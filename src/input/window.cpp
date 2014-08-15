@@ -1,7 +1,7 @@
 #include "window.h"
 #include "../video/video.h"
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -44,6 +44,6 @@ void Window::addEvent(const SDL_Event& e)
 }
 
 } // input
-} // engine
+} // flat
 
 

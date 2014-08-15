@@ -1,11 +1,11 @@
-#ifndef ENGINE_VIDEO_WINDOW_H
-#define ENGINE_VIDEO_WINDOW_H
+#ifndef FLAT_VIDEO_WINDOW_H
+#define FLAT_VIDEO_WINDOW_H
 
 #include <string>
 #include <SDL2/SDL.h>
 #include "../geometry/vector2.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -48,8 +48,8 @@ class Window
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_WINDOW_H
+#endif // FLAT_VIDEO_WINDOW_H
 
 

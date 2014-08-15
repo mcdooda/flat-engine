@@ -1,10 +1,10 @@
-#ifndef ENGINE_VIDEO_FONT_H
-#define ENGINE_VIDEO_FONT_H
+#ifndef FLAT_VIDEO_FONT_H
+#define FLAT_VIDEO_FONT_H
 
 #include <string>
 #include <SDL/SDL_ttf.h>
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -22,8 +22,8 @@ class Font
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_FONT_H
+#endif // FLAT_VIDEO_FONT_H
 
 

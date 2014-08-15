@@ -1,12 +1,12 @@
-#ifndef ENGINE_INPUT_KEYBOARD_H
-#define ENGINE_INPUT_KEYBOARD_H
+#ifndef FLAT_INPUT_KEYBOARD_H
+#define FLAT_INPUT_KEYBOARD_H
 
 #include <vector>
 #include <SDL2/SDL.h>
 
 #define K(k) SDLK_##k
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -37,8 +37,8 @@ class Keyboard
 };
 
 } // input
-} // engine
+} // flat
 
-#endif // ENGINE_INPUT_KEYBOARD_H
+#endif // FLAT_INPUT_KEYBOARD_H
 
 

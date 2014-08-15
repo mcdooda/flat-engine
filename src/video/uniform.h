@@ -1,11 +1,11 @@
-#ifndef ENGINE_VIDEO_UNIFORM_H
-#define ENGINE_VIDEO_UNIFORM_H
+#ifndef FLAT_VIDEO_UNIFORM_H
+#define FLAT_VIDEO_UNIFORM_H
 
 #include "color.h"
 #include "../geometry/vector2.h"
 #include "../geometry/matrix4.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -28,8 +28,8 @@ class Uniform
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_UNIFORM_H
+#endif // FLAT_VIDEO_UNIFORM_H
 
 

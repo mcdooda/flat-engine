@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include "uniform.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -49,6 +49,6 @@ void Uniform::setMatrix4(const geometry::Matrix4& matrix4) const
 }
 
 } // video
-} // engine
+} // flat
 
 

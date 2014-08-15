@@ -1,6 +1,6 @@
 #include "color.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -32,6 +32,6 @@ Color* Color::newCopy()
 }
 
 } // video
-} // engine
+} // flat
 
 

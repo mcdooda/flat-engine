@@ -1,6 +1,6 @@
 #include <iostream>
 
-namespace engine
+namespace flat
 {
 namespace resource
 {
@@ -27,6 +27,6 @@ template <class T> T* ResourceManager<T>::load(std::string name)
 }
 
 } // resource
-} // engine
+} // flat
 
 

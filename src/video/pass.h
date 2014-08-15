@@ -1,10 +1,10 @@
-#ifndef ENGINE_VIDEO_PASS_H
-#define ENGINE_VIDEO_PASS_H
+#ifndef FLAT_VIDEO_PASS_H
+#define FLAT_VIDEO_PASS_H
 
 #include <GL/glew.h>
 #include "program.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -28,8 +28,8 @@ class Pass : public Program
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_PASS_H
+#endif // FLAT_VIDEO_PASS_H
 
 

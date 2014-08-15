@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "circle.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -51,6 +51,6 @@ void Circle::buildCircle()
 }
 
 } // geometry
-} // engine
+} // flat
 
 

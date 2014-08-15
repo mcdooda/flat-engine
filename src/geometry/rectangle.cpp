@@ -2,7 +2,7 @@
 #include <iostream>
 #include "rectangle.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -81,6 +81,6 @@ void Rectangle::draw(video::Attribute vertexAttribute, video::Attribute uvAttrib
 }
 
 } // geometry
-} // engine
+} // flat
 
 

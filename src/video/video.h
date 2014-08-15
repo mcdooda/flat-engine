@@ -1,10 +1,10 @@
-#ifndef ENGINE_VIDEO_VIDEO_H
-#define ENGINE_VIDEO_VIDEO_H
+#ifndef FLAT_VIDEO_VIDEO_H
+#define FLAT_VIDEO_VIDEO_H
 
 #include "window.h"
 #include "color.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -25,8 +25,8 @@ class Video
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_VIDEO_H
+#endif // FLAT_VIDEO_VIDEO_H
 
 

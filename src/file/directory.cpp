@@ -3,7 +3,7 @@
 #include <string>
 #include "directory.h"
 
-namespace engine
+namespace flat
 {
 namespace file
 {
@@ -89,6 +89,6 @@ std::vector<Directory*> Directory::getDirectories()
 }
 
 } // file
-} // engine
+} // flat
 
 

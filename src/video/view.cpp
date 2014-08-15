@@ -1,7 +1,7 @@
 #include "view.h"
 #include "window.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -48,7 +48,7 @@ void View::updateProjection(const geometry::Vector2& windowSize)
 	m_projectionMatrix.setOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000.0f, 1000.0f);
 }
 
-engine::geometry::Vector2 View::getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const
+flat::geometry::Vector2 View::getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const
 {
 	geometry::Matrix4 matrix = getViewProjectionMatrix();
 	matrix.setInverse();
@@ -60,6 +60,6 @@ engine::geometry::Vector2 View::getRelativePosition(const geometry::Vector2& win
 }
 
 } // video
-} // engine
+} // flat
 
 

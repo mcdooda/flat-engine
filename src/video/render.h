@@ -1,11 +1,11 @@
-#ifndef ENGINE_VIDEO_RENDER_H
-#define ENGINE_VIDEO_RENDER_H
+#ifndef FLAT_VIDEO_RENDER_H
+#define FLAT_VIDEO_RENDER_H
 
 #include <GL/glew.h>
 #include "program.h"
 #include "../geometry/rectangle.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -28,8 +28,8 @@ class Render : public Program
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_RENDER_H
+#endif // FLAT_VIDEO_RENDER_H
 
 

@@ -1,6 +1,6 @@
 #include "keyboard.h"
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -103,6 +103,6 @@ void Keyboard::addEvent(const SDL_Event& e)
 }
 
 } // input
-} // engine
+} // flat
 
 

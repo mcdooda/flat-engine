@@ -1,9 +1,9 @@
-#ifndef ENGINE_GEOMETRY_RECTANGLE_H
-#define ENGINE_GEOMETRY_RECTANGLE_H
+#ifndef FLAT_GEOMETRY_RECTANGLE_H
+#define FLAT_GEOMETRY_RECTANGLE_H
 
 #include "polygon.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -28,8 +28,8 @@ class Rectangle : public Polygon
 };
 
 } // geometry
-} // engine
+} // flat
 
-#endif // ENGINE_GEOMETRY_RECTANGLE_H
+#endif // FLAT_GEOMETRY_RECTANGLE_H
 
 

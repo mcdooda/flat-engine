@@ -1,6 +1,6 @@
 #include "agent.h"
 
-namespace engine
+namespace flat
 {
 namespace state
 {
@@ -16,6 +16,6 @@ Agent::~Agent()
 }
 
 } // state
-} // engine
+} // flat
 
 

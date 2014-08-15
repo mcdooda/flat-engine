@@ -1,9 +1,9 @@
-#ifndef ENGINE_STATE_MACHINE_H
-#define ENGINE_STATE_MACHINE_H
+#ifndef FLAT_STATE_MACHINE_H
+#define FLAT_STATE_MACHINE_H
 
 #include "state.h"
 
-namespace engine
+namespace flat
 {
 namespace state
 {
@@ -31,8 +31,8 @@ class Machine
 };
 
 } // state
-} // engine
+} // flat
 
-#endif // ENGINE_STATE_MACHINE_H
+#endif // FLAT_STATE_MACHINE_H
 
 

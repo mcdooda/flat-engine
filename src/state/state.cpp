@@ -1,6 +1,6 @@
 #include "state.h"
 
-namespace engine
+namespace flat
 {
 namespace state
 {
@@ -15,7 +15,7 @@ State::~State()
 
 }
 
-} // engine
+} // flat
 } // state
 
 

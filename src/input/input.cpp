@@ -4,7 +4,7 @@
 #include "mouse.h"
 #include "window.h"
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -47,6 +47,6 @@ void Input::clearAll()
 }
 
 } // input
-} // engine
+} // flat
 
 

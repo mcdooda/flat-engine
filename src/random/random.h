@@ -1,7 +1,7 @@
-#ifndef ENGINE_RANDOM_H
-#define ENGINE_RANDOM_H
+#ifndef FLAT_RANDOM_H
+#define FLAT_RANDOM_H
 
-namespace engine
+namespace flat
 {
 namespace random
 {
@@ -23,8 +23,8 @@ class Random
 };
 
 } // random
-} // engine
+} // flat
 
-#endif // ENGINE_RANDOM_H
+#endif // FLAT_RANDOM_H
 
 

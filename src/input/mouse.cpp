@@ -1,6 +1,6 @@
 #include "mouse.h"
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -76,6 +76,6 @@ void Mouse::addEvent(const SDL_Event& e)
 }
 
 } // input
-} // engine
+} // flat
 
 

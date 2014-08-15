@@ -1,5 +1,5 @@
-#ifndef ENGINE_INPUT_MOUSE_H
-#define ENGINE_INPUT_MOUSE_H
+#ifndef FLAT_INPUT_MOUSE_H
+#define FLAT_INPUT_MOUSE_H
 
 #include <SDL2/SDL.h>
 #include "../geometry/vector2.h"
@@ -9,7 +9,7 @@
 #define M(m) SDL_BUTTON_##m
 #define NUM_BUTTONS 8
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -43,8 +43,8 @@ class Mouse
 };
 
 } // input
-} // engine
+} // flat
 
-#endif // ENGINE_INPUT_MOUSE_H
+#endif // FLAT_INPUT_MOUSE_H
 
 

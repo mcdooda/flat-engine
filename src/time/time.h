@@ -1,7 +1,7 @@
-#ifndef ENGINE_TIME_H
-#define ENGINE_TIME_H
+#ifndef FLAT_TIME_H
+#define FLAT_TIME_H
 
-namespace engine
+namespace flat
 {
 namespace time
 {
@@ -42,8 +42,8 @@ class Time
 };
 
 } // time
-} // engine
+} // flat
 
-#endif // ENGINE_TIME_H
+#endif // FLAT_TIME_H
 
 

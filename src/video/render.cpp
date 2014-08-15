@@ -1,6 +1,6 @@
 #include "render.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -30,6 +30,6 @@ void Render::draw()
 }
 
 } // video
-} // engine
+} // flat
 
 

@@ -1,9 +1,9 @@
-#ifndef ENGINE_VIDEO_ATTRIB_H
-#define ENGINE_VIDEO_ATTRIB_H
+#ifndef FLAT_VIDEO_ATTRIB_H
+#define FLAT_VIDEO_ATTRIB_H
 
 #include <GL/glew.h>
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -11,8 +11,8 @@ namespace video
 typedef GLint Attribute;
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_ATTRIB_H
+#endif // FLAT_VIDEO_ATTRIB_H
 
 

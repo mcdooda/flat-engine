@@ -1,12 +1,12 @@
-#ifndef ENGINE_INPUT_INPUT_H
-#define ENGINE_INPUT_INPUT_H
+#ifndef FLAT_INPUT_INPUT_H
+#define FLAT_INPUT_INPUT_H
 
 #include "keyboard.h"
 #include "mouse.h"
 #include "window.h"
 #include "../video/video.h"
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -27,8 +27,8 @@ class Input
 };
 
 } // input
-} // engine
+} // flat
 
-#endif // ENGINE_INPUT_INPUT_H
+#endif // FLAT_INPUT_INPUT_H
 
 

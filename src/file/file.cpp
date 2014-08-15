@@ -2,7 +2,7 @@
 #include <cstring>
 #include "file.h"
 
-namespace engine
+namespace flat
 {
 namespace file
 {
@@ -43,6 +43,6 @@ bool File::isWritable()
 }
 
 } // file
-} // engine
+} // flat
 
 

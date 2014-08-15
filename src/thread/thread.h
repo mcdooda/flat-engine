@@ -1,10 +1,10 @@
-#ifndef ENGINE_THREAD_H
-#define ENGINE_THREAD_H
+#ifndef FLAT_THREAD_H
+#define FLAT_THREAD_H
 
 #include <SDL2/SDL.h>
 #include <string>
 
-namespace engine
+namespace flat
 {
 namespace thread
 {
@@ -53,8 +53,8 @@ class Thread
 };
 
 } // thread
-} // engine
+} // flat
 
-#endif // ENGINE_THREAD_H
+#endif // FLAT_THREAD_H
 
 

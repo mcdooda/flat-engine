@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include "window.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -118,6 +118,6 @@ void Window::initGlew()
 }
 
 } // video
-} // engine
+} // flat
 
 

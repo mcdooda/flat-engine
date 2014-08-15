@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include "engine.h"
+#include "flat.h"
 
 #include "input/input.h"
 #include "video/video.h"
@@ -7,10 +7,10 @@
 #include "time/time.h"
 #include "random/random.h"
 
-namespace engine
+namespace flat
 {
 
-Engine::Engine()
+Flat::Flat()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	time = new time::Time;
@@ -20,7 +20,7 @@ Engine::Engine()
 	input = new input::Input(video->window);
 }
 
-Engine::~Engine()
+Flat::~Flat()
 {
 	SDL_Quit();
 	delete time;
@@ -30,6 +30,6 @@ Engine::~Engine()
 	delete input;
 }
 
-} // engine
+} // flat
 
 

@@ -1,10 +1,10 @@
-#ifndef ENGINE_VIDEO_VIEW_H
-#define ENGINE_VIDEO_VIEW_H
+#ifndef FLAT_VIDEO_VIEW_H
+#define FLAT_VIDEO_VIEW_H
 
 #include "../geometry/vector2.h"
 #include "../geometry/matrix4.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -36,8 +36,8 @@ class View
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_VIEW_H
+#endif // FLAT_VIDEO_VIEW_H
 
 

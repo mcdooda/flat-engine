@@ -1,7 +1,7 @@
 #include <iostream>
 #include "game.h"
 
-namespace engine
+namespace flat
 {
 
 Game::Game(const std::vector<std::string>& args) :
@@ -68,6 +68,6 @@ void Game::loop()
 	}
 }
 
-} // engine
+} // flat
 
 

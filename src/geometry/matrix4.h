@@ -1,9 +1,9 @@
-#ifndef ENGINE_GEOMETRY_MATRIX4_H
-#define ENGINE_GEOMETRY_MATRIX4_H
+#ifndef FLAT_GEOMETRY_MATRIX4_H
+#define FLAT_GEOMETRY_MATRIX4_H
 
 #include "vector2.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -56,8 +56,8 @@ class Matrix4
 };
 
 } // geometry
-} // engine
+} // flat
 
-#endif // ENGINE_GEOMETRY_MATRIX4_H
+#endif // FLAT_GEOMETRY_MATRIX4_H
 
 

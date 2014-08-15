@@ -1,12 +1,12 @@
-#ifndef ENGINE_VIDEO_POLYGON_H
-#define ENGINE_VIDEO_POLYGON_H
+#ifndef FLAT_VIDEO_POLYGON_H
+#define FLAT_VIDEO_POLYGON_H
 
 #include <vector>
 #include "vector2.h"
 #include "matrix4.h"
 #include "../video/attribute.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -31,8 +31,8 @@ class Polygon
 };
 
 } // geometry
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_POLYGON_H
+#endif // FLAT_VIDEO_POLYGON_H
 
 

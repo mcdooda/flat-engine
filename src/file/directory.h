@@ -1,10 +1,10 @@
-#ifndef ENGINE_FILE_DIRECTORY_H
-#define ENGINE_FILE_DIRECTORY_H
+#ifndef FLAT_FILE_DIRECTORY_H
+#define FLAT_FILE_DIRECTORY_H
 
 #include <vector>
 #include "file.h"
 
-namespace engine
+namespace flat
 {
 namespace file
 {
@@ -32,8 +32,8 @@ class Directory : public File
 };
 
 } // file
-} // engine
+} // flat
 
-#endif // ENGINE_FILE_DIRECTORY_H
+#endif // FLAT_FILE_DIRECTORY_H
 
 

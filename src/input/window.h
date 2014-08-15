@@ -1,10 +1,10 @@
-#ifndef ENGINE_INPUT_WINDOW_H
-#define ENGINE_INPUT_WINDOW_H
+#ifndef FLAT_INPUT_WINDOW_H
+#define FLAT_INPUT_WINDOW_H
 
 #include <SDL2/SDL.h>
 #include "../video/video.h"
 
-namespace engine
+namespace flat
 {
 namespace input
 {
@@ -29,8 +29,8 @@ class Window
 };
 
 } // input
-} // engine
+} // flat
 
-#endif // ENGINE_INPUT_WINDOW_H
+#endif // FLAT_INPUT_WINDOW_H
 
 

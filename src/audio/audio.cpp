@@ -1,7 +1,7 @@
 #include <SDL2/SDL_mixer.h>
 #include "audio.h"
 
-namespace engine
+namespace flat
 {
 namespace audio
 {
@@ -22,6 +22,6 @@ Music* Audio::loadMusic(std::string filename)
 }
 
 } // audio
-} // engine
+} // flat
 
 

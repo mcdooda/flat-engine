@@ -1,5 +1,5 @@
-#ifndef ENGINE_RESOURCE_RESOURCEMANAGER_H
-#define ENGINE_RESOURCE_RESOURCEMANAGER_H
+#ifndef FLAT_RESOURCE_RESOURCEMANAGER_H
+#define FLAT_RESOURCE_RESOURCEMANAGER_H
 
 #include <map>
 #include "video/texture.h"
@@ -7,7 +7,7 @@
 #include "audio/sample.h"
 #include "audio/music.h"
 
-namespace engine
+namespace flat
 {
 namespace resource
 {
@@ -29,10 +29,10 @@ class SampleManager  : public ResourceManager<audio::Sample>  {};
 class MusicManager   : public ResourceManager<audio::Music>   {};
 
 } // resource
-} // engine
+} // flat
 
 #include "resourcemanager.inl"
 
-#endif // ENGINE_RESOURCE_RESOURCEMANAGER_H
+#endif // FLAT_RESOURCE_RESOURCEMANAGER_H
 
 

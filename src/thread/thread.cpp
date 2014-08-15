@@ -1,6 +1,6 @@
 #include "thread.h"
 
-namespace engine
+namespace flat
 {
 namespace thread
 {
@@ -64,6 +64,6 @@ Thread::Id Thread::getCurrentId()
 }
 
 } // thread
-} // engine
+} // flat
 
 

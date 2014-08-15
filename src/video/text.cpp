@@ -1,7 +1,7 @@
 #include <iostream>
 #include "text.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -31,6 +31,6 @@ Text::~Text()
 }
 
 } // video
-} // engine
+} // flat
 
 

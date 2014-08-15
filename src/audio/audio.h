@@ -1,10 +1,10 @@
-#ifndef AUDIO_AUDIO_H
-#define AUDIO_AUDIO_H
+#ifndef FLAT_AUDIO_AUDIO_H
+#define FLAT_AUDIO_AUDIO_H
 
 #include <string>
 #include "music.h"
 
-namespace engine
+namespace flat
 {
 namespace audio
 {
@@ -19,8 +19,8 @@ class Audio
 };
 
 } // audio
-} // engine
+} // flat
 
-#endif // AUDIO_AUDIO_H
+#endif // FLAT_AUDIO_AUDIO_H
 
 

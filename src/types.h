@@ -1,8 +1,8 @@
-#ifndef ENGINE_TYPES_H
-#define ENGINE_TYPES_H
+#ifndef FLAT_TYPES_H
+#define FLAT_TYPES_H
 
 #include <SDL2/SDL_types.h>
 
-#endif // ENGINE_TYPES_H
+#endif // FLAT_TYPES_H
 
 

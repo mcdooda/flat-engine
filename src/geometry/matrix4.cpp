@@ -3,7 +3,7 @@
 #include <cmath>
 #include "matrix4.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -402,6 +402,6 @@ std::ostream& operator<<(std::ostream& out, Matrix4 matrix4)
 }
 
 } // geometry
-} // engine
+} // flat
 
 

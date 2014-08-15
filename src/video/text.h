@@ -1,5 +1,5 @@
-#ifndef ENGINE_VIDEO_TEXT_H
-#define ENGINE_VIDEO_TEXT_H
+#ifndef FLAT_VIDEO_TEXT_H
+#define FLAT_VIDEO_TEXT_H
 
 #include <string>
 #include <SDL/SDL_ttf.h>
@@ -7,7 +7,7 @@
 #include "color.h"
 #include "font.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -39,8 +39,8 @@ class Text : public FileTexture
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_TEXT_H
+#endif // FLAT_VIDEO_TEXT_H
 
 

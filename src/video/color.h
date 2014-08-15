@@ -1,9 +1,9 @@
-#ifndef ENGINE_VIDEO_COLOR_H
-#define ENGINE_VIDEO_COLOR_H
+#ifndef FLAT_VIDEO_COLOR_H
+#define FLAT_VIDEO_COLOR_H
 
 #include <GL/glew.h>
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -37,8 +37,8 @@ class Color
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_COLOR_H
+#endif // FLAT_VIDEO_COLOR_H
 
 

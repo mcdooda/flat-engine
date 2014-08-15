@@ -1,5 +1,5 @@
-#ifndef ENGINE_ENGINE_H
-#define ENGINE_ENGINE_H
+#ifndef FLAT_FLAT_H
+#define FLAT_FLAT_H
 
 #include "input/input.h"
 #include "time/time.h"
@@ -7,14 +7,14 @@
 #include "audio/audio.h"
 #include "random/random.h"
 
-namespace engine
+namespace flat
 {
 
-class Engine
+class Flat
 {
 	public:
-		Engine();
-		virtual ~Engine();
+		Flat();
+		virtual ~Flat();
 		
 	public:
 		input::Input* input;
@@ -24,8 +24,8 @@ class Engine
 		random::Random* random;
 };
 
-} // engine
+} // flat
 
-#endif // ENGINE_ENGINE_H
+#endif // FLAT_FLAT_H
 
 

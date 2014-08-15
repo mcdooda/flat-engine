@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include "polygon.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -51,6 +51,6 @@ void Polygon::transform(const Matrix4& matrix4)
 }
 
 } // geometry
-} // engine
+} // flat
 
 

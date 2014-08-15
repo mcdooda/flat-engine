@@ -3,7 +3,7 @@
 #include "video.h"
 #include "text.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -36,6 +36,6 @@ void Video::setClearColor(const Color& color)
 }
 
 } // video
-} // engine
+} // flat
 
 

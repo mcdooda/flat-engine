@@ -1,7 +1,7 @@
 #include <cmath>
 #include "vector2.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -136,6 +136,6 @@ std::ostream& operator<<(std::ostream& out, Vector2 vector2)
 }
 
 } // geometry
-} // engine
+} // flat
 
 

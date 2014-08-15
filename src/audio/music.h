@@ -1,10 +1,10 @@
-#ifndef ENGINE_AUDIO_MUSIC_H
-#define ENGINE_AUDIO_MUSIC_H
+#ifndef FLAT_AUDIO_MUSIC_H
+#define FLAT_AUDIO_MUSIC_H
 
 #include <string>
 #include <SDL2/SDL_mixer.h>
 
-namespace engine
+namespace flat
 {
 namespace audio
 {
@@ -22,8 +22,8 @@ class Music
 };
 
 } // audio
-} // engine
+} // flat
 
-#endif // ENGINE_AUDIO_MUSIC_H
+#endif // FLAT_AUDIO_MUSIC_H
 
 

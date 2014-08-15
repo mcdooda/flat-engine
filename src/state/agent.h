@@ -1,9 +1,9 @@
-#ifndef ENGINE_STATE_AGENT_H
-#define ENGINE_STATE_AGENT_H
+#ifndef FLAT_STATE_AGENT_H
+#define FLAT_STATE_AGENT_H
 
 #include "machine.h"
 
-namespace engine
+namespace flat
 {
 namespace state
 {
@@ -23,8 +23,8 @@ class Agent
 };
 
 } // state
-} // engine
+} // flat
 
-#endif // ENGINE_STATE_AGENT_H
+#endif // FLAT_STATE_AGENT_H
 
 

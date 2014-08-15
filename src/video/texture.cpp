@@ -1,6 +1,6 @@
 #include "texture.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -25,6 +25,6 @@ Texture::~Texture()
 }
 
 } // video
-} // engine
+} // flat
 
 

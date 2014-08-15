@@ -1,10 +1,10 @@
-#ifndef ENGINE_VIDEO_TEXTURE_H
-#define ENGINE_VIDEO_TEXTURE_H
+#ifndef FLAT_VIDEO_TEXTURE_H
+#define FLAT_VIDEO_TEXTURE_H
 
 #include <GL/glew.h>
 #include "../geometry/vector2.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -29,8 +29,8 @@ class Texture
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_TEXTURE_H
+#endif // FLAT_VIDEO_TEXTURE_H
 
 

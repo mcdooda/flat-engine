@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include "linesegment.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -32,6 +32,6 @@ void LineSegment::draw(video::Attribute vertexAttribute)
 }
 
 } // geometry
-} //engine
+} //flat
 
 

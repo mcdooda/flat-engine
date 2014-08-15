@@ -1,9 +1,9 @@
-#ifndef ENGINE_FILE_FILE_H
-#define ENGINE_FILE_FILE_H
+#ifndef FLAT_FILE_FILE_H
+#define FLAT_FILE_FILE_H
 
 #include <string>
 
-namespace engine
+namespace flat
 {
 namespace file
 {
@@ -27,8 +27,8 @@ class File
 };
 
 } // file
-} // engine
+} // flat
 
-#endif // ENGINE_FILE_FILE_H
+#endif // FLAT_FILE_FILE_H
 
 

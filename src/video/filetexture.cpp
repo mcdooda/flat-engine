@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include "filetexture.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -52,6 +52,6 @@ void FileTexture::free()
 }
 
 } // video
-} // engine
+} // flat
 
 

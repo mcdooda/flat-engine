@@ -1,6 +1,6 @@
 #include "music.h"
 
-namespace engine
+namespace flat
 {
 namespace audio
 {
@@ -21,6 +21,6 @@ void Music::play()
 }
 
 } // audio
-} // engine
+} // flat
 
 

@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include "time.h"
 
-namespace engine
+namespace flat
 {
 namespace time
 {
@@ -96,6 +96,6 @@ float Time::getFrameTime()
 }
 
 } // time
-} // engine
+} // flat
 
 

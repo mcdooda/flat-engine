@@ -1,10 +1,10 @@
-#ifndef ENGINE_GEOMETRY_LINESEGMENT_H
-#define ENGINE_GEOMETRY_LINESEGMENT_H
+#ifndef FLAT_GEOMETRY_LINESEGMENT_H
+#define FLAT_GEOMETRY_LINESEGMENT_H
 
 #include "vector2.h"
 #include "../video/attribute.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -29,8 +29,8 @@ class LineSegment
 };
 
 } // geometry
-} // engine
+} // flat
 
-#endif // ENGINE_GEOMETRY_LINESEGMENT_H
+#endif // FLAT_GEOMETRY_LINESEGMENT_H
 
 

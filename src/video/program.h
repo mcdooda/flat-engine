@@ -1,5 +1,5 @@
-#ifndef ENGINE_VIDEO_PROGRAM_H
-#define ENGINE_VIDEO_PROGRAM_H
+#ifndef FLAT_VIDEO_PROGRAM_H
+#define FLAT_VIDEO_PROGRAM_H
 
 #include <map>
 #include <string>
@@ -9,7 +9,7 @@
 #include "window.h"
 #include "texture.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -56,8 +56,8 @@ class Program
 };
 
 } // video
-} // engine
+} // flat
 
-#endif // ENGINE_VIDEO_PROGRAM_H
+#endif // FLAT_VIDEO_PROGRAM_H
 
 

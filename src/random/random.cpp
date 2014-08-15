@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "random.h"
 
-namespace engine
+namespace flat
 {
 namespace random
 {
@@ -39,6 +39,6 @@ void Random::setSeed(int seed)
 }
 
 } // random
-} // engine
+} // flat
 
 

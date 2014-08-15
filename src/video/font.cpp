@@ -1,6 +1,6 @@
 #include "font.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -19,6 +19,6 @@ Font::~Font()
 }
 
 } // video
-} // engine
+} // flat
 
 

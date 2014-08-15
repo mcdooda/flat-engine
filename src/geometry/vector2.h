@@ -1,5 +1,5 @@
-#ifndef ENGINE_GEOMETRY_VECTOR2_H
- #define ENGINE_GEOMETRY_VECTOR2_H
+#ifndef FLAT_GEOMETRY_VECTOR2_H
+ #define FLAT_GEOMETRY_VECTOR2_H
 
 #include <ostream>
 
@@ -7,7 +7,7 @@
 	#define M_PI 3.1415926535897932384626433832795
 #endif
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -53,8 +53,8 @@ class Vector2
 };
 
 } // geometry
-} // engine
+} // flat
 
-#endif // ENGINE_GEOMETRY_VECTOR2_H
+#endif // FLAT_GEOMETRY_VECTOR2_H
 
 

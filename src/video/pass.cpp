@@ -1,6 +1,6 @@
 #include "pass.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -64,6 +64,6 @@ void Pass::use()
 }
 
 } // video
-} // engine
+} // flat
 
 

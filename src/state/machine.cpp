@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include "machine.h"
 
-namespace engine
+namespace flat
 {
 namespace state
 {
@@ -72,6 +72,6 @@ void Machine::update()
 }
 
 } // state
-} // engine
+} // flat
 
 

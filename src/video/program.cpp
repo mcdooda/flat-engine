@@ -5,7 +5,7 @@
 #include <vector>
 #include "program.h"
 
-namespace engine
+namespace flat
 {
 namespace video
 {
@@ -208,6 +208,6 @@ void Program::loadUniforms()
 }
 
 } // video
-} // engine
+} // flat
 
 

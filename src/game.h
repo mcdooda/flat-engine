@@ -1,8 +1,8 @@
-#ifndef ENGINE_GAME_H
-#define ENGINE_GAME_H
+#ifndef FLAT_GAME_H
+#define FLAT_GAME_H
 
 #include <string>
-#include "engine.h"
+#include "flat.h"
 
 // single header public API
 
@@ -22,10 +22,10 @@
 // thread
 #include "thread/thread.h"
 
-namespace engine
+namespace flat
 {
 
-class Game : public Engine, public state::Agent
+class Game : public Flat, public state::Agent
 {
 	public:
 		Game(const std::vector<std::string>& args);
@@ -57,10 +57,10 @@ class Game : public Engine, public state::Agent
 		bool m_stop;
 };
 
-} // engine
+} // flat
 
-using namespace engine;
+using namespace flat;
 
-#endif // ENGINE_GAME_H
+#endif // FLAT_GAME_H
 
 

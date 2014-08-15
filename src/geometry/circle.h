@@ -1,9 +1,9 @@
-#ifndef ENGINE_GEOMETRY_CIRCLE_H
-#define ENGINE_GEOMETRY_CIRCLE_H
+#ifndef FLAT_GEOMETRY_CIRCLE_H
+#define FLAT_GEOMETRY_CIRCLE_H
 
 #include "polygon.h"
 
-namespace engine
+namespace flat
 {
 namespace geometry
 {
@@ -30,8 +30,8 @@ class Circle : public Polygon
 };
 
 } // geometry
-} // engine
+} // flat
 
-#endif // ENGINE_GEOMETRY_CIRCLE_H
+#endif // FLAT_GEOMETRY_CIRCLE_H
 
 
