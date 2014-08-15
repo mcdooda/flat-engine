@@ -2,25 +2,7 @@
 #define FLAT_GAME_H
 
 #include <string>
-#include "flat.h"
-
-// single header public API
-
-// geometry
-#include "geometry/linesegment.h"
-#include "geometry/circle.h"
-#include "geometry/rectangle.h"
-
-// video
-#include "video/pass.h"
-#include "video/render.h"
-#include "video/color.h"
-
-// state
-#include "state/state.h"
-
-// thread
-#include "thread/thread.h"
+#include "../flat.h"
 
 namespace flat
 {
