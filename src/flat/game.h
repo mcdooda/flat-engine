@@ -41,8 +41,6 @@ class Game : public Flat, public state::Agent
 
 } // flat
 
-using namespace flat;
-
 #endif // FLAT_GAME_H
 
 
