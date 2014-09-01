@@ -8,7 +8,7 @@ Game::Game(const std::vector<std::string>& args) :
 	m_args(args)
 {
 	checkArgs();
-	video->window->open(video->window->getDesktopSize() / 2, false, true);
+	openWindow();
 }
 
 Game::~Game()
@@ -19,6 +19,11 @@ Game::~Game()
 void Game::checkArgs()
 {
 	
+}
+
+void Game::openWindow()
+{
+	video->window->open(video->window->getDesktopSize() / 2, false, true);
 }
 
 void Game::argCheckString(int index)

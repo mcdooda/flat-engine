@@ -14,6 +14,7 @@ class Game : public Flat, public state::Agent
 		virtual ~Game();
 		
 		virtual void checkArgs();
+		virtual void openWindow();
 		
 		void argCheckString(int index);
 		std::string argGetString(int index);
@@ -26,8 +27,10 @@ class Game : public Flat, public state::Agent
 		inline void stop() { m_stop = true; }
 		
 		/* game launcher */
-		template <class T> static int run(std::vector<std::string> args)
+		template <class T> static int run(int argc, char* argv[])
 		{
+			std::vector<std::string> args;
+			args.assign(argv, argv + argc);
 			T* game = new T(args);
 			game->loop();
 			delete game;
