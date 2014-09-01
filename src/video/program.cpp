@@ -51,10 +51,8 @@ void Program::use(Window* window)
 	int i = 0;
 	for (std::vector<Texture>::iterator it = m_inputTextures.begin(); it != m_inputTextures.end(); it++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, it->getTextureId());
 		const Uniform& textureUniform = getUniform(it->getName());
-		textureUniform.setInt(i);
+		textureUniform.setTexture(&*it, i);
 		i++;
 	}
 }

@@ -28,6 +28,9 @@ class Color
 		
 		static Color WHITE;
 		static Color BLACK;
+		static Color RED;
+		static Color GREEN;
+		static Color BLUE;
 
 	protected:
 		GLfloat m_r;

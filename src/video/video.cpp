@@ -10,13 +10,15 @@ namespace video
 
 Video::Video()
 {
-	Text::open();
 	window = new Window;
+	Texture::open();
+	Text::open();
 }
 
 Video::~Video()
 {
 	Text::close();
+	Texture::close();
 	delete window;
 }
 

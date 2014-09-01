@@ -18,6 +18,8 @@
 #include "video/pass.h"
 #include "video/render.h"
 #include "video/color.h"
+#include "video/filetexture.h"
+#include "video/sprite.h"
 
 // state
 #include "state/state.h"

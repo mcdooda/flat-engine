@@ -23,7 +23,7 @@ void Game::checkArgs()
 
 void Game::openWindow()
 {
-	video->window->open(video->window->getDesktopSize() / 2, false, true);
+	video->window->open(video->window->getDesktopSize(), true, true);
 }
 
 void Game::argCheckString(int index)

@@ -7,7 +7,7 @@ namespace flat
 namespace video
 {
 
-bool Window::glewOk = false;
+bool Window::glOk = false;
 
 Window::Window()
 {
@@ -35,7 +35,12 @@ void Window::open(geometry::Vector2 size, bool fullScreen, bool vsync)
 	
 	m_renderer = SDL_CreateRenderer(m_window, -1, rendererFlags);
 	
-	initGlew();
+	if (!glOk)
+	{
+		glOk = true;
+		initGlew();
+		initGL();
+	}
 	
 	SDL_WarpMouseInWindow(m_window, size.getX() / 2, size.getY() / 2);
 
@@ -97,24 +102,25 @@ void Window::initSize(const geometry::Vector2& size)
 
 void Window::initGlew()
 {
-	if (!glewOk)
+	int err = glewInit();
+	if (err != GLEW_OK)
 	{
-		glewOk = true;
-		
-		int err = glewInit();
-		if (err != GLEW_OK)
-		{
-			std::cerr << "Fatal: glewInit failed: " << glewGetErrorString(err) << std::endl;
-			exit(1);
-		}
-	
-		if (!GLEW_ARB_vertex_program
-		 || !GLEW_ARB_fragment_program
-		 || !GLEW_ARB_texture_float
-		 || !GLEW_ARB_draw_buffers
-		 || !GLEW_ARB_framebuffer_object)
-			std::cerr << "Warning: Shaders not supported!" << std::endl;
+		std::cerr << "Fatal: glewInit failed: " << glewGetErrorString(err) << std::endl;
+		exit(1);
 	}
+
+	if (!GLEW_ARB_vertex_program
+	 || !GLEW_ARB_fragment_program
+	 || !GLEW_ARB_texture_float
+	 || !GLEW_ARB_draw_buffers
+	 || !GLEW_ARB_framebuffer_object)
+		std::cerr << "Warning: Shaders not supported!" << std::endl;
+}
+
+void Window::initGL()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 } // video

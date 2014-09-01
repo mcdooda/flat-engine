@@ -27,7 +27,7 @@ Text::Text(std::string string, Font* font, Color color) :
 
 Text::~Text()
 {
-	FileTexture::free();
+	
 }
 
 } // video

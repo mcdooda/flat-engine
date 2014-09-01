@@ -51,12 +51,12 @@ void Rectangle::setPosition(const Vector2& position)
 	setPositionSize(position, size);
 }
 
-Vector2 Rectangle::getPosition()
+Vector2 Rectangle::getPosition() const
 {
 	return m_vertices[0];
 }
 
-void Rectangle::draw(video::Attribute vertexAttribute, video::Attribute uvAttribute)
+void Rectangle::draw(video::Attribute vertexAttribute, video::Attribute uvAttribute) const
 {
 	if (!m_vertices.empty())
 	{

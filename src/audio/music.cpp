@@ -17,7 +17,7 @@ Music::~Music()
 
 void Music::play()
 {
-	Mix_PlayMusic(m_music, 1);
+	Mix_PlayMusic(m_music, -1);
 }
 
 } // audio

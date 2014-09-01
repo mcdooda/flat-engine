@@ -35,6 +35,7 @@ class Window
 		void initSize(const geometry::Vector2& size);
 		
 		static void initGlew();
+		static void initGL();
 	
 	private:
 		geometry::Vector2 m_size;
@@ -44,7 +45,7 @@ class Window
 		SDL_Window* m_window;
 		SDL_Renderer* m_renderer;
 		
-		static bool glewOk;
+		static bool glOk;
 };
 
 } // video

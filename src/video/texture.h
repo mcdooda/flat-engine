@@ -14,7 +14,17 @@ class Texture
 	public:
 		Texture();
 		Texture(GLuint textureId, const geometry::Vector2& size, const std::string& name);
-		~Texture();
+		virtual ~Texture();
+		
+		static void open()
+		{
+			
+		}
+
+		static void close()
+		{
+			
+		}
 		
 		inline GLuint getTextureId() const { return m_textureId; }
 		inline const geometry::Vector2& getSize() const { return m_size; }

@@ -21,6 +21,16 @@ FileTexture::FileTexture(std::string filename) :
 		std::cerr << "Warning: error in IMG_Load(" << filename.c_str() << ") : " << IMG_GetError() << std::endl;
 }
 
+FileTexture::FileTexture()
+{
+	
+}
+
+FileTexture::~FileTexture()
+{
+	free();
+}
+
 Color FileTexture::getPixel(const geometry::Vector2& pixelPosition)
 {
 	int x = pixelPosition.getRoundX();

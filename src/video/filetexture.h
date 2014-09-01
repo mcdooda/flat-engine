@@ -16,13 +16,14 @@ class FileTexture : public Texture
 {
 	public:
 		FileTexture(std::string filename);
+		virtual ~FileTexture();
 
 		inline const std::string& getPath() const { return m_path; }
 		
 		Color getPixel(const geometry::Vector2& pixelPosition);
 
 	protected:
-		FileTexture() {}
+		FileTexture();
 		
 		void load();
 		void free();
