@@ -217,10 +217,14 @@ void Matrix4::scale(float scale)
 	     (0 0 0 1/s)
 	*/
 
-	set(3, 0, get(3, 0) / scale);
-	set(3, 1, get(3, 1) / scale);
-	set(3, 2, get(3, 2) / scale);
-	set(3, 3, get(3, 3) / scale);
+	Matrix4 m;
+	m.set(3, 3, 1.f / scale);
+	*this = m * *this;
+}
+
+void Matrix4::scale(const Vector2& vector2)
+{
+	scale(vector2.getX(), vector2.getY());
 }
 
 void Matrix4::scale(float scaleX, float scaleY, float scaleZ)
@@ -231,21 +235,15 @@ void Matrix4::scale(float scaleX, float scaleY, float scaleZ)
 	     (0 0 z 0)
 	     (0 0 0 1)
 	*/
-
-	set(0, 0, scaleX + get(0, 0));
-	set(0, 1, scaleX + get(0, 1));
-	set(0, 2, scaleX + get(0, 2));
-	set(0, 3, scaleX + get(0, 3));
 	
-	set(1, 0, scaleY + get(1, 0));
-	set(1, 1, scaleY + get(1, 1));
-	set(1, 2, scaleY + get(1, 2));
-	set(1, 3, scaleY + get(1, 3));
-	
-	set(2, 0, scaleZ + get(2, 0));
-	set(2, 1, scaleZ + get(2, 1));
-	set(2, 2, scaleZ + get(2, 2));
-	set(2, 3, scaleZ + get(2, 3));
+	Matrix4 m;
+	m.setAll(
+		scaleX, 0, 0, 0,
+		0, scaleY, 0, 0,
+		0, 0, scaleZ, 0,
+		0, 0, 0, 1
+	);
+	*this = m * *this;
 }
 
 void Matrix4::translate(const Vector2& vector2)
@@ -262,20 +260,14 @@ void Matrix4::translate(float translateX, float translateY, float translateZ)
 	     (0 0 0 1)
 	*/
 	
-	set(0, 0, get(0, 0) + get(3, 0) * translateX);
-	set(0, 1, get(0, 1) + get(3, 1) * translateX);
-	set(0, 2, get(0, 2) + get(3, 2) * translateX);
-	set(0, 3, get(0, 3) + get(3, 3) * translateX);
-	
-	set(1, 0, get(1, 0) + get(3, 0) * translateY);
-	set(1, 1, get(1, 1) + get(3, 1) * translateY);
-	set(1, 2, get(1, 2) + get(3, 2) * translateY);
-	set(1, 3, get(1, 3) + get(3, 3) * translateY);
-	
-	set(2, 0, get(2, 0) + get(3, 0) * translateZ);
-	set(2, 1, get(2, 1) + get(3, 1) * translateZ);
-	set(2, 2, get(2, 2) + get(3, 2) * translateZ);
-	set(2, 3, get(2, 3) + get(3, 3) * translateZ);
+	Matrix4 m;
+	m.setAll(
+		1, 0, 0, translateX,
+		0, 1, 0, translateY,
+		0, 0, 1, translateZ,
+		0, 0, 0, 1
+	);
+	*this = m * *this;
 }
 
 void Matrix4::rotateX(float rotateX)
@@ -290,15 +282,14 @@ void Matrix4::rotateX(float rotateX)
 	float c = cos(rotateX);
 	float s = sin(rotateX);
 	
-	set(1, 0, get(1, 0) * c - get(2, 0) * s);
-	set(1, 1, get(1, 1) * c - get(2, 1) * s);
-	set(1, 2, get(1, 2) * c - get(2, 2) * s);
-	set(1, 3, get(1, 3) * c - get(2, 3) * s);
-	
-	set(2, 0, get(1, 0) * s + get(2, 0) * c);
-	set(2, 1, get(1, 1) * s + get(2, 1) * c);
-	set(2, 2, get(1, 2) * s + get(2, 2) * c);
-	set(2, 3, get(1, 3) * s + get(2, 3) * c);
+	Matrix4 m;
+	m.setAll(
+		1, 0, 0,  0,
+		0, c, -s, 0,
+		0, s, c,  0,
+		0, 0, 0,  1
+	);
+	*this = m * *this;
 }
 
 void Matrix4::rotateY(float rotateY)
@@ -313,15 +304,14 @@ void Matrix4::rotateY(float rotateY)
 	float c = cos(rotateY);
 	float s = sin(rotateY);
 	
-	set(0, 0, get(0, 0) * c + get(2, 0) * s);
-	set(0, 1, get(0, 1) * c + get(2, 1) * s);
-	set(0, 2, get(0, 2) * c + get(2, 2) * s);
-	set(0, 3, get(0, 3) * c + get(2, 3) * s);
-	
-	set(2, 0, get(0, 0) * -s + get(2, 0) * c);
-	set(2, 1, get(0, 1) * -s + get(2, 1) * c);
-	set(2, 2, get(0, 2) * -s + get(2, 2) * c);
-	set(2, 3, get(0, 3) * -s + get(2, 3) * c);
+	Matrix4 m;
+	m.setAll(
+		c,  0, s, 0,
+		0,  1, 0, 0,
+		-s, 0, c, 0,
+		0,  0, 0, 1
+	);
+	*this = m * *this;
 }
 
 void Matrix4::rotateZ(float rotateZ)
@@ -335,18 +325,6 @@ void Matrix4::rotateZ(float rotateZ)
 	
 	float c = cos(rotateZ);
 	float s = sin(rotateZ);
-	
-	/*
-	set(0, 0, get(0, 0) * c + get(1, 0) * -s);
-	set(0, 1, get(0, 1) * c + get(1, 1) * -s);
-	set(0, 2, get(0, 2) * c + get(1, 2) * -s);
-	set(0, 3, get(0, 3) * c + get(1, 3) * -s);
-	
-	set(1, 0, get(0, 0) * s + get(1, 0) * c);
-	set(1, 1, get(0, 1) * s + get(1, 1) * c);
-	set(1, 2, get(0, 2) * s + get(1, 2) * c);
-	set(1, 3, get(0, 3) * s + get(1, 3) * c);
-	*/
 	
 	Matrix4 m;
 	m.setAll(

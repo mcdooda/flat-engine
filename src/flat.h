@@ -19,13 +19,15 @@
 #include "video/render.h"
 #include "video/color.h"
 #include "video/filetexture.h"
-#include "video/sprite.h"
 
 // state
 #include "state/state.h"
 
 // thread
 #include "thread/thread.h"
+
+// util
+#include "util/sprite.h"
 
 namespace flat
 {

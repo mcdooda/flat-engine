@@ -32,6 +32,7 @@ class Matrix4
 		void setInverse();
 		
 		void scale(float scale);
+		void scale(const Vector2& vector2);
 		void scale(float scaleX, float scaleY, float scaleZ = 1.0f);
 		
 		void translate(const Vector2& vector2);
