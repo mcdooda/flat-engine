@@ -27,7 +27,7 @@
 #include "thread/thread.h"
 
 // util
-#include "util/sprite.h"
+#include "util/heightmap.h"
 
 namespace flat
 {

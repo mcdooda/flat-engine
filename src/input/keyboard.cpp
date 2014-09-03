@@ -19,30 +19,36 @@ Keyboard::~Keyboard()
 	delete m_justReleasedKeys;
 }
 
-bool Keyboard::isPressed(Key k)
+bool Keyboard::isPressed(Key k) const
 {
 	const Uint8* pressedKeys = SDL_GetKeyboardState(NULL);
 	
-	int scanCode = SDL_GetScancodeFromKey(k);
-	
-	if (scanCode < m_numKeys)
-		return (bool) pressedKeys[scanCode];
+	if (k < m_numKeys)
+		return (bool) pressedKeys[k];
 		
 	else
 		return false;
 }
 
-bool Keyboard::isJustPressed(Key k)
+bool Keyboard::isJustPressed(Key k) const
 {
-	return m_justPressedKeys[k];
+	if (k < m_numKeys)
+		return m_justPressedKeys[k];
+		
+	else
+		return false;
 }
 
-bool Keyboard::isJustReleased(Key k)
+bool Keyboard::isJustReleased(Key k) const
 {
-	return m_justReleasedKeys[k];
+	if (k < m_numKeys)
+		return m_justReleasedKeys[k];
+		
+	else
+		return false;
 }
 
-std::vector<Key> Keyboard::getPressedKeys()
+std::vector<Key> Keyboard::getPressedKeys() const
 {
 	std::vector<Key> pressedKeysVector;
 	const Uint8* pressedKeys = SDL_GetKeyboardState(NULL);
@@ -54,7 +60,7 @@ std::vector<Key> Keyboard::getPressedKeys()
 	return pressedKeysVector;
 }
 
-std::vector<Key> Keyboard::getJustPressedKeys()
+std::vector<Key> Keyboard::getJustPressedKeys() const
 {
 	std::vector<Key> justPressedKeysVector;
 	
@@ -65,7 +71,7 @@ std::vector<Key> Keyboard::getJustPressedKeys()
 	return justPressedKeysVector;
 }
 
-std::vector<Key> Keyboard::getJustReleasedKeys()
+std::vector<Key> Keyboard::getJustReleasedKeys() const
 {
 	std::vector<Key> justReleasedKeysVector;
 	
@@ -87,16 +93,14 @@ void Keyboard::addEvent(const SDL_Event& e)
 	switch (e.type)
 	{
 		case SDL_KEYDOWN:
-		
-		if (!e.key.repeat && e.key.keysym.sym < m_numKeys)
-			m_justPressedKeys[e.key.keysym.sym] = 1;
+		if (!e.key.repeat && e.key.keysym.scancode < m_numKeys)
+			m_justPressedKeys[e.key.keysym.scancode] = 1;
 			
 		break;
 
 		case SDL_KEYUP:
-		
-		if (e.key.keysym.sym < m_numKeys)
-			m_justReleasedKeys[e.key.keysym.sym] = 1;
+		if (e.key.keysym.scancode < m_numKeys)
+			m_justReleasedKeys[e.key.keysym.scancode] = 1;
 			
 		break;
 	}

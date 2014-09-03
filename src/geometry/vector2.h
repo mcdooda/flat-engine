@@ -47,7 +47,7 @@ class Vector2
 		
 		friend std::ostream& operator<<(std::ostream& out, Vector2 vector2);
 
-	private:
+	protected:
 		float m_x;
 		float m_y;
 };

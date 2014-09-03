@@ -4,14 +4,14 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
-#define K(k) SDLK_##k
+#define K(k) SDL_SCANCODE_##k
 
 namespace flat
 {
 namespace input
 {
 
-typedef SDL_Keycode Key;
+typedef SDL_Scancode Key;
 
 class Keyboard
 {
@@ -19,13 +19,13 @@ class Keyboard
 		Keyboard();
 		~Keyboard();
 		
-		bool isPressed(Key k);
-		bool isJustPressed(Key k);
-		bool isJustReleased(Key k);
+		bool isPressed(Key k) const;
+		bool isJustPressed(Key k) const;
+		bool isJustReleased(Key k) const;
 
-		std::vector<Key> getPressedKeys();
-		std::vector<Key> getJustPressedKeys();
-		std::vector<Key> getJustReleasedKeys();
+		std::vector<Key> getPressedKeys() const;
+		std::vector<Key> getJustPressedKeys() const;
+		std::vector<Key> getJustReleasedKeys() const;
 
 		void clearEvents();
 		void addEvent(const SDL_Event& e);
