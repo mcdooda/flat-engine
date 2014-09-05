@@ -12,6 +12,7 @@ namespace util
     struct Vertex3d
     {
         float x, y, z;
+        float nx, ny, nz;
         float u, v;
     };
 

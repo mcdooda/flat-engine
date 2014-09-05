@@ -21,10 +21,10 @@ Sprite::~Sprite()
 
 void Sprite::draw(const RenderSettings& renderSettings) const
 {
-	geometry::Rectangle rectangle(m_texture->getSize() / -2.f, m_texture->getSize());
 	renderSettings.textureUniform.setTexture(m_texture);
 	geometry::Matrix4 modelMatrix = getModelMatrix();
 	renderSettings.modelMatrixUniform.setMatrix4(modelMatrix);
+	geometry::Rectangle rectangle(m_texture->getSize() / -2.f, m_texture->getSize());
 	rectangle.draw(renderSettings.positionAttribute, renderSettings.uvAttribute);
 }
 
