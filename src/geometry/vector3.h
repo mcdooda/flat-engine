@@ -20,6 +20,8 @@ class Vector3 : public Vector2
 		float distance() const;
 		float distanceSquared() const;
 		Vector3 normalize() const;
+		
+		Vector3 crossProduct(const Vector3& v) const;
 
 		Vector3 operator+(const Vector3& v) const;
 		Vector3 operator-(const Vector3& v) const;

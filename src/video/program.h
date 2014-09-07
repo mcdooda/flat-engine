@@ -53,6 +53,9 @@ class Program
 		std::map<std::string, Uniform> m_uniforms;
 		
 		std::vector<Texture> m_inputTextures;
+		
+		std::string m_fragmentShader;
+		std::string m_vertexShader;
 };
 
 } // video

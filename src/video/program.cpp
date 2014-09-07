@@ -25,6 +25,8 @@ Program::~Program()
 
 void Program::load(std::string fragmentShader, std::string vertexShader)
 {
+	m_fragmentShader = fragmentShader;
+	m_vertexShader = vertexShader;
 	m_valid = true;
 	
 	GLuint fragmentShaderId = compileShader(fragmentShader, GL_FRAGMENT_SHADER);
@@ -66,7 +68,7 @@ Attribute Program::getAttribute(std::string attributeName)
 		
 	else
 	{
-		std::cerr << "Warning: attribute '" << attributeName << "' does not exist" << std::endl;
+		std::cerr << "Warning: attribute '" << attributeName << "' does not exist in '" << m_fragmentShader << "' and '" << m_vertexShader << "'" << std::endl;
 		return -1;
 	}
 }
@@ -80,7 +82,7 @@ Uniform Program::getUniform(std::string uniformName)
 		
 	else
 	{
-		std::cerr << "Warning: uniform '" << uniformName << "' does not exist" << std::endl;
+		std::cerr << "Warning: uniform '" << uniformName << "' does not exist in '" << m_fragmentShader << "' and '" << m_vertexShader << "'" << std::endl;
 		return Uniform(-1);
 	}
 }

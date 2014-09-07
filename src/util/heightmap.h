@@ -26,13 +26,18 @@ namespace util
 	        
 	        void setHeightMap(video::FileTexture* heightMap, float multiplier = 0.0017);
 	        
+	        inline void setBumpMap(video::FileTexture* bumpMap) { m_bumpMap = bumpMap; }
+	        
 		protected:
-			float getHeight(unsigned int x, unsigned y) const;
+			float getHeight(unsigned int x, unsigned int y) const;
+			Vertex3d* getVertex(unsigned int x, unsigned int y) const;
 			void computeHeightMap();
 			
         protected:
         	video::FileTexture* m_heightMap;
             float m_multiplier;
+            
+            video::FileTexture* m_bumpMap;
             
             Vertex3d* m_vertices;
             unsigned int m_numIndices;

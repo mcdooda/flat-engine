@@ -32,6 +32,7 @@ void Vector3::operator=(const Vector3& Vector3)
 {
 	m_x = Vector3.m_x;
 	m_y = Vector3.m_y;
+	m_z = Vector3.m_z;
 }
 
 float Vector3::distance() const
@@ -53,6 +54,15 @@ Vector3 Vector3::normalize() const
 
 	else
 		return *this;
+}
+
+Vector3 Vector3::crossProduct(const Vector3& v) const
+{
+	return Vector3(
+		m_y * v.m_z - m_z * v.m_y,
+		m_z * v.m_x - m_x * v.m_z,
+		m_x * v.m_y - m_y * v.m_x
+	);
 }
 
 Vector3 Vector3::operator+(const Vector3& v) const
@@ -117,7 +127,7 @@ int Vector3::getRoundZ() const
 
 std::ostream& operator<<(std::ostream& out, Vector3 vector3)
 {
-	out << "(" << vector3.m_x << "," << vector3.m_y << "," << vector3.m_z << ")";
+	out << "Vector3(" << vector3.m_x << "," << vector3.m_y << "," << vector3.m_z << ")";
 	return out;
 }
 

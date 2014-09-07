@@ -131,7 +131,7 @@ int Vector2::getRoundY() const
 
 std::ostream& operator<<(std::ostream& out, Vector2 vector2)
 {
-	out << "(" << vector2.m_x << "," << vector2.m_y << ")";
+	out << "Vector2(" << vector2.m_x << "," << vector2.m_y << ")";
 	return out;
 }
 
