@@ -9,7 +9,8 @@ namespace util
 
 Sprite::Sprite() :
 	m_texture(NULL),
-	m_scale(1.f)
+	m_scale(1.f),
+	m_updateModelMatrix(true)
 {
 	
 }
@@ -19,7 +20,7 @@ Sprite::~Sprite()
 	
 }
 
-void Sprite::draw(const RenderSettings& renderSettings) const
+void Sprite::draw(const RenderSettings& renderSettings)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
 	geometry::Matrix4 modelMatrix = getModelMatrix();
@@ -28,15 +29,19 @@ void Sprite::draw(const RenderSettings& renderSettings) const
 	rectangle.draw(renderSettings.positionAttribute, renderSettings.uvAttribute);
 }
 
-geometry::Matrix4 Sprite::getModelMatrix() const
+const geometry::Matrix4& Sprite::getModelMatrix()
 {
-	geometry::Matrix4 modelMatrix;
-	modelMatrix.rotateZ(m_rotation.getZ());
-	modelMatrix.rotateY(m_rotation.getY());
-	modelMatrix.rotateX(m_rotation.getX());
-	modelMatrix.scale(m_scale);
-	modelMatrix.translate(m_position);
-	return modelMatrix;
+	if (m_updateModelMatrix)
+	{
+		m_updateModelMatrix = false;
+		m_modelMatrix.setIdentity();
+		m_modelMatrix.rotateZ(m_rotation.getZ());
+		m_modelMatrix.rotateY(m_rotation.getY());
+		m_modelMatrix.rotateX(m_rotation.getX());
+		m_modelMatrix.scale(m_scale);
+		m_modelMatrix.translate(m_position);
+	}
+	return m_modelMatrix;
 }
 
 } // util

@@ -14,7 +14,8 @@ struct RenderSettings
 	video::Uniform textureUniform;
 	video::Uniform bumpMapUniform;
 	video::Uniform modelMatrixUniform;
-	video::Uniform vpMatrixUniform;
+	video::Uniform normalMatrixUniform;
+	video::Uniform viewProjectionMatrixUniform;
 	video::Attribute positionAttribute;
 	video::Attribute normalAttribute;
 	video::Attribute uvAttribute;

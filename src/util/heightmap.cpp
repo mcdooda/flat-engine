@@ -18,7 +18,7 @@ HeightMap::~HeightMap()
 	
 }
 
-void HeightMap::draw(const RenderSettings& renderSettings) const
+void HeightMap::draw(const RenderSettings& renderSettings)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
 	

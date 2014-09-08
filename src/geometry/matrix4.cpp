@@ -208,6 +208,25 @@ void Matrix4::setInverse()
         m_matrix[i] = inv[i] * det;
 }
 
+void Matrix4::setTranspose()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < i; j++)
+		{
+			float t = get(i, j);
+			set(i, j, get(j, i));
+			set(j, i, t);
+		}
+	}
+}
+
+void Matrix4::setInverseTranspose()
+{
+	setInverse();
+	setTranspose();
+}
+
 void Matrix4::scale(float scale)
 {
 	/*

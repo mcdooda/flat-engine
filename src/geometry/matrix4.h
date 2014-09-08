@@ -26,6 +26,8 @@ class Matrix4
 		            float v30, float v31, float v32, float v33);
 		
 		void setIdentity();
+		void setTranspose();
+		void setInverseTranspose();
 		
 		void setOrtho(float left, float right, float bottom, float top, float near = -1.0f, float far = 1.0f);
 		
