@@ -59,13 +59,6 @@ void View::updateProjection(const geometry::Vector2& windowSize)
 	m_projectionMatrix.setOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000.0f, 1000.0f);
 }
 
-geometry::Matrix4 View::getNormalMatrix() const
-{
-	geometry::Matrix4 normalMatrix = m_viewMatrix;
-	normalMatrix.setInverseTranspose();
-	return normalMatrix;
-}
-
 } // video
 } // flat
 

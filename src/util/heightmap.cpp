@@ -18,7 +18,7 @@ HeightMap::~HeightMap()
 	
 }
 
-void HeightMap::draw(const RenderSettings& renderSettings)
+void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
 	
@@ -27,6 +27,10 @@ void HeightMap::draw(const RenderSettings& renderSettings)
 	
 	geometry::Matrix4 modelMatrix = getModelMatrix();
 	renderSettings.modelMatrixUniform.setMatrix4(modelMatrix);
+	
+	geometry::Matrix4 normalMatrix = viewMatrix * modelMatrix;
+	normalMatrix.setInverseTranspose();
+	renderSettings.normalMatrixUniform.setMatrix4(normalMatrix);
 	
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);

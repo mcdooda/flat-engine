@@ -33,7 +33,7 @@ class Sprite
 		
 		inline void moveBy(const geometry::Vector2& move) { m_position += move; }
 		
-		virtual void draw(const RenderSettings& renderSettings);
+		virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
 		
 		const geometry::Matrix4& getModelMatrix();
 		

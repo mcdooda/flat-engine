@@ -20,7 +20,7 @@ Sprite::~Sprite()
 	
 }
 
-void Sprite::draw(const RenderSettings& renderSettings)
+void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
 	geometry::Matrix4 modelMatrix = getModelMatrix();

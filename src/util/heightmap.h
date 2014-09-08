@@ -22,7 +22,7 @@ namespace util
             HeightMap();
             virtual ~HeightMap();
 
-	        virtual void draw(const RenderSettings& renderSettings);
+	        virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
 	        
 	        void setHeightMap(video::FileTexture* heightMap, float multiplier = 0.0017);
 	        
