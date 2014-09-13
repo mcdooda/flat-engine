@@ -49,6 +49,11 @@ const Texture& Pass::addOutputTexture(std::string name)
 	return m_textures.back();
 }
 
+void Pass::addOutputTexture(const Texture& texture)
+{
+	m_textures.push_back(texture);
+}
+
 void Pass::use()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);

@@ -21,6 +21,9 @@ class Window
 
 		void toggleFullScreen();
 		
+		void showCursor() const;
+		void hideCursor() const;
+		
 		inline bool isFullScreen() const { return m_fullScreen; }
 		inline bool isVsyncEnabled() const { return m_vsync; }
 

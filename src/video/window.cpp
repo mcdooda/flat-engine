@@ -71,6 +71,16 @@ void Window::toggleFullScreen()
 	}
 }
 
+void Window::showCursor() const
+{
+	SDL_ShowCursor(1);
+}
+
+void Window::hideCursor() const
+{
+	SDL_ShowCursor(0);
+}
+
 void Window::resized(const geometry::Vector2& size)
 {
 	m_size = size;

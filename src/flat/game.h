@@ -13,8 +13,8 @@ class Game : public Flat, public state::Agent
 		Game(const std::vector<std::string>& args);
 		virtual ~Game();
 		
-		virtual void checkArgs();
-		virtual void openWindow();
+		void checkArgs();
+		void openWindow();
 		
 		void argCheckString(int index);
 		std::string argGetString(int index);

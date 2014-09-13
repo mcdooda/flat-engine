@@ -18,6 +18,7 @@ class Pass : public Program
 		void load(const geometry::Vector2& size, std::string fragmentShader, std::string vertexShader);
 		
 		const Texture& addOutputTexture(std::string name);
+		void addOutputTexture(const Texture& texture);
 		
 		void use();
 		
