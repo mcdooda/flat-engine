@@ -16,6 +16,8 @@ class Sprite
 		Sprite();
 		virtual ~Sprite();
 		
+		virtual Sprite* lightCopy();
+		
 		inline void setTexture(video::Texture* texture) { m_texture = texture; }
 		inline video::Texture* getTexture() const { return m_texture; }
 		

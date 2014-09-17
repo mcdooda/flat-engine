@@ -26,6 +26,9 @@
 // thread
 #include "thread/thread.h"
 
+// lua
+#include "lua/lua.h"
+
 // util
 #include "util/heightmap.h"
 

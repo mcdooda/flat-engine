@@ -20,6 +20,12 @@ Sprite::~Sprite()
 	
 }
 
+Sprite* Sprite::lightCopy()
+{
+	Sprite* copy = new Sprite(*this);
+	return copy;
+}
+
 void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);

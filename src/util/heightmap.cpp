@@ -18,6 +18,12 @@ HeightMap::~HeightMap()
 	
 }
 
+Sprite* HeightMap::lightCopy()
+{
+	Sprite* copy = new HeightMap(*this);
+	return copy;
+}
+
 void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);

@@ -21,6 +21,8 @@ namespace util
         public:
             HeightMap();
             virtual ~HeightMap();
+            
+            virtual Sprite* lightCopy();
 
 	        virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
 	        
