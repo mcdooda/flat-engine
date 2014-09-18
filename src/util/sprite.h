@@ -31,6 +31,8 @@ class Sprite
 		inline float getScale() const { return m_scale; }
 		
 		inline void setPosition(const geometry::Vector2& position) { m_position = position; m_updateModelMatrix = true; }
+		inline void setPositionX(float x) { m_position.setX(x); m_updateModelMatrix = true; }
+		inline void setPositionY(float y) { m_position.setY(y); m_updateModelMatrix = true; }
 		inline const geometry::Vector2& getPosition() const { return m_position; }
 		
 		inline void moveBy(const geometry::Vector2& move) { m_position += move; m_updateModelMatrix = true; }
@@ -38,6 +40,7 @@ class Sprite
 		virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
 		
 		void updateModelMatrix();
+		inline const geometry::Matrix4& getModelMatrix() { updateModelMatrix(); return m_modelMatrix; }
 		
 	protected:
 		video::Texture* m_texture;
