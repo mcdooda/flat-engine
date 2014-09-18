@@ -22,20 +22,19 @@ Sprite::~Sprite()
 
 Sprite* Sprite::lightCopy()
 {
-	Sprite* copy = new Sprite(*this);
-	return copy;
+	return new Sprite(*this);
 }
 
 void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
-	geometry::Matrix4 modelMatrix = getModelMatrix();
-	renderSettings.modelMatrixUniform.setMatrix4(modelMatrix);
+	updateModelMatrix();
+	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
 	geometry::Rectangle rectangle(m_texture->getSize() / -2.f, m_texture->getSize());
 	rectangle.draw(renderSettings.positionAttribute, renderSettings.uvAttribute);
 }
 
-const geometry::Matrix4& Sprite::getModelMatrix()
+void Sprite::updateModelMatrix()
 {
 	if (m_updateModelMatrix)
 	{
@@ -47,7 +46,6 @@ const geometry::Matrix4& Sprite::getModelMatrix()
 		m_modelMatrix.scale(m_scale);
 		m_modelMatrix.translate(m_position);
 	}
-	return m_modelMatrix;
 }
 
 } // util

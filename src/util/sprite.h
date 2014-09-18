@@ -33,11 +33,11 @@ class Sprite
 		inline void setPosition(const geometry::Vector2& position) { m_position = position; m_updateModelMatrix = true; }
 		inline const geometry::Vector2& getPosition() const { return m_position; }
 		
-		inline void moveBy(const geometry::Vector2& move) { m_position += move; }
+		inline void moveBy(const geometry::Vector2& move) { m_position += move; m_updateModelMatrix = true; }
 		
 		virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
 		
-		const geometry::Matrix4& getModelMatrix();
+		void updateModelMatrix();
 		
 	protected:
 		video::Texture* m_texture;

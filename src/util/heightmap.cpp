@@ -1,4 +1,3 @@
-#include <iostream>
 #include "heightmap.h"
 
 namespace flat
@@ -20,8 +19,7 @@ HeightMap::~HeightMap()
 
 Sprite* HeightMap::lightCopy()
 {
-	Sprite* copy = new HeightMap(*this);
-	return copy;
+	return new HeightMap(*this);
 }
 
 void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
@@ -31,10 +29,10 @@ void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matri
 	if (m_bumpMap != NULL)
 		renderSettings.bumpMapUniform.setTexture(m_bumpMap, 1);
 	
-	geometry::Matrix4 modelMatrix = getModelMatrix();
-	renderSettings.modelMatrixUniform.setMatrix4(modelMatrix);
+	updateModelMatrix();
+	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
 	
-	geometry::Matrix4 normalMatrix = viewMatrix * modelMatrix;
+	geometry::Matrix4 normalMatrix = viewMatrix * m_modelMatrix;
 	normalMatrix.setInverseTranspose();
 	renderSettings.normalMatrixUniform.setMatrix4(normalMatrix);
 	
