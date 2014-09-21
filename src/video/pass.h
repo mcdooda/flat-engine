@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include "program.h"
+#include "framebuffer.h"
 
 namespace flat
 {
@@ -15,17 +16,12 @@ class Pass : public Program
 		Pass();
 		virtual ~Pass();
 		
-		void load(const geometry::Vector2& size, std::string fragmentShader, std::string vertexShader);
-		
-		const Texture& addOutputTexture(std::string name);
-		void addOutputTexture(const Texture& texture);
+		void load(FrameBuffer* frameBuffer, std::string fragmentShader, std::string vertexShader);
 		
 		void use();
 		
 	private:
-		geometry::Vector2 m_size;
-		std::vector<Texture> m_textures;
-		GLuint m_fboId;
+		FrameBuffer* m_frameBuffer;
 };
 
 } // video
