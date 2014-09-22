@@ -56,6 +56,11 @@ Vector3 Vector3::normalize() const
 		return *this;
 }
 
+float Vector3::dotProduct(const Vector3& v) const
+{
+	return m_x * v.m_x + m_y * v.m_y + m_z * v.m_z;
+}
+
 Vector3 Vector3::crossProduct(const Vector3& v) const
 {
 	return Vector3(

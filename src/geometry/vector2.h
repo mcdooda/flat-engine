@@ -25,6 +25,8 @@ class Vector2
 		float distanceSquared() const;
 		float angle() const;
 		Vector2 normalize() const;
+		
+		float dotProduct(const Vector2& v) const;
 
 		Vector2 operator+(const Vector2& v) const;
 		Vector2 operator-(const Vector2& v) const;

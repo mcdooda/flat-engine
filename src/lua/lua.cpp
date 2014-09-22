@@ -7,9 +7,6 @@ namespace flat
 namespace lua
 {
 
-static const char coroutine_resume_index = 'r';
-static const char coroutine_status_index = 's';
-
 lua_State* open()
 {
 	lua_State* L = luaL_newstate();
@@ -18,21 +15,6 @@ lua_State* open()
 	// remove os lib
 	lua_pushnil(L);
 	lua_setglobal(L, "os");
-	
-	 // push coroutine.resume on the registry for faster access
-	lua_getglobal(L, "coroutine");
-	lua_getfield(L, -1, "resume");
-	lua_pushlightuserdata(L, (void*) &coroutine_resume_index);
-	lua_pushvalue(L, -2);
-	lua_settable(L, LUA_REGISTRYINDEX);
-	
-	// push coroutine.status on the registry for faster access
-	lua_getglobal(L, "coroutine");
-	lua_getfield(L, -1, "status");
-	lua_pushlightuserdata(L, (void*) &coroutine_status_index);
-	lua_pushvalue(L, -2);
-	lua_settable(L, LUA_REGISTRYINDEX);
-	lua_settop(L, 0);
 	
 	// panic function
 	lua_atpanic(L, panic);

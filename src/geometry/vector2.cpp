@@ -68,6 +68,11 @@ Vector2 Vector2::normalize() const
 		return *this;
 }
 
+float Vector2::dotProduct(const Vector2& v) const
+{
+	return m_x * v.m_x + m_y * v.m_y;
+}
+
 Vector2 Vector2::operator+(const Vector2& v) const
 {
 	return Vector2(m_x + v.m_x, m_y + v.m_y);
