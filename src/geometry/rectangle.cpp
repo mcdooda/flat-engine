@@ -51,7 +51,7 @@ void Rectangle::setPosition(const Vector2& position)
 	setPositionSize(position, size);
 }
 
-Vector2 Rectangle::getPosition() const
+const Vector2& Rectangle::getPosition() const
 {
 	return m_vertices[0];
 }
@@ -78,6 +78,14 @@ void Rectangle::draw(video::Attribute vertexAttribute, video::Attribute uvAttrib
 		if (uvAttribute != 0)
 			glDisableVertexAttribArray(uvAttribute);
 	}
+}
+
+bool Rectangle::contains(const Vector2& v)
+{
+	const Vector2& position = getPosition();
+	Vector2 size = getSize();
+	return v.getX() >= position.getX() && v.getX() <= position.getX() + size.getX()
+	    && v.getY() >= position.getY() && v.getY() <= position.getY() + size.getY();
 }
 
 } // geometry

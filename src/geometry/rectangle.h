@@ -21,9 +21,11 @@ class Rectangle : public Polygon
 		Vector2 getSize() const;
 		
 		void setPosition(const Vector2& position);
-		Vector2 getPosition() const;
+		const Vector2& getPosition() const;
 		
 		void draw(video::Attribute vertexAttribute, video::Attribute uvAttribute = 0) const;
+		
+		bool contains(const Vector2& v);
 		
 };
 
