@@ -16,6 +16,8 @@ class Game : public Flat, public state::Agent
 		void checkArgs();
 		void openWindow();
 		
+		bool isArg(int index);
+		
 		void argCheckString(int index);
 		std::string argGetString(int index);
 		

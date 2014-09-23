@@ -26,6 +26,11 @@ void Game::openWindow()
 	video->window->open(video->window->getDesktopSize() * 3.f / 4.f, false, true);
 }
 
+bool Game::isArg(int index)
+{
+	return index >= 0 && index < (int) m_args.size();
+}
+
 void Game::argCheckString(int index)
 {
 	if (index < 0 || index >= (int) m_args.size())
@@ -37,7 +42,7 @@ void Game::argCheckString(int index)
 
 std::string Game::argGetString(int index)
 {
-	return index >= 0 && index < (int) m_args.size() ? m_args[index] : "";
+	return isArg(index) ? m_args[index] : "";
 }
 
 void Game::argCheckInt(int index)
@@ -51,7 +56,7 @@ void Game::argCheckInt(int index)
 
 int Game::argGetInt(int index)
 {
-	return index >= 0 && index < (int) m_args.size() ? atoi(m_args[index].c_str()) : 0;
+	return isArg(index) ? atoi(m_args[index].c_str()) : 0;
 }
 
 void Game::loop()
