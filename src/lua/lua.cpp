@@ -109,6 +109,47 @@ void printStack(lua_State* L)
 	std::cout << "--- Lua Debug ======" << std::endl;
 }
 
+const char* codeToString(int code)
+{
+	static const char* ok = "LUA_OK";
+	static const char* yield = "LUA_YIELD";
+	static const char* errRun = "LUA_ERRRUN";
+	static const char* errMem = "LUA_ERRMEM";
+	static const char* errErr = "LUA_ERRERR";
+	static const char* errGcMm = "LUA_ERRGCMM";
+	static const char* unknown = "(UNKNOWN)";
+	
+	switch (code)
+	{
+		case LUA_OK:
+			return ok;
+			break;
+			
+		case LUA_YIELD:
+			return yield;
+			break;
+			
+		case LUA_ERRRUN:
+			return errRun;
+			break;
+			
+		case LUA_ERRMEM:
+			return errMem;
+			break;
+			
+		case LUA_ERRERR:
+			return errErr;
+			break;
+			
+		case LUA_ERRGCMM:
+			return errGcMm;
+			break;
+			
+		default:
+			return unknown;
+	}
+}
+
 int panic(lua_State* L)
 {
 	std::cout << "~~~~ PANIC! ~~~~" << std::endl;
