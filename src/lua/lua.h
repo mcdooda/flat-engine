@@ -11,6 +11,7 @@ lua_State* open();
 void close(lua_State* L);
 
 void doFile(lua_State* L, std::string fileName);
+void loadLib(lua_State* L, std::string fileName, std::string globalName);
 
 void printStack(lua_State* L);
 const char* codeToString(int code);

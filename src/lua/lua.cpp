@@ -33,6 +33,13 @@ void doFile(lua_State* L, std::string fileName)
 	lua_call(L, 0, 0);
 }
 
+void loadLib(lua_State* L, std::string fileName, std::string globalName)
+{
+	luaL_loadfile(L, fileName.c_str());
+	lua_call(L, 0, 1);
+	lua_setglobal(L, globalName.c_str());
+}
+
 void printStack(lua_State* L)
 {
 	std::cout << "--- Lua Debug (" << L << ") ==========" << std::endl;
