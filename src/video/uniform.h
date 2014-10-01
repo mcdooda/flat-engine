@@ -18,6 +18,8 @@ class Uniform
 		Uniform();
 		~Uniform();
 		
+		inline bool isValid() const { return m_uniformLocation != 0; }
+		
 		void setInt(int i) const;
 		void setFloat(float f) const;
 		void setColor(const Color& color) const;

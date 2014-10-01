@@ -25,6 +25,7 @@ Sprite* HeightMap::lightCopy()
 void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
+	renderSettings.colorUniform.setColor(m_color);
 	
 	if (m_bumpMap != NULL)
 		renderSettings.bumpMapUniform.setTexture(m_bumpMap, 1);

@@ -28,6 +28,7 @@ Sprite* Sprite::lightCopy()
 void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
 	renderSettings.textureUniform.setTexture(m_texture);
+	renderSettings.colorUniform.setColor(m_color);
 	updateModelMatrix();
 	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
 	geometry::Rectangle rectangle(m_texture->getSize() / -2.f, m_texture->getSize());

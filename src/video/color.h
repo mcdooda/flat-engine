@@ -13,6 +13,7 @@ class Color
 	public:
 		Color(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 		Color(GLfloat gray);
+		Color();
 
 		inline GLfloat getR() const { return m_r; }
 		inline GLfloat getG() const { return m_g; }

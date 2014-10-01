@@ -21,6 +21,9 @@ class Sprite
 		inline void setTexture(video::Texture* texture) { m_texture = texture; }
 		inline video::Texture* getTexture() const { return m_texture; }
 		
+		inline void setColor(const video::Color& color) { m_color = color; }
+		inline const video::Color& getColor() const { return m_color; }
+		
 		inline void setRotation(const geometry::Vector3& rotation) { m_rotation = rotation; m_updateModelMatrix = true; }
 		inline void setRotationX(float rotationX) { m_rotation.setX(rotationX); m_updateModelMatrix = true; }
 		inline void setRotationY(float rotationY) { m_rotation.setY(rotationY); m_updateModelMatrix = true; }
@@ -44,6 +47,8 @@ class Sprite
 		
 	protected:
 		video::Texture* m_texture;
+		video::Color m_color;
+		
 		geometry::Vector3 m_rotation;
 		float m_scale;
 		geometry::Vector2 m_position;

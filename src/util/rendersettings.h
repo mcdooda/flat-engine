@@ -12,6 +12,7 @@ namespace util
 struct RenderSettings
 {
 	video::Uniform textureUniform;
+	video::Uniform colorUniform;
 	video::Uniform bumpMapUniform;
 	video::Uniform modelMatrixUniform;
 	video::Uniform normalMatrixUniform;

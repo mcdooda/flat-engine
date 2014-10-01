@@ -5,7 +5,7 @@ namespace flat
 namespace video
 {
 
-Color Color::WHITE = Color(1.0f);
+Color Color::WHITE;
 Color Color::BLACK = Color(0.0f);
 Color Color::RED   = Color(1.0f, 0.0f, 0.0f, 1.0f);
 Color Color::GREEN = Color(0.0f, 1.0f, 0.0f, 1.0f);
@@ -24,6 +24,15 @@ Color::Color(GLfloat gray) :
 	m_r(gray),
 	m_g(gray),
 	m_b(gray),
+	m_a(1.0f)
+{
+	
+}
+
+Color::Color() :
+	m_r(1.0f),
+	m_g(1.0f),
+	m_b(1.0f),
 	m_a(1.0f)
 {
 	
