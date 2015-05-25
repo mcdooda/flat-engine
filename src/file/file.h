@@ -11,19 +11,19 @@ namespace file
 class File
 {
 	public:
-		File(std::string path);
+		File(const std::string& path);
 		virtual ~File();
 
 		inline const std::string& getPath() const { return m_path; }
 
-		virtual inline bool isFile() const { return true; }
-		virtual inline bool isDir() const { return false; }
+		virtual bool isFile() const { return true; }
+		virtual bool isDir() const { return false; }
 
-		bool isReadable();
-		bool isWritable();
+		bool isReadable() const;
+		bool isWritable() const;
 
 	protected:
-		std::string m_path;
+		const std::string m_path;
 };
 
 } // file

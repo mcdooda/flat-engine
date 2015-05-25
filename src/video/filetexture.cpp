@@ -9,12 +9,12 @@ namespace flat
 namespace video
 {
 
-FileTexture::FileTexture(std::string filename) :
+FileTexture::FileTexture(const std::string& filename) :
 	m_path(filename)
 {
 	m_surface = IMG_Load(filename.c_str());
 	
-	if (m_surface != NULL)
+	if (m_surface != nullptr)
 		load();
 		
 	else
@@ -59,6 +59,7 @@ void FileTexture::free()
 {
 	glDeleteTextures(1, &m_textureId);
 	SDL_FreeSurface(m_surface);
+	m_surface = nullptr;
 }
 
 } // video

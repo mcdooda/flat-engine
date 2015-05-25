@@ -1,6 +1,8 @@
 #ifndef FLAT_FLAT_H
 #define FLAT_FLAT_H
 
+#include "memory/memory.h"
+
 #include "input/input.h"
 #include "time/time.h"
 #include "video/video.h"

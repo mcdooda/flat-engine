@@ -15,7 +15,7 @@ Pass::~Pass()
 	
 }
 
-void Pass::load(FrameBuffer* frameBuffer, std::string fragmentShader, std::string vertexShader)
+void Pass::load(FrameBuffer* frameBuffer, const std::string& fragmentShader, const std::string& vertexShader)
 {
 	m_frameBuffer = frameBuffer;
 	Program::load(fragmentShader, vertexShader);

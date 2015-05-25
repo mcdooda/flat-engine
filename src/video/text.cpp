@@ -6,7 +6,7 @@ namespace flat
 namespace video
 {
 
-Text::Text(std::string string, Font* font, Color color) :
+Text::Text(const std::string& string, Font* font, const Color& color) :
 	m_string(string),
 	m_font(font),
 	m_color(color)
@@ -18,7 +18,7 @@ Text::Text(std::string string, Font* font, Color color) :
 	};
 	m_surface = TTF_RenderUTF8_Blended(font->m_font, string.c_str(), sdlColor);
 	
-	if (m_surface != NULL)
+	if (m_surface != nullptr)
 		load();
 		
 	else

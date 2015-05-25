@@ -47,12 +47,12 @@ void Uniform::setTexture(const Texture* texture, int i) const
 
 void Uniform::setVector2(const geometry::Vector2& vector2) const
 {
-	glUniform2f(m_uniformLocation, vector2.getX(), vector2.getY());
+	glUniform2f(m_uniformLocation, vector2.x, vector2.y);
 }
 
 void Uniform::setVector3(const geometry::Vector3& vector3) const
 {
-	glUniform3f(m_uniformLocation, vector3.getX(), vector3.getY(), vector3.getZ());
+	glUniform3f(m_uniformLocation, vector3.x, vector3.y, vector3.z);
 }
 
 void Uniform::setMatrix4(const geometry::Matrix4& matrix4) const

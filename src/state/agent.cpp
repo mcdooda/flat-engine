@@ -1,5 +1,7 @@
 #include "agent.h"
 
+#include "../memory/memory.h"
+
 namespace flat
 {
 namespace state
@@ -12,7 +14,7 @@ Agent::Agent()
 
 Agent::~Agent()
 {
-	delete m_machine;
+	FLAT_DELETE(m_machine);
 }
 
 } // state

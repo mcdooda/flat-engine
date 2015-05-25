@@ -12,19 +12,19 @@ namespace file
 class Directory : public File
 {
 	public:
-		Directory(std::string path);
-		virtual ~Directory();
+		Directory(const std::string& path);
+		~Directory() override;
 
 		void read();
 
-		static bool isFileName(std::string name);
+		static bool isFileName(const std::string& name);
 
-		virtual inline bool isFile() const { return false; }
-		virtual inline bool isDir() const { return true; }
+		bool isFile() const override { return false; }
+		bool isDir() const override { return true; }
 
 		inline const std::vector<File*>& getContent() const { return m_content; }
-		std::vector<File*> getFiles();
-		std::vector<Directory*> getDirectories();
+		void getFiles(std::vector<File*>& files) const;
+		void getDirectories(std::vector<Directory*>& directories) const;
 
 	private:
 		std::vector<File*> m_content;

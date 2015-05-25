@@ -26,7 +26,7 @@ const Texture& FrameBuffer::addTexture(const std::string& name)
 	glGenTextures(1, &textureId);
 	
 	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.getX(), m_size.getY(), 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.x, m_size.y, 0, GL_RGBA, GL_FLOAT, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -46,7 +46,7 @@ const Texture& FrameBuffer::addTexture(const std::string& name)
 void FrameBuffer::use()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);
-	glViewport(0, 0, m_size.getX(), m_size.getY());
+	glViewport(0, 0, m_size.x, m_size.y);
 	
 	GLenum bufferList[m_textures.size()];
 	for (unsigned int i = 0; i < m_textures.size(); i++)

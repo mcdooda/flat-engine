@@ -17,7 +17,7 @@ class View
 		void reset();
 		
 		void zoom(float factor);
-		void move(geometry::Vector2 position);
+		void move(const geometry::Vector2& position);
 		void rotateX(float angle);
 		void rotateY(float angle);
 		void rotateZ(float angle);

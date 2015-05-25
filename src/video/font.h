@@ -12,7 +12,7 @@ namespace video
 class Font
 {
 	public:
-		Font(std::string font);
+		Font(const std::string& font);
 		~Font();
 		
 	protected:

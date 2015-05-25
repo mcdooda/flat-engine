@@ -49,7 +49,7 @@ class Matrix4
 		
 		inline const float* getData() const { return m_matrix; }
 		
-		friend std::ostream& operator<<(std::ostream& out, Matrix4 matrix4);
+		friend std::ostream& operator<<(std::ostream& out, const Matrix4& matrix4);
 	
 	private:
 		void copy(const Matrix4& matrix4);

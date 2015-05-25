@@ -16,7 +16,7 @@ class Window
 		Window();
 		~Window();
 		
-		void open(geometry::Vector2 size, bool fullScreen, bool vsync);
+		void open(const geometry::Vector2& size, bool fullScreen, bool vsync);
 		void setTitle(std::string title);
 
 		void toggleFullScreen();

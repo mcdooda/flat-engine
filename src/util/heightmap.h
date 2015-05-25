@@ -20,11 +20,11 @@ namespace util
     {
         public:
             HeightMap();
-            virtual ~HeightMap();
+            ~HeightMap() override;
             
-            virtual Sprite* lightCopy();
+            Sprite* lightCopy() override;
 
-	        virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
+	        void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) override;
 	        
 	        void setHeightMap(video::FileTexture* heightMap, float multiplier = 0.0017);
 	        
@@ -37,13 +37,11 @@ namespace util
 			
         protected:
         	video::FileTexture* m_heightMap;
-            float m_multiplier;
-            
             video::FileTexture* m_bumpMap;
-            
             Vertex3d* m_vertices;
-            unsigned int m_numIndices;
             unsigned int* m_indices;
+            unsigned int m_numIndices;
+            float m_multiplier;
     };
 
 } // util

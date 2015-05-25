@@ -15,7 +15,7 @@ namespace video
 class Text : public FileTexture
 {
 	public:
-		Text(std::string string, Font* font, Color color);
+		Text(const std::string& string, Font* font, const Color& color);
 		virtual ~Text();
 
 		static void open()

@@ -12,26 +12,43 @@ namespace flat
 namespace resource
 {
 
-template <class T> class ResourceManager
+template <class T>
+class ResourceManager
 {
 	public:
-		T* get(std::string name);
+		T* get(const std::string& name)
+		{
+			T* resource;
+			typename std::map<std::string, T*>::iterator it = m_resources.find(name);
+
+			if (it != m_resources.end())
+				resource = it->second;
+	
+			else
+				resource = load(name);
+
+			return resource;
+		}
 
 	private:
-		T* load(std::string name);
+		T* load(const std::string& name)
+		{
+			T* const resource = new T(name);
+			m_resources[name] = resource;
+			return resource;
+		}
 
+	private:
 		std::map<std::string, T*> m_resources;
 };
 
-class TextureManager : public ResourceManager<video::Texture> {};
-class FontManager    : public ResourceManager<video::Font>    {};
-class SampleManager  : public ResourceManager<audio::Sample>  {};
-class MusicManager   : public ResourceManager<audio::Music>   {};
+typedef ResourceManager<video::Texture> TextureManager;
+typedef ResourceManager<video::Font>    FontManager;
+typedef ResourceManager<audio::Sample>  SampleManager;
+typedef ResourceManager<audio::Music>   MusicManager;
 
 } // resource
 } // flat
-
-#include "resourcemanager.inl"
 
 #endif // FLAT_RESOURCE_RESOURCEMANAGER_H
 

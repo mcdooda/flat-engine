@@ -1,5 +1,5 @@
 #ifndef FLAT_GEOMETRY_VECTOR2_H
- #define FLAT_GEOMETRY_VECTOR2_H
+#define FLAT_GEOMETRY_VECTOR2_H
 
 #include <ostream>
 
@@ -15,14 +15,14 @@ namespace geometry
 class Vector2
 {
 	public:
-		Vector2(float x, float y);
-		Vector2(float alpha);
 		Vector2();
 		Vector2(const Vector2& vector2);
+		Vector2(float x, float y);
+		explicit Vector2(float alpha);
 		void operator=(const Vector2& vector2);
 
-		float distance() const;
-		float distanceSquared() const;
+		float length() const;
+		float lengthSquared() const;
 		float angle() const;
 		Vector2 normalize() const;
 		
@@ -38,21 +38,17 @@ class Vector2
 		void operator*=(const float& f);
 		void operator/=(const float& f);
 
-		inline void setX(float x) { m_x = x; }
-		inline void setY(float y) { m_y = y; }
-
-		inline float getX() const { return m_x; }
-		inline float getY() const { return m_y; }
-
 		int getRoundX() const;
 		int getRoundY() const;
 		
 		friend std::ostream& operator<<(std::ostream& out, Vector2 vector2);
 
-	protected:
-		float m_x;
-		float m_y;
+	public:
+		float x;
+		float y;
 };
+
+static_assert(sizeof(float) * 2 == sizeof(Vector2), "no padding");
 
 } // geometry
 } // flat

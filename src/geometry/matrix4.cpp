@@ -49,9 +49,9 @@ Matrix4 Matrix4::operator*(const Matrix4& matrix4) const
 Vector2 Matrix4::operator*(const Vector2& vector2) const
 {
 	float x, y, w;
-	x = get(0, 0) * vector2.getX() + get(0, 1) * vector2.getY() + get(0, 3);
-	y = get(1, 0) * vector2.getX() + get(1, 1) * vector2.getY() + get(1, 3);
-	w = get(3, 0) * vector2.getX() + get(3, 1) * vector2.getY() + get(3, 3);
+	x = get(0, 0) * vector2.x + get(0, 1) * vector2.y + get(0, 3);
+	y = get(1, 0) * vector2.x + get(1, 1) * vector2.y + get(1, 3);
+	w = get(3, 0) * vector2.x + get(3, 1) * vector2.y + get(3, 3);
 	x /= w;
 	y /= w;
 	return Vector2(x, y);
@@ -243,7 +243,7 @@ void Matrix4::scale(float scale)
 
 void Matrix4::scale(const Vector2& vector2)
 {
-	scale(vector2.getX(), vector2.getY());
+	scale(vector2.x, vector2.y);
 }
 
 void Matrix4::scale(float scaleX, float scaleY, float scaleZ)
@@ -267,7 +267,7 @@ void Matrix4::scale(float scaleX, float scaleY, float scaleZ)
 
 void Matrix4::translate(const Vector2& vector2)
 {
-	translate(vector2.getX(), vector2.getY());
+	translate(vector2.x, vector2.y);
 }
 
 void Matrix4::translate(float translateX, float translateY, float translateZ)
@@ -360,7 +360,7 @@ void Matrix4::copy(const Matrix4& matrix4)
 	memcpy(m_matrix, matrix4.m_matrix, sizeof(m_matrix));
 }
 
-std::ostream& operator<<(std::ostream& out, Matrix4 matrix4)
+std::ostream& operator<<(std::ostream& out, const Matrix4& matrix4)
 {
 	const int w = 8;
 	const int p = 3;

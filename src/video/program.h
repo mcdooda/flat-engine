@@ -20,42 +20,42 @@ class Program
 		Program();
 		virtual ~Program();
 		
-		void load(std::string fragmentShader, std::string vertexShader);
+		void load(const std::string& fragmentShader, const std::string& vertexShader);
 		
 		inline bool isValid() const { return m_valid; }
 		
 		void use(Window* window);
 		
-		Attribute getAttribute(std::string attributeName);
-		Uniform getUniform(std::string uniformName);
+		Attribute getAttribute(const std::string& attributeName);
+		Uniform getUniform(const std::string& uniformName);
 		
 		void addInputTexture(const Texture& inputTexture);
 		
 	protected:
-		void checkValid();
+		void assertValid();
 		
 		GLuint compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId);
-		GLuint compileShader(std::string shader, GLuint shaderType);
+		GLuint compileShader(const std::string& shader, GLuint shaderType);
 		
 		void checkProgram(GLuint programId);
-		void checkShader(std::string shaderFile, GLuint shaderId);
+		void checkShader(const std::string& shaderFile, GLuint shaderId);
 		
-		const GLchar* readCode(std::string shader);
+		const GLchar* readCode(const std::string& shader);
 		
 		void loadAttributes();
 		void loadUniforms();
 		
 	protected:
-		GLuint m_programId;
-		bool m_valid;
-		
-		std::map<std::string, Attribute> m_attributes;
 		std::map<std::string, Uniform> m_uniforms;
+		std::map<std::string, Attribute> m_attributes;
 		
 		std::vector<Texture> m_inputTextures;
 		
 		std::string m_fragmentShader;
 		std::string m_vertexShader;
+		
+		GLuint m_programId;
+		bool m_valid;
 };
 
 } // video

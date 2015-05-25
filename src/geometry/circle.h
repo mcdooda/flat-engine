@@ -11,9 +11,9 @@ namespace geometry
 class Circle : public Polygon
 {
 	public:
-		Circle(Vector2 center, float radius);
+		Circle(const Vector2& center, float radius);
 		Circle();
-		virtual ~Circle();
+		~Circle() override;
 		
 		void setCenter(const Vector2& center);
 		void setRadius(float radius);

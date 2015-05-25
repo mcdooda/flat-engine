@@ -20,7 +20,7 @@ Polygon::Polygon(const std::vector<Vector2>& vertices) :
 
 Polygon::Polygon(const Polygon& polygon)
 {
-	*this = polygon;
+	m_vertices = polygon.m_vertices;
 }
 
 void Polygon::operator=(const Polygon& polygon)

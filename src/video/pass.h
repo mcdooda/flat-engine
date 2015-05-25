@@ -16,7 +16,7 @@ class Pass : public Program
 		Pass();
 		virtual ~Pass();
 		
-		void load(FrameBuffer* frameBuffer, std::string fragmentShader, std::string vertexShader);
+		void load(FrameBuffer* frameBuffer, const std::string& fragmentShader, const std::string& vertexShader);
 		
 		void use();
 		

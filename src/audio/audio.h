@@ -15,7 +15,7 @@ class Audio
 		Audio();
 		~Audio();
 		
-		Music* loadMusic(std::string filename);
+		Music* loadMusic(const std::string& filename);
 };
 
 } // audio

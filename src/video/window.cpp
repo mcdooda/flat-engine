@@ -19,14 +19,14 @@ Window::~Window()
 	
 }
 
-void Window::open(geometry::Vector2 size, bool fullScreen, bool vsync)
+void Window::open(const geometry::Vector2& size, bool fullScreen, bool vsync)
 {
 	int windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	
 	if (fullScreen)
 		windowFlags |= SDL_WINDOW_FULLSCREEN;
 	
-	m_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, size.getX(), size.getY(), windowFlags);
+	m_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, size.x, size.y, windowFlags);
 	
 	int rendererFlags = 0;
 	
@@ -42,7 +42,7 @@ void Window::open(geometry::Vector2 size, bool fullScreen, bool vsync)
 		initGL();
 	}
 	
-	SDL_WarpMouseInWindow(m_window, size.getX() / 2, size.getY() / 2);
+	SDL_WarpMouseInWindow(m_window, size.x / 2, size.y / 2);
 
 	m_fullScreen = fullScreen;
 	m_vsync = vsync;
@@ -61,13 +61,13 @@ void Window::toggleFullScreen()
 	geometry::Vector2 desktopSize = getDesktopSize();
 	if (m_fullScreen)
 	{
-		SDL_SetWindowSize(m_window, desktopSize.getX(), desktopSize.getY());
+		SDL_SetWindowSize(m_window, desktopSize.x, desktopSize.y);
 		SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN);
 	}
 	else
 	{
 		SDL_SetWindowFullscreen(m_window, 0);
-		SDL_SetWindowSize(m_window, desktopSize.getX() / 2, desktopSize.getY() / 2);
+		SDL_SetWindowSize(m_window, desktopSize.x / 2, desktopSize.y / 2);
 	}
 }
 
@@ -89,7 +89,7 @@ void Window::resized(const geometry::Vector2& size)
 geometry::Vector2 Window::getDesktopSize()
 {
 	static geometry::Vector2 desktopSize;
-	if (desktopSize.getX() == 0)
+	if (desktopSize.x == 0)
 	{
 		SDL_DisplayMode desktopDisplayMode;
 		SDL_GetDesktopDisplayMode(0, &desktopDisplayMode);

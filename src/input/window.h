@@ -22,10 +22,10 @@ class Window
 		void addEvent(const SDL_Event& e);
 		
 	private:
+		video::Window* m_videoWindow;
+		
 		bool m_closed;
 		bool m_resized;
-		
-		video::Window* m_videoWindow;
 };
 
 } // input

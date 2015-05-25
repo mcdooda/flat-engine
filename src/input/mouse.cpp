@@ -18,13 +18,13 @@ Mouse::~Mouse()
 
 bool Mouse::isPressed(int button)
 {
-	Uint8 buttonState = SDL_GetMouseState(NULL, NULL);
+	Uint8 buttonState = SDL_GetMouseState(nullptr, nullptr);
 	return buttonState & SDL_BUTTON(button);
 }
 
 bool Mouse::isJustPressed(int button)
 {
-	if (button < NUM_BUTTONS)
+	if (m_justPressedButtons.isInRange(button))
 		return m_justPressedButtons[button];
 
 	return false;
@@ -32,7 +32,7 @@ bool Mouse::isJustPressed(int button)
 
 bool Mouse::isJustReleased(int button)
 {
-	if (button < NUM_BUTTONS)
+	if (m_justPressedButtons.isInRange(button))
 		return m_justReleasedButtons[button];
 
 	return false;
@@ -41,8 +41,8 @@ bool Mouse::isJustReleased(int button)
 void Mouse::clearEvents()
 {
 	m_moved = false;
-	memset(m_justPressedButtons, 0, NUM_BUTTONS * sizeof(bool));
-	memset(m_justReleasedButtons, 0, NUM_BUTTONS * sizeof(bool));
+	m_justPressedButtons.memset(0);
+	m_justReleasedButtons.memset(0);
 }
 
 void Mouse::addEvent(const SDL_Event& e)
@@ -50,26 +50,20 @@ void Mouse::addEvent(const SDL_Event& e)
 	switch (e.type)
 	{
 		case SDL_MOUSEBUTTONDOWN:
-		m_position.setX(e.button.x);
-		m_position.setY(m_videoWindow->getSize().getY() - e.button.y);
-
-		if (e.button.button < NUM_BUTTONS)
-			m_justPressedButtons[e.button.button] = true;
-
+		m_position.x = e.button.x;
+		m_position.y = m_videoWindow->getSize().y - e.button.y;
+		m_justPressedButtons[e.button.button] = true;
 		break;
 
 		case SDL_MOUSEBUTTONUP:
-		m_position.setX(e.button.x);
-		m_position.setY(m_videoWindow->getSize().getY() - e.button.y);
-
-		if (e.button.button < NUM_BUTTONS)
-			m_justReleasedButtons[e.button.button] = true;
-
+		m_position.x = e.button.x;
+		m_position.y = m_videoWindow->getSize().y - e.button.y;
+		m_justReleasedButtons[e.button.button] = true;
 		break;
 
 		case SDL_MOUSEMOTION:
-		m_position.setX(e.button.x);
-		m_position.setY(m_videoWindow->getSize().getY() - e.button.y);
+		m_position.x = e.button.x;
+		m_position.y = m_videoWindow->getSize().y - e.button.y;
 		m_moved = true;
 		break;
 	}

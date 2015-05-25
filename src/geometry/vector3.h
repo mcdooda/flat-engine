@@ -1,24 +1,23 @@
 #ifndef FLAT_GEOMETRY_VECTOR3_H
 #define FLAT_GEOMETRY_VECTOR3_H
 
-#include "vector2.h"
+#include <ostream>
 
 namespace flat
 {
 namespace geometry
 {
 
-class Vector3 : public Vector2
+class Vector3
 {
 	public:
-		Vector3(float x, float y, float z);
 		Vector3();
 		Vector3(const Vector3& vector3);
-		virtual ~Vector3();
+		Vector3(float x, float y, float z);
 		void operator=(const Vector3& vector3);
 
-		float distance() const;
-		float distanceSquared() const;
+		float length() const;
+		float lengthSquared() const;
 		Vector3 normalize() const;
 		
 		float dotProduct(const Vector3& v) const;
@@ -33,18 +32,20 @@ class Vector3 : public Vector2
 		void operator-=(const Vector3& v);
 		void operator*=(const float& f);
 		void operator/=(const float& f);
-		
-		inline void setZ(float z) { m_z = z; }
 
-		inline float getZ() const { return m_z; }
-
+		int getRoundX() const;
+		int getRoundY() const;
 		int getRoundZ() const;
 		
 		friend std::ostream& operator<<(std::ostream& out, Vector3 vector3);
 
-	protected:
-		float m_z;
+	public:
+		float x;
+		float y;
+		float z;
 };
+
+static_assert(sizeof(float) * 3 == sizeof(Vector3), "no padding");
 
 } // geometry
 } // flat

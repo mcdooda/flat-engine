@@ -1,56 +1,60 @@
 #include <cmath>
 #include "vector3.h"
 
+#include "../debug/assert.h"
+
 namespace flat
 {
 namespace geometry
 {
 
-Vector3::Vector3(float x, float y, float z) : Vector2(x, y),
-	m_z(z)
-{
-
-}
-
 Vector3::Vector3() :
-	m_z(0)
+	x(0.f),
+	y(0.f),
+	z(0.f)
 {
 
 }
 
-Vector3::Vector3(const Vector3& Vector3)
-{
-	*this = Vector3;
-}
-
-Vector3::~Vector3()
+Vector3::Vector3(const Vector3& vector3) :
+	x(vector3.x),
+	y(vector3.y),
+	z(vector3.z)
 {
 	
 }
 
-void Vector3::operator=(const Vector3& Vector3)
+Vector3::Vector3(float x, float y, float z) :
+	x(x),
+	y(y),
+	z(z)
 {
-	m_x = Vector3.m_x;
-	m_y = Vector3.m_y;
-	m_z = Vector3.m_z;
+
 }
 
-float Vector3::distance() const
+void Vector3::operator=(const Vector3& vector3)
 {
-	return sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
+	x = vector3.x;
+	y = vector3.y;
+	z = vector3.z;
 }
 
-float Vector3::distanceSquared() const
+float Vector3::length() const
 {
-	return m_x * m_x + m_y * m_y + m_z * m_z;
+	return sqrt(x * x + y * y + z * z);
+}
+
+float Vector3::lengthSquared() const
+{
+	return x * x + y * y + z * z;
 }
 
 Vector3 Vector3::normalize() const
 {
-	float d = distance();
+	float len = length();
 
-	if (d != 0)
-		return Vector3(m_x / d, m_y / d, m_z / d);
+	if (len != 0)
+		return Vector3(x / len, y / len, z / len);
 
 	else
 		return *this;
@@ -58,81 +62,86 @@ Vector3 Vector3::normalize() const
 
 float Vector3::dotProduct(const Vector3& v) const
 {
-	return m_x * v.m_x + m_y * v.m_y + m_z * v.m_z;
+	return x * v.x + y * v.y + z * v.z;
 }
 
 Vector3 Vector3::crossProduct(const Vector3& v) const
 {
 	return Vector3(
-		m_y * v.m_z - m_z * v.m_y,
-		m_z * v.m_x - m_x * v.m_z,
-		m_x * v.m_y - m_y * v.m_x
+		y * v.z - z * v.y,
+		z * v.x - x * v.z,
+		x * v.y - y * v.x
 	);
 }
 
 Vector3 Vector3::operator+(const Vector3& v) const
 {
-	return Vector3(m_x + v.m_x, m_y + v.m_y, m_z + v.m_z);
+	return Vector3(x + v.x, y + v.y, z + v.z);
 }
 
 Vector3 Vector3::operator-(const Vector3& v) const
 {
-	return Vector3(m_x - v.m_x, m_y - v.m_y, m_z - v.m_z);
+	return Vector3(x - v.x, y - v.y, z - v.z);
 }
 
 Vector3 Vector3::operator*(const float& f) const
 {
-	return Vector3(m_x * f, m_y * f, m_z * f);
+	return Vector3(x * f, y * f, z * f);
 }
 
 Vector3 Vector3::operator/(const float& f) const
 {
-	if (f != 0)
-		return Vector3(m_x / f, m_y / f, m_z / f);
-
-	else
-		return *this;
+	FLAT_ASSERT(f != 0.f);
+	return Vector3(x / f, y / f, z / f);
 }
 
 void Vector3::operator+=(const Vector3& v)
 {
-	m_x += v.m_x;
-	m_y += v.m_y;
-	m_z += v.m_z;
+	x += v.x;
+	y += v.y;
+	z += v.z;
 }
 
 void Vector3::operator-=(const Vector3& v)
 {
-	m_x -= v.m_x;
-	m_y -= v.m_y;
-	m_z -= v.m_z;
+	x -= v.x;
+	y -= v.y;
+	z -= v.z;
 }
 
 void Vector3::operator*=(const float& f)
 {
-	m_x *= f;
-	m_y *= f;
-	m_z *= f;
+	x *= f;
+	y *= f;
+	z *= f;
 }
 
 void Vector3::operator/=(const float& f)
 {
-	if (f != 0)
-	{
-		m_x /= f;
-		m_y /= f;
-		m_z /= f;
-	}
+	FLAT_ASSERT(f != 0.f);
+	x /= f;
+	y /= f;
+	z /= f;
+}
+
+int Vector3::getRoundX() const
+{
+	return round(x);
+}
+
+int Vector3::getRoundY() const
+{
+	return round(y);
 }
 
 int Vector3::getRoundZ() const
 {
-	return round(m_z);
+	return round(z);
 }
 
 std::ostream& operator<<(std::ostream& out, Vector3 vector3)
 {
-	out << "Vector3(" << vector3.m_x << "," << vector3.m_y << "," << vector3.m_z << ")";
+	out << "Vector3(" << vector3.x << "," << vector3.y << "," << vector3.z << ")";
 	return out;
 }
 

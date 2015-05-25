@@ -1,6 +1,6 @@
 #include <dirent.h>
 #include <cstring>
-#include <string>
+#include <algorithm>
 #include "directory.h"
 
 namespace flat
@@ -8,7 +8,7 @@ namespace flat
 namespace file
 {
 
-Directory::Directory(std::string path) :
+Directory::Directory(const std::string& path) :
 	File(path),
 	m_read(false)
 {
@@ -17,9 +17,7 @@ Directory::Directory(std::string path) :
 
 Directory::~Directory()
 {
-	std::vector<File*>::iterator end = m_content.end();
-	for (std::vector<File*>::iterator it = m_content.begin(); it != end; it++)
-		delete *it;
+	std::for_each(m_content.begin(), m_content.end(), [](File* f) { delete f; });
 }
 
 void Directory::read()
@@ -52,7 +50,7 @@ void Directory::read()
 	}
 }
 
-bool Directory::isFileName(std::string name)
+bool Directory::isFileName(const std::string& name)
 {
 	int i;
 	for (i = name.size() - 1; i >= 0 && name[i] != '.' && name[i] != '/'; i--);
@@ -64,28 +62,30 @@ bool Directory::isFileName(std::string name)
 		return false;
 }
 
-std::vector<File*> Directory::getFiles()
+void Directory::getFiles(std::vector<File*>& files) const
 {
-	std::vector<File*> files;
-
-	std::vector<File*>::iterator end = m_content.end();
-	for (std::vector<File*>::iterator it = m_content.begin(); it != end; it++)
-		if ((*it)->isFile())
-			files.push_back(*it);
-
-	return files;
+	files.clear();
+	
+	std::for_each(m_content.begin(), m_content.end(),
+		[&files](File* f)
+		{
+			if (f->isFile())
+				files.push_back(f);
+		}
+	);
 }
 
-std::vector<Directory*> Directory::getDirectories()
+void Directory::getDirectories(std::vector<Directory*>& directories) const
 {
-	std::vector<Directory*> dirs;
-
-	std::vector<File*>::iterator end = m_content.end();
-	for (std::vector<File*>::iterator it = m_content.begin(); it != end; it++)
-		if ((*it)->isDir())
-			dirs.push_back((Directory*) *it);
-
-	return dirs;
+	directories.clear();
+	
+	std::for_each(m_content.begin(), m_content.end(),
+		[&directories](File* f)
+		{
+			if (f->isFile())
+				directories.push_back(static_cast<Directory*>(f));
+		}
+	);
 }
 
 } // file

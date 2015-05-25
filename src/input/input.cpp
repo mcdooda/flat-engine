@@ -4,6 +4,8 @@
 #include "mouse.h"
 #include "window.h"
 
+#include "../memory/memory.h"
+
 namespace flat
 {
 namespace input
@@ -18,9 +20,9 @@ Input::Input(video::Window* videoWindow)
 
 Input::~Input()
 {
-	delete keyboard;
-	delete mouse;
-	delete window;
+	FLAT_DELETE(keyboard);
+	FLAT_DELETE(mouse);
+	FLAT_DELETE(window);
 }
 
 void Input::poll()

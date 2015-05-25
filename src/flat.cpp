@@ -23,11 +23,11 @@ Flat::Flat()
 Flat::~Flat()
 {
 	SDL_Quit();
-	delete time;
-	delete video;
-	delete audio;
-	delete random;
-	delete input;
+	FLAT_DELETE(time);
+	FLAT_DELETE(video);
+	FLAT_DELETE(audio);
+	FLAT_DELETE(random);
+	FLAT_DELETE(input);
 }
 
 } // flat

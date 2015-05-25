@@ -11,21 +11,22 @@ namespace video
 class Color
 {
 	public:
-		Color(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
-		Color(GLfloat gray);
-		Color();
-
-		inline GLfloat getR() const { return m_r; }
-		inline GLfloat getG() const { return m_g; }
-		inline GLfloat getB() const { return m_b; }
-		inline GLfloat getA() const { return m_a; }
-
-		inline void setR(GLfloat r) { m_r = r; }
-		inline void setG(GLfloat g) { m_g = g; }
-		inline void setB(GLfloat b) { m_b = b; }
-		inline void setA(GLfloat a) { m_a = a; }
+		typedef GLfloat AttributeType;
 		
-		Color* newCopy();
+		Color();
+		Color(const Color& color);
+		Color(AttributeType r, AttributeType g, AttributeType b, AttributeType a);
+		explicit Color(AttributeType gray);
+
+		inline AttributeType getR() const { return m_r; }
+		inline AttributeType getG() const { return m_g; }
+		inline AttributeType getB() const { return m_b; }
+		inline AttributeType getA() const { return m_a; }
+
+		inline void setR(AttributeType r) { m_r = r; }
+		inline void setG(AttributeType g) { m_g = g; }
+		inline void setB(AttributeType b) { m_b = b; }
+		inline void setA(AttributeType a) { m_a = a; }
 		
 		static Color WHITE;
 		static Color BLACK;
@@ -34,10 +35,10 @@ class Color
 		static Color BLUE;
 
 	protected:
-		GLfloat m_r;
-		GLfloat m_g;
-		GLfloat m_b;
-		GLfloat m_a;
+		AttributeType m_r;
+		AttributeType m_g;
+		AttributeType m_b;
+		AttributeType m_a;
 };
 
 } // video

@@ -12,7 +12,7 @@ namespace audio
 class Music
 {
 	public:
-		Music(std::string filename);
+		Music(const std::string& filename);
 		~Music();
 		
 		void play();

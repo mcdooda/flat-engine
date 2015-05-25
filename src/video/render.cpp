@@ -17,7 +17,7 @@ Render::~Render()
 
 }
 
-void Render::load(std::string fragmentShader, std::string vertexShader)
+void Render::load(const std::string& fragmentShader, const std::string& vertexShader)
 {
 	Program::load(fragmentShader, vertexShader);
 	m_positionAttribute = getAttribute("position");

@@ -8,23 +8,22 @@ namespace input
 Keyboard::Keyboard()
 {
 	SDL_GetKeyboardState(&m_numKeys);
-	m_justPressedKeys = new bool[m_numKeys];
-	m_justReleasedKeys = new bool[m_numKeys];
+	m_justPressedKeys.resize(m_numKeys);
+	m_justReleasedKeys.resize(m_numKeys);
 	clearEvents();
 }
 
 Keyboard::~Keyboard()
 {
-	delete m_justPressedKeys;
-	delete m_justReleasedKeys;
+	
 }
 
 bool Keyboard::isPressed(Key k) const
 {
-	const Uint8* pressedKeys = SDL_GetKeyboardState(NULL);
+	const Uint8* pressedKeys = SDL_GetKeyboardState(nullptr);
 	
 	if (k < m_numKeys)
-		return (bool) pressedKeys[k];
+		return static_cast<bool>(pressedKeys[k]);
 		
 	else
 		return false;
@@ -32,7 +31,7 @@ bool Keyboard::isPressed(Key k) const
 
 bool Keyboard::isJustPressed(Key k) const
 {
-	if (k < m_numKeys)
+	if (m_justPressedKeys.isInRange(k))
 		return m_justPressedKeys[k];
 		
 	else
@@ -41,51 +40,46 @@ bool Keyboard::isJustPressed(Key k) const
 
 bool Keyboard::isJustReleased(Key k) const
 {
-	if (k < m_numKeys)
+	if (m_justPressedKeys.isInRange(k))
 		return m_justReleasedKeys[k];
 		
 	else
 		return false;
 }
 
-std::vector<Key> Keyboard::getPressedKeys() const
+void Keyboard::getPressedKeys(std::vector<Key>& pressedKeys) const
 {
-	std::vector<Key> pressedKeysVector;
-	const Uint8* pressedKeys = SDL_GetKeyboardState(NULL);
+	const Uint8* pressedKeysMap = SDL_GetKeyboardState(nullptr);
+	
+	pressedKeys.clear();
 	
 	for (int k = 0; k < m_numKeys; k++)
-		if (pressedKeys[k])
-			pressedKeysVector.push_back((Key) k);
-			
-	return pressedKeysVector;
+		if (pressedKeysMap[k])
+			pressedKeys.push_back((Key) k);
 }
 
-std::vector<Key> Keyboard::getJustPressedKeys() const
+void Keyboard::getJustPressedKeys(std::vector<Key>& justPressedKeys) const
 {
-	std::vector<Key> justPressedKeysVector;
+	justPressedKeys.clear();
 	
 	for (int k = 0; k < m_numKeys; k++)
 		if (m_justPressedKeys[k])
-			justPressedKeysVector.push_back((Key) k);
-			
-	return justPressedKeysVector;
+			justPressedKeys.push_back((Key) k);
 }
 
-std::vector<Key> Keyboard::getJustReleasedKeys() const
+void Keyboard::getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const
 {
-	std::vector<Key> justReleasedKeysVector;
+	justReleasedKeys.clear();
 	
 	for (int k = 0; k < m_numKeys; k++)
 		if (m_justReleasedKeys[k])
-			justReleasedKeysVector.push_back((Key) k);
-			
-	return justReleasedKeysVector;
+			justReleasedKeys.push_back((Key) k);
 }
 
 void Keyboard::clearEvents()
 {
-	memset(m_justPressedKeys, 0, m_numKeys * sizeof(bool));
-	memset(m_justReleasedKeys, 0, m_numKeys * sizeof(bool));
+	m_justPressedKeys.memset(0);
+	m_justReleasedKeys.memset(0);
 }
 
 void Keyboard::addEvent(const SDL_Event& e)
@@ -94,13 +88,13 @@ void Keyboard::addEvent(const SDL_Event& e)
 	{
 		case SDL_KEYDOWN:
 		if (!e.key.repeat && e.key.keysym.scancode < m_numKeys)
-			m_justPressedKeys[e.key.keysym.scancode] = 1;
+			m_justPressedKeys[e.key.keysym.scancode] = true;
 			
 		break;
 
 		case SDL_KEYUP:
 		if (e.key.keysym.scancode < m_numKeys)
-			m_justReleasedKeys[e.key.keysym.scancode] = 1;
+			m_justReleasedKeys[e.key.keysym.scancode] = true;
 			
 		break;
 	}

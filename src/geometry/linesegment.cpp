@@ -6,16 +6,16 @@ namespace flat
 namespace geometry
 {
 
-LineSegment::LineSegment(Vector2 a, Vector2 b)
+LineSegment::LineSegment(const Vector2& a, const Vector2& b) :
+	m_a(a),
+	m_b(b)
 {
-	setA(a);
-	setB(b);
+	
 }
 
 LineSegment::LineSegment()
 {
-	setA(Vector2());
-	setB(Vector2());
+	
 }
 
 LineSegment::~LineSegment()
@@ -26,7 +26,7 @@ LineSegment::~LineSegment()
 void LineSegment::draw(video::Attribute vertexAttribute)
 {
 	glEnableVertexAttribArray(vertexAttribute);
-	glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, m_vertices);
+	glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, this);
 	glDrawArrays(GL_LINES, 0, 2);
 	glDisableVertexAttribArray(vertexAttribute);
 }

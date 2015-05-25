@@ -8,9 +8,10 @@ namespace util
 {
 
 Sprite::Sprite() :
-	m_texture(NULL),
+	m_texture(nullptr),
 	m_scale(1.f),
-	m_updateModelMatrix(true)
+	m_modelMatrixIsDirty(true),
+	m_isLightCopy(false)
 {
 	
 }
@@ -22,7 +23,9 @@ Sprite::~Sprite()
 
 Sprite* Sprite::lightCopy()
 {
-	return new Sprite(*this);
+	Sprite* sprite = new Sprite(*this);
+	sprite->m_isLightCopy = true;
+	return sprite;
 }
 
 void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
@@ -37,13 +40,13 @@ void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4&
 
 void Sprite::updateModelMatrix()
 {
-	if (m_updateModelMatrix)
+	if (m_modelMatrixIsDirty)
 	{
-		m_updateModelMatrix = false;
+		m_modelMatrixIsDirty = false;
 		m_modelMatrix.setIdentity();
-		m_modelMatrix.rotateZ(m_rotation.getZ());
-		m_modelMatrix.rotateY(m_rotation.getY());
-		m_modelMatrix.rotateX(m_rotation.getX());
+		m_modelMatrix.rotateZ(m_rotation.z);
+		m_modelMatrix.rotateY(m_rotation.y);
+		m_modelMatrix.rotateX(m_rotation.x);
 		m_modelMatrix.scale(m_scale);
 		m_modelMatrix.translate(m_position);
 	}

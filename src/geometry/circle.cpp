@@ -7,7 +7,7 @@ namespace flat
 namespace geometry
 {
 
-Circle::Circle(Vector2 center, float radius) : Polygon(),
+Circle::Circle(const Vector2& center, float radius) : Polygon(),
 	m_center(center),
 	m_radius(radius)
 {
@@ -38,14 +38,15 @@ void Circle::setRadius(float radius)
 
 void Circle::buildCircle()
 {
-	const int numVertices = 512;
+	const int numVertices = 64;
 	m_vertices.clear();
 	m_vertices.reserve(numVertices);
 	for (int i = 0; i < numVertices; i++)
 	{
+		float alpha = M_PI * 2 * static_cast<float>(i) / numVertices;
 		m_vertices.push_back(Vector2(
-			m_center.getX() + cos(M_PI * 2 * (float) i / numVertices) * m_radius,
-			m_center.getY() + sin(M_PI * 2 * (float) i / numVertices) * m_radius
+			m_center.x + cos(alpha) * m_radius,
+			m_center.y + sin(alpha) * m_radius
 		));
 	}
 }

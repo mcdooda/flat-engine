@@ -5,7 +5,7 @@ namespace flat
 namespace audio
 {
 
-Music::Music(std::string filename)
+Music::Music(const std::string& filename)
 {
 	m_music = Mix_LoadMUS(filename.c_str());
 }

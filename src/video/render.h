@@ -16,7 +16,7 @@ class Render : public Program
 		Render();
 		virtual ~Render();
 		
-		void load(std::string fragmentShader, std::string vertexShader);
+		void load(const std::string& fragmentShader, const std::string& vertexShader);
 		
 		void draw();
 		

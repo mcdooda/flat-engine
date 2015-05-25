@@ -1,4 +1,5 @@
 #include "heightmap.h"
+#include "../memory/memory.h"
 
 namespace flat
 {
@@ -6,20 +7,28 @@ namespace util
 {
 
 HeightMap::HeightMap() :
-	m_heightMap(NULL),
-	m_bumpMap(NULL)
+	m_heightMap(nullptr),
+	m_bumpMap(nullptr),
+	m_vertices(nullptr),
+	m_indices(nullptr)
 {
 	
 }
 
 HeightMap::~HeightMap()
 {
-	
+	if (!m_isLightCopy)
+	{
+		FLAT_DELETE_ARRAY(m_vertices);
+		FLAT_DELETE_ARRAY(m_indices);
+	}
 }
 
 Sprite* HeightMap::lightCopy()
 {
-	return new HeightMap(*this);
+	HeightMap* heightMap = new HeightMap(*this);
+	heightMap->m_isLightCopy = true;
+	return heightMap;
 }
 
 void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
@@ -27,7 +36,7 @@ void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matri
 	renderSettings.textureUniform.setTexture(m_texture);
 	renderSettings.colorUniform.setColor(m_color);
 	
-	if (m_bumpMap != NULL)
+	if (m_bumpMap != nullptr)
 		renderSettings.bumpMapUniform.setTexture(m_bumpMap, 1);
 	
 	updateModelMatrix();
@@ -77,24 +86,24 @@ void HeightMap::setHeightMap(video::FileTexture* heightMap, float multiplier)
 float HeightMap::getHeight(unsigned int x, unsigned int y) const
 {
 	video::Color color = m_heightMap->getPixel(geometry::Vector2(x, y));
-	return (float) (color.getR() + color.getG() + color.getB()) / 3.f * m_multiplier;
+	return static_cast<float>(color.getR() + color.getG() + color.getB()) / 3.f * m_multiplier;
 }
 
 Vertex3d* HeightMap::getVertex(unsigned int x, unsigned int y) const
 {
-	unsigned int width  = m_heightMap->getSize().getX();
+	unsigned int width  = m_heightMap->getSize().x;
 	return &m_vertices[x * width + y];
 }
 
 void HeightMap::computeHeightMap()
 {
-	unsigned int width  = m_heightMap->getSize().getX();
-	unsigned int height = m_heightMap->getSize().getY();
+	unsigned int width  = m_heightMap->getSize().x;
+	unsigned int height = m_heightMap->getSize().y;
 	unsigned int numVertices = width * height;
 	m_vertices = new Vertex3d[numVertices];
 	
-	float textureWidth = m_texture->getSize().getX();
-	float textureHeight = m_texture->getSize().getY();
+	float textureWidth = m_texture->getSize().x;
+	float textureHeight = m_texture->getSize().y;
 	
 	unsigned int x, y;
 	for (x = 0; x < width; x++)
@@ -149,9 +158,9 @@ void HeightMap::computeHeightMap()
 			flat::geometry::Vector3 dy(0, topVertex->y - bottomVertex->y, topVertex->z - bottomVertex->z);
 			flat::geometry::Vector3 normal = dx.crossProduct(dy).normalize();
 			//std::cout << "normal = " << normal << " / " << normal.normalize() << std::endl;
-			v->nx = normal.getX();
-			v->ny = normal.getY();
-			v->nz = normal.getZ();
+			v->nx = normal.x;
+			v->ny = normal.y;
+			v->nz = normal.z;
 		}
 	}
 

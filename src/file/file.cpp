@@ -7,7 +7,7 @@ namespace flat
 namespace file
 {
 
-File::File(std::string path) :
+File::File(const std::string& path) :
 	m_path(path)
 {
 
@@ -18,7 +18,7 @@ File::~File()
 	
 }
 
-bool File::isReadable()
+bool File::isReadable() const
 {
 	std::ifstream f(m_path.c_str());
 	bool readable = false;
@@ -30,7 +30,7 @@ bool File::isReadable()
 	return readable;
 }
 
-bool File::isWritable()
+bool File::isWritable() const
 {
 	std::ofstream f(m_path.c_str());
 	bool writable = false;

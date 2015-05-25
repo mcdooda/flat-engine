@@ -4,6 +4,8 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
+#include "../containers/array.h"
+
 #define K(k) SDL_SCANCODE_##k
 
 namespace flat
@@ -23,17 +25,17 @@ class Keyboard
 		bool isJustPressed(Key k) const;
 		bool isJustReleased(Key k) const;
 
-		std::vector<Key> getPressedKeys() const;
-		std::vector<Key> getJustPressedKeys() const;
-		std::vector<Key> getJustReleasedKeys() const;
+		void getPressedKeys(std::vector<Key>& pressedKeys) const;
+		void getJustPressedKeys(std::vector<Key>& justPressedKeys) const;
+		void getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const;
 
 		void clearEvents();
 		void addEvent(const SDL_Event& e);
 		
 	private:
+		containers::Array<bool> m_justPressedKeys;
+		containers::Array<bool> m_justReleasedKeys;
 		int m_numKeys;
-		bool* m_justPressedKeys;
-		bool* m_justReleasedKeys;
 };
 
 } // input

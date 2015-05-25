@@ -16,7 +16,7 @@ Audio::~Audio()
 	Mix_CloseAudio();
 }
 
-Music* Audio::loadMusic(std::string filename)
+Music* Audio::loadMusic(const std::string& filename)
 {
 	return new Music(filename);
 }

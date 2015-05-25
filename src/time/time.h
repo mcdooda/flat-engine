@@ -31,14 +31,14 @@ class Time
 		float getFrameTime();
 		
 	private:
-		bool m_timePaused;
-		float m_pauseTime;
-		float m_pauseRealTime;
-		float m_pauseElapsedTime;
-
 		float m_frameTime;
 		float m_beginFrameTime;
 		float m_frameDuration;
+		
+		float m_pauseTime;
+		float m_pauseRealTime;
+		float m_pauseElapsedTime;
+		bool m_timePaused;
 };
 
 } // time

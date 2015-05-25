@@ -12,21 +12,24 @@ namespace geometry
 class LineSegment
 {
 	public:
-		LineSegment(Vector2 a, Vector2 b);
+		LineSegment(const Vector2& a, const Vector2& b);
 		LineSegment();
-		virtual ~LineSegment();
+		~LineSegment();
 		
 		void draw(video::Attribute vertexAttribute);
 		
-		inline Vector2 getA() const { return Vector2(m_vertices[0], m_vertices[1]); }
-		void setA(const Vector2& a) { m_vertices[0] = a.getX(); m_vertices[1] = a.getY(); }
+		inline const Vector2& getA() const { return m_a; }
+		void setA(const Vector2& a) { m_a = a; }
 		
-		inline Vector2 getB() const { return Vector2(m_vertices[2], m_vertices[3]); }
-		void setB(const Vector2& b) { m_vertices[2] = b.getX(); m_vertices[3] = b.getY(); }
+		inline const Vector2& getB() const { return m_b; }
+		void setB(const Vector2& b) { m_b = b; }
 		
 	private:
-		float m_vertices[4];
+		Vector2 m_a;
+		Vector2 m_b;
 };
+
+static_assert(sizeof(LineSegment) == (sizeof(Vector2) * 2), "there should not be any padding between A and B!");
 
 } // geometry
 } // flat

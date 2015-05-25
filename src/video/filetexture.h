@@ -15,8 +15,8 @@ namespace video
 class FileTexture : public Texture
 {
 	public:
-		FileTexture(std::string filename);
-		virtual ~FileTexture();
+		FileTexture(const std::string& filename);
+		~FileTexture() override;
 
 		inline const std::string& getPath() const { return m_path; }
 		

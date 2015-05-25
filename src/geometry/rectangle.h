@@ -13,7 +13,7 @@ class Rectangle : public Polygon
 	public:
 		Rectangle(const Vector2& position, const Vector2& size);
 		Rectangle();
-		virtual ~Rectangle();
+		~Rectangle() override;
 		
 		void setPositionSize(const Vector2& position, const Vector2& size);
 		

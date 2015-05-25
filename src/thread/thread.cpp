@@ -17,7 +17,7 @@ int runTask(void* thread)
 }
 
 Thread::Thread() :
-	m_thread(NULL),
+	m_thread(nullptr),
 	m_state(NEW),
 	m_priority(NORMAL)
 {
@@ -36,7 +36,7 @@ void Thread::run()
 
 void Thread::wait()
 {
-	SDL_WaitThread(m_thread, NULL);
+	SDL_WaitThread(m_thread, nullptr);
 }
 
 void Thread::setPriority(Priority priority)

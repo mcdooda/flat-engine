@@ -9,7 +9,7 @@ namespace random
 
 Random::Random()
 {
-	setSeed(time(NULL));
+	setSeed(time(nullptr));
 }
 
 Random::~Random()
@@ -24,7 +24,7 @@ int Random::nextInt(int min, int max)
 
 float Random::nextFloat(float min, float max)
 {
-	return (float) rand() / RAND_MAX * (max - min) + min;
+	return static_cast<float>(rand() / RAND_MAX * (max - min) + min);
 }
 
 void Random::resetSeed()

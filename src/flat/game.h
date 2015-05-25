@@ -11,7 +11,7 @@ class Game : public Flat, public state::Agent
 {
 	public:
 		Game(const std::vector<std::string>& args);
-		virtual ~Game();
+		~Game() override;
 		
 		void checkArgs();
 		void openWindow();

@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include "machine.h"
 
+#include "../memory/memory.h"
+
 namespace flat
 {
 namespace state
@@ -9,38 +11,30 @@ namespace state
 Machine::Machine(Agent* agent)
 {
 	m_agent = agent;
-	m_currentState = NULL;
-	m_previousState = NULL;
-	m_globalState = NULL;
+	m_currentState = nullptr;
+	m_previousState = nullptr;
+	m_globalState = nullptr;
 }
 
 Machine::~Machine()
 {
-	if (m_globalState != NULL)
+	if (m_globalState != nullptr)
 	{
 		m_globalState->exit(m_agent);
-		delete m_globalState;
+		FLAT_DELETE(m_globalState);
 	}
-
-	if (m_previousState != NULL)
-		delete m_previousState;
-
-	if (m_currentState != NULL)
-		delete m_currentState;
+	FLAT_DELETE(m_previousState);
+	FLAT_DELETE(m_currentState);
 }
 
 void Machine::setState(State* state)
 {
-	if (m_currentState != NULL)
+	if (m_currentState != nullptr)
 	{
 		m_currentState->exit(m_agent);
-		
-		if (m_previousState != NULL)
-			delete m_previousState;
-		
+		FLAT_DELETE(m_previousState);
 		m_previousState = m_currentState;
 	}
-
 	m_currentState = state;
 	state->enter(m_agent);
 }
@@ -52,22 +46,21 @@ void Machine::revertToPreviousState()
 
 void Machine::setGlobalState(State* globalState)
 {
-	if (m_globalState != NULL)
+	if (m_globalState != nullptr)
 	{
 		m_globalState->exit(m_agent);
-		delete m_globalState;
+		FLAT_DELETE(m_globalState);
 	}
-
 	m_globalState = globalState;
 	globalState->enter(m_agent);
 }
 
 void Machine::update()
 {
-	if (m_globalState != NULL)
+	if (m_globalState != nullptr)
 		m_globalState->execute(m_agent);
 
-	if (m_currentState != NULL)
+	if (m_currentState != nullptr)
 		m_currentState->execute(m_agent);
 }
 
