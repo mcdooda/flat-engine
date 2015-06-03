@@ -119,6 +119,11 @@ void Vector2::operator/=(const float& f)
 	y /= f;
 }
 
+Vector2 Vector2::operator-() const
+{
+	return Vector2(-x, -y);
+}
+
 int Vector2::getRoundX() const
 {
 	return round(x);

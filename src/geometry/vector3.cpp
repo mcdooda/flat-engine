@@ -124,6 +124,11 @@ void Vector3::operator/=(const float& f)
 	z /= f;
 }
 
+Vector3 Vector3::operator-() const
+{
+	return Vector3(-x, -y, -z);
+}
+
 int Vector3::getRoundX() const
 {
 	return round(x);

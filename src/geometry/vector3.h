@@ -33,6 +33,8 @@ class Vector3
 		void operator*=(const float& f);
 		void operator/=(const float& f);
 
+		Vector3 operator-() const;
+
 		int getRoundX() const;
 		int getRoundY() const;
 		int getRoundZ() const;

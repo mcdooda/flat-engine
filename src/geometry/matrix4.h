@@ -1,7 +1,9 @@
 #ifndef FLAT_GEOMETRY_MATRIX4_H
 #define FLAT_GEOMETRY_MATRIX4_H
 
+#include "../debug/assert.h"
 #include "vector2.h"
+#include "vector3.h"
 
 namespace flat
 {
@@ -46,6 +48,20 @@ class Matrix4
 		
 		inline float get(int y, int x) const { return m_matrix[y * 4 + x]; }
 		inline void set(int y, int x, float value) { m_matrix[y * 4 + x] = value; }
+
+		inline void getPos(Vector3& pos) const
+		{
+			pos.x = get(0, 3);
+			pos.y = get(1, 3);
+			pos.z = get(2, 3);
+		}
+
+		inline void getScale(Vector3& scale) const
+		{
+			scale.x = get(0, 0);
+			scale.y = get(1, 1);
+			scale.z = get(2, 2);
+		}
 		
 		inline const float* getData() const { return m_matrix; }
 		

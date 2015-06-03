@@ -38,6 +38,8 @@ class Vector2
 		void operator*=(const float& f);
 		void operator/=(const float& f);
 
+		Vector2 operator-() const;
+
 		int getRoundX() const;
 		int getRoundY() const;
 		
