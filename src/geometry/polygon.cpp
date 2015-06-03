@@ -33,7 +33,7 @@ Polygon::~Polygon()
 	
 }
 
-void Polygon::draw(video::Attribute vertexAttribute)
+void Polygon::draw(video::Attribute vertexAttribute) const
 {
 	if (!m_vertices.empty())
 	{

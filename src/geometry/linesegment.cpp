@@ -23,7 +23,7 @@ LineSegment::~LineSegment()
 
 }
 
-void LineSegment::draw(video::Attribute vertexAttribute)
+void LineSegment::draw(video::Attribute vertexAttribute) const
 {
 	glEnableVertexAttribArray(vertexAttribute);
 	glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, this);

@@ -22,7 +22,7 @@ class Polygon
 		
 		inline void setVertices(const std::vector<Vector2>& vertices) { m_vertices = vertices; }
 		
-		void draw(video::Attribute vertexAttribute);
+		void draw(video::Attribute vertexAttribute) const;
 		
 		void transform(const Matrix4& matrix4);
 		

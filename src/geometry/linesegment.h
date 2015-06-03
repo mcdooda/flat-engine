@@ -16,7 +16,7 @@ class LineSegment
 		LineSegment();
 		~LineSegment();
 		
-		void draw(video::Attribute vertexAttribute);
+		void draw(video::Attribute vertexAttribute) const;
 		
 		inline const Vector2& getA() const { return m_a; }
 		void setA(const Vector2& a) { m_a = a; }

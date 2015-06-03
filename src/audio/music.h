@@ -15,7 +15,10 @@ class Music
 		Music(const std::string& filename);
 		~Music();
 		
-		void play();
+		void play(int loops = -1) const;
+
+		static void pause();
+		static void resume();
 		
 	private:
 		Mix_Music* m_music;

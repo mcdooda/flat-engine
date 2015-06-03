@@ -30,20 +30,20 @@ class Vector2
 
 		Vector2 operator+(const Vector2& v) const;
 		Vector2 operator-(const Vector2& v) const;
-		Vector2 operator*(const float& f) const;
-		Vector2 operator/(const float& f) const;
+		Vector2 operator*(float f) const;
+		Vector2 operator/(float f) const;
 
 		void operator+=(const Vector2& v);
 		void operator-=(const Vector2& v);
-		void operator*=(const float& f);
-		void operator/=(const float& f);
+		void operator*=(float f);
+		void operator/=(float f);
 
 		Vector2 operator-() const;
 
 		int getRoundX() const;
 		int getRoundY() const;
 		
-		friend std::ostream& operator<<(std::ostream& out, Vector2 vector2);
+		friend std::ostream& operator<<(std::ostream& out, const Vector2& vector2);
 
 	public:
 		float x;

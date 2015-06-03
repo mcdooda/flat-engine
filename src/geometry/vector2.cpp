@@ -83,12 +83,12 @@ Vector2 Vector2::operator-(const Vector2& v) const
 	return Vector2(x - v.x, y - v.y);
 }
 
-Vector2 Vector2::operator*(const float& f) const
+Vector2 Vector2::operator*(float f) const
 {
 	return Vector2(x * f, y * f);
 }
 
-Vector2 Vector2::operator/(const float& f) const
+Vector2 Vector2::operator/(float f) const
 {
 	FLAT_ASSERT(f != 0.f);
 	return Vector2(x / f, y / f);
@@ -106,13 +106,13 @@ void Vector2::operator-=(const Vector2& v)
 	y -= v.y;
 }
 
-void Vector2::operator*=(const float& f)
+void Vector2::operator*=(float f)
 {
 	x *= f;
 	y *= f;
 }
 
-void Vector2::operator/=(const float& f)
+void Vector2::operator/=(float f)
 {
 	FLAT_ASSERT(f != 0.f);
 	x /= f;
@@ -134,7 +134,7 @@ int Vector2::getRoundY() const
 	return round(y);
 }
 
-std::ostream& operator<<(std::ostream& out, Vector2 vector2)
+std::ostream& operator<<(std::ostream& out, const Vector2& vector2)
 {
 	out << "Vector2(" << vector2.x << "," << vector2.y << ")";
 	return out;

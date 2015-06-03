@@ -25,13 +25,13 @@ class Vector3
 
 		Vector3 operator+(const Vector3& v) const;
 		Vector3 operator-(const Vector3& v) const;
-		Vector3 operator*(const float& f) const;
-		Vector3 operator/(const float& f) const;
+		Vector3 operator*(float f) const;
+		Vector3 operator/(float f) const;
 
 		void operator+=(const Vector3& v);
 		void operator-=(const Vector3& v);
-		void operator*=(const float& f);
-		void operator/=(const float& f);
+		void operator*=(float f);
+		void operator/=(float f);
 
 		Vector3 operator-() const;
 
@@ -39,7 +39,7 @@ class Vector3
 		int getRoundY() const;
 		int getRoundZ() const;
 		
-		friend std::ostream& operator<<(std::ostream& out, Vector3 vector3);
+		friend std::ostream& operator<<(std::ostream& out, const Vector3& vector3);
 
 	public:
 		float x;

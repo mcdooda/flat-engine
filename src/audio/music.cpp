@@ -15,9 +15,19 @@ Music::~Music()
 	Mix_FreeMusic(m_music);
 }
 
-void Music::play()
+void Music::play(int loops) const
 {
-	Mix_PlayMusic(m_music, -1);
+	Mix_PlayMusic(m_music, loops);
+}
+
+void Music::pause()
+{
+	Mix_PauseMusic();
+}
+
+void Music::resume()
+{
+	Mix_ResumeMusic();
 }
 
 } // audio

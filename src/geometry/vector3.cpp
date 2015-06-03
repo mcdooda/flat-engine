@@ -84,12 +84,12 @@ Vector3 Vector3::operator-(const Vector3& v) const
 	return Vector3(x - v.x, y - v.y, z - v.z);
 }
 
-Vector3 Vector3::operator*(const float& f) const
+Vector3 Vector3::operator*(float f) const
 {
 	return Vector3(x * f, y * f, z * f);
 }
 
-Vector3 Vector3::operator/(const float& f) const
+Vector3 Vector3::operator/(float f) const
 {
 	FLAT_ASSERT(f != 0.f);
 	return Vector3(x / f, y / f, z / f);
@@ -109,14 +109,14 @@ void Vector3::operator-=(const Vector3& v)
 	z -= v.z;
 }
 
-void Vector3::operator*=(const float& f)
+void Vector3::operator*=(float f)
 {
 	x *= f;
 	y *= f;
 	z *= f;
 }
 
-void Vector3::operator/=(const float& f)
+void Vector3::operator/=(float f)
 {
 	FLAT_ASSERT(f != 0.f);
 	x /= f;
@@ -144,7 +144,7 @@ int Vector3::getRoundZ() const
 	return round(z);
 }
 
-std::ostream& operator<<(std::ostream& out, Vector3 vector3)
+std::ostream& operator<<(std::ostream& out, const Vector3& vector3)
 {
 	out << "Vector3(" << vector3.x << "," << vector3.y << "," << vector3.z << ")";
 	return out;
