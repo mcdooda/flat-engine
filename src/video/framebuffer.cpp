@@ -39,7 +39,7 @@ const Texture& FrameBuffer::addTexture(const std::string& name)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	m_textures.push_back(Texture(textureId, m_size, name));
+	m_textures.emplace_back(textureId, m_size, name);
 	return m_textures.back();
 }
 

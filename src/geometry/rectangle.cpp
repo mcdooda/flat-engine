@@ -27,9 +27,9 @@ void Rectangle::setPositionSize(const Vector2& position, const Vector2& size)
 	m_vertices.clear();
 	m_vertices.reserve(4);
 	m_vertices.push_back(position);
-	m_vertices.push_back(Vector2(position.x + size.x, position.y));
+	m_vertices.emplace_back(position.x + size.x, position.y);
 	m_vertices.push_back(position + size);
-	m_vertices.push_back(Vector2(position.x, position.y + size.y));
+	m_vertices.emplace_back(position.x, position.y + size.y);
 }
 
 void Rectangle::setSize(const Vector2& size)

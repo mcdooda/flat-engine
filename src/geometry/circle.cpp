@@ -44,10 +44,7 @@ void Circle::buildCircle()
 	for (int i = 0; i < numVertices; i++)
 	{
 		float alpha = M_PI * 2 * static_cast<float>(i) / numVertices;
-		m_vertices.push_back(Vector2(
-			m_center.x + cos(alpha) * m_radius,
-			m_center.y + sin(alpha) * m_radius
-		));
+		m_vertices.emplace_back(m_center.x + cos(alpha) * m_radius, m_center.y + sin(alpha) * m_radius);
 	}
 }
 
