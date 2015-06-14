@@ -6,6 +6,11 @@
 
 namespace flat
 {
+namespace time
+{
+class Timer;
+}
+
 namespace audio
 {
 
@@ -16,12 +21,24 @@ class Music
 		~Music();
 		
 		void play(int loops = -1) const;
+		void stop() const;
 
-		static void pause();
-		static void resume();
+		float getPosition() const;
+
+		bool move(double delta);
+		bool setPosition(double position);
+		void rewind();
+
+		void pause();
+		void resume();
+		bool isPaused() const;
+		void togglePause();
 		
 	private:
 		Mix_Music* m_music;
+		time::Timer* m_timer;
+
+		static const Music* currentMusic;
 };
 
 } // audio
