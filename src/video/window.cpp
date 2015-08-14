@@ -105,6 +105,15 @@ void Window::endFrame()
 	SDL_RenderPresent(m_renderer);
 }
 
+bool Window::supportsGlExtensions()
+{
+	return GLEW_ARB_vertex_program
+	    && GLEW_ARB_fragment_program
+	    && GLEW_ARB_texture_float
+	    && GLEW_ARB_draw_buffers
+	    && GLEW_ARB_framebuffer_object;
+}
+
 void Window::initSize(const geometry::Vector2& size)
 {
 	resized(size);
@@ -119,12 +128,11 @@ void Window::initGlew()
 		exit(1);
 	}
 
-	if (!GLEW_ARB_vertex_program
-	 || !GLEW_ARB_fragment_program
-	 || !GLEW_ARB_texture_float
-	 || !GLEW_ARB_draw_buffers
-	 || !GLEW_ARB_framebuffer_object)
-		std::cerr << "Warning: Shaders not supported!" << std::endl;
+	if (!supportsGlExtensions())
+	{
+		std::cerr << "Fatal: Shaders not supported!" << std::endl;
+		exit(1);
+	}
 }
 
 void Window::initGL()

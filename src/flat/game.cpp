@@ -5,7 +5,8 @@ namespace flat
 {
 
 Game::Game(const std::vector<std::string>& args) :
-	m_args(args)
+	m_args(args),
+	m_stop(false)
 {
 	checkArgs();
 	openWindow();
@@ -68,7 +69,6 @@ void Game::loop()
 		
 		input->poll();
 		
-		m_stop = false;
 		getStateMachine()->update();
 		running = !input->window->isClosed() && !m_stop;
 		

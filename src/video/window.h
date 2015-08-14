@@ -34,6 +34,8 @@ class Window
 		
 		void endFrame();
 		
+		static bool supportsGlExtensions();
+		
 	private:
 		void initSize(const geometry::Vector2& size);
 		
