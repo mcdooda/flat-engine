@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "music.h"
 
 #include "../time/timer.h"
@@ -30,7 +28,6 @@ void Music::play(int loops) const
 {
 	Mix_PlayMusic(m_music, loops);
 	m_timer->start();
-	std::cout << "position : " << m_timer->getTime() << " / " << getPosition() << std::endl;
 	currentMusic = this;
 }
 
