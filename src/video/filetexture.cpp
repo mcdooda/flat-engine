@@ -9,16 +9,16 @@ namespace flat
 namespace video
 {
 
-FileTexture::FileTexture(const std::string& filename) :
-	m_path(filename)
+FileTexture::FileTexture(const std::string& fileName) :
+	m_fileName(fileName)
 {
-	m_surface = IMG_Load(filename.c_str());
+	m_surface = IMG_Load(fileName.c_str());
 	
 	if (m_surface != nullptr)
 		load();
 		
 	else
-		std::cerr << "Warning: error in IMG_Load(" << filename.c_str() << ") : " << IMG_GetError() << std::endl;
+		std::cerr << "Warning: error in IMG_Load(" << fileName.c_str() << ") : " << IMG_GetError() << std::endl;
 }
 
 FileTexture::FileTexture()
@@ -31,11 +31,11 @@ FileTexture::~FileTexture()
 	free();
 }
 
-Color FileTexture::getPixel(const geometry::Vector2& pixelPosition)
+Color FileTexture::getPixel(const geometry::Vector2& pixelPosition) const
 {
 	int x = pixelPosition.getRoundX();
 	int y = pixelPosition.getRoundY();
-	Uint32 pixel = *((Uint32*) m_surface->pixels + (m_surface->h - y) * m_surface->w + x);
+	Uint32 pixel = *(static_cast<Uint32*>(m_surface->pixels) + (m_surface->h - y) * m_surface->w + x);
 	Uint8 r, g, b, a;
 	SDL_GetRGBA(pixel, m_surface->format, &r, &g, &b, &a);
 	return Color(r, g, b, a);

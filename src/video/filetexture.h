@@ -15,12 +15,12 @@ namespace video
 class FileTexture : public Texture
 {
 	public:
-		FileTexture(const std::string& filename);
+		FileTexture(const std::string& fileName);
 		~FileTexture() override;
 
-		inline const std::string& getPath() const { return m_path; }
+		inline const std::string& getFileName() const { return m_fileName; }
 		
-		Color getPixel(const geometry::Vector2& pixelPosition);
+		Color getPixel(const geometry::Vector2& pixelPosition) const;
 
 	protected:
 		FileTexture();
@@ -30,7 +30,7 @@ class FileTexture : public Texture
 		
 		SDL_Surface* m_surface;
 
-		std::string m_path;
+		std::string m_fileName;
 };
 
 } // video

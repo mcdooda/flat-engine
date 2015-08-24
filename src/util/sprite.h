@@ -1,6 +1,7 @@
 #ifndef FLAT_UTIL_SPRITE_H
 #define FLAT_UTIL_SPRITE_H
 
+#include <memory>
 #include "rendersettings.h"
 #include "../video/texture.h"
 #include "../geometry/vector3.h"
@@ -18,8 +19,8 @@ class Sprite
 		
 		virtual Sprite* lightCopy();
 		
-		inline void setTexture(video::Texture* texture) { m_texture = texture; }
-		inline video::Texture* getTexture() const { return m_texture; }
+		inline void setTexture(std::shared_ptr<const video::Texture> texture) { m_texture = texture; }
+		inline const video::Texture* getTexture() const { return m_texture.get(); }
 		
 		inline void setColor(const video::Color& color) { m_color = color; }
 		inline const video::Color& getColor() const { return m_color; }
@@ -46,7 +47,7 @@ class Sprite
 		inline const geometry::Matrix4& getModelMatrix() { updateModelMatrix(); return m_modelMatrix; }
 		
 	protected:
-		video::Texture* m_texture;
+		std::shared_ptr<const video::Texture> m_texture;
 		video::Color m_color;
 		
 		geometry::Vector3 m_rotation;

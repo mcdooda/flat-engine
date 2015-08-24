@@ -33,11 +33,12 @@ Sprite* HeightMap::lightCopy()
 
 void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
 {
-	renderSettings.textureUniform.setTexture(m_texture);
+	const flat::video::Texture* texture = getTexture();
+	renderSettings.textureUniform.setTexture(texture);
 	renderSettings.colorUniform.setColor(m_color);
 	
 	if (m_bumpMap != nullptr)
-		renderSettings.bumpMapUniform.setTexture(m_bumpMap, 1);
+		renderSettings.bumpMapUniform.setTexture(m_bumpMap.get(), 1);
 	
 	updateModelMatrix();
 	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
@@ -76,7 +77,7 @@ void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matri
 	glDisable(GL_DEPTH_TEST);
 }
 
-void HeightMap::setHeightMap(video::FileTexture* heightMap, float multiplier)
+void HeightMap::setHeightMap(std::shared_ptr<const video::FileTexture> heightMap, float multiplier)
 {
 	m_heightMap = heightMap;
 	m_multiplier = multiplier;
@@ -102,8 +103,9 @@ void HeightMap::computeHeightMap()
 	unsigned int numVertices = width * height;
 	m_vertices = new Vertex3d[numVertices];
 	
-	float textureWidth = m_texture->getSize().x;
-	float textureHeight = m_texture->getSize().y;
+	const flat::video::Texture* texture = getTexture();
+	float textureWidth = texture->getSize().x;
+	float textureHeight = texture->getSize().y;
 	
 	unsigned int x, y;
 	for (x = 0; x < width; x++)
