@@ -2,50 +2,38 @@
 #define FLAT_RESOURCE_RESOURCEMANAGER_H
 
 #include <map>
-#include "video/texture.h"
-#include "video/font.h"
-#include "audio/sample.h"
-#include "audio/music.h"
+#include <tuple>
 
 namespace flat
 {
 namespace resource
 {
 
-template <class T>
+template <class T, typename... U>
 class ResourceManager
 {
-	public:
-		T* get(const std::string& name)
+	protected:
+		typedef std::tuple<U...> CacheKeyType;
+		typedef std::weak_ptr<const T> CacheValueType;
+		typedef std::map<CacheKeyType, CacheValueType> CacheType;
+		
+		std::shared_ptr<const T> getResource(const U&... initializers)
 		{
-			T* resource;
-			typename std::map<std::string, T*>::iterator it = m_resources.find(name);
-
-			if (it != m_resources.end())
-				resource = it->second;
+			CacheKeyType initializersTuple(initializers...);
+			typename CacheType::iterator it = m_loadedResources.find(initializersTuple);
+			if (it != m_loadedResources.end())
+				if (std::shared_ptr<const T> sharedResource = it->second.lock())
+					return sharedResource;
 	
-			else
-				resource = load(name);
-
-			return resource;
+			const T* resource = new T(initializers...);
+			std::shared_ptr<const T> sharedResource;
+			sharedResource.reset(resource);
+			m_loadedResources[initializersTuple] = CacheValueType(sharedResource);
+			return sharedResource;
 		}
 
-	private:
-		T* load(const std::string& name)
-		{
-			T* const resource = new T(name);
-			m_resources[name] = resource;
-			return resource;
-		}
-
-	private:
-		std::map<std::string, T*> m_resources;
+		CacheType m_loadedResources;
 };
-
-typedef ResourceManager<video::Texture> TextureManager;
-typedef ResourceManager<video::Font>    FontManager;
-typedef ResourceManager<audio::Sample>  SampleManager;
-typedef ResourceManager<audio::Music>   MusicManager;
 
 } // resource
 } // flat

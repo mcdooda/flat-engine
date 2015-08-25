@@ -3,8 +3,11 @@
 
 #include <memory>
 #include <unordered_map>
+#include <string>
 #include "window.h"
 #include "color.h"
+#include "filetexture.h"
+#include "../resource/resourcemanager.h"
 
 namespace flat
 {
@@ -12,7 +15,7 @@ namespace video
 {
 class FileTexture;
 
-class Video
+class Video : public resource::ResourceManager<FileTexture, std::string>
 {
 	public:
 		Video();
@@ -23,13 +26,10 @@ class Video
 		void clear();
 		void setClearColor(const Color& color);
 		
-		std::shared_ptr<const FileTexture> getTexture(const std::string& fileName);
+		inline std::shared_ptr<const FileTexture> getTexture(const std::string& fileName) { return getResource(fileName); }
 
 	public:
 		Window* window;
-		
-	private:
-		std::unordered_map<std::string, std::weak_ptr<const FileTexture>> m_loadedTextures;
 };
 
 } // video
