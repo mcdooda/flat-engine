@@ -55,9 +55,9 @@ class Sprite
 		float m_scale;
 		
 		geometry::Matrix4 m_modelMatrix;
-		bool m_modelMatrixIsDirty;
+		bool m_modelMatrixIsDirty : 1;
 		
-		bool m_isLightCopy;
+		bool m_isLightCopy : 1;
 };
 
 } // util

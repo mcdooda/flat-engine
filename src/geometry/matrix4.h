@@ -49,7 +49,13 @@ class Matrix4
 		inline float get(int y, int x) const { return m_matrix[y * 4 + x]; }
 		inline void set(int y, int x, float value) { m_matrix[y * 4 + x] = value; }
 
-		inline void getPos(Vector3& pos) const
+		inline void getPosition(Vector2& pos) const
+		{
+			pos.x = get(0, 3);
+			pos.y = get(1, 3);
+		}
+
+		inline void getPosition(Vector3& pos) const
 		{
 			pos.x = get(0, 3);
 			pos.y = get(1, 3);

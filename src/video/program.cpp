@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include "program.h"
 #include "../debug/assert.h"
 
@@ -177,7 +178,8 @@ void Program::loadAttributes()
 {
 	GLint total = -1;
 	glGetProgramiv(m_programId, GL_ACTIVE_ATTRIBUTES, &total); 
-	for(GLint i = 0; i < total; i++) {
+	for (GLint i = 0; i < total; i++)
+	{
 		GLsizei nameLength;
 		GLint size;
 		GLenum type = GL_ZERO;
@@ -185,7 +187,9 @@ void Program::loadAttributes()
 		glGetActiveAttrib(m_programId, i, sizeof(name) - 1, &nameLength, &size, &type, name);
 		name[nameLength] = '\0';
 		Attribute location = glGetAttribLocation(m_programId, name);
-		m_attributes[name] = location;
+		m_attributes.emplace(std::piecewise_construct,
+							 std::forward_as_tuple(name),
+							 std::forward_as_tuple(location));
 	}
 }
 
@@ -193,7 +197,8 @@ void Program::loadUniforms()
 {
 	GLint total = -1;
 	glGetProgramiv(m_programId, GL_ACTIVE_UNIFORMS, &total); 
-	for(GLint i = 0; i < total; i++) {
+	for (GLint i = 0; i < total; i++)
+	{
 		GLsizei nameLength;
 		GLint size;
 		GLenum type = GL_ZERO;
@@ -201,7 +206,9 @@ void Program::loadUniforms()
 		glGetActiveUniform(m_programId, i, sizeof(name) - 1, &nameLength, &size, &type, name);
 		name[nameLength] = '\0';
 		Attribute location = glGetUniformLocation(m_programId, name);
-		m_uniforms[name] = Uniform(location);
+		m_uniforms.emplace(std::piecewise_construct,
+						   std::forward_as_tuple(name),
+						   std::forward_as_tuple(location));
 	}
 }
 

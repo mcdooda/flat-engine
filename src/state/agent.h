@@ -18,6 +18,13 @@ class Agent
 
 		inline Machine* getStateMachine() const { return m_machine; }
 
+		template <class T>
+		T* to()
+		{
+			FLAT_ASSERT(dynamic_cast<T*>(this));
+			return static_cast<T*>(this);
+		}
+
 	private:
 		Machine* m_machine;
 };

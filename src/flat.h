@@ -34,6 +34,11 @@
 // util
 #include "util/heightmap.h"
 
+// sharp
+// ui
+#include "sharp/ui/widgetfactory.h"
+#include "sharp/ui/rootwidget.h"
+
 namespace flat
 {
 
