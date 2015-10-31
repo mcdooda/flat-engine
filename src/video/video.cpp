@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include "video.h"
 #include "text.h"
+#include "../memory/memory.h"
 
 namespace flat
 {
@@ -19,7 +20,7 @@ Video::~Video()
 {
 	Text::close();
 	Texture::close();
-	delete window;
+	FLAT_DELETE(window);
 }
 
 void Video::endFrame()

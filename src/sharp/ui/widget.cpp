@@ -86,9 +86,9 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 		renderSettings.modelMatrixUniform.setMatrix4(m_transform);
 
 		if (m_mouseOver)
-			renderSettings.colorUniform.setColor(video::Color::BLACK);
-		else
 			renderSettings.colorUniform.setColor(video::Color::WHITE);
+		else
+			renderSettings.colorUniform.setColor(video::Color::BLACK);
 
 		// enable vertex attrib array
 		// position

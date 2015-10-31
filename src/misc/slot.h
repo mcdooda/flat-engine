@@ -20,10 +20,10 @@ class Slot
 		};
 
 		template <typename U>
-		class CallbackImpl : public Callback
+		class CallbackMethodImpl : public Callback
 		{
 			public:
-				CallbackImpl(U* object, void (U::*callbackMethod)(T... params)) :
+				CallbackMethodImpl(U* object, void (U::*callbackMethod)(T... params)) :
 					m_object(object),
 					m_callbackMethod(callbackMethod) {}
 
@@ -38,10 +38,10 @@ class Slot
 		};
 
 		template <typename Func>
-		class CallbackFuncImpl : public Callback
+		class CallbackFunctionImpl : public Callback
 		{
 			public:
-				CallbackFuncImpl(Func callbackFunc) :
+				CallbackFunctionImpl(Func callbackFunc) :
 					m_callbackFunc(callbackFunc) {}
 
 				void operator()(T... params) override
@@ -69,7 +69,7 @@ class Slot
 		void connect(U* object, void (std::remove_const<U>::type::*callbackMethod)(T...))
 		{
 			FLAT_ASSERT(object && callbackMethod);
-			Callback* callback = new CallbackImpl<U>(object, callbackMethod);
+			Callback* callback = new CallbackMethodImpl<U>(object, callbackMethod);
 			m_callbacks.push_back(callback);
 		}
 
@@ -77,7 +77,7 @@ class Slot
 		void connect(Func callbackFunc)
 		{
 			FLAT_ASSERT(callbackFunc);
-			Callback* callback = new CallbackFuncImpl<Func>(callbackFunc);
+			Callback* callback = new CallbackFunctionImpl<Func>(callbackFunc);
 			m_callbacks.push_back(callback);
 		}
 
@@ -87,11 +87,11 @@ class Slot
 			std::remove_if(m_callbacks.begin(), m_callbacks.end(),
 				[object, callbackMethod](Callback* callback)
 				{
-					if (CallbackImpl<U>* callbackImpl = dynamic_cast<CallbackImpl<U>*>(callback))
+					if (CallbackMethodImpl<U>* callbackMethodImpl = dynamic_cast<CallbackMethodImpl<U>*>(callback))
 					{
-						if (callbackImpl->m_object == object && callbackImpl->m_callbackMethod == callbackMethod)
+						if (callbackMethodImpl->m_object == object && callbackMethodImpl->m_callbackMethod == callbackMethod)
 						{
-							delete callbackImpl;
+							delete callbackMethodImpl;
 							return true;
 						}
 					}
@@ -106,11 +106,11 @@ class Slot
 			std::remove_if(m_callbacks.begin(), m_callbacks.end(),
 				[callbackFunc](Callback* callback)
 				{
-					if (CallbackFuncImpl<Func>* callbackFuncImpl = dynamic_cast<CallbackFuncImpl<Func>*>(callback))
+					if (CallbackFunctionImpl<Func>* callbackFunctionImpl = dynamic_cast<CallbackFunctionImpl<Func>*>(callback))
 					{
-						if (callbackFuncImpl->m_callbackFunc == callbackFunc)
+						if (callbackFunctionImpl->m_callbackFunc == callbackFunc)
 						{
-							delete callbackFuncImpl;
+							delete callbackFunctionImpl;
 							return true;
 						}
 					}
@@ -125,11 +125,11 @@ class Slot
 			std::remove_if(m_callbacks.begin(), m_callbacks.end(),
 				[object](Callback* callback)
 				{
-					if (CallbackImpl<U>* callbackImpl = dynamic_cast<CallbackImpl<U>*>(callback))
+					if (CallbackMethodImpl<U>* callbackMethodImpl = dynamic_cast<CallbackMethodImpl<U>*>(callback))
 					{
-						if (callbackImpl->m_object == object)
+						if (callbackMethodImpl->m_object == object)
 						{
-							delete callbackImpl;
+							delete callbackMethodImpl;
 							return true;
 						}
 					}

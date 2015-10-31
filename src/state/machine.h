@@ -1,6 +1,7 @@
 #ifndef FLAT_STATE_MACHINE_H
 #define FLAT_STATE_MACHINE_H
 
+#include <utility>
 #include "state.h"
 
 namespace flat
@@ -16,6 +17,18 @@ class Machine
 	public:
 		Machine(Agent* agent);
 		~Machine();
+
+		template <typename T, typename... U>
+		void setNewState(U&... params)
+		{
+			setState(new T(params...));
+		}
+
+		template <typename T, typename... U>
+		void setNewStateMove(U&&... params)
+		{
+			setState(new T(std::move(params)...));
+		}
 
 		void setState(State* state);
 		void revertToPreviousState();
