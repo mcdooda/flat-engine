@@ -30,14 +30,13 @@ void RootWidget::updateInput()
 
 	if (mouseOverWidget != m_mouseOverWidget)
 	{
-		if (m_mouseOverWidget)
-			m_mouseOverWidget->onMouseLeave();
-
-		if (mouseOverWidget)
-			mouseOverWidget->onMouseEnter();
-
+		handleMouseLeave();
 		m_mouseOverWidget = mouseOverWidget;
+		handleMouseEnter();
 	}
+
+	if (m_game.input->mouse->isPressed(M(LEFT)))
+		handleClick();
 }
 
 void RootWidget::handleClick()
@@ -46,8 +45,26 @@ void RootWidget::handleClick()
 	Widget* widget = m_mouseOverWidget;
 	while (widget && !eventHandled)
 	{
-		widget->onClick(widget, eventHandled);
+		widget->click(widget, eventHandled);
 		widget = widget->getParent();
+	}
+}
+
+void RootWidget::handleMouseEnter()
+{
+	if (m_mouseOverWidget)
+	{
+		m_mouseOverWidget->m_mouseOver = true;
+		m_mouseOverWidget->mouseEnter(m_mouseOverWidget);
+	}
+}
+
+void RootWidget::handleMouseLeave()
+{
+	if (m_mouseOverWidget)
+	{
+		m_mouseOverWidget->m_mouseOver = false;
+		m_mouseOverWidget->mouseLeave(m_mouseOverWidget);
 	}
 }
 

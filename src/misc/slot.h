@@ -56,7 +56,7 @@ class Slot
 	public:
 		~Slot()
 		{
-			disconnectAll();
+			off();
 		}
 
 		void operator()(T... params)
@@ -65,8 +65,13 @@ class Slot
 				(*callback)(params...);
 		}
 
+		bool on() const
+		{
+			return !m_callbacks.empty();
+		}
+
 		template <typename U>
-		void connect(U* object, void (std::remove_const<U>::type::*callbackMethod)(T...))
+		void on(U* object, void (std::remove_const<U>::type::*callbackMethod)(T...))
 		{
 			FLAT_ASSERT(object && callbackMethod);
 			Callback* callback = new CallbackMethodImpl<U>(object, callbackMethod);
@@ -74,7 +79,7 @@ class Slot
 		}
 
 		template <typename Func>
-		void connect(Func callbackFunc)
+		void on(Func callbackFunc)
 		{
 			FLAT_ASSERT(callbackFunc);
 			Callback* callback = new CallbackFunctionImpl<Func>(callbackFunc);
@@ -82,7 +87,7 @@ class Slot
 		}
 
 		template <typename U>
-		void disconnect(U* object, void (U::*callbackMethod)(T...))
+		void off(U* object, void (U::*callbackMethod)(T...))
 		{
 			std::remove_if(m_callbacks.begin(), m_callbacks.end(),
 				[object, callbackMethod](Callback* callback)
@@ -101,7 +106,7 @@ class Slot
 		}
 
 		template <typename Func>
-		void disconnect(Func callbackFunc)
+		void off(Func callbackFunc)
 		{
 			std::remove_if(m_callbacks.begin(), m_callbacks.end(),
 				[callbackFunc](Callback* callback)
@@ -120,7 +125,7 @@ class Slot
 		}
 
 		template <typename U>
-		void disconnectObject(U* object)
+		void off(U* object)
 		{
 			std::remove_if(m_callbacks.begin(), m_callbacks.end(),
 				[object](Callback* callback)
@@ -139,7 +144,7 @@ class Slot
 			);
 		}
 
-		void disconnectAll()
+		void off()
 		{
 			for (Callback* callback : m_callbacks)
 				delete callback;

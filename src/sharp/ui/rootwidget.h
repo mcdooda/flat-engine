@@ -29,7 +29,11 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void draw(const flat::util::RenderSettings& renderSettings) const override final;
 
 		void updateInput();
+
+	private:
 		void handleClick();
+		void handleMouseEnter();
+		void handleMouseLeave();
 		
 	private:
 		Game& m_game;

@@ -31,9 +31,7 @@ Widget::Widget() :
 Widget::~Widget()
 {
 	for (Widget* child : m_children)
-	{
 		FLAT_DELETE(child);
-	}
 }
 
 void Widget::setSizePolicy(SizePolicy sizePolicy)
@@ -85,7 +83,7 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 		renderSettings.textureUniform.setTexture(background);
 		renderSettings.modelMatrixUniform.setMatrix4(m_transform);
 
-		if (m_mouseOver)
+		if (m_mouseOver || !click.on())
 			renderSettings.colorUniform.setColor(video::Color::WHITE);
 		else
 			renderSettings.colorUniform.setColor(video::Color::BLACK);
@@ -155,16 +153,6 @@ bool Widget::isInside(const geometry::Vector2& point) const
 	geometry::Vector2 localPoint = invTransform * point;
 	return localPoint.x >= 0 && localPoint.x <= m_size.x
 			&& localPoint.y >= 0 && localPoint.y <= m_size.y;
-}
-
-void Widget::onMouseEnter()
-{
-	m_mouseOver = true;
-}
-
-void Widget::onMouseLeave()
-{
-	m_mouseOver = false;
 }
 
 void Widget::drawChildren(const util::RenderSettings& renderSettings) const

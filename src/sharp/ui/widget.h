@@ -27,10 +27,12 @@ namespace ui
 {
 
 class Layout;
+class RootWidget;
 
 class Widget
 {
 	friend class Layout;
+	friend class RootWidget;
 
 	public:
 		enum SizePolicy : unsigned char
@@ -138,10 +140,9 @@ class Widget
 
 		bool isInside(const geometry::Vector2& point) const;
 
-		void onMouseEnter();
-		void onMouseLeave();
-
-		Slot<Widget*, bool&> onClick;
+		Slot<Widget*, bool> click;
+		Slot<Widget*> mouseEnter;
+		Slot<Widget*> mouseLeave;
 		
 	protected:
 		void drawChildren(const util::RenderSettings& renderSettings) const;
@@ -170,7 +171,6 @@ class Widget
 		PositionPolicy m_positionPolicy;
 
 		bool m_mouseOver;
-
 
 		geometry::Matrix4 m_transform;
 		

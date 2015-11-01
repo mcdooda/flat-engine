@@ -24,8 +24,8 @@ void Game::checkArgs()
 
 void Game::openWindow()
 {
-	//video->window->open(video->window->getDesktopSize() * 3.f / 4.f, false, true);
-	video->window->open(video->window->getDesktopSize(), true, true);
+	video->window->open(video->window->getDesktopSize() * 3.f / 4.f, false, true);
+	//video->window->open(video->window->getDesktopSize(), true, true);
 }
 
 bool Game::isArg(int index)
