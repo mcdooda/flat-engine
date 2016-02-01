@@ -2,7 +2,7 @@
 #define FLAT_VIDEO_FONT_H
 
 #include <string>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 
 namespace flat
 {

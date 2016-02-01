@@ -2,7 +2,7 @@
 #define FLAT_VIDEO_TEXT_H
 
 #include <string>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include "filetexture.h"
 #include "color.h"
 #include "font.h"
