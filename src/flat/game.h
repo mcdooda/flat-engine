@@ -13,8 +13,11 @@ class Game : public Flat, public state::Agent
 		Game(const std::vector<std::string>& args);
 		~Game() override;
 		
-		void checkArgs();
-		void openWindow();
+		void init();
+		
+		virtual void setStates() = 0;
+		virtual void checkArgs();
+		virtual void openWindow();
 		
 		bool isArg(int index);
 		
@@ -34,6 +37,7 @@ class Game : public Flat, public state::Agent
 			std::vector<std::string> args;
 			args.assign(argv, argv + argc);
 			T* game = new T(args);
+			game->init();
 			game->loop();
 			delete game;
 			return 0;

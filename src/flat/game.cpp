@@ -8,13 +8,19 @@ Game::Game(const std::vector<std::string>& args) :
 	m_args(args),
 	m_stop(false)
 {
-	checkArgs();
-	openWindow();
+	
 }
 
 Game::~Game()
 {
 	
+}
+
+void Game::init()
+{
+	checkArgs();
+	openWindow();
+	setStates();
 }
 
 void Game::checkArgs()

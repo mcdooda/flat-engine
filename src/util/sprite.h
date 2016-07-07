@@ -19,7 +19,7 @@ class Sprite
 		
 		virtual Sprite* lightCopy();
 		
-		inline void setTexture(std::shared_ptr<const video::Texture> texture) { m_texture = texture; }
+		void setTexture(std::shared_ptr<const video::Texture> texture);
 		inline const video::Texture* getTexture() const { return m_texture.get(); }
 		
 		inline void setColor(const video::Color& color) { m_color = color; }
@@ -39,11 +39,16 @@ class Sprite
 		inline void setPositionY(float y) { m_position.y = y; m_modelMatrixIsDirty = true; }
 		inline const geometry::Vector2& getPosition() const { return m_position; }
 		
+		inline void setOrigin(const geometry::Vector2& origin) { m_origin = origin; m_modelMatrixIsDirty = true; }
+		inline void setOriginX(float x) { m_origin.x = x; m_modelMatrixIsDirty = true; }
+		inline void setOriginY(float y) { m_origin.y = y; m_modelMatrixIsDirty = true; }
+		inline const geometry::Vector2& getOrigin() const { return m_origin; }
+		
 		inline void moveBy(const geometry::Vector2& move) { m_position += move; m_modelMatrixIsDirty = true; }
 		
-		virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix);
+		virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const;
 		
-		void updateModelMatrix();
+		void updateModelMatrix() const;
 		inline const geometry::Matrix4& getModelMatrix() { updateModelMatrix(); return m_modelMatrix; }
 		
 	protected:
@@ -52,10 +57,11 @@ class Sprite
 		
 		geometry::Vector3 m_rotation;
 		geometry::Vector2 m_position;
+		geometry::Vector2 m_origin;
 		float m_scale;
 		
-		geometry::Matrix4 m_modelMatrix;
-		bool m_modelMatrixIsDirty : 1;
+		mutable geometry::Matrix4 m_modelMatrix;
+		mutable bool m_modelMatrixIsDirty : 1;
 		
 		bool m_isLightCopy : 1;
 };

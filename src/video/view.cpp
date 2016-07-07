@@ -41,6 +41,11 @@ void View::rotateZ(float angle)
 	m_viewMatrix.rotateZ(angle);
 }
 
+void View::revertY()
+{
+	m_viewMatrix.scale(1.f, -1.f);
+}
+
 flat::geometry::Vector2 View::getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const
 {
 	geometry::Matrix4 matrix = getViewProjectionMatrix();

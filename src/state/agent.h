@@ -14,7 +14,7 @@ class Agent
 {
 	public:
 		Agent();
-		~Agent();
+		virtual ~Agent();
 
 		inline Machine* getStateMachine() const { return m_machine; }
 
@@ -23,6 +23,13 @@ class Agent
 		{
 			FLAT_ASSERT(dynamic_cast<T*>(this));
 			return static_cast<T*>(this);
+		}
+		
+		template <class T>
+		const T* to() const
+		{
+			FLAT_ASSERT(dynamic_cast<const T*>(this));
+			return static_cast<const T*>(this);
 		}
 
 	private:

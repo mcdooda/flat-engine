@@ -392,9 +392,9 @@ std::ostream& operator<<(std::ostream& out, const Matrix4& matrix4)
 	    << std::setw(w) << matrix4.get(3, 2) << " "
 	    << std::setw(w) << matrix4.get(3, 3)
 	    << ")" << std::endl;
-	    
-    out.precision(precision);
-    
+	
+	out.precision(precision);
+	
 	return out;
 }
 

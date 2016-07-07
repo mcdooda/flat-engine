@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cassert>
 #include <csignal>
+#include <iostream>
 
 #define FLAT_BREAK() \
 	raise(SIGTRAP)

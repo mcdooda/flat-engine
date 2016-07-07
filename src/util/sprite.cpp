@@ -27,23 +27,31 @@ Sprite* Sprite::lightCopy()
 	return sprite;
 }
 
-void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
+void Sprite::setTexture(std::shared_ptr<const video::Texture> texture)
+{
+	m_texture = texture;
+	m_origin = texture->getSize() / 2.f;
+	m_modelMatrixIsDirty = true;
+}
+
+void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const
 {
 	const video::Texture* texture = getTexture();
 	renderSettings.textureUniform.setTexture(texture);
 	renderSettings.colorUniform.setColor(m_color);
 	updateModelMatrix();
 	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
-	geometry::Rectangle rectangle(texture->getSize() / -2.f, texture->getSize());
+	geometry::Rectangle rectangle(geometry::Vector2(), texture->getSize());
 	rectangle.draw(renderSettings.positionAttribute, renderSettings.uvAttribute);
 }
 
-void Sprite::updateModelMatrix()
+void Sprite::updateModelMatrix() const
 {
 	if (m_modelMatrixIsDirty)
 	{
 		m_modelMatrixIsDirty = false;
 		m_modelMatrix.setIdentity();
+		m_modelMatrix.translate(-m_origin);
 		m_modelMatrix.rotateZ(m_rotation.z);
 		m_modelMatrix.rotateY(m_rotation.y);
 		m_modelMatrix.rotateX(m_rotation.x);

@@ -31,7 +31,7 @@ Sprite* HeightMap::lightCopy()
 	return heightMap;
 }
 
-void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix)
+void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const
 {
 	const flat::video::Texture* texture = getTexture();
 	renderSettings.textureUniform.setTexture(texture);
