@@ -35,7 +35,7 @@ void RootWidget::updateInput()
 		handleMouseEnter();
 	}
 
-	if (m_game.input->mouse->isPressed(M(LEFT)))
+	if (m_game.input->mouse->isJustPressed(M(LEFT)))
 		handleClick();
 }
 

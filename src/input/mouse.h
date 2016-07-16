@@ -8,7 +8,7 @@
 #include "../video/view.h"
 
 #define M(m) SDL_BUTTON_##m
-#define NUM_BUTTONS 8
+#define NUM_BUTTONS 255
 
 namespace flat
 {

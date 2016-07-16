@@ -1,13 +1,15 @@
 #include <iostream>
 #include <cstdlib>
+#include <flat.h>
 #include "lua.h"
 
 namespace flat
 {
 namespace lua
 {
+static char gameRegistryIndex = 'G';
 
-lua_State* open()
+lua_State* open(Game* game)
 {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
@@ -19,21 +21,30 @@ lua_State* open()
 	// panic function
 	lua_atpanic(L, panic);
 	
+	// store Game in the registry
+	lua_pushlightuserdata(L, &gameRegistryIndex);
+	lua_pushlightuserdata(L, game);
+	lua_settable(L, LUA_REGISTRYINDEX);
+	
 	return L;
 }
 
 void close(lua_State* L)
 {
+	lua_pushlightuserdata(L, &gameRegistryIndex);
+	lua_pushnil(L);
+	lua_settable(L, LUA_REGISTRYINDEX);
+	
 	lua_close(L);
 }
 
-void doFile(lua_State* L, std::string fileName)
+void doFile(lua_State* L, const std::string& fileName)
 {
 	luaL_loadfile(L, fileName.c_str());
 	lua_call(L, 0, 0);
 }
 
-void loadLib(lua_State* L, std::string fileName, std::string globalName)
+void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName)
 {
 	luaL_loadfile(L, fileName.c_str());
 	lua_call(L, 0, 1);
@@ -162,8 +173,19 @@ int panic(lua_State* L)
 	std::cout << "~~~~ PANIC! ~~~~" << std::endl;
 	printStack(L);
 	std::cout << "~~~~ PANIC! ~~~~" << std::endl;
+	FLAT_BREAK();
 	exit(1);
 	return 0;
+}
+
+Game* getGame(lua_State* L)
+{
+	lua_pushlightuserdata(L, &gameRegistryIndex);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	Game* game = static_cast<Game*>(lua_touserdata(L, -1));
+	FLAT_ASSERT(game);
+	lua_pop(L, 1);
+	return game;
 }
 
 } // lua

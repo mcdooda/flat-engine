@@ -54,7 +54,7 @@ class Widget
 		
 		enum PositionPolicy : unsigned char
 		{
-		LEFT     = (1 << 0),
+			LEFT     = (1 << 0),
 			CENTER_X = (1 << 1),
 			RIGHT    = (1 << 2),
 			FLOW_X   = (1 << 3),
@@ -64,10 +64,13 @@ class Widget
 			BOTTOM   = (1 << 6),
 			FLOW_Y   = (1 << 7),
 			
-			TOP_LEFT    = LEFT | TOP,
-			CENTER      = CENTER_X | CENTER_Y,
-			COLUMN_FLOW = CENTER_X | FLOW_Y,
-			LINE_FLOW   = FLOW_X | CENTER_Y
+			TOP_LEFT     = LEFT     | TOP,
+			TOP_RIGHT    = RIGHT    | TOP,
+			BOTTOM_LEFT  = LEFT     | BOTTOM,
+			BOTTOM_RIGHT = RIGHT    | BOTTOM,
+			CENTER       = CENTER_X | CENTER_Y,
+			COLUMN_FLOW  = CENTER_X | FLOW_Y,
+			LINE_FLOW    = FLOW_X   | CENTER_Y
 		};
 		
 		typedef geometry::Vector2 Position;
@@ -108,10 +111,12 @@ class Widget
 		void setSizePolicy(SizePolicy sizePolicy);
 		void setSizePolicyX(SizePolicy sizePolicyX);
 		void setSizePolicyY(SizePolicy sizePolicyY);
+		SizePolicy getSizePolicy() const { return m_sizePolicy; }
 		inline void setSize(const Size& size) { m_size = size; }
 		inline const Size& getSize() const { return m_size; }
 		
 		void setPositionPolicy(PositionPolicy positionPolicy);
+		inline PositionPolicy getPositionPolicy() const { return m_positionPolicy; }
 		inline void setPosition(const Position& position) { m_position = position; }
 		inline const Position& getPosition() const { return m_position; }
 

@@ -81,7 +81,7 @@ class Slot
 		template <typename Func>
 		void on(Func callbackFunc)
 		{
-			FLAT_ASSERT(callbackFunc);
+			//FLAT_ASSERT(callbackFunc); // no operator! for lambdas
 			Callback* callback = new CallbackFunctionImpl<Func>(callbackFunc);
 			m_callbacks.push_back(callback);
 		}

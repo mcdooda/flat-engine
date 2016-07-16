@@ -38,6 +38,7 @@
 // ui
 #include "sharp/ui/widgetfactory.h"
 #include "sharp/ui/rootwidget.h"
+#include "sharp/ui/lua/ui.h"
 
 namespace flat
 {
