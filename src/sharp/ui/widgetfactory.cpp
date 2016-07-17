@@ -4,6 +4,7 @@
 
 #include "layouts/fixedlayout.h"
 #include "layouts/lineflowlayout.h"
+#include "layouts/columnflowlayout.h"
 
 namespace flat
 {
@@ -41,6 +42,12 @@ Widget* WidgetFactory::makeFixedSize(const geometry::Vector2& size) const
 Widget* WidgetFactory::makeLineFlow() const
 {
 	Widget* widget = new WidgetImpl<LineFlowLayout>();
+	return widget;
+}
+
+Widget* WidgetFactory::makeColumnFlow() const
+{
+	Widget* widget = new WidgetImpl<ColumnFlowLayout>();
 	return widget;
 }
 

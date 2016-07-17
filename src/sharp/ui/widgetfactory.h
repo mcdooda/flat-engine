@@ -28,6 +28,7 @@ class WidgetFactory
 		Widget* makeImage(const std::string& fileName) const;
 		Widget* makeFixedSize(const geometry::Vector2& size) const;
 		Widget* makeLineFlow() const;
+		Widget* makeColumnFlow() const;
 		
 	private:
 		Game& m_game;

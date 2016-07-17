@@ -26,15 +26,30 @@ int open(lua_State* L)
 	lua_setfield(L, -2, "__index");
 	
 	static const luaL_Reg Widget_lib_m[] = {
+		{"destroy",           l_Widget_destroy},
+		
 		{"addChild",          l_Widget_addChild},
+		{"removeChild",       l_Widget_removeChild},
+		{"removeFromParent",  l_Widget_removeFromParent},
 		
 		{"setSizePolicy",     l_Widget_setSizePolicy},
+		{"setSizePolicyX",    l_Widget_setSizePolicyX},
+		{"setSizePolicyY",    l_Widget_setSizePolicyY},
 		{"getSizePolicy",     l_Widget_getSizePolicy},
 		{"setSize",           l_Widget_setSize},
 		{"getSize",           l_Widget_getSize},
 		
 		{"setPositionPolicy", l_Widget_setPositionPolicy},
 		{"getPositionPolicy", l_Widget_getPositionPolicy},
+		
+		{"setRotation",       l_Widget_setRotation},
+		{"setRotationZ",      l_Widget_setRotationZ},
+		{"getRotation",       l_Widget_getRotation},
+		
+		{"setVisible",        l_Widget_setVisible},
+		{"getVisible",        l_Widget_isVisible},
+		{"hide",              l_Widget_hide},
+		{"show",              l_Widget_show},
 		
 		{"click",             l_Widget_click},
 		
@@ -47,11 +62,12 @@ int open(lua_State* L)
 	
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
-		{"getRoot",       l_Widget_getRoot},
+		{"getRoot",        l_Widget_getRoot},
 		
-		{"makeImage",     l_Widget_makeImage},
-		{"makeFixedSize", l_Widget_makeFixedSize},
-		{"makeLineFlow",  l_Widget_makeLineFlow},
+		{"makeImage",      l_Widget_makeImage},
+		{"makeFixedSize",  l_Widget_makeFixedSize},
+		{"makeLineFlow",   l_Widget_makeLineFlow},
+		{"makeColumnFlow", l_Widget_makeColumnFlow},
 		
 		{nullptr, nullptr}
 	};
@@ -115,11 +131,39 @@ int setRootWidget(lua_State* L, Widget* rootWidget)
 
 // Widget methods
 
+int l_Widget_destroy(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	delete widget;
+	return 0;
+}
+
 int l_Widget_addChild(lua_State* L)
 {
 	Widget* parent = getWidget(L, 1);
 	Widget* child = getWidget(L, 2);
 	parent->addChild(child);
+	// TODO: mark as dirty
+	Widget* root = getRootWidget(L);
+	root->fullLayout();
+	return 0;
+}
+
+int l_Widget_removeChild(lua_State* L)
+{
+	Widget* parent = getWidget(L, 1);
+	Widget* child = getWidget(L, 2);
+	parent->removeChild(child);
+	// TODO: mark as dirty
+	Widget* root = getRootWidget(L);
+	root->fullLayout();
+	return 0;
+}
+
+int l_Widget_removeFromParent(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	widget->removeFromParent();
 	return 0;
 }
 
@@ -128,6 +172,22 @@ int l_Widget_setSizePolicy(lua_State* L)
 	Widget* widget = getWidget(L, 1);
 	Widget::SizePolicy sizePolicy = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
 	widget->setSizePolicy(sizePolicy);
+	return 0;
+}
+
+int l_Widget_setSizePolicyX(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	Widget::SizePolicy sizePolicyX = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
+	widget->setSizePolicyX(sizePolicyX);
+	return 0;
+}
+
+int l_Widget_setSizePolicyY(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	Widget::SizePolicy sizePolicyY = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
+	widget->setSizePolicyY(sizePolicyY);
 	return 0;
 }
 
@@ -172,6 +232,64 @@ int l_Widget_getPositionPolicy(lua_State* L)
 	Widget::PositionPolicy positionPolicy = widget->getPositionPolicy();
 	lua_pushinteger(L, positionPolicy);
 	return 1;
+}
+
+int l_Widget_setRotation(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	float rotationX = luaL_checknumber(L, 2);
+	float rotationY = luaL_checknumber(L, 3);
+	float rotationZ = luaL_checknumber(L, 4);
+	widget->setRotation(Widget::Rotation(rotationX, rotationY, rotationZ));
+	return 0;
+}
+
+int l_Widget_setRotationZ(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	float rotationZ = luaL_checknumber(L, 2);
+	widget->setRotationZ(rotationZ);
+	return 0;
+}
+
+int l_Widget_getRotation(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	const Widget::Rotation& rotation = widget->getRotation();
+	lua_pushnumber(L, rotation.x);
+	lua_pushnumber(L, rotation.y);
+	lua_pushnumber(L, rotation.z);
+	return 3;
+}
+
+int l_Widget_setVisible(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	bool visible = lua_toboolean(L, 2);
+	widget->setVisible(visible);
+	return 0;
+}
+
+int l_Widget_isVisible(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	bool visible = widget->isVisible();
+	lua_pushboolean(L, visible);
+	return 1;
+}
+
+int l_Widget_hide(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	widget->hide();
+	return 0;
+}
+
+int l_Widget_show(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	widget->show();
+	return 0;
 }
 
 int l_Widget_click(lua_State* L)
@@ -226,6 +344,14 @@ int l_Widget_makeLineFlow(lua_State* L)
 {
 	WidgetFactory* widgetFactory = getWidgetFactory(L);
 	Widget* widget = widgetFactory->makeLineFlow();
+	pushWidget(L, widget);
+	return 1;
+}
+
+int l_Widget_makeColumnFlow(lua_State* L)
+{
+	WidgetFactory* widgetFactory = getWidgetFactory(L);
+	Widget* widget = widgetFactory->makeColumnFlow();
 	pushWidget(L, widget);
 	return 1;
 }

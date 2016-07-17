@@ -23,6 +23,7 @@ Widget::Widget() :
 	m_sizePolicy(SizePolicy::COMPRESS),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_mouseOver(false),
+	m_visible(true),
 	m_parent(nullptr)
 {
 	
@@ -30,8 +31,15 @@ Widget::Widget() :
 
 Widget::~Widget()
 {
+	if (m_parent)
+		removeFromParent();
+	
 	for (Widget* child : m_children)
+	{
+		// hack to avoid removing from parent while traversing m_children
+		child->m_parent = nullptr;
 		FLAT_DELETE(child);
+	}
 }
 
 void Widget::setSizePolicy(SizePolicy sizePolicy)
@@ -75,8 +83,26 @@ void Widget::addChild(Widget* widget)
 	widget->m_parent = this;
 }
 
+void Widget::removeChild(Widget* widget)
+{
+	FLAT_ASSERT(widget && widget->m_parent);
+	std::vector<Widget*>::iterator it = std::find(m_children.begin(), m_children.end(), widget);
+	FLAT_ASSERT(it != m_children.end());
+	m_children.erase(it);
+	widget->m_parent = nullptr;
+}
+
+void Widget::removeFromParent()
+{
+	FLAT_ASSERT(m_parent);
+	m_parent->removeChild(this);
+}
+
 void Widget::draw(const util::RenderSettings& renderSettings) const
 {
+	if (!m_visible)
+		return;
+		
 	const video::FileTexture* background = m_background.get();
 	if (background != nullptr)
 	{
@@ -148,6 +174,9 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 
 bool Widget::isInside(const geometry::Vector2& point) const
 {
+	if (!m_visible)
+		return false;
+	
 	geometry::Matrix4 invTransform = m_transform;
 	invTransform.setInverse();
 	geometry::Vector2 localPoint = invTransform * point;

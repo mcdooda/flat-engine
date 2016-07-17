@@ -128,7 +128,14 @@ class Widget
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
 		inline const video::FileTexture* getBackground() const { return m_background.get(); }
 		
+		inline void setVisible(bool visible) { m_visible = visible; }
+		inline bool isVisible() const { return m_visible; }
+		inline void hide() { setVisible(false); }
+		inline void show() { setVisible(true); }
+		
 		void addChild(Widget* widget);
+		void removeChild(Widget* widget);
+		void removeFromParent();
 
 		Widget* getParent() { return m_parent; }
 		const Widget* getParent() const { return m_parent; }
@@ -175,12 +182,13 @@ class Widget
 		SizePolicy m_sizePolicy;
 		PositionPolicy m_positionPolicy;
 
-		bool m_mouseOver;
+		bool m_mouseOver : 1;
+		bool m_visible : 1;
 
 		geometry::Matrix4 m_transform;
 		
 		Widget* m_parent;
-		std::vector<Widget*> m_children;
+		std::vector<Widget*> m_children; //TODO std::vector<std::shared_ptr<Widget>>
 };
 
 template <class LayoutType>
