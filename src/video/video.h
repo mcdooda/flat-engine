@@ -7,6 +7,7 @@
 #include "window.h"
 #include "color.h"
 #include "filetexture.h"
+#include "font/font.h"
 #include "../resource/resourcemanager.h"
 
 namespace flat
@@ -15,7 +16,7 @@ namespace video
 {
 class FileTexture;
 
-class Video : public resource::ResourceManager<FileTexture, std::string>
+class Video
 {
 	public:
 		Video();
@@ -26,10 +27,15 @@ class Video : public resource::ResourceManager<FileTexture, std::string>
 		void clear();
 		void setClearColor(const Color& color);
 		
-		inline std::shared_ptr<const FileTexture> getTexture(const std::string& fileName) { return getResource(fileName); }
+		inline std::shared_ptr<const FileTexture> getTexture(const std::string& fileName) { return m_textureManager.getResource(fileName); }
+		inline std::shared_ptr<const font::Font> getFont(const std::string& fileName, int size) { return m_fontManager.getResource(fileName, size); }
 
 	public:
 		Window* window;
+		
+	private:
+		resource::ResourceManager<FileTexture, std::string> m_textureManager;
+		resource::ResourceManager<font::Font, std::string, int> m_fontManager;
 };
 
 } // video

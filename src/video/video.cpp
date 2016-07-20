@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include "video.h"
-#include "text.h"
+#include "font/font.h"
 #include "../memory/memory.h"
 
 namespace flat
@@ -13,12 +13,12 @@ Video::Video()
 {
 	window = new Window;
 	Texture::open();
-	Text::open();
+	font::Font::open();
 }
 
 Video::~Video()
 {
-	Text::close();
+	font::Font::close();
 	Texture::close();
 	FLAT_DELETE(window);
 }

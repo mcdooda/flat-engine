@@ -24,6 +24,7 @@ class Uniform
 		void setFloat(float f) const;
 		void setColor(const Color& color) const;
 		void setTexture(const Texture* texture, int i = 0) const;
+		void setTexture(GLuint textureId, int i = 0) const;
 		void setVector2(const geometry::Vector2& vector2) const;
 		void setVector3(const geometry::Vector3& vector3) const;
 		void setMatrix4(const geometry::Matrix4& matrix4) const;

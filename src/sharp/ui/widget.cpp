@@ -3,7 +3,7 @@
 #include "widget.h"
 #include "../../util/rendersettings.h"
 #include "../../video/color.h"
-#include "../../video/filetexture.h"
+#include "../../video/texture.h"
 #include "../../memory/memory.h"
 
 namespace flat
@@ -103,7 +103,7 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 	if (!m_visible)
 		return;
 		
-	const video::FileTexture* background = m_background.get();
+	const video::Texture* background = m_background.get();
 	if (background != nullptr)
 	{
 		renderSettings.textureUniform.setTexture(background);

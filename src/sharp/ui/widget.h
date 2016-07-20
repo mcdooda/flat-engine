@@ -13,7 +13,7 @@ namespace flat
 {
 namespace video
 {
-class FileTexture;
+class Texture;
 }
 
 namespace util
@@ -124,9 +124,9 @@ class Widget
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; }
 		inline const Rotation& getRotation() const { return m_rotation; }
 		
-		inline void setBackground(std::shared_ptr<const video::FileTexture> background) { m_background = background; }
+		inline void setBackground(std::shared_ptr<const video::Texture> background) { m_background = background; }
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
-		inline const video::FileTexture* getBackground() const { return m_background.get(); }
+		inline const video::Texture* getBackground() const { return m_background.get(); }
 		
 		inline void setVisible(bool visible) { m_visible = visible; }
 		inline bool isVisible() const { return m_visible; }
@@ -176,7 +176,7 @@ class Widget
 		Position m_position;
 		Rotation m_rotation;
 
-		std::shared_ptr<const video::FileTexture> m_background;
+		std::shared_ptr<const video::Texture> m_background;
 		BackgroundRepeat m_backgroundRepeat;
 		
 		SizePolicy m_sizePolicy;

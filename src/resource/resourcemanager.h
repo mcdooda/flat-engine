@@ -17,6 +17,7 @@ class ResourceManager
 		typedef std::weak_ptr<const T> CacheValueType;
 		typedef std::map<CacheKeyType, CacheValueType> CacheType;
 		
+	public:
 		std::shared_ptr<const T> getResource(const U&... initializers)
 		{
 			CacheKeyType initializersTuple(initializers...);
@@ -32,6 +33,7 @@ class ResourceManager
 			return sharedResource;
 		}
 
+	protected:
 		CacheType m_loadedResources;
 };
 

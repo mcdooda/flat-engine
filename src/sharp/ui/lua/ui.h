@@ -11,6 +11,7 @@ namespace sharp
 namespace ui
 {
 class Widget;
+class TextWidget;
 class WidgetFactory;
 namespace lua
 {
@@ -47,6 +48,9 @@ int l_Widget_show(lua_State* L);
 
 int l_Widget_click(lua_State* L);
 
+// TextWidget only!
+int l_TextWidget_setText(lua_State* L);
+
 // static Widget functions
 int l_Widget_getRoot(lua_State* L);
 
@@ -54,10 +58,12 @@ int l_Widget_makeImage(lua_State* L);
 int l_Widget_makeFixedSize(lua_State* L);
 int l_Widget_makeLineFlow(lua_State* L);
 int l_Widget_makeColumnFlow(lua_State* L);
+int l_Widget_makeText(lua_State* L);
 
 // private
 Widget* getRootWidget(lua_State* L);
 Widget* getWidget(lua_State* L, int index);
+TextWidget* getTextWidget(lua_State* L, int index);
 void pushWidget(lua_State* L, Widget* widget);
 WidgetFactory* getWidgetFactory(lua_State* L);
 

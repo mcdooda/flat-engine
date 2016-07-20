@@ -40,8 +40,13 @@ void Uniform::setColor(const Color& color) const
 
 void Uniform::setTexture(const Texture* texture, int i) const
 {
+	setTexture(texture->getTextureId(), i);
+}
+
+void Uniform::setTexture(GLuint textureId, int i) const
+{
 	glActiveTexture(GL_TEXTURE0 + i);
-	glBindTexture(GL_TEXTURE_2D, texture->getTextureId());
+	glBindTexture(GL_TEXTURE_2D, textureId);
 	setInt(i);
 }
 

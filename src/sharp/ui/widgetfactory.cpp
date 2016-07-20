@@ -1,5 +1,6 @@
 #include "widgetfactory.h"
 #include "rootwidget.h"
+#include "textwidget.h"
 #include "../../flat/game.h"
 
 #include "layouts/fixedlayout.h"
@@ -48,6 +49,14 @@ Widget* WidgetFactory::makeLineFlow() const
 Widget* WidgetFactory::makeColumnFlow() const
 {
 	Widget* widget = new WidgetImpl<ColumnFlowLayout>();
+	return widget;
+}
+
+Widget* WidgetFactory::makeText(const std::string& text, const std::string& fileName, int fontSize) const
+{
+	std::shared_ptr<const video::font::Font> font = m_game.video->getFont(fileName, fontSize);
+	TextWidget* widget = new TextWidget(font);
+	widget->setText(text);
 	return widget;
 }
 

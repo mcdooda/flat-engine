@@ -3,6 +3,7 @@
 #include "../../../lua/reference.h"
 #include "../../../lua/table.h"
 #include "../widget.h"
+#include "../textwidget.h"
 #include "../widgetfactory.h"
 
 namespace flat
@@ -53,6 +54,8 @@ int open(lua_State* L)
 		
 		{"click",             l_Widget_click},
 		
+		{"setText",           l_TextWidget_setText},
+		
 		{nullptr, nullptr}
 	};
 	
@@ -68,6 +71,7 @@ int open(lua_State* L)
 		{"makeFixedSize",  l_Widget_makeFixedSize},
 		{"makeLineFlow",   l_Widget_makeLineFlow},
 		{"makeColumnFlow", l_Widget_makeColumnFlow},
+		{"makeText",       l_Widget_makeText},
 		
 		{nullptr, nullptr}
 	};
@@ -311,6 +315,14 @@ int l_Widget_click(lua_State* L)
 	return 0;
 }
 
+int l_TextWidget_setText(lua_State* L)
+{
+	TextWidget* textWidget = getTextWidget(L, 1);
+	const char* text = luaL_checkstring(L, 2);
+	textWidget->setText(text);
+	return 0;
+}
+
 // static Widget functions
 
 int l_Widget_getRoot(lua_State* L)
@@ -356,6 +368,17 @@ int l_Widget_makeColumnFlow(lua_State* L)
 	return 1;
 }
 
+int l_Widget_makeText(lua_State* L)
+{
+	const char* text = luaL_checkstring(L, 1);
+	const char* fileName = luaL_checkstring(L, 2);
+	int fontSize = luaL_checkint(L, 3);
+	WidgetFactory* widgetFactory = getWidgetFactory(L);
+	Widget* widget = widgetFactory->makeText(text, fileName, fontSize);
+	pushWidget(L, widget);
+	return 1;
+}
+
 // private
 
 Widget* getRootWidget(lua_State* L)
@@ -371,6 +394,17 @@ Widget* getRootWidget(lua_State* L)
 Widget* getWidget(lua_State* L, int index)
 {
 	return *static_cast<Widget**>(luaL_checkudata(L, index, "Flat.Widget"));
+}
+
+TextWidget* getTextWidget(lua_State* L, int index)
+{
+	Widget* widget = getWidget(L, index);
+	TextWidget* textWidget = dynamic_cast<TextWidget*>(widget);
+	if (!textWidget)
+	{
+		luaL_error(L, "TextWidget required, Widget given");
+	}
+	return textWidget;
 }
 
 void pushWidget(lua_State* L, Widget* widget)

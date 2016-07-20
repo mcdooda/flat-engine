@@ -12,6 +12,14 @@ namespace geometry
 class Vector2;
 }
 
+namespace video
+{
+namespace font
+{
+class Font;
+}
+}
+
 namespace sharp
 {
 namespace ui
@@ -29,6 +37,7 @@ class WidgetFactory
 		Widget* makeFixedSize(const geometry::Vector2& size) const;
 		Widget* makeLineFlow() const;
 		Widget* makeColumnFlow() const;
+		Widget* makeText(const std::string& text, const std::string& fileName, int fontSize) const;
 		
 	private:
 		Game& m_game;
