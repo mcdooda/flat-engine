@@ -44,6 +44,11 @@ class Sprite
 		inline void setOriginY(float y) { m_origin.y = y; m_modelMatrixIsDirty = true; }
 		inline const geometry::Vector2& getOrigin() const { return m_origin; }
 		
+		inline void setFlipX(bool flipX) { m_flipX = flipX; m_modelMatrixIsDirty = true; }
+		inline bool getFlipX() const { return m_flipX; }
+		inline void setFlipY(bool flipY) { m_flipY = flipY; m_modelMatrixIsDirty = true; }
+		inline bool getFlipY() const { return m_flipY; }
+		
 		inline void moveBy(const geometry::Vector2& move) { m_position += move; m_modelMatrixIsDirty = true; }
 		
 		virtual void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const;
@@ -60,10 +65,13 @@ class Sprite
 		geometry::Vector2 m_origin;
 		float m_scale;
 		
-		mutable geometry::Matrix4 m_modelMatrix;
-		mutable bool m_modelMatrixIsDirty : 1;
+		bool m_flipX : 1;
+		bool m_flipY : 1;
 		
 		bool m_isLightCopy : 1;
+		
+		mutable bool m_modelMatrixIsDirty : 1;
+		mutable geometry::Matrix4 m_modelMatrix;
 };
 
 } // util

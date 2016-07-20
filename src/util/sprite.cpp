@@ -9,8 +9,10 @@ namespace util
 
 Sprite::Sprite() :
 	m_scale(1.f),
-	m_modelMatrixIsDirty(true),
-	m_isLightCopy(false)
+	m_flipX(false),
+	m_flipY(false),
+	m_isLightCopy(false),
+	m_modelMatrixIsDirty(true)
 {
 	
 }
@@ -52,6 +54,9 @@ void Sprite::updateModelMatrix() const
 		m_modelMatrixIsDirty = false;
 		m_modelMatrix.setIdentity();
 		m_modelMatrix.translate(-m_origin);
+		float scaleX = m_flipX ? -1.f : 1.f;
+		float scaleY = m_flipY ? -1.f : 1.f;
+		m_modelMatrix.scale(scaleX, scaleY);
 		m_modelMatrix.rotateZ(m_rotation.z);
 		m_modelMatrix.rotateY(m_rotation.y);
 		m_modelMatrix.rotateX(m_rotation.x);
