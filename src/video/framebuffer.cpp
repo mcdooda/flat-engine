@@ -48,11 +48,12 @@ void FrameBuffer::use()
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);
 	glViewport(0, 0, m_size.x, m_size.y);
 	
-	GLenum bufferList[m_textures.size()];
-	for (unsigned int i = 0; i < m_textures.size(); i++)
+	const unsigned int numTextures = m_textures.size();
+	std::vector<GLenum> bufferList(numTextures);
+	for (unsigned int i = 0; i < numTextures; i++)
 		bufferList[i] = GL_COLOR_ATTACHMENT0 + i;
 		
-	glDrawBuffers(m_textures.size(), bufferList);
+	glDrawBuffers(numTextures, bufferList.data());
 }
 
 } // video

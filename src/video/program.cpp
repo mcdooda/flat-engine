@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <cstdlib>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <vector>
 #include <tuple>
@@ -111,10 +112,11 @@ GLuint Program::compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId)
 
 GLuint Program::compileShader(const std::string& shader, GLuint shaderType)
 {
-	const GLchar* shaderCode = readCode(shader);
+	std::string shaderCode;
+	readCode(shader, shaderCode);
 	GLuint shaderId = glCreateShader(shaderType);
-	glShaderSource(shaderId, 1, &shaderCode, nullptr);
-	delete shaderCode;
+	const GLchar* p = shaderCode.c_str();
+	glShaderSource(shaderId, 1, &p, nullptr);
 	glCompileShader(shaderId);
 	return shaderId;
 }
@@ -128,7 +130,7 @@ void Program::checkProgram(GLuint programId)
 	{
 		GLsizei infoLogLength;
 		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar message[infoLogLength];
+		GLchar message[256]; // TODO fix
 		glGetProgramInfoLog(programId, infoLogLength, nullptr, message);
 		std::cerr << "Warning: " << message << std::endl;
 		m_valid = false;
@@ -144,34 +146,28 @@ void Program::checkShader(const std::string& shaderFile, GLuint shaderId)
 	{
 		GLsizei infoLogLength;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar message[infoLogLength];
+		GLchar message[256]; // TODO fix
 		glGetShaderInfoLog(shaderId, infoLogLength, nullptr, message);
 		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message << std::endl;
 		m_valid = false;
 	}
 }
 
-const GLchar* Program::readCode(const std::string& shader)
+void Program::readCode(const std::string& shader, std::string& code)
 {
 	std::ifstream file(shader.c_str(), std::ifstream::binary);
 	if (!file.is_open())
 	{
 		std::cerr << "Warning: unable to open shader file '" << shader << "'" << std::endl;
 		m_valid = false;
-		return nullptr;
+		code = "";
 	}
-	
-	file.seekg(0, file.end);
-	int length = file.tellg();
-	file.seekg(0, file.beg);
-	
-	GLchar* code = new GLchar[length + 1];
-	file.read(code, length);
-	code[length] = '\0';
+
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	code = buffer.str();
 		
 	file.close();
-	
-	return code;
 }
 
 void Program::loadAttributes()

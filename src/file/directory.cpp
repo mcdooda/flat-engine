@@ -1,7 +1,8 @@
-#include <dirent.h>
+//#include <dirent.h>
 #include <cstring>
 #include <algorithm>
 #include "directory.h"
+#include "../debug/assert.h"
 
 namespace flat
 {
@@ -24,7 +25,7 @@ void Directory::read()
 {
 	if (!m_read)
 	{
-		dirent* entry;
+		/*dirent* entry;
 		DIR* d = opendir(m_path.c_str());
 
 		while ((entry = readdir(d)))
@@ -46,7 +47,8 @@ void Directory::read()
 			}
 		}
 
-		closedir(d);
+		closedir(d);*/
+		FLAT_ASSERT(false);
 	}
 }
 

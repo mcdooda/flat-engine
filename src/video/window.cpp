@@ -1,5 +1,6 @@
 #include <iostream>
 #include <GL/glew.h>
+#include <flat.h>
 #include "window.h"
 
 namespace flat
@@ -29,11 +30,18 @@ void Window::open(const geometry::Vector2& size, bool fullScreen, bool vsync)
 	m_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, size.x, size.y, windowFlags);
 	
 	int rendererFlags = 0;
-	
-	if (vsync)
+	if (vsync) // TODO vsync
 		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
-	
-	m_renderer = SDL_CreateRenderer(m_window, -1, rendererFlags);
+
+	SDL_GLContext glContext = SDL_GL_CreateContext(m_window);
+	if (glContext == nullptr)
+	{
+		printf("There was an error creating the OpenGL context!\n");
+		FLAT_BREAK();
+		exit(1);
+	}
+
+	SDL_GL_MakeCurrent(m_window, glContext);
 	
 	if (!glOk)
 	{
@@ -41,8 +49,6 @@ void Window::open(const geometry::Vector2& size, bool fullScreen, bool vsync)
 		initGlew();
 		initGL();
 	}
-	
-	SDL_WarpMouseInWindow(m_window, size.x / 2, size.y / 2);
 
 	m_fullScreen = fullScreen;
 	m_vsync = vsync;
@@ -50,7 +56,7 @@ void Window::open(const geometry::Vector2& size, bool fullScreen, bool vsync)
 	initSize(size);
 }
 
-void Window::setTitle(std::string title)
+void Window::setTitle(const std::string& title)
 {
 	SDL_SetWindowTitle(m_window, title.c_str());
 }
@@ -86,7 +92,7 @@ void Window::resized(const geometry::Vector2& size)
 	m_size = size;
 }
 
-geometry::Vector2 Window::getDesktopSize()
+const geometry::Vector2& Window::getDesktopSize() const
 {
 	static geometry::Vector2 desktopSize;
 	if (desktopSize.x == 0)
@@ -101,8 +107,7 @@ geometry::Vector2 Window::getDesktopSize()
 void Window::endFrame()
 {
 	glUseProgram(0);
-	glFlush();
-	SDL_RenderPresent(m_renderer);
+	SDL_GL_SwapWindow(m_window);
 }
 
 bool Window::supportsGlExtensions()
@@ -121,16 +126,21 @@ void Window::initSize(const geometry::Vector2& size)
 
 void Window::initGlew()
 {
+	glewExperimental = GL_TRUE;
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	int err = glewInit();
 	if (err != GLEW_OK)
 	{
 		std::cerr << "Fatal: glewInit failed: " << glewGetErrorString(err) << std::endl;
+		FLAT_BREAK();
 		exit(1);
 	}
 
 	if (!supportsGlExtensions())
 	{
 		std::cerr << "Fatal: Shaders not supported!" << std::endl;
+		FLAT_BREAK();
 		exit(1);
 	}
 }

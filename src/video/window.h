@@ -17,7 +17,7 @@ class Window
 		~Window();
 		
 		void open(const geometry::Vector2& size, bool fullScreen, bool vsync);
-		void setTitle(std::string title);
+		void setTitle(const std::string& title);
 
 		void toggleFullScreen();
 		
@@ -30,7 +30,7 @@ class Window
 		inline const geometry::Vector2& getSize() { return m_size; }
 		void resized(const geometry::Vector2& size);
 
-		geometry::Vector2 getDesktopSize();
+		const geometry::Vector2& getDesktopSize() const;
 		
 		void endFrame();
 		

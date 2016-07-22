@@ -40,7 +40,7 @@ class Program
 		void checkProgram(GLuint programId);
 		void checkShader(const std::string& shaderFile, GLuint shaderId);
 		
-		const GLchar* readCode(const std::string& shader);
+		void readCode(const std::string& shader, std::string& code);
 		
 		void loadAttributes();
 		void loadUniforms();

@@ -26,7 +26,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 	public:
 		RootWidget(Game& game);
 
-		void draw(const flat::util::RenderSettings& renderSettings) const override final;
+		void draw(const flat::util::RenderSettings& renderSettings) const override; // final
 
 		void updateInput();
 

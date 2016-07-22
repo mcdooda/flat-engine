@@ -4,6 +4,7 @@
 #include <cstring>
 #include "bitaccessor.h"
 #include "../debug/assert.h"
+#include "../memory/memory.h"
 
 namespace flat
 {
@@ -62,33 +63,8 @@ template <int SIZE>
 class FixedSizeArray<bool, SIZE>
 {
 	public:
-		FixedSizeArray() :
-			m_buffer(nullptr)
-		{
-			m_buffer = static_cast<char*>(malloc(getNumBytes(SIZE)));
-		}
-		
-		FixedSizeArray(const FixedSizeArray<bool, SIZE>& array)
-		{
-			size_t bytesSize = getNumBytes(SIZE);
-			m_buffer = static_cast<char*>(malloc(bytesSize));
-			memcpy(m_buffer, array.m_buffer, bytesSize);
-		}
-		
-		void operator=(const FixedSizeArray<bool, SIZE>& array)
-		{
-			if (m_buffer)
-				FLAT_FREE(m_buffer);
-				
-			size_t numBytes = getNumBytes(SIZE);
-			m_buffer = static_cast<char*>(malloc(numBytes));
-			memcpy(m_buffer, array.m_buffer, numBytes);
-		}
-		
-		~FixedSizeArray()
-		{
-			FLAT_FREE(m_buffer);
-		}
+		FixedSizeArray() {}
+		~FixedSizeArray() {}
 		
 		bool isInRange(unsigned int index) const
 		{

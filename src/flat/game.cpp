@@ -44,6 +44,7 @@ void Game::argCheckString(int index)
 	if (index < 0 || index >= (int) m_args.size())
 	{
 		std::cerr << "Argument #" << index << " must be of type string" << std::endl;
+		FLAT_BREAK();
 		exit(1);
 	}
 }
@@ -58,6 +59,7 @@ void Game::argCheckInt(int index)
 	if (index < 0 || index >= (int) m_args.size())
 	{
 		std::cerr << "Argument #" << index << " must be of type int" << std::endl;
+		FLAT_BREAK();
 		exit(1);
 	}
 }
