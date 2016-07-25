@@ -20,6 +20,7 @@ class Time final : public private_::TimerBase
 		float getFrameRate();
 		void setNoLimitFrameRate();
 		float getFrameTime();
+		float getActualFrameRate();
 
 		void sleep(float duration);
 		

@@ -30,9 +30,9 @@ protected:
 	bool m_timePaused;
 };
 
-}
-}
-}
+} // private_
+} // time
+} // flat
 
 #endif // FLAT_TIME_TIMERBASE_H
 

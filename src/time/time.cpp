@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <SDL2/SDL.h>
 #include "time.h"
 
@@ -46,6 +47,11 @@ void Time::setNoLimitFrameRate()
 float Time::getFrameTime()
 {
 	return m_timePaused ? 0.0f : m_frameTime;
+}
+
+float Time::getActualFrameRate()
+{
+	return std::min(1.f / m_frameTime, getFrameRate());
 }
 
 void Time::sleep(float duration)

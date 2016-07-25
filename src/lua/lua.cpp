@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
-#include <flat.h>
+#include "../flat.h"
+#include "../flat/game.h"
 #include "lua.h"
 
 namespace flat
@@ -186,6 +187,11 @@ Game* getGame(lua_State* L)
 	FLAT_ASSERT(game);
 	lua_pop(L, 1);
 	return game;
+}
+
+time::Time* getTime(lua_State* L)
+{
+	return getGame(L)->time;
 }
 
 } // lua

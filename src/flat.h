@@ -1,15 +1,24 @@
 #ifndef FLAT_FLAT_H
 #define FLAT_FLAT_H
 
+// single header public API
+
 #include "memory/memory.h"
 
 #include "input/input.h"
-#include "time/time.h"
-#include "video/video.h"
-#include "audio/audio.h"
-#include "random/random.h"
 
-// single header public API
+// time
+#include "time/time.h"
+#include "time/lua/time.h"
+
+// video
+#include "video/video.h"
+
+// audio
+#include "audio/audio.h"
+
+// random
+#include "random/random.h"
 
 // geometry
 #include "geometry/linesegment.h"

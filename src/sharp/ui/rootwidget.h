@@ -44,7 +44,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 } // sharp
 } // flat
 
-#endif // FLAT_SHARP_UI_WIDGET_H
+#endif // FLAT_SHARP_UI_ROOTWIDGET_H
 
 
 

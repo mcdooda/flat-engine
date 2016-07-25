@@ -7,6 +7,10 @@
 namespace flat
 {
 class Game;
+namespace time
+{
+class Time;
+}
 namespace lua
 {
 lua_State* open(Game* game);
@@ -21,6 +25,7 @@ const char* codeToString(int code);
 int panic(lua_State* L);
 
 Game* getGame(lua_State* L);
+time::Time* getTime(lua_State* L);
 
 } // lua
 } // flat
