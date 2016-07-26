@@ -41,6 +41,7 @@
 #include "lua/lua.h"
 
 // util
+#include "util/animatedsprite.h"
 #include "util/heightmap.h"
 
 // sharp

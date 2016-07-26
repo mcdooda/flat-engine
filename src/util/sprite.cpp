@@ -69,6 +69,7 @@ void Sprite::setTexture(std::shared_ptr<const video::Texture> texture)
 void Sprite::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const
 {
 	const video::Texture* texture = getTexture();
+	FLAT_ASSERT(texture);
 	renderSettings.textureUniform.setTexture(texture);
 	renderSettings.colorUniform.setColor(m_color);
 	updateModelMatrix();
