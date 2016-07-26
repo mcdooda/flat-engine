@@ -5,6 +5,7 @@
 #include "rendersettings.h"
 #include "../video/texture.h"
 #include "../geometry/vector3.h"
+#include "../containers/fixedsizearray.h"
 
 namespace flat
 {
@@ -58,6 +59,14 @@ class Sprite
 		
 	protected:
 		std::shared_ptr<const video::Texture> m_texture;
+		
+		struct Vertex
+		{
+			flat::geometry::Vector2 pos;
+			flat::geometry::Vector2 uv;
+		};
+		flat::containers::FixedSizeArray<Vertex, 4> m_vertices;
+		
 		video::Color m_color;
 		
 		geometry::Vector3 m_rotation;
