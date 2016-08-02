@@ -18,7 +18,7 @@ class ResourceManager
 		typedef std::map<CacheKeyType, CacheValueType> CacheType;
 		
 	public:
-		std::shared_ptr<const T> getResource(const U&... initializers)
+		std::shared_ptr<const T> getResource(const U&... initializers) const
 		{
 			CacheKeyType initializersTuple(initializers...);
 			typename CacheType::iterator it = m_loadedResources.find(initializersTuple);
@@ -34,7 +34,7 @@ class ResourceManager
 		}
 
 	protected:
-		CacheType m_loadedResources;
+		mutable CacheType m_loadedResources;
 };
 
 } // resource

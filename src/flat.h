@@ -39,6 +39,7 @@
 
 // lua
 #include "lua/lua.h"
+#include "lua/reference.h"
 
 // util
 #include "util/animatedsprite.h"

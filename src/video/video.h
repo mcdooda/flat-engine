@@ -27,8 +27,8 @@ class Video
 		void clear();
 		void setClearColor(const Color& color);
 		
-		inline std::shared_ptr<const FileTexture> getTexture(const std::string& fileName) { return m_textureManager.getResource(fileName); }
-		inline std::shared_ptr<const font::Font> getFont(const std::string& fileName, int size) { return m_fontManager.getResource(fileName, size); }
+		inline std::shared_ptr<const FileTexture> getTexture(const std::string& fileName) const { return m_textureManager.getResource(fileName); }
+		inline std::shared_ptr<const font::Font> getFont(const std::string& fileName, int size) const { return m_fontManager.getResource(fileName, size); }
 
 	public:
 		Window* window;

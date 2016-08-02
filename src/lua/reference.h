@@ -41,7 +41,14 @@ class SharedReference : public std::shared_ptr<Reference<LuaType>>
 {
 	typedef std::shared_ptr<Reference<LuaType>> Super;
 	public:
+		SharedReference() {}
+		
 		SharedReference(lua_State* L, int index)
+		{
+			set(L, index);
+		}
+		
+		void set(lua_State* L, int index)
 		{
 			Reference<LuaType>* reference = new Reference<LuaType>(L, index);
 			Super::reset(reference);
