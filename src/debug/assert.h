@@ -17,6 +17,9 @@
 #define FLAT_ASSERT(cond) \
 	if (!(cond)) { std::cerr << "assertion failed: " #cond "\n" << std::endl; FLAT_BREAK(); }
 
+#define FLAT_DEBUG_ONLY(code) \
+	code
+
 #else // FLAT_DEBUG
 
 #define FLAT_BREAK() \
@@ -26,6 +29,9 @@
 	{}
 
 #define FLAT_ASSERT(cond) \
+	{}
+
+#define FLAT_DEBUG_ONLY(code) \
 	{}
 
 #endif // FLAT_DEBUG

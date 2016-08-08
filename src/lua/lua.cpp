@@ -3,6 +3,7 @@
 #include "../flat.h"
 #include "../flat/game.h"
 #include "lua.h"
+#include "coroutine.h"
 
 namespace flat
 {
@@ -26,6 +27,9 @@ lua_State* open(Game* game)
 	lua_pushlightuserdata(L, &gameRegistryIndex);
 	lua_pushlightuserdata(L, game);
 	lua_settable(L, LUA_REGISTRYINDEX);
+	
+	// open coroutine C api
+	coroutine::createCoroutineShortcuts(L);
 	
 	return L;
 }

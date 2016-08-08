@@ -64,6 +64,13 @@ class SharedReference : public std::shared_ptr<Reference<LuaType>>
 			lua_rawgeti(L, LUA_REGISTRYINDEX, luaReference);
 			return L;
 		}
+		
+		inline lua_State* getLuaState() const
+		{
+			Reference<LuaType>* reference = Super::get();
+			FLAT_ASSERT(reference);
+			return reference->getLuaState();
+		}
 };
 
 } // lua
