@@ -12,10 +12,21 @@
 	raise(SIGTRAP)
 
 #define FLAT_ASSERT_MSG(cond, format, ...) \
-	if (!(cond)) { fprintf(stderr, "assertion failed: " #cond " ; " format "\n", ##__VA_ARGS__); FLAT_BREAK(); }
+	if (!(cond)) \
+	{ \
+		fprintf(stderr, "assertion failed: " #cond " ; " format "\n" \
+			"in file " __FILE__ ":" "\n", \
+			##__VA_ARGS__); \
+		FLAT_BREAK(); \
+	}
 
 #define FLAT_ASSERT(cond) \
-	if (!(cond)) { std::cerr << "assertion failed: " #cond "\n" << std::endl; FLAT_BREAK(); }
+	if (!(cond)) \
+	{ \
+		std::cerr << "assertion failed: " #cond "\n" \
+			"in file " __FILE__ ":" << std::endl; \
+		FLAT_BREAK(); \
+	}
 
 #define FLAT_DEBUG_ONLY(code) \
 	code
