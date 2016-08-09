@@ -14,6 +14,7 @@ namespace lua
 int open(lua_State* L);
 
 int l_Time_getFrameRate(lua_State* L);
+int l_Time_getTime(lua_State* L);
 
 } // lua
 } // time

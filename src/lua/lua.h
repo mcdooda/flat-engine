@@ -32,18 +32,33 @@ time::Time* getTime(lua_State* L);
 
 #ifdef FLAT_DEBUG
 
-#define FLAT_LUA_ASSERT(cond, L) \
-	if (!(cond)) { std::cerr << "assertion failed: " #cond "\n" << std::endl; flat::lua::printStack(L); FLAT_BREAK(); }
-
 #define FLAT_LUA_ASSERT_MSG(cond, L, format, ...) \
-	if (!(cond)) { fprintf(stderr, "assertion failed: " #cond " ; " format "\n", ##__VA_ARGS__); flat::lua::printStack(L); FLAT_BREAK(); }
+	if (!(cond)) \
+	{ \
+		fprintf(stderr, "assertion failed: " #cond " ; " format "\n" \
+			"in file " __FILE__ ":%d\n" \
+			"in function %s\n", \
+			##__VA_ARGS__, __LINE__, __PRETTY_FUNCTION__); \
+		flat::lua::printStack(L); \
+		FLAT_BREAK(); \
+	}
+
+#define FLAT_LUA_ASSERT(cond, L) \
+	if (!(cond)) \
+	{ \
+		std::cerr << "assertion failed: " #cond << std::endl \
+			"in file " __FILE__ ":" << __LINE__ << std::endl \
+			"in function " << __PRETTY_FUNCTION__ << std::endl; \
+		flat::lua::printStack(L); \
+		FLAT_BREAK(); \
+	}
 
 #else // FLAT_DEBUG
 
-#define FLAT_LUA_ASSERT(cond, L) \
+#define FLAT_LUA_ASSERT_MSG(cond, L, format, ...) \
 	{}
 
-#define FLAT_LUA_ASSERT_MSG(cond, L, format, ...) \
+#define FLAT_LUA_ASSERT(cond, L) \
 	{}
 
 #endif // FLAT_DEBUG
