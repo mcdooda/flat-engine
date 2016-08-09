@@ -39,6 +39,7 @@
 
 // lua
 #include "lua/lua.h"
+#include "lua/debug.h"
 #include "lua/reference.h"
 
 // util
