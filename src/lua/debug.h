@@ -44,9 +44,10 @@ class ExpectStackGrowth
 #define FLAT_LUA_ASSERT(cond, L) \
 	if (!(cond)) \
 	{ \
-		std::cerr << "assertion failed: " #cond << std::endl \
-			"in file " __FILE__ ":" << __LINE__ << std::endl \
-			"in function " << __PRETTY_FUNCTION__ << std::endl; \
+		fprintf(stderr, "assertion failed: " #cond "\n" \
+			"in file " __FILE__ ":%d\n" \
+			"in function %s\n", \
+			__LINE__, __PRETTY_FUNCTION__); \
 		flat::lua::printStack(L); \
 		FLAT_BREAK(); \
 	}

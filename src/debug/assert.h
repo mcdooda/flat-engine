@@ -6,7 +6,6 @@
 #include <cstdio>
 #include <cassert>
 #include <csignal>
-#include <iostream>
 
 #define FLAT_BREAK() \
 	raise(SIGTRAP)
@@ -15,16 +14,19 @@
 	if (!(cond)) \
 	{ \
 		fprintf(stderr, "assertion failed: " #cond " ; " format "\n" \
-			"in file " __FILE__ ":" "\n", \
-			##__VA_ARGS__); \
+			"in file " __FILE__ ":%d\n" \
+			"in function %s\n", \
+			##__VA_ARGS__, __LINE__, __PRETTY_FUNCTION__); \
 		FLAT_BREAK(); \
 	}
 
 #define FLAT_ASSERT(cond) \
 	if (!(cond)) \
 	{ \
-		std::cerr << "assertion failed: " #cond "\n" \
-			"in file " __FILE__ ":" << std::endl; \
+		fprintf(stderr, "assertion failed: " #cond "\n" \
+			"in file " __FILE__ ":%d\n" \
+			"in function %s\n", \
+			__LINE__, __PRETTY_FUNCTION__); \
 		FLAT_BREAK(); \
 	}
 
