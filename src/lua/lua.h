@@ -11,6 +11,10 @@ namespace time
 {
 class Time;
 }
+namespace input
+{
+class Input;
+}
 namespace lua
 {
 lua_State* open(Game* game);
@@ -26,6 +30,7 @@ int panic(lua_State* L);
 
 Game* getGame(lua_State* L);
 time::Time* getTime(lua_State* L);
+input::Input* getInput(lua_State* L);
 
 } // lua
 } // flat

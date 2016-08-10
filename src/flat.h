@@ -6,6 +6,7 @@
 #include "memory/memory.h"
 
 #include "input/input.h"
+#include "input/lua/mouse.h"
 
 // time
 #include "time/time.h"

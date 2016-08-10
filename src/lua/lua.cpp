@@ -194,6 +194,11 @@ time::Time* getTime(lua_State* L)
 	return getGame(L)->time;
 }
 
+input::Input* getInput(lua_State* L)
+{
+	return getGame(L)->input;
+}
+
 } // lua
 } // flat
 
