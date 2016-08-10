@@ -57,14 +57,15 @@ class Sprite
 		void updateModelMatrix() const;
 		inline const geometry::Matrix4& getModelMatrix() { updateModelMatrix(); return m_modelMatrix; }
 		
-	protected:
-		std::shared_ptr<const video::Texture> m_texture;
-		
 		struct Vertex
 		{
 			flat::geometry::Vector2 pos;
 			flat::geometry::Vector2 uv;
 		};
+		
+	protected:
+		std::shared_ptr<const video::Texture> m_texture;
+		
 		flat::containers::FixedSizeArray<Vertex, 4> m_vertices;
 		
 		video::Color m_color;
