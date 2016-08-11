@@ -41,7 +41,7 @@ void View::rotateZ(float angle)
 	m_viewMatrix.rotateZ(angle);
 }
 
-void View::revertY()
+void View::flipY()
 {
 	m_viewMatrix.scale(1.f, -1.f);
 }
@@ -51,16 +51,16 @@ flat::geometry::Vector2 View::getRelativePosition(const geometry::Vector2& windo
 	geometry::Matrix4 matrix = getViewProjectionMatrix();
 	matrix.setInverse();
 	geometry::Vector2 position = geometry::Vector2(
-		(windowPosition.x / windowSize.x) * 2 - 1,
-		(windowPosition.y / windowSize.y) * 2 - 1
+		(windowPosition.x / windowSize.x) * 2.f - 1.f,
+		(windowPosition.y / windowSize.y) * 2.f - 1.f
 	);
 	return matrix * position;
 }
 
 void View::updateProjection(const geometry::Vector2& windowSize)
 {
-	float halfWidth = windowSize.x / 2;
-	float halfHeight = windowSize.y / 2;
+	float halfWidth = windowSize.x / 2.f;
+	float halfHeight = windowSize.y / 2.f;
 	m_projectionMatrix.setOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000.0f, 1000.0f);
 }
 

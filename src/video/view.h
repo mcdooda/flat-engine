@@ -21,7 +21,7 @@ class View
 		void rotateX(float angle);
 		void rotateY(float angle);
 		void rotateZ(float angle);
-		void revertY();
+		void flipY();
 		
 		geometry::Vector2 getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const;
 
