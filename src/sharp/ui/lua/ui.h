@@ -36,6 +36,8 @@ int l_Widget_getSize(lua_State* L);
 
 int l_Widget_setPositionPolicy(lua_State* L);
 int l_Widget_getPositionPolicy(lua_State* L);
+int l_Widget_setPosition(lua_State* L);
+int l_Widget_getPosition(lua_State* L);
 
 int l_Widget_setRotation(lua_State* L);
 int l_Widget_setRotationZ(lua_State* L);

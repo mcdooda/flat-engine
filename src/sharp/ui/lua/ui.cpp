@@ -42,6 +42,8 @@ int open(lua_State* L)
 		
 		{"setPositionPolicy", l_Widget_setPositionPolicy},
 		{"getPositionPolicy", l_Widget_getPositionPolicy},
+		{"setPosition",       l_Widget_setPosition},
+		{"getPosition",       l_Widget_getPosition},
 		
 		{"setRotation",       l_Widget_setRotation},
 		{"setRotationZ",      l_Widget_setRotationZ},
@@ -236,6 +238,28 @@ int l_Widget_getPositionPolicy(lua_State* L)
 	Widget::PositionPolicy positionPolicy = widget->getPositionPolicy();
 	lua_pushinteger(L, positionPolicy);
 	return 1;
+}
+
+int l_Widget_setPosition(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	int x = luaL_checkint(L, 2);
+	int y = luaL_checkint(L, 3);
+	Widget::Position position(x, y);
+	widget->setPosition(position);
+	// TODO: mark as dirty
+	Widget* root = getRootWidget(L);
+	root->fullLayout();
+	return 0;
+}
+
+int l_Widget_getPosition(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	const Widget::Position& position = widget->getPosition();
+	lua_pushinteger(L, position.x);
+	lua_pushinteger(L, position.y);
+	return 2;
 }
 
 int l_Widget_setRotation(lua_State* L)
