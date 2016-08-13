@@ -12,7 +12,9 @@ AnimatedSprite::AnimatedSprite() : Sprite(),
 	m_currentColumn(0),
 	m_lastUpdateTime(0.f),
 	m_frameDuration(1.f),
-	m_animated(true)
+	m_numFrames(1),
+	m_animated(false),
+	m_animationStarted(false)
 {
 	
 }
@@ -77,14 +79,45 @@ void AnimatedSprite::setColumn(int column)
 	m_vertices[3].uv.x = uvx0;
 }
 
+void AnimatedSprite::playAnimation(int line, int numFrames, float frameDuration, int numLoops)
+{
+	setLine(line);
+	setColumn(0);
+	FLAT_ASSERT(numFrames <= getAtlasWidth());
+	setNumFrames(numFrames);
+	setFrameDuration(frameDuration);
+	setNumLoops(numLoops);
+	setAnimated(true);
+	m_animationStarted = false;
+}
+
 void AnimatedSprite::update(float currentTime)
 {
 	if (m_animated)
 	{
+		if (!m_animationStarted)
+		{
+			m_animationStarted = true;
+			m_lastUpdateTime = currentTime;
+		}
+		
 		if (currentTime - m_lastUpdateTime > m_frameDuration)
 		{
-			int atlasWidth = getAtlasWidth();
-			setColumn((m_currentColumn + 1) % atlasWidth);
+			int nextColumn = m_currentColumn + 1;
+			if (nextColumn >= m_numFrames)
+			{
+				nextColumn = 0;
+				if (m_numLoops != INFINITE_LOOP)
+				{
+					--m_numLoops;
+					if (m_numLoops == 0)
+					{
+						nextColumn = m_currentColumn;
+						setAnimated(false);
+					}
+				}
+			}
+			setColumn(nextColumn);
 			m_lastUpdateTime += m_frameDuration;
 		}
 	}
