@@ -44,8 +44,7 @@
 #define FLAT_ASSERT(cond) \
 	{}
 
-#define FLAT_DEBUG_ONLY(code) \
-	{}
+#define FLAT_DEBUG_ONLY(code)
 
 #endif // FLAT_DEBUG
 
