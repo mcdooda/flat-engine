@@ -41,6 +41,9 @@ bool Mouse::isJustReleased(int button)
 void Mouse::clearEvents()
 {
 	m_moved = false;
+	m_wheelMoved = false;
+	m_wheelMove.x = 0.f;
+	m_wheelMove.y = 0.f;
 	m_justPressedButtons.memset(0);
 	m_justReleasedButtons.memset(0);
 }
@@ -65,6 +68,12 @@ void Mouse::addEvent(const SDL_Event& e)
 		m_position.x = e.button.x;
 		m_position.y = m_videoWindow->getSize().y - e.button.y;
 		m_moved = true;
+		break;
+		
+		case SDL_MOUSEWHEEL:
+		m_wheelMove.x = e.wheel.x;
+		m_wheelMove.y = e.wheel.y;
+		m_wheelMoved = true;
 		break;
 	}
 }

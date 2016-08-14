@@ -26,8 +26,10 @@ class Mouse
 		bool isJustReleased(int button);
 
 		inline bool justMoved() const { return m_moved; }
-
 		inline const geometry::Vector2& getPosition() const { return m_position; }
+		
+		inline bool wheelJustMoved() const { return m_wheelMoved; }
+		inline const geometry::Vector2& getWheelMove() const { return m_wheelMove; }
 
 		void clearEvents();
 		void addEvent(const SDL_Event& e);
@@ -39,7 +41,9 @@ class Mouse
 		video::Window* const m_videoWindow;
 
 		geometry::Vector2 m_position;
-		bool m_moved;
+		geometry::Vector2 m_wheelMove;
+		bool m_moved : 1;
+		bool m_wheelMoved : 1;
 };
 
 } // input
