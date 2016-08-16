@@ -96,7 +96,7 @@ class Widget
 
 		typedef geometry::Vector3 Rotation;
 
-		enum class BackgroundRepeat
+		enum BackgroundRepeat : unsigned char
 		{
 			SCALED,
 			REPEAT

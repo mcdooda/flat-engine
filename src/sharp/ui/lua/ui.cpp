@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "../../../flat/game.h"
 #include "../../../lua/lua.h"
 #include "../../../lua/reference.h"
 #include "../../../lua/table.h"
@@ -27,36 +28,39 @@ int open(lua_State* L)
 	lua_setfield(L, -2, "__index");
 	
 	static const luaL_Reg Widget_lib_m[] = {
-		{"destroy",           l_Widget_destroy},
+		{"destroy",             l_Widget_destroy},
 		
-		{"addChild",          l_Widget_addChild},
-		{"removeChild",       l_Widget_removeChild},
-		{"removeFromParent",  l_Widget_removeFromParent},
+		{"addChild",            l_Widget_addChild},
+		{"removeChild",         l_Widget_removeChild},
+		{"removeFromParent",    l_Widget_removeFromParent},
 		
-		{"setSizePolicy",     l_Widget_setSizePolicy},
-		{"setSizePolicyX",    l_Widget_setSizePolicyX},
-		{"setSizePolicyY",    l_Widget_setSizePolicyY},
-		{"getSizePolicy",     l_Widget_getSizePolicy},
-		{"setSize",           l_Widget_setSize},
-		{"getSize",           l_Widget_getSize},
+		{"setSizePolicy",       l_Widget_setSizePolicy},
+		{"setSizePolicyX",      l_Widget_setSizePolicyX},
+		{"setSizePolicyY",      l_Widget_setSizePolicyY},
+		{"getSizePolicy",       l_Widget_getSizePolicy},
+		{"setSize",             l_Widget_setSize},
+		{"getSize",             l_Widget_getSize},
 		
-		{"setPositionPolicy", l_Widget_setPositionPolicy},
-		{"getPositionPolicy", l_Widget_getPositionPolicy},
-		{"setPosition",       l_Widget_setPosition},
-		{"getPosition",       l_Widget_getPosition},
+		{"setPositionPolicy",   l_Widget_setPositionPolicy},
+		{"getPositionPolicy",   l_Widget_getPositionPolicy},
+		{"setPosition",         l_Widget_setPosition},
+		{"getPosition",         l_Widget_getPosition},
 		
-		{"setRotation",       l_Widget_setRotation},
-		{"setRotationZ",      l_Widget_setRotationZ},
-		{"getRotation",       l_Widget_getRotation},
+		{"setRotation",         l_Widget_setRotation},
+		{"setRotationZ",        l_Widget_setRotationZ},
+		{"getRotation",         l_Widget_getRotation},
 		
-		{"setVisible",        l_Widget_setVisible},
-		{"getVisible",        l_Widget_isVisible},
-		{"hide",              l_Widget_hide},
-		{"show",              l_Widget_show},
+		{"setBackground",       l_Widget_setBackground},
+		{"setBackgroundRepeat", l_Widget_setBackgroundRepeat},
 		
-		{"click",             l_Widget_click},
+		{"setVisible",          l_Widget_setVisible},
+		{"getVisible",          l_Widget_isVisible},
+		{"hide",                l_Widget_hide},
+		{"show",                l_Widget_show},
 		
-		{"setText",           l_TextWidget_setText},
+		{"click",               l_Widget_click},
+		
+		{"setText",             l_TextWidget_setText},
 		
 		{nullptr, nullptr}
 	};
@@ -103,6 +107,16 @@ int open(lua_State* L)
 		{nullptr, 0},
 	};
 	flat::lua::table::pushTable(L, positionPolicyTable);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "BackgroundRepeat");
+	const flat::lua::table::KeyValuePair<int> backgroundRepeatTable[] = {
+		{ "SCALED", Widget::BackgroundRepeat::SCALED },
+		{ "REPEAT", Widget::BackgroundRepeat::REPEAT },
+
+		{ nullptr, 0 },
+	};
+	flat::lua::table::pushTable(L, backgroundRepeatTable);
 	lua_settable(L, -3);
 	
 	lua_setglobal(L, "Widget");
@@ -288,6 +302,24 @@ int l_Widget_getRotation(lua_State* L)
 	lua_pushnumber(L, rotation.y);
 	lua_pushnumber(L, rotation.z);
 	return 3;
+}
+
+int l_Widget_setBackground(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	const char* backgroundFileName = luaL_checkstring(L, 2);
+	Game* game = flat::lua::getGame(L);
+	std::shared_ptr<const flat::video::FileTexture> background = game->video->getTexture(backgroundFileName);
+	widget->setBackground(background);
+	return 0;
+}
+
+int l_Widget_setBackgroundRepeat(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	Widget::BackgroundRepeat backgroundRepeat = static_cast<Widget::BackgroundRepeat>(luaL_checkint(L, 2));
+	widget->setBackgroundRepeat(backgroundRepeat);
+	return 0;
 }
 
 int l_Widget_setVisible(lua_State* L)
