@@ -45,6 +45,7 @@ int l_Widget_getRotation(lua_State* L);
 
 int l_Widget_setBackground(lua_State* L);
 int l_Widget_setBackgroundRepeat(lua_State* L);
+int l_Widget_setBackgroundColor(lua_State* L);
 
 int l_Widget_setVisible(lua_State* L);
 int l_Widget_isVisible(lua_State* L);

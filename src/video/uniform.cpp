@@ -23,6 +23,11 @@ Uniform::~Uniform()
 	
 }
 
+void Uniform::setBool(bool b) const
+{
+	glUniform1i(m_uniformLocation, b);
+}
+
 void Uniform::setInt(int i) const
 {
 	glUniform1i(m_uniformLocation, i);

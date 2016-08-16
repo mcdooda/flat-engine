@@ -28,10 +28,8 @@ void TextWidget::draw(const util::RenderSettings& renderSettings) const
 	renderSettings.textureUniform.setTexture(getFont()->getAtlasId());
 	renderSettings.modelMatrixUniform.setMatrix4(m_transform);
 	
-	if (m_mouseOver || !click.on())
-		renderSettings.colorUniform.setColor(video::Color::WHITE);
-	else
-		renderSettings.colorUniform.setColor(video::Color::BLACK);
+	renderSettings.colorUniform.setColor(video::Color::WHITE);
+	renderSettings.textureGivenUniform.setBool(true);
 	
 	glEnableVertexAttribArray(renderSettings.positionAttribute);
 	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const float*>(&(getVertices()[0])));

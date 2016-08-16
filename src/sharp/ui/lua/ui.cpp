@@ -52,6 +52,7 @@ int open(lua_State* L)
 		
 		{"setBackground",       l_Widget_setBackground},
 		{"setBackgroundRepeat", l_Widget_setBackgroundRepeat},
+		{"setBackgroundColor",  l_Widget_setBackgroundColor},
 		
 		{"setVisible",          l_Widget_setVisible},
 		{"getVisible",          l_Widget_isVisible},
@@ -319,6 +320,20 @@ int l_Widget_setBackgroundRepeat(lua_State* L)
 	Widget* widget = getWidget(L, 1);
 	Widget::BackgroundRepeat backgroundRepeat = static_cast<Widget::BackgroundRepeat>(luaL_checkint(L, 2));
 	widget->setBackgroundRepeat(backgroundRepeat);
+	return 0;
+}
+
+int l_Widget_setBackgroundColor(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	uint32_t color = luaL_checkint(L, 2);
+	float r = static_cast<float>((color >> 24) & 0xFF) / 255.f;
+	float g = static_cast<float>((color >> 16) & 0xFF) / 255.f;
+	float b = static_cast<float>((color >> 8 ) & 0xFF) / 255.f;
+	float a = static_cast<float>((color >> 0 ) & 0xFF) / 255.f;
+	flat::video::Color backgroundColor(r, g, b, a);
+	std::cout << "0x" << std::hex << color << std::dec << " = (" << r << "," << g << "," << b << "," << a << ")" << std::endl;
+	widget->setBackgroundColor(backgroundColor);
 	return 0;
 }
 

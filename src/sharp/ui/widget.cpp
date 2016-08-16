@@ -20,6 +20,7 @@ Widget::Widget() :
 	m_position(0.f, 0.f),
 	m_rotation(0.f, 0.f, 0.f),
 	m_backgroundRepeat(BackgroundRepeat::SCALED),
+	m_backgroundColor(0.f, 0.f, 0.f, 0.f),
 	m_sizePolicy(SizePolicy::COMPRESS),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_mouseOver(false),
@@ -104,15 +105,25 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 		return;
 		
 	const video::Texture* background = m_background.get();
-	if (background != nullptr)
+	if (background != nullptr || m_backgroundColor.getA() > 0.f)
 	{
-		renderSettings.textureUniform.setTexture(background);
+		if (background != nullptr)
+		{
+			renderSettings.textureUniform.setTexture(background);
+			renderSettings.textureGivenUniform.setBool(true);
+		}
+		else
+		{
+			renderSettings.textureGivenUniform.setBool(false);
+		}
 		renderSettings.modelMatrixUniform.setMatrix4(m_transform);
 
-		if (m_mouseOver || !click.on())
-			renderSettings.colorUniform.setColor(video::Color::WHITE);
+		renderSettings.colorUniform.setColor(m_backgroundColor);
+
+		if (!m_mouseOver || !click.on())
+			renderSettings.secondaryColorUniform.setColor(video::Color::BLACK);
 		else
-			renderSettings.colorUniform.setColor(video::Color::BLACK);
+			renderSettings.secondaryColorUniform.setColor(video::Color::WHITE);
 
 		// enable vertex attrib array
 		// position
@@ -126,47 +137,52 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 		glEnableVertexAttribArray(renderSettings.positionAttribute);
 		glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, position);
 
-		// uv
-		const float* uv = nullptr;
-
-		// TODO compute during layout...
-		const float repeatUv[] = {
-			0.0f, m_size.y / background->getSize().y,
-			m_size.x / background->getSize().x, m_size.y / background->getSize().y,
-			m_size.x / background->getSize().x, 0.0f,
-			0.0f, 0.0f
-		};
-
-		static const float scaledUv[] = {
-			0.0f, 1.0f,
-			1.0f, 1.0f,
-			1.0f, 0.0f,
-			0.0f, 0.0f
-		};
-
-		if (m_backgroundRepeat == BackgroundRepeat::REPEAT)
+		if (background != nullptr)
 		{
-			uv = repeatUv;
-		}
-		else if (m_backgroundRepeat == BackgroundRepeat::SCALED)
-		{
-			uv = scaledUv;
-		}
-		else
-		{
-			FLAT_ASSERT(false);
-		}
+			// uv
+			const float* uv = nullptr;
 
-		glEnableVertexAttribArray(renderSettings.uvAttribute);
-		glVertexAttribPointer(renderSettings.uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, uv);
+			// TODO compute during layout...
+			const float repeatUv[] = {
+				0.0f, m_size.y / background->getSize().y,
+				m_size.x / background->getSize().x, m_size.y / background->getSize().y,
+				m_size.x / background->getSize().x, 0.0f,
+				0.0f, 0.0f
+			};
+
+			static const float scaledUv[] = {
+				0.0f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.0f,
+				0.0f, 0.0f
+			};
+
+			if (m_backgroundRepeat == BackgroundRepeat::REPEAT)
+			{
+				uv = repeatUv;
+			}
+			else if (m_backgroundRepeat == BackgroundRepeat::SCALED)
+			{
+				uv = scaledUv;
+			}
+			else
+			{
+				FLAT_ASSERT(false);
+			}
+
+			glEnableVertexAttribArray(renderSettings.uvAttribute);
+			glVertexAttribPointer(renderSettings.uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, uv);
+		}
 
 		// draw
 		glDrawArrays(GL_QUADS, 0, 4);
 
 		// disable vertex attrib array
 		glDisableVertexAttribArray(renderSettings.positionAttribute);
-		glDisableVertexAttribArray(renderSettings.uvAttribute);
-
+		if (background != nullptr)
+		{
+			glDisableVertexAttribArray(renderSettings.uvAttribute);
+		}
 	}
 
 	drawChildren(renderSettings);

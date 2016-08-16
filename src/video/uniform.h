@@ -20,6 +20,7 @@ class Uniform
 		
 		inline bool isValid() const { return m_uniformLocation != 0; }
 		
+		void setBool(bool b) const;
 		void setInt(int i) const;
 		void setFloat(float f) const;
 		void setColor(const Color& color) const;

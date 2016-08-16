@@ -7,6 +7,7 @@
 #include "../../geometry/vector2.h"
 #include "../../geometry/matrix4.h"
 #include "../../video/attribute.h"
+#include "../../video/color.h"
 #include "../../misc/slot.h"
 
 namespace flat
@@ -124,9 +125,12 @@ class Widget
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; }
 		inline const Rotation& getRotation() const { return m_rotation; }
 		
-		inline void setBackground(std::shared_ptr<const video::Texture> background) { m_background = background; }
+		inline void setBackground(std::shared_ptr<const video::Texture> background) { m_background = background; setBackgroundColor(flat::video::Color::WHITE); }
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
 		inline const video::Texture* getBackground() const { return m_background.get(); }
+
+		inline void setBackgroundColor(const flat::video::Color& backgroundColor) { m_backgroundColor = backgroundColor; }
+		inline const flat::video::Color& getBackgroundColor() const { return m_backgroundColor; }
 		
 		inline void setVisible(bool visible) { m_visible = visible; }
 		inline bool isVisible() const { return m_visible; }
@@ -178,6 +182,7 @@ class Widget
 
 		std::shared_ptr<const video::Texture> m_background;
 		BackgroundRepeat m_backgroundRepeat;
+		flat::video::Color m_backgroundColor;
 		
 		SizePolicy m_sizePolicy;
 		PositionPolicy m_positionPolicy;
