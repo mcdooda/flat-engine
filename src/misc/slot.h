@@ -70,11 +70,15 @@ class Slot
 			return !m_callbacks.empty();
 		}
 
-		template <typename U>
-		void on(U* object, void (std::remove_const<U>::type::*callbackMethod)(T...))
+		// VS 2015 does not see this function this way
+		//template <typename U>
+		//void on(U* object, void (std::remove_const<U>::type::*callbackMethod)(T...))
+		template <typename PointerType, typename MethodType>
+		void on(PointerType* object, MethodType callbackMethod)
 		{
+			static_assert(std::is_same<MethodType, void (std::remove_const<PointerType>::type::*)(T...)>::value, "");
 			FLAT_ASSERT(object && callbackMethod);
-			Callback* callback = new CallbackMethodImpl<U>(object, callbackMethod);
+			Callback* callback = new CallbackMethodImpl<PointerType>(object, callbackMethod);
 			m_callbacks.push_back(callback);
 		}
 
