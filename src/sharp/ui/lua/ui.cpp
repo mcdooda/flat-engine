@@ -332,7 +332,6 @@ int l_Widget_setBackgroundColor(lua_State* L)
 	float b = static_cast<float>((color >> 8 ) & 0xFF) / 255.f;
 	float a = static_cast<float>((color >> 0 ) & 0xFF) / 255.f;
 	flat::video::Color backgroundColor(r, g, b, a);
-	std::cout << "0x" << std::hex << color << std::dec << " = (" << r << "," << g << "," << b << "," << a << ")" << std::endl;
 	widget->setBackgroundColor(backgroundColor);
 	return 0;
 }
