@@ -29,6 +29,7 @@ void TextWidget::draw(const util::RenderSettings& renderSettings) const
 	renderSettings.modelMatrixUniform.setMatrix4(m_transform);
 	
 	renderSettings.colorUniform.setColor(video::Color::WHITE);
+	renderSettings.secondaryColorUniform.setColor(video::Color::BLACK);
 	renderSettings.textureGivenUniform.setBool(true);
 	
 	glEnableVertexAttribArray(renderSettings.positionAttribute);
