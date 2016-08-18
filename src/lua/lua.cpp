@@ -52,6 +52,16 @@ void loadLib(lua_State* L, const std::string& fileName, const std::string& globa
 	lua_setglobal(L, globalName.c_str());
 }
 
+lua_State* getMainThread(lua_State* L)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_MAINTHREAD);
+	luaL_checktype(L, -1, LUA_TTHREAD);
+	lua_State* mainThread = lua_tothread(L, -1);
+	lua_pop(L, 1);
+	return mainThread;
+}
+
 void printStack(lua_State* L)
 {
 	std::cout << "--- Lua Debug (" << L << ") ==========" << std::endl;

@@ -23,6 +23,8 @@ void close(lua_State* L);
 void doFile(lua_State* L, const std::string& fileName);
 void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName);
 
+lua_State* getMainThread(lua_State* L);
+
 void printStack(lua_State* L);
 const char* codeToString(int code);
 

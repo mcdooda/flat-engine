@@ -370,11 +370,14 @@ int l_Widget_click(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
+	lua_State* mainThread = flat::lua::getMainThread(L);
+	flat::lua::SharedReference<LUA_TFUNCTION> ref(mainThread, 2);
 	widget->click.on(
 		[ref](Widget* w, bool& eventHandled)
 		{
-			lua_State* L = ref.push(); // TODO WRONG LUA STATE
+			lua_State* L = ref.getLuaState();
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			ref.push(L);
 			luaL_checktype(L, -1, LUA_TFUNCTION);
 			pushWidget(L, w);
 			lua_call(L, 1, 1);
