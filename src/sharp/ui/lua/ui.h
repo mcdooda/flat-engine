@@ -53,6 +53,8 @@ int l_Widget_hide(lua_State* L);
 int l_Widget_show(lua_State* L);
 
 int l_Widget_click(lua_State* L);
+int l_Widget_mouseEnter(lua_State* L);
+int l_Widget_mouseLeave(lua_State* L);
 
 // TextWidget only!
 int l_TextWidget_setText(lua_State* L);

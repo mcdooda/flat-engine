@@ -60,6 +60,8 @@ int open(lua_State* L)
 		{"show",                l_Widget_show},
 		
 		{"click",               l_Widget_click},
+		{"mouseEnter",          l_Widget_mouseEnter},
+		{"mouseLeave",          l_Widget_mouseLeave},
 		
 		{"setText",             l_TextWidget_setText},
 		
@@ -370,12 +372,11 @@ int l_Widget_click(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	lua_State* mainThread = flat::lua::getMainThread(L);
-	flat::lua::SharedReference<LUA_TFUNCTION> ref(mainThread, 2);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
 	widget->click.on(
-		[ref](Widget* w, bool& eventHandled)
+		[L, ref](Widget* w, bool& eventHandled)
 		{
-			lua_State* L = ref.getLuaState();
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			ref.push(L);
 			luaL_checktype(L, -1, LUA_TFUNCTION);
@@ -383,6 +384,44 @@ int l_Widget_click(lua_State* L)
 			lua_call(L, 1, 1);
 			eventHandled |= lua_toboolean(L, -1);
 			lua_pop(L, 1);
+		}
+	);
+	return 0;
+}
+
+int l_Widget_mouseEnter(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
+	widget->mouseEnter.on(
+		[L, ref](Widget* w)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			ref.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w);
+			lua_call(L, 1, 0);
+		}
+	);
+	return 0;
+}
+
+int l_Widget_mouseLeave(lua_State* L)
+{
+	Widget* widget = getWidget(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
+	widget->mouseLeave.on(
+		[L, ref](Widget* w)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			ref.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w);
+			lua_call(L, 1, 0);
 		}
 	);
 	return 0;
