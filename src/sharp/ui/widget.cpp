@@ -105,7 +105,7 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 		return;
 		
 	const video::Texture* background = m_background.get();
-	if (background != nullptr || m_backgroundColor.getA() > 0.f)
+	if (background != nullptr || m_backgroundColor.a > 0.f)
 	{
 		if (background != nullptr)
 		{

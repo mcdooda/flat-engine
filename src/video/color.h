@@ -13,20 +13,10 @@ class Color
 	public:
 		typedef GLfloat AttributeType;
 		
-		Color();
-		Color(const Color& color);
-		Color(AttributeType r, AttributeType g, AttributeType b, AttributeType a);
-		explicit Color(AttributeType gray);
-
-		inline AttributeType getR() const { return m_r; }
-		inline AttributeType getG() const { return m_g; }
-		inline AttributeType getB() const { return m_b; }
-		inline AttributeType getA() const { return m_a; }
-
-		inline void setR(AttributeType r) { m_r = r; }
-		inline void setG(AttributeType g) { m_g = g; }
-		inline void setB(AttributeType b) { m_b = b; }
-		inline void setA(AttributeType a) { m_a = a; }
+		Color() : r(1.f), g(1.f), b(1.f), a(1.f) {}
+		Color(const Color& color) : r(color.r), g(color.g), b(color.b), a(color.a) {}
+		Color(AttributeType r, AttributeType g, AttributeType b, AttributeType a) : r(r), g(g), b(b), a(a) {}
+		explicit Color(AttributeType gray) : r(gray), g(gray), b(gray), a(1.f) {}
 		
 		static Color WHITE;
 		static Color BLACK;
@@ -34,11 +24,11 @@ class Color
 		static Color GREEN;
 		static Color BLUE;
 
-	protected:
-		AttributeType m_r;
-		AttributeType m_g;
-		AttributeType m_b;
-		AttributeType m_a;
+	public:
+		AttributeType r;
+		AttributeType g;
+		AttributeType b;
+		AttributeType a;
 };
 
 } // video

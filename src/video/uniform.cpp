@@ -40,7 +40,7 @@ void Uniform::setFloat(float f) const
 
 void Uniform::setColor(const Color& color) const
 {
-	glUniform4f(m_uniformLocation, color.getR(), color.getG(), color.getB(), color.getA());
+	glUniform4f(m_uniformLocation, color.r, color.g, color.b, color.a);
 }
 
 void Uniform::setTexture(const Texture* texture, int i) const

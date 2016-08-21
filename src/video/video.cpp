@@ -35,7 +35,7 @@ void Video::clear()
 
 void Video::setClearColor(const Color& color)
 {
-	glClearColor(color.getR(), color.getG(), color.getB(), color.getA());
+	glClearColor(color.r, color.g, color.b, color.a);
 }
 
 } // video
