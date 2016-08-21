@@ -13,6 +13,7 @@ static char gameRegistryIndex = 'G';
 lua_State* open(Game* game)
 {
 	lua_State* L = luaL_newstate();
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	luaL_openlibs(L);
 	
 	// remove os lib
@@ -23,30 +24,30 @@ lua_State* open(Game* game)
 	lua_atpanic(L, panic);
 	
 	// store Game in the registry
-	lua_pushlightuserdata(L, &gameRegistryIndex);
 	lua_pushlightuserdata(L, game);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	
 	return L;
 }
 
 void close(lua_State* L)
 {
-	lua_pushlightuserdata(L, &gameRegistryIndex);
 	lua_pushnil(L);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	
 	lua_close(L);
 }
 
 void doFile(lua_State* L, const std::string& fileName)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	luaL_loadfile(L, fileName.c_str());
 	lua_call(L, 0, 0);
 }
 
 void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	luaL_loadfile(L, fileName.c_str());
 	lua_call(L, 0, 1);
 	lua_setglobal(L, globalName.c_str());
@@ -191,8 +192,8 @@ int panic(lua_State* L)
 
 Game* getGame(lua_State* L)
 {
-	lua_pushlightuserdata(L, &gameRegistryIndex);
-	lua_gettable(L, LUA_REGISTRYINDEX);
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_rawgetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	Game* game = static_cast<Game*>(lua_touserdata(L, -1));
 	FLAT_ASSERT(game);
 	lua_pop(L, 1);

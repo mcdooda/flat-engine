@@ -21,6 +21,8 @@ static char rootWidgetRegistryIndex = 'R';
 
 int open(lua_State* L)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	
 	// Widget metatable
 	luaL_newmetatable(L, "Flat.Widget");
 	// mt.__index = mt
@@ -127,28 +129,26 @@ int open(lua_State* L)
 	// TODO actual full userdata with __gc for WidgetFactory
 	Game* game = flat::lua::getGame(L);
 	WidgetFactory* widgetFactory = new WidgetFactory(*game);
-	lua_pushlightuserdata(L, &widgetFactoryRegistryIndex);
 	lua_pushlightuserdata(L, widgetFactory);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	
 	return 0;
 }
 
 int close(lua_State* L)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	WidgetFactory* widgetFactory = getWidgetFactory(L);
 	delete widgetFactory;
-	lua_pushlightuserdata(L, &widgetFactoryRegistryIndex);
 	lua_pushnil(L);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	return 0;
 }
 
 int setRootWidget(lua_State* L, Widget* rootWidget)
 {
-	lua_pushlightuserdata(L, &rootWidgetRegistryIndex);
 	lua_pushlightuserdata(L, rootWidget);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	return 0;
 }
 
@@ -495,8 +495,8 @@ int l_Widget_makeText(lua_State* L)
 
 Widget* getRootWidget(lua_State* L)
 {
-	lua_pushlightuserdata(L, &rootWidgetRegistryIndex);
-	lua_gettable(L, LUA_REGISTRYINDEX);
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_rawgetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	Widget* rootWidget = static_cast<Widget*>(lua_touserdata(L, -1));
 	FLAT_ASSERT(rootWidget);
 	lua_pop(L, 1);
@@ -505,11 +505,13 @@ Widget* getRootWidget(lua_State* L)
 
 Widget* getWidget(lua_State* L, int index)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	return *static_cast<Widget**>(luaL_checkudata(L, index, "Flat.Widget"));
 }
 
 TextWidget* getTextWidget(lua_State* L, int index)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	Widget* widget = getWidget(L, index);
 	TextWidget* textWidget = dynamic_cast<TextWidget*>(widget);
 	if (!textWidget)
@@ -521,6 +523,7 @@ TextWidget* getTextWidget(lua_State* L, int index)
 
 void pushWidget(lua_State* L, Widget* widget)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
 	if (widget != nullptr)
 	{
 		Widget** widgetPointer = static_cast<Widget**>(lua_newuserdata(L, sizeof(Widget*)));
@@ -536,8 +539,8 @@ void pushWidget(lua_State* L, Widget* widget)
 
 WidgetFactory* getWidgetFactory(lua_State* L)
 {
-	lua_pushlightuserdata(L, &widgetFactoryRegistryIndex);
-	lua_gettable(L, LUA_REGISTRYINDEX);
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_rawgetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	WidgetFactory* widgetFactory = static_cast<WidgetFactory*>(lua_touserdata(L, -1));
 	FLAT_ASSERT(widgetFactory);
 	lua_pop(L, 1);
