@@ -35,9 +35,6 @@
 // state
 #include "state/state.h"
 
-// thread
-#include "thread/thread.h"
-
 // lua
 #include "lua/lua.h"
 #include "lua/debug.h"
