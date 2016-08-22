@@ -4,7 +4,7 @@
 #include <string>
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
-#include "../../geometry/vector2.h"
+#include "../../misc/vector2.h"
 #include "../../containers/fixedsizearray.h"
 
 namespace flat
@@ -38,7 +38,7 @@ class Font
 		~Font();
 		
 		GLint getAtlasId() const { return m_atlasId; }
-		const geometry::Vector2& getAtlasSize() const { return m_atlasSize; }
+		const Vector2& getAtlasSize() const { return m_atlasSize; }
 		
 		static void open();
 		static void close();
@@ -54,7 +54,7 @@ class Font
 		TTF_Font* m_font;
 		int m_fontSize;
 		GLuint m_atlasId;
-		geometry::Vector2 m_atlasSize;
+		Vector2 m_atlasSize;
 };
 
 } // font

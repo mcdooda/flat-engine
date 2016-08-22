@@ -51,7 +51,7 @@ void Program::use(Window* window)
 	assertValid();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(m_programId);
-	const geometry::Vector2& windowSize = window->getSize();
+	const Vector2& windowSize = window->getSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);
 	
 	int i = 0;

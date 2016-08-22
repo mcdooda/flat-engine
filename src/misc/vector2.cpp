@@ -5,8 +5,6 @@
 
 namespace flat
 {
-namespace geometry
-{
 
 Vector2::Vector2() :
 	x(0.f),
@@ -140,7 +138,6 @@ std::ostream& operator<<(std::ostream& out, const Vector2& vector2)
 	return out;
 }
 
-} // geometry
 } // flat
 
 

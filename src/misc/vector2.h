@@ -9,8 +9,6 @@
 
 namespace flat
 {
-namespace geometry
-{
 
 class Vector2
 {
@@ -52,7 +50,6 @@ class Vector2
 
 static_assert(sizeof(float) * 2 == sizeof(Vector2), "no padding");
 
-} // geometry
 } // flat
 
 #endif // FLAT_GEOMETRY_VECTOR2_H

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <SDL2/SDL.h>
-#include "../geometry/vector2.h"
+#include "../misc/vector2.h"
 
 namespace flat
 {
@@ -16,7 +16,7 @@ class Window
 		Window();
 		~Window();
 		
-		void open(const geometry::Vector2& size, bool fullScreen, bool vsync);
+		void open(const Vector2& size, bool fullScreen, bool vsync);
 		void setTitle(const std::string& title);
 
 		void toggleFullScreen();
@@ -27,24 +27,24 @@ class Window
 		inline bool isFullScreen() const { return m_fullScreen; }
 		inline bool isVsyncEnabled() const { return m_vsync; }
 
-		inline const geometry::Vector2& getSize() { return m_size; }
-		void resized(const geometry::Vector2& size);
+		inline const Vector2& getSize() { return m_size; }
+		void resized(const Vector2& size);
 
-		const geometry::Vector2& getDesktopSize() const;
+		const Vector2& getDesktopSize() const;
 		
 		void endFrame();
 		
 		static bool supportsGlExtensions();
 		
 	private:
-		void initSize(const geometry::Vector2& size);
+		void initSize(const Vector2& size);
 		
 		static void initGlew();
 		static void initGL();
 	
 	private:
-		geometry::Vector2 m_size;
-		geometry::Vector2 m_oldSize;
+		Vector2 m_size;
+		Vector2 m_oldSize;
 		bool m_fullScreen;
 		bool m_vsync;
 		SDL_Window* m_window;

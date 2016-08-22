@@ -7,8 +7,6 @@
 
 namespace flat
 {
-namespace geometry
-{
 
 class Matrix4
 {
@@ -80,7 +78,6 @@ class Matrix4
 		float m_matrix[4 * 4];
 };
 
-} // geometry
 } // flat
 
 #endif // FLAT_GEOMETRY_MATRIX4_H

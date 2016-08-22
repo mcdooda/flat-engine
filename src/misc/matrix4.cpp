@@ -5,8 +5,6 @@
 
 namespace flat
 {
-namespace geometry
-{
 
 Matrix4::Matrix4()
 {
@@ -398,7 +396,6 @@ std::ostream& operator<<(std::ostream& out, const Matrix4& matrix4)
 	return out;
 }
 
-} // geometry
 } // flat
 
 

@@ -33,7 +33,7 @@ Widget* WidgetFactory::makeImage(const std::string& fileName) const
 	return widget;
 }
 
-Widget* WidgetFactory::makeFixedSize(const geometry::Vector2& size) const
+Widget* WidgetFactory::makeFixedSize(const Vector2& size) const
 {
 	Widget* widget = new WidgetImpl<FixedLayout>();
 	widget->setSize(size);

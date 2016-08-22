@@ -28,7 +28,7 @@ void AnimatedSprite::setAtlasSize(int atlasWidth, int atlasHeight)
 {
 	const flat::video::Texture* texture = getTexture();
 	FLAT_ASSERT(texture);
-	const flat::geometry::Vector2& textureSize = texture->getSize();
+	const flat::Vector2& textureSize = texture->getSize();
 	FLAT_ASSERT(0 < atlasWidth  && atlasWidth  < textureSize.x);
 	FLAT_ASSERT(0 < atlasHeight && atlasHeight < textureSize.y);
 	FLAT_ASSERT_MSG(
@@ -131,7 +131,7 @@ int AnimatedSprite::getAtlasWidth() const
 {
 	const flat::video::Texture* texture = getTexture();
 	FLAT_ASSERT(texture);
-	const flat::geometry::Vector2& textureSize = texture->getSize();
+	const flat::Vector2& textureSize = texture->getSize();
 	return static_cast<int>(m_tileSizeRatio.x * textureSize.x);
 }
 
@@ -139,7 +139,7 @@ int AnimatedSprite::getAtlasHeight() const
 {
 	const flat::video::Texture* texture = getTexture();
 	FLAT_ASSERT(texture);
-	const flat::geometry::Vector2& textureSize = texture->getSize();
+	const flat::Vector2& textureSize = texture->getSize();
 	return static_cast<int>(m_tileSizeRatio.y * textureSize.y);
 }
 

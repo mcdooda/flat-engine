@@ -15,7 +15,7 @@ void LineFlowLayout::preLayout(Widget& widget)
 void LineFlowLayout::layout(Widget& widget)
 {
 	// compute size
-	geometry::Vector2 size(getPadding(widget).left + getPadding(widget).right, getPadding(widget).top + getPadding(widget).bottom);
+	Vector2 size(getPadding(widget).left + getPadding(widget).right, getPadding(widget).top + getPadding(widget).bottom);
 	for (Widget* child : getChildren(widget))
 	{
 		size.x += getOuterWidth(*child);
@@ -37,9 +37,9 @@ void LineFlowLayout::layout(Widget& widget)
 	{
 		currentX += getMargin(*child).left;
 
-		geometry::Matrix4& childTransform = getTransform(*child);
+		Matrix4& childTransform = getTransform(*child);
 		childTransform.setIdentity();
-		childTransform.translate(geometry::Vector2(currentX, getPadding(widget).top + getMargin(*child).top));
+		childTransform.translate(Vector2(currentX, getPadding(widget).top + getMargin(*child).top));
 		childTransform = getTransform(widget) * childTransform;
 
 		childrenLayout(*child);

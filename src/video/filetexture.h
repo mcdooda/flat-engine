@@ -3,7 +3,7 @@
 
 #include <string>
 #include <SDL2/SDL.h>
-#include "../geometry/vector2.h"
+#include "../misc/vector2.h"
 #include "color.h"
 #include "texture.h"
 
@@ -20,7 +20,7 @@ class FileTexture : public Texture
 
 		inline const std::string& getFileName() const { return m_fileName; }
 		
-		Color getPixel(const geometry::Vector2& pixelPosition) const;
+		Color getPixel(const Vector2& pixelPosition) const;
 
 	protected:
 		FileTexture();

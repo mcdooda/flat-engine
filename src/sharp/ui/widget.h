@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include "../../geometry/vector2.h"
-#include "../../geometry/matrix4.h"
+#include "../../misc/vector2.h"
+#include "../../misc/matrix4.h"
 #include "../../video/attribute.h"
 #include "../../video/color.h"
 #include "../../misc/slot.h"
@@ -51,7 +51,7 @@ class Widget
 			FIXED    = FIXED_X | FIXED_Y
 		};
 		
-		typedef geometry::Vector2 Size;
+		typedef Vector2 Size;
 		
 		enum PositionPolicy : unsigned char
 		{
@@ -74,7 +74,7 @@ class Widget
 			LINE_FLOW    = FLOW_X   | CENTER_Y
 		};
 		
-		typedef geometry::Vector2 Position;
+		typedef Vector2 Position;
 		
 		struct Margin
 		{
@@ -95,7 +95,7 @@ class Widget
 		
 		typedef Margin Padding;
 
-		typedef geometry::Vector3 Rotation;
+		typedef Vector3 Rotation;
 
 		enum BackgroundRepeat : unsigned char
 		{
@@ -154,7 +154,7 @@ class Widget
 		template <class CandidateLayoutType>
 		bool hasLayout();
 
-		bool isInside(const geometry::Vector2& point) const;
+		bool isInside(const Vector2& point) const;
 
 		Slot<Widget*, bool> click;
 		Slot<Widget*> mouseEnter;
@@ -172,7 +172,7 @@ class Widget
 		float getOuterWidth() const { return m_size.x + m_margin.left + m_margin.right; }
 		float getOuterHeight() const { return m_size.y + m_margin.top + m_margin.bottom; }
 
-		Widget* getMouseOverWidget(const geometry::Vector2& mousePosition);
+		Widget* getMouseOverWidget(const Vector2& mousePosition);
 		
 		Margin m_margin;
 		Padding m_padding;
@@ -190,7 +190,7 @@ class Widget
 		bool m_mouseOver : 1;
 		bool m_visible : 1;
 
-		geometry::Matrix4 m_transform;
+		Matrix4 m_transform;
 		
 		Widget* m_parent;
 		std::vector<Widget*> m_children; //TODO std::vector<std::shared_ptr<Widget>>

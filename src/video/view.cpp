@@ -21,7 +21,7 @@ void View::zoom(float factor)
 	m_viewMatrix.scale(factor);
 }
 
-void View::move(const geometry::Vector2& move)
+void View::move(const Vector2& move)
 {
 	m_viewMatrix.translate(move);
 }
@@ -46,18 +46,18 @@ void View::flipY()
 	m_viewMatrix.scale(1.f, -1.f);
 }
 
-flat::geometry::Vector2 View::getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const
+flat::Vector2 View::getRelativePosition(const Vector2& windowPosition, const Vector2& windowSize) const
 {
-	geometry::Matrix4 matrix = getViewProjectionMatrix();
+	Matrix4 matrix = getViewProjectionMatrix();
 	matrix.setInverse();
-	geometry::Vector2 position = geometry::Vector2(
+	Vector2 position = Vector2(
 		(windowPosition.x / windowSize.x) * 2.f - 1.f,
 		(windowPosition.y / windowSize.y) * 2.f - 1.f
 	);
 	return matrix * position;
 }
 
-void View::updateProjection(const geometry::Vector2& windowSize)
+void View::updateProjection(const Vector2& windowSize)
 {
 	float halfWidth = windowSize.x / 2.f;
 	float halfHeight = windowSize.y / 2.f;

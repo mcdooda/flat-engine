@@ -188,14 +188,14 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 	drawChildren(renderSettings);
 }
 
-bool Widget::isInside(const geometry::Vector2& point) const
+bool Widget::isInside(const Vector2& point) const
 {
 	if (!m_visible)
 		return false;
 	
-	geometry::Matrix4 invTransform = m_transform;
+	Matrix4 invTransform = m_transform;
 	invTransform.setInverse();
-	geometry::Vector2 localPoint = invTransform * point;
+	Vector2 localPoint = invTransform * point;
 	return localPoint.x >= 0 && localPoint.x <= m_size.x
 			&& localPoint.y >= 0 && localPoint.y <= m_size.y;
 }
@@ -208,7 +208,7 @@ void Widget::drawChildren(const util::RenderSettings& renderSettings) const
 	}
 }
 
-Widget* Widget::getMouseOverWidget(const geometry::Vector2& mousePosition)
+Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {
 	if (isInside(mousePosition))
 	{

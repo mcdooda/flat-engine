@@ -16,7 +16,7 @@ TextWidget::TextWidget(std::shared_ptr<const flat::video::font::Font> font) : fl
 void TextWidget::setText(const std::string& text)
 {
 	flat::video::font::String::setText(text);
-	const flat::geometry::Vector2& size = getComputedSize();
+	const flat::Vector2& size = getComputedSize();
 	setSize(size);
 }
 

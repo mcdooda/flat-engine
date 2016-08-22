@@ -11,7 +11,7 @@ Texture::Texture() :
 	
 }
 
-Texture::Texture(GLuint textureId, const geometry::Vector2& size, const std::string& name) :
+Texture::Texture(GLuint textureId, const Vector2& size, const std::string& name) :
 	m_textureId(textureId),
 	m_size(size),
 	m_name(name)

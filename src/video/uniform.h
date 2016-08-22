@@ -3,8 +3,8 @@
 
 #include "color.h"
 #include "texture.h"
-#include "../geometry/vector3.h"
-#include "../geometry/matrix4.h"
+#include "../misc/vector3.h"
+#include "../misc/matrix4.h"
 
 namespace flat
 {
@@ -26,9 +26,9 @@ class Uniform
 		void setColor(const Color& color) const;
 		void setTexture(const Texture* texture, int i = 0) const;
 		void setTexture(GLuint textureId, int i = 0) const;
-		void setVector2(const geometry::Vector2& vector2) const;
-		void setVector3(const geometry::Vector3& vector3) const;
-		void setMatrix4(const geometry::Matrix4& matrix4) const;
+		void setVector2(const Vector2& vector2) const;
+		void setVector3(const Vector3& vector3) const;
+		void setMatrix4(const Matrix4& matrix4) const;
 		
 	private:
 		GLint m_uniformLocation;

@@ -24,7 +24,7 @@ namespace util
 			
 			Sprite* lightCopy() override;
 
-			void draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const override;
+			void draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const override;
 			
 			void setHeightMap(std::shared_ptr<const video::FileTexture> heightMap, float multiplier = 0.0017);
 			

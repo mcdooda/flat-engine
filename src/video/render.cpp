@@ -5,7 +5,7 @@ namespace flat
 namespace video
 {
 
-geometry::Rectangle Render::screenRectangle(geometry::Vector2(-1.f, -1.f), geometry::Vector2(2.f, 2.f));
+geometry::Rectangle Render::screenRectangle(Vector2(-1.f, -1.f), Vector2(2.f, 2.f));
 
 Render::Render() : Program()
 {

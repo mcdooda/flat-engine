@@ -37,14 +37,14 @@ class String
 		
 		inline std::shared_ptr<const Font> getFont() const { return m_font; }
 		
-		inline const geometry::Vector2& getComputedSize() const { return m_size; }
+		inline const Vector2& getComputedSize() const { return m_size; }
 		
 	private:
 		std::string m_text;
 		std::shared_ptr<const Font> m_font;
 		std::vector<CharacterVertex> m_vertices;
 		std::vector<Font::CharInfoUv> m_uv;
-		geometry::Vector2 m_size;
+		Vector2 m_size;
 		int m_wrapLength;
 };
 

@@ -24,7 +24,7 @@ protected:
 	static void childrenFullLayout(Widget& widget);
 
 	static std::vector<Widget*>& getChildren(Widget& widget);
-	static geometry::Matrix4& getTransform(Widget& widget);
+	static Matrix4& getTransform(Widget& widget);
 	static Widget& getParent(Widget& widget);
 	static Widget::PositionPolicy& getPositionPolicy(Widget& widget);
 	static Widget::Position& getPosition(Widget& widget);
@@ -38,7 +38,7 @@ protected:
 	static float getParentRelativeRight(Widget& widget);
 	static float getParentRelativeBottom(Widget& widget);
 
-	static void computePosition(Widget& widget, geometry::Vector2& position);
+	static void computePosition(Widget& widget, Vector2& position);
 	static void computeTransform(Widget& widget);
 };
 

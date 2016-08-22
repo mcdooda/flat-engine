@@ -45,7 +45,7 @@ std::vector<Widget*>& Layout::getChildren(Widget& widget)
 	return widget.m_children;
 }
 
-geometry::Matrix4& Layout::getTransform(Widget& widget)
+Matrix4& Layout::getTransform(Widget& widget)
 {
 	return widget.m_transform;
 }
@@ -101,7 +101,7 @@ float Layout::getParentRelativeBottom(Widget& widget)
 	return widget.m_position.y + widget.m_size.y + widget.m_margin.bottom;
 }
 
-void Layout::computePosition(Widget& widget, geometry::Vector2& position)
+void Layout::computePosition(Widget& widget, Vector2& position)
 {
 	Widget::PositionPolicy positionPolicy = widget.m_positionPolicy;
 
@@ -149,10 +149,10 @@ void Layout::computePosition(Widget& widget, geometry::Vector2& position)
 
 void Layout::computeTransform(Widget& widget)
 {
-	geometry::Vector2 position;
+	Vector2 position;
 	computePosition(widget, position);
 
-	geometry::Matrix4& transform = widget.m_transform;
+	Matrix4& transform = widget.m_transform;
 	transform.setIdentity();
 	transform.translate(-widget.getSize() / 2.f);
 	transform.rotateZ(widget.getRotation().z);

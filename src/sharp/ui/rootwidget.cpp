@@ -23,7 +23,7 @@ void RootWidget::draw(const flat::util::RenderSettings& renderSettings) const
 
 void RootWidget::updateInput()
 {
-	geometry::Vector2 mousePosition = m_game.input->mouse->getPosition();
+	Vector2 mousePosition = m_game.input->mouse->getPosition();
 	Widget* mouseOverWidget = getMouseOverWidget(mousePosition);
 	if (mouseOverWidget == this)
 		mouseOverWidget = nullptr;

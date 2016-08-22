@@ -31,7 +31,7 @@ FileTexture::~FileTexture()
 	free();
 }
 
-Color FileTexture::getPixel(const geometry::Vector2& pixelPosition) const
+Color FileTexture::getPixel(const Vector2& pixelPosition) const
 {
 	int x = pixelPosition.getRoundX();
 	int y = pixelPosition.getRoundY();
@@ -43,7 +43,7 @@ Color FileTexture::getPixel(const geometry::Vector2& pixelPosition) const
 
 void FileTexture::load()
 {
-	m_size = geometry::Vector2(m_surface->w, m_surface->h);
+	m_size = Vector2(m_surface->w, m_surface->h);
 	
 	glGenTextures(1, &m_textureId);
 	glBindTexture(GL_TEXTURE_2D, m_textureId);

@@ -44,7 +44,7 @@ class AnimatedSprite : public Sprite
 		int getAtlasWidth() const;
 		int getAtlasHeight() const;
 		
-		flat::geometry::Vector2 m_tileSizeRatio;
+		flat::Vector2 m_tileSizeRatio;
 		
 		int m_currentLine;
 		int m_currentColumn;

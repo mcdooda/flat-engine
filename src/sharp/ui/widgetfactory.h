@@ -6,11 +6,7 @@
 namespace flat
 {
 class Game;
-
-namespace geometry
-{
 class Vector2;
-}
 
 namespace video
 {
@@ -34,7 +30,7 @@ class WidgetFactory
 		
 		RootWidget* makeRoot() const;
 		Widget* makeImage(const std::string& fileName) const;
-		Widget* makeFixedSize(const geometry::Vector2& size) const;
+		Widget* makeFixedSize(const Vector2& size) const;
 		Widget* makeLineFlow() const;
 		Widget* makeColumnFlow() const;
 		Widget* makeText(const std::string& text, const std::string& fileName, int fontSize) const;

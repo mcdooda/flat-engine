@@ -15,7 +15,7 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 void ColumnFlowLayout::layout(Widget& widget)
 {
 	// compute size
-	geometry::Vector2 size(getPadding(widget).left + getPadding(widget).right, getPadding(widget).top + getPadding(widget).bottom);
+	Vector2 size(getPadding(widget).left + getPadding(widget).right, getPadding(widget).top + getPadding(widget).bottom);
 	for (Widget* child : getChildren(widget))
 	{
 		size.y += getOuterHeight(*child);
@@ -41,9 +41,9 @@ void ColumnFlowLayout::layout(Widget& widget)
 		Widget& child = **it;
 		currentY += getMargin(child).top;
 
-		geometry::Matrix4& childTransform = getTransform(child);
+		Matrix4& childTransform = getTransform(child);
 		childTransform.setIdentity();
-		childTransform.translate(geometry::Vector2(getPadding(widget).left + getMargin(child).left, currentY));
+		childTransform.translate(Vector2(getPadding(widget).left + getMargin(child).left, currentY));
 		childTransform = getTransform(widget) * childTransform;
 
 		childrenLayout(child);

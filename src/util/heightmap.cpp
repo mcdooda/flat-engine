@@ -31,7 +31,7 @@ Sprite* HeightMap::lightCopy()
 	return heightMap;
 }
 
-void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matrix4& viewMatrix) const
+void HeightMap::draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const
 {
 	const flat::video::Texture* texture = getTexture();
 	renderSettings.textureUniform.setTexture(texture);
@@ -43,7 +43,7 @@ void HeightMap::draw(const RenderSettings& renderSettings, const geometry::Matri
 	updateModelMatrix();
 	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
 	
-	geometry::Matrix4 normalMatrix = viewMatrix * m_modelMatrix;
+	Matrix4 normalMatrix = viewMatrix * m_modelMatrix;
 	normalMatrix.setInverseTranspose();
 	renderSettings.normalMatrixUniform.setMatrix4(normalMatrix);
 	
@@ -86,7 +86,7 @@ void HeightMap::setHeightMap(std::shared_ptr<const video::FileTexture> heightMap
 
 float HeightMap::getHeight(unsigned int x, unsigned int y) const
 {
-	video::Color color = m_heightMap->getPixel(geometry::Vector2(x, y));
+	video::Color color = m_heightMap->getPixel(Vector2(x, y));
 	return static_cast<float>(color.r + color.g + color.b) / 3.f * m_multiplier;
 }
 
@@ -156,9 +156,9 @@ void HeightMap::computeHeightMap()
 			else
 				bottomVertex = v;
 			
-			flat::geometry::Vector3 dx(rightVertex->x - leftVertex->x, 0, rightVertex->z - leftVertex->z);
-			flat::geometry::Vector3 dy(0, topVertex->y - bottomVertex->y, topVertex->z - bottomVertex->z);
-			flat::geometry::Vector3 normal = dx.crossProduct(dy).normalize();
+			flat::Vector3 dx(rightVertex->x - leftVertex->x, 0, rightVertex->z - leftVertex->z);
+			flat::Vector3 dy(0, topVertex->y - bottomVertex->y, topVertex->z - bottomVertex->z);
+			flat::Vector3 normal = dx.crossProduct(dy).normalize();
 			//std::cout << "normal = " << normal << " / " << normal.normalize() << std::endl;
 			v->nx = normal.x;
 			v->ny = normal.y;

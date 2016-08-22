@@ -2,7 +2,7 @@
 #define FLAT_VIDEO_TEXTURE_H
 
 #include <GL/glew.h>
-#include "../geometry/vector2.h"
+#include "../misc/vector2.h"
 
 namespace flat
 {
@@ -13,7 +13,7 @@ class Texture
 {
 	public:
 		Texture();
-		Texture(GLuint textureId, const geometry::Vector2& size, const std::string& name);
+		Texture(GLuint textureId, const Vector2& size, const std::string& name);
 		virtual ~Texture();
 		
 		static void open()
@@ -27,14 +27,14 @@ class Texture
 		}
 		
 		inline GLuint getTextureId() const { return m_textureId; }
-		inline const geometry::Vector2& getSize() const { return m_size; }
+		inline const Vector2& getSize() const { return m_size; }
 		inline const std::string& getName() const { return m_name; }
 		
 		friend class Pass;
 		
 	protected:
 		GLuint m_textureId;
-		geometry::Vector2 m_size;
+		Vector2 m_size;
 		std::string m_name;
 };
 

@@ -20,7 +20,7 @@ Window::~Window()
 	
 }
 
-void Window::open(const geometry::Vector2& size, bool fullScreen, bool vsync)
+void Window::open(const Vector2& size, bool fullScreen, bool vsync)
 {
 	int windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	
@@ -64,7 +64,7 @@ void Window::setTitle(const std::string& title)
 void Window::toggleFullScreen()
 {
 	m_fullScreen = !m_fullScreen;
-	geometry::Vector2 desktopSize = getDesktopSize();
+	Vector2 desktopSize = getDesktopSize();
 	if (m_fullScreen)
 	{
 		SDL_SetWindowSize(m_window, desktopSize.x, desktopSize.y);
@@ -87,19 +87,19 @@ void Window::hideCursor() const
 	SDL_ShowCursor(0);
 }
 
-void Window::resized(const geometry::Vector2& size)
+void Window::resized(const Vector2& size)
 {
 	m_size = size;
 }
 
-const geometry::Vector2& Window::getDesktopSize() const
+const Vector2& Window::getDesktopSize() const
 {
-	static geometry::Vector2 desktopSize;
+	static Vector2 desktopSize;
 	if (desktopSize.x == 0)
 	{
 		SDL_DisplayMode desktopDisplayMode;
 		SDL_GetDesktopDisplayMode(0, &desktopDisplayMode);
-		desktopSize = geometry::Vector2(desktopDisplayMode.w, desktopDisplayMode.h);
+		desktopSize = Vector2(desktopDisplayMode.w, desktopDisplayMode.h);
 	}
 	return desktopSize;
 }
@@ -119,7 +119,7 @@ bool Window::supportsGlExtensions()
 	    && GLEW_ARB_framebuffer_object;
 }
 
-void Window::initSize(const geometry::Vector2& size)
+void Window::initSize(const Vector2& size)
 {
 	resized(size);
 }

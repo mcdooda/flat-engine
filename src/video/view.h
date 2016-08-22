@@ -1,8 +1,8 @@
 #ifndef FLAT_VIDEO_VIEW_H
 #define FLAT_VIDEO_VIEW_H
 
-#include "../geometry/vector2.h"
-#include "../geometry/matrix4.h"
+#include "../misc/vector2.h"
+#include "../misc/matrix4.h"
 
 namespace flat
 {
@@ -17,23 +17,23 @@ class View
 		void reset();
 		
 		void zoom(float factor);
-		void move(const geometry::Vector2& position);
+		void move(const Vector2& position);
 		void rotateX(float angle);
 		void rotateY(float angle);
 		void rotateZ(float angle);
 		void flipY();
 		
-		geometry::Vector2 getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const;
+		Vector2 getRelativePosition(const Vector2& windowPosition, const Vector2& windowSize) const;
 
-		void updateProjection(const geometry::Vector2& windowSize);
+		void updateProjection(const Vector2& windowSize);
 		
-		inline const geometry::Matrix4& getProjectionMatrix() const { return m_projectionMatrix; }
-		inline const geometry::Matrix4& getViewMatrix() const { return m_viewMatrix; }
-		inline geometry::Matrix4 getViewProjectionMatrix() const { return m_projectionMatrix * m_viewMatrix; }
+		inline const Matrix4& getProjectionMatrix() const { return m_projectionMatrix; }
+		inline const Matrix4& getViewMatrix() const { return m_viewMatrix; }
+		inline Matrix4 getViewProjectionMatrix() const { return m_projectionMatrix * m_viewMatrix; }
 
 	private:
-		geometry::Matrix4 m_projectionMatrix;
-		geometry::Matrix4 m_viewMatrix;
+		Matrix4 m_projectionMatrix;
+		Matrix4 m_viewMatrix;
 };
 
 } // video
