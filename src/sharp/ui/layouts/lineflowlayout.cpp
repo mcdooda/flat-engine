@@ -39,7 +39,7 @@ void LineFlowLayout::layout(Widget& widget)
 
 		Matrix4& childTransform = getTransform(*child);
 		childTransform.setIdentity();
-		childTransform.translate(Vector2(currentX, getPadding(widget).top + getMargin(*child).top));
+		childTransform.translate(Vector2(currentX + getPosition(*child).x, getPadding(widget).top + getMargin(*child).top + getPosition(*child).y));
 		childTransform = getTransform(widget) * childTransform;
 
 		childrenLayout(*child);

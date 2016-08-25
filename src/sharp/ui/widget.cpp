@@ -128,10 +128,10 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 		// enable vertex attrib array
 		// position
 		const float position[] = {
-			m_position.x,            m_position.y,
-			m_position.x + m_size.x, m_position.y,
-			m_position.x + m_size.x, m_position.y + m_size.y,
-			m_position.x,            m_position.y + m_size.y
+			0.f, 0.f,
+			m_size.x, 0.f,
+			m_size.x, m_size.y,
+			0.f, m_size.y
 		};
 
 		glEnableVertexAttribArray(renderSettings.positionAttribute);

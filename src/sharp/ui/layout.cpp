@@ -145,6 +145,8 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 	{
 		FLAT_ASSERT(false);
 	}
+
+	position += widget.m_position;
 }
 
 void Layout::computeTransform(Widget& widget)
@@ -153,13 +155,12 @@ void Layout::computeTransform(Widget& widget)
 	computePosition(widget, position);
 
 	Matrix4& transform = widget.m_transform;
-	transform.setIdentity();
+	transform = widget.m_parent->m_transform;
 	transform.translate(-widget.getSize() / 2.f);
 	transform.rotateZ(widget.getRotation().z);
 	transform.rotateY(widget.getRotation().y);
 	transform.rotateX(widget.getRotation().x);
 	transform.translate(position + widget.getSize() / 2.f);
-	transform = widget.m_parent->m_transform * transform;
 }
 
 } // ui
