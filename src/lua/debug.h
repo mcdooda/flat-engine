@@ -4,6 +4,7 @@
 #ifdef FLAT_DEBUG
 
 #include <lua5.2/lua.hpp>
+#include "../debug/assert.h"
 
 namespace flat
 {
@@ -36,7 +37,7 @@ class ExpectStackGrowth
 		fprintf(stderr, "assertion failed: " #cond " ; " format "\n" \
 			"in file " __FILE__ ":%d\n" \
 			"in function %s\n", \
-			##__VA_ARGS__, __LINE__, __PRETTY_FUNCTION__); \
+			##__VA_ARGS__, __LINE__, FLAT_PRETTY_FUNCTION); \
 		flat::lua::printStack(L); \
 		FLAT_BREAK(); \
 	}
@@ -47,13 +48,13 @@ class ExpectStackGrowth
 		fprintf(stderr, "assertion failed: " #cond "\n" \
 			"in file " __FILE__ ":%d\n" \
 			"in function %s\n", \
-			__LINE__, __PRETTY_FUNCTION__); \
+			__LINE__, FLAT_PRETTY_FUNCTION); \
 		flat::lua::printStack(L); \
 		FLAT_BREAK(); \
 	}
 
 #define FLAT_LUA_EXPECT_STACK_GROWTH(L, n) \
-	flat::lua::debug::ExpectStackGrowth expectStackGrowth(L, n, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+	flat::lua::debug::ExpectStackGrowth expectStackGrowth(L, n, FLAT_PRETTY_FUNCTION, __FILE__, __LINE__);
 
 #else // FLAT_DEBUG
 
