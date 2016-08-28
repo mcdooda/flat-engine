@@ -21,21 +21,46 @@ void RootWidget::draw(const flat::util::RenderSettings& renderSettings) const
 	drawChildren(renderSettings);
 }
 
+void RootWidget::addDirtyWidget(Widget* widget)
+{
+	std::vector<Widget*>::iterator it = std::find(m_dirtyWidgets.begin(), m_dirtyWidgets.end(), widget);
+	if (it == m_dirtyWidgets.end())
+	{
+		m_dirtyWidgets.push_back(widget);
+	}
+}
+
+void RootWidget::updateDirtyWidgets()
+{
+	for (Widget* widget : m_dirtyWidgets)
+	{
+		widget->fullLayout();
+	}
+	m_dirtyWidgets.clear();
+}
+
 void RootWidget::updateInput()
 {
-	Vector2 mousePosition = m_game.input->mouse->getPosition();
-	Widget* mouseOverWidget = getMouseOverWidget(mousePosition);
-	if (mouseOverWidget == this)
-		mouseOverWidget = nullptr;
-
-	if (mouseOverWidget != m_mouseOverWidget)
+	const flat::input::Mouse* mouse = m_game.input->mouse;
+	if (mouse->justMoved())
 	{
-		handleMouseLeave();
-		m_mouseOverWidget = mouseOverWidget;
-		handleMouseEnter();
+		Vector2 mousePosition = mouse->getPosition();
+		Widget* mouseOverWidget = getMouseOverWidget(mousePosition);
+
+		if (mouseOverWidget == this) // root
+			mouseOverWidget = nullptr;
+
+		if (mouseOverWidget != m_mouseOverWidget)
+		{
+			handleMouseLeave();
+			m_mouseOverWidget = mouseOverWidget;
+			handleMouseEnter();
+		}
+
+		handleMouseMove();
 	}
 
-	if (m_game.input->mouse->isJustPressed(M(LEFT)))
+	if (mouse->isJustPressed(M(LEFT)))
 		handleClick();
 }
 
@@ -46,6 +71,17 @@ void RootWidget::handleClick()
 	while (widget && !eventHandled)
 	{
 		widget->click(widget, eventHandled);
+		widget = widget->getParent();
+	}
+}
+
+void RootWidget::handleMouseMove()
+{
+	bool eventHandled = false;
+	Widget* widget = m_mouseOverWidget;
+	while (widget && !eventHandled)
+	{
+		widget->mouseMove(widget, eventHandled);
 		widget = widget->getParent();
 	}
 }

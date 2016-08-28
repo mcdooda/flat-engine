@@ -21,9 +21,9 @@ class Mouse
 		Mouse(video::Window* videoWindow);
 		~Mouse();
 		
-		bool isPressed(int button);
-		bool isJustPressed(int button);
-		bool isJustReleased(int button);
+		bool isPressed(int button) const;
+		bool isJustPressed(int button) const;
+		bool isJustReleased(int button) const;
 
 		inline bool justMoved() const { return m_moved; }
 		inline const Vector2& getPosition() const { return m_position; }

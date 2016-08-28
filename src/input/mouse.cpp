@@ -16,13 +16,13 @@ Mouse::~Mouse()
 
 }
 
-bool Mouse::isPressed(int button)
+bool Mouse::isPressed(int button) const
 {
 	Uint8 buttonState = SDL_GetMouseState(nullptr, nullptr);
 	return buttonState & SDL_BUTTON(button);
 }
 
-bool Mouse::isJustPressed(int button)
+bool Mouse::isJustPressed(int button) const
 {
 	if (m_justPressedButtons.isInRange(button))
 		return m_justPressedButtons[button];
@@ -30,7 +30,7 @@ bool Mouse::isJustPressed(int button)
 	return false;
 }
 
-bool Mouse::isJustReleased(int button)
+bool Mouse::isJustReleased(int button) const
 {
 	if (m_justPressedButtons.isInRange(button))
 		return m_justReleasedButtons[button];

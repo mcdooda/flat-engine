@@ -1,6 +1,8 @@
 #include <limits>
 #include <algorithm>
 #include "widget.h"
+#include "rootwidget.h"
+#include "layouts/fixedlayout.h"
 #include "../../util/rendersettings.h"
 #include "../../video/color.h"
 #include "../../video/texture.h"
@@ -77,11 +79,22 @@ void Widget::setPositionPolicy(PositionPolicy positionPolicy)
 	m_positionPolicy = positionPolicy;
 }
 
+void Widget::setPosition(const Position& position)
+{
+	m_position = position;
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
+}
+
 void Widget::addChild(Widget* widget)
 {
 	FLAT_ASSERT(!widget->m_parent);
 	m_children.push_back(widget);
 	widget->m_parent = this;
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
 }
 
 void Widget::removeChild(Widget* widget)
@@ -91,6 +104,9 @@ void Widget::removeChild(Widget* widget)
 	FLAT_ASSERT(it != m_children.end());
 	m_children.erase(it);
 	widget->m_parent = nullptr;
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
 }
 
 void Widget::removeFromParent()
@@ -192,12 +208,17 @@ bool Widget::isInside(const Vector2& point) const
 {
 	if (!m_visible)
 		return false;
-	
+
+	Vector2 localPosition = getRelativePosition(point);
+	return localPosition.x >= 0 && localPosition.x <= m_size.x
+	    && localPosition.y >= 0 && localPosition.y <= m_size.y;
+}
+
+Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
+{
 	Matrix4 invTransform = m_transform;
 	invTransform.setInverse();
-	Vector2 localPoint = invTransform * point;
-	return localPoint.x >= 0 && localPoint.x <= m_size.x
-			&& localPoint.y >= 0 && localPoint.y <= m_size.y;
+	return invTransform * absolutePosition;
 }
 
 void Widget::drawChildren(const util::RenderSettings& renderSettings) const
@@ -220,6 +241,35 @@ Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 		return this;
 	}
 	return nullptr;
+}
+
+void Widget::setDirty()
+{
+	if (RootWidget* rootWidget = getRootIfAncestor())
+	{
+		rootWidget->addDirtyWidget(this);
+	}
+}
+
+RootWidget* Widget::getRootIfAncestor()
+{
+	Widget* widget = this;
+	while (widget && widget->m_parent)
+	{
+		widget = widget->m_parent;
+	}
+	return dynamic_cast<RootWidget*>(widget);
+}
+
+Widget* Widget::getFixedLayoutAncestor()
+{
+	if (!m_parent)
+		return nullptr;
+
+	if (hasLayout<FixedLayout>() || hasLayout<RootLayout>())
+		return this;
+
+	return m_parent->getFixedLayoutAncestor();
 }
 
 } // ui

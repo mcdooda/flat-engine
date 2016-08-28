@@ -28,16 +28,20 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void draw(const flat::util::RenderSettings& renderSettings) const override; // final
 
+		void addDirtyWidget(Widget* widget);
+		void updateDirtyWidgets();
 		void updateInput();
 
 	private:
 		void handleClick();
+		void handleMouseMove();
 		void handleMouseEnter();
 		void handleMouseLeave();
 		
 	private:
 		Game& m_game;
 		Widget* m_mouseOverWidget;
+		std::vector<Widget*> m_dirtyWidgets;
 };
 
 } // ui

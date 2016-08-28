@@ -10,9 +10,9 @@ namespace sharp
 namespace ui
 {
 
-void RootLayout::preLayout(Widget& /*widget*/)
+void RootLayout::preLayout(Widget& widget)
 {
-
+	static_cast<RootWidget&>(widget).m_dirtyWidgets.clear();
 }
 
 void RootLayout::layout(Widget& widget)
@@ -21,9 +21,6 @@ void RootLayout::layout(Widget& widget)
 	widget.setSize(window->getSize());
 
 	getTransform(widget).setIdentity();
-	// inverse y axis (top = 0, bottom = window height)
-	//getTransform(widget).translate(0.f, -window->getSize().y);
-	//getTransform(widget).scale(1.f, -1.f);
 }
 
 void RootLayout::postLayout(Widget& widget)

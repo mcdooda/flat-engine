@@ -118,7 +118,7 @@ class Widget
 		
 		void setPositionPolicy(PositionPolicy positionPolicy);
 		inline PositionPolicy getPositionPolicy() const { return m_positionPolicy; }
-		inline void setPosition(const Position& position) { m_position = position; }
+		void setPosition(const Position& position);
 		inline const Position& getPosition() const { return m_position; }
 
 		inline void setRotation(const Rotation& rotation) { m_rotation = rotation; }
@@ -155,8 +155,10 @@ class Widget
 		bool hasLayout();
 
 		bool isInside(const Vector2& point) const;
+		Vector2 getRelativePosition(const Vector2& absolutePosition) const;
 
 		Slot<Widget*, bool> click;
+		Slot<Widget*, bool> mouseMove;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
 		
@@ -173,6 +175,11 @@ class Widget
 		float getOuterHeight() const { return m_size.y + m_margin.top + m_margin.bottom; }
 
 		Widget* getMouseOverWidget(const Vector2& mousePosition);
+
+		void setDirty();
+
+		RootWidget* getRootIfAncestor();
+		Widget* getFixedLayoutAncestor();
 		
 		Margin m_margin;
 		Padding m_padding;
