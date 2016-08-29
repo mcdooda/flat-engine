@@ -57,8 +57,8 @@ void Program::use(Window* window)
 	int i = 0;
 	for (std::vector<Texture>::iterator it = m_inputTextures.begin(); it != m_inputTextures.end(); it++)
 	{
-		const Uniform& textureUniform = getUniform(it->getName());
-		textureUniform.setTexture(&*it, i);
+		Uniform<Texture> textureUniform = getUniform<Texture>(it->getName());
+		textureUniform.set(&*it, i);
 		i++;
 	}
 }
@@ -74,20 +74,6 @@ Attribute Program::getAttribute(const std::string& attributeName)
 	{
 		std::cerr << "Warning: attribute '" << attributeName << "' does not exist in '" << m_fragmentShader << "' and '" << m_vertexShader << "'" << std::endl;
 		return -1;
-	}
-}
-
-Uniform Program::getUniform(const std::string& uniformName)
-{
-	std::map<std::string, Uniform>::iterator it = m_uniforms.find(uniformName);
-	
-	if (it != m_uniforms.end())
-		return it->second;
-		
-	else
-	{
-		std::cerr << "Warning: uniform '" << uniformName << "' does not exist in '" << m_fragmentShader << "' and '" << m_vertexShader << "'" << std::endl;
-		return Uniform(-1);
 	}
 }
 

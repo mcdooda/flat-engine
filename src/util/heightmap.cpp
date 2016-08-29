@@ -34,18 +34,18 @@ Sprite* HeightMap::lightCopy()
 void HeightMap::draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const
 {
 	const flat::video::Texture* texture = getTexture();
-	renderSettings.textureUniform.setTexture(texture);
-	renderSettings.colorUniform.setColor(m_color);
+	renderSettings.textureUniform.set(texture);
+	renderSettings.colorUniform.set(m_color);
 	
 	if (m_bumpMap != nullptr)
-		renderSettings.bumpMapUniform.setTexture(m_bumpMap.get(), 1);
+		renderSettings.bumpMapUniform.set(m_bumpMap.get(), 1);
 	
 	updateModelMatrix();
-	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
+	renderSettings.modelMatrixUniform.set(m_modelMatrix);
 	
 	Matrix4 normalMatrix = viewMatrix * m_modelMatrix;
 	normalMatrix.setInverseTranspose();
-	renderSettings.normalMatrixUniform.setMatrix4(normalMatrix);
+	renderSettings.normalMatrixUniform.set(normalMatrix);
 	
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);

@@ -27,7 +27,22 @@ class Program
 		void use(Window* window);
 		
 		Attribute getAttribute(const std::string& attributeName);
-		Uniform getUniform(const std::string& uniformName);
+
+		template <class T>
+		Uniform<T> getUniform(const std::string& uniformName)
+		{
+			std::map<std::string, GLint>::iterator it = m_uniforms.find(uniformName);
+
+			if (it != m_uniforms.end())
+			{
+				return Uniform<T>(it->second);
+			}
+			else
+			{
+				std::cerr << "Warning: uniform '" << uniformName << "' does not exist in '" << m_fragmentShader << "' and '" << m_vertexShader << "'" << std::endl;
+				return Uniform<T>(0);
+			}
+		}
 		
 		void addInputTexture(const Texture& inputTexture);
 		
@@ -46,7 +61,7 @@ class Program
 		void loadUniforms();
 		
 	protected:
-		std::map<std::string, Uniform> m_uniforms;
+		std::map<std::string, GLint> m_uniforms;
 		std::map<std::string, Attribute> m_attributes;
 		
 		std::vector<Texture> m_inputTextures;

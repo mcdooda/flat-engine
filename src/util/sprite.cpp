@@ -71,10 +71,10 @@ void Sprite::draw(const RenderSettings& renderSettings, const Matrix4& viewMatri
 {
 	const video::Texture* texture = getTexture();
 	FLAT_ASSERT(texture);
-	renderSettings.textureUniform.setTexture(texture);
-	renderSettings.colorUniform.setColor(m_color);
+	renderSettings.textureUniform.set(texture);
+	renderSettings.colorUniform.set(m_color);
 	updateModelMatrix();
-	renderSettings.modelMatrixUniform.setMatrix4(m_modelMatrix);
+	renderSettings.modelMatrixUniform.set(m_modelMatrix);
 	
 	video::Attribute positionAttribute = renderSettings.positionAttribute;
 	video::Attribute uvAttribute = renderSettings.uvAttribute;

@@ -125,21 +125,21 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 	{
 		if (background != nullptr)
 		{
-			renderSettings.textureUniform.setTexture(background);
-			renderSettings.textureGivenUniform.setBool(true);
+			renderSettings.textureUniform.set(background);
+			renderSettings.textureGivenUniform.set(true);
 		}
 		else
 		{
-			renderSettings.textureGivenUniform.setBool(false);
+			renderSettings.textureGivenUniform.set(false);
 		}
-		renderSettings.modelMatrixUniform.setMatrix4(m_transform);
+		renderSettings.modelMatrixUniform.set(m_transform);
 
-		renderSettings.colorUniform.setColor(m_backgroundColor);
+		renderSettings.colorUniform.set(m_backgroundColor);
 
 		if (!m_mouseOver || !click.on())
-			renderSettings.secondaryColorUniform.setColor(video::Color::BLACK);
+			renderSettings.secondaryColorUniform.set(video::Color::BLACK);
 		else
-			renderSettings.secondaryColorUniform.setColor(video::Color::WHITE);
+			renderSettings.secondaryColorUniform.set(video::Color::WHITE);
 
 		// enable vertex attrib array
 		// position

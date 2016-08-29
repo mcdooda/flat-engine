@@ -11,14 +11,15 @@ namespace util
 
 struct RenderSettings
 {
-	video::Uniform textureUniform;
-	video::Uniform textureGivenUniform;
-	video::Uniform colorUniform;
-	video::Uniform secondaryColorUniform;
-	video::Uniform bumpMapUniform;
-	video::Uniform modelMatrixUniform;
-	video::Uniform normalMatrixUniform;
-	video::Uniform viewProjectionMatrixUniform;
+	video::Uniform<video::Texture> textureUniform;
+	video::Uniform<bool>           textureGivenUniform;
+	video::Uniform<video::Color>   colorUniform;
+	video::Uniform<video::Color>   secondaryColorUniform;
+	video::Uniform<video::Texture> bumpMapUniform;
+	video::Uniform<Matrix4>        modelMatrixUniform;
+	video::Uniform<Matrix4>        normalMatrixUniform;
+	video::Uniform<Matrix4>        viewProjectionMatrixUniform;
+
 	video::Attribute positionAttribute;
 	video::Attribute normalAttribute;
 	video::Attribute uvAttribute;
