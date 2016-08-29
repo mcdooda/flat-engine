@@ -30,6 +30,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void addDirtyWidget(Widget* widget);
 		void updateDirtyWidgets();
+		void setDirty() override;
+
 		void updateInput();
 
 	private:
@@ -42,6 +44,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		Game& m_game;
 		Widget* m_mouseOverWidget;
 		std::vector<Widget*> m_dirtyWidgets;
+		bool m_dirty : 1;
 };
 
 } // ui

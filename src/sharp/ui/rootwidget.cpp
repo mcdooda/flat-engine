@@ -11,9 +11,10 @@ namespace ui
 
 RootWidget::RootWidget(Game& game) : Super(),
 	m_game(game),
-	m_mouseOverWidget(nullptr)
+	m_mouseOverWidget(nullptr),
+	m_dirty(true)
 {
-
+	
 }
 
 void RootWidget::draw(const flat::util::RenderSettings& renderSettings) const
@@ -23,6 +24,9 @@ void RootWidget::draw(const flat::util::RenderSettings& renderSettings) const
 
 void RootWidget::addDirtyWidget(Widget* widget)
 {
+	if (m_dirty)
+		return;
+
 	std::vector<Widget*>::iterator it = std::find(m_dirtyWidgets.begin(), m_dirtyWidgets.end(), widget);
 	if (it == m_dirtyWidgets.end())
 	{
@@ -32,10 +36,25 @@ void RootWidget::addDirtyWidget(Widget* widget)
 
 void RootWidget::updateDirtyWidgets()
 {
-	for (Widget* widget : m_dirtyWidgets)
+	if (m_dirty)
 	{
-		widget->fullLayout();
+		FLAT_ASSERT(m_dirtyWidgets.empty());
+		fullLayout();
+		m_dirty = false;
 	}
+	else
+	{
+		for (Widget* widget : m_dirtyWidgets)
+		{
+			widget->fullLayout();
+		}
+		m_dirtyWidgets.clear();
+	}
+}
+
+void RootWidget::setDirty()
+{
+	m_dirty = true;
 	m_dirtyWidgets.clear();
 }
 

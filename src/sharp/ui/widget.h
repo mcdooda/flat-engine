@@ -176,7 +176,7 @@ class Widget
 
 		Widget* getMouseOverWidget(const Vector2& mousePosition);
 
-		void setDirty();
+		virtual void setDirty();
 
 		RootWidget* getRootIfAncestor();
 		Widget* getFixedLayoutAncestor();
