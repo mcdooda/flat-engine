@@ -125,7 +125,7 @@ class Widget
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; }
 		inline const Rotation& getRotation() const { return m_rotation; }
 		
-		inline void setBackground(std::shared_ptr<const video::Texture> background) { m_background = background; setBackgroundColor(flat::video::Color::WHITE); }
+		inline void setBackground(const std::shared_ptr<const video::Texture>& background) { m_background = background; setBackgroundColor(flat::video::Color::WHITE); }
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
 		inline const video::Texture* getBackground() const { return m_background.get(); }
 

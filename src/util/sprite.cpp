@@ -53,7 +53,7 @@ Sprite* Sprite::lightCopy()
 	return sprite;
 }
 
-void Sprite::setTexture(std::shared_ptr<const video::Texture> texture)
+void Sprite::setTexture(const std::shared_ptr<const video::Texture>& texture)
 {
 	m_texture = texture;
 	const video::Texture* t = texture.get();
@@ -69,7 +69,7 @@ void Sprite::setTexture(std::shared_ptr<const video::Texture> texture)
 
 void Sprite::draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const
 {
-	const video::Texture* texture = getTexture();
+	const video::Texture* texture = getTexture().get();
 	FLAT_ASSERT(texture);
 	renderSettings.textureUniform.set(texture);
 	renderSettings.colorUniform.set(m_color);

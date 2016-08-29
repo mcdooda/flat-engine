@@ -20,8 +20,8 @@ class Sprite
 		
 		virtual Sprite* lightCopy();
 		
-		void setTexture(std::shared_ptr<const video::Texture> texture);
-		inline const video::Texture* getTexture() const { return m_texture.get(); }
+		void setTexture(const std::shared_ptr<const video::Texture>& texture);
+		inline const std::shared_ptr<const video::Texture>& getTexture() const { return m_texture; }
 		
 		inline void setColor(const video::Color& color) { m_color = color; }
 		inline const video::Color& getColor() const { return m_color; }

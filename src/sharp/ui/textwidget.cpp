@@ -8,7 +8,7 @@ namespace sharp
 namespace ui
 {
 
-TextWidget::TextWidget(std::shared_ptr<const flat::video::font::Font> font) : flat::video::font::String(font)
+TextWidget::TextWidget(const std::shared_ptr<const flat::video::font::Font>& font) : flat::video::font::String(font)
 {
 	
 }

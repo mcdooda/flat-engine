@@ -9,7 +9,7 @@ namespace video
 namespace font
 {
 
-String::String(std::shared_ptr<const Font> font) :
+String::String(const std::shared_ptr<const Font>& font) :
 	m_font(font),
 	m_wrapLength(0)
 {

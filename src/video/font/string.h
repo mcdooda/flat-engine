@@ -23,7 +23,7 @@ class String
 	};
 	
 	public:
-		String(std::shared_ptr<const Font> font);
+		String(const std::shared_ptr<const Font>& font);
 		~String();
 		
 		inline void setWrapLength(int wrapLength) { m_wrapLength = wrapLength; }
@@ -35,7 +35,7 @@ class String
 		inline const std::vector<CharacterVertex>& getVertices() const { return m_vertices; }
 		inline const std::vector<Font::CharInfoUv>& getUv() const { return m_uv; }
 		
-		inline std::shared_ptr<const Font> getFont() const { return m_font; }
+		inline const std::shared_ptr<const Font>& getFont() const { return m_font; }
 		
 		inline const Vector2& getComputedSize() const { return m_size; }
 		

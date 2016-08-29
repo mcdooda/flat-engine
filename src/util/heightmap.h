@@ -26,9 +26,9 @@ namespace util
 
 			void draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const override;
 			
-			void setHeightMap(std::shared_ptr<const video::FileTexture> heightMap, float multiplier = 0.0017);
+			void setHeightMap(const std::shared_ptr<const video::FileTexture>& heightMap, float multiplier = 0.0017);
 			
-			inline void setBumpMap(std::shared_ptr<const video::FileTexture> bumpMap) { m_bumpMap = bumpMap; }
+			inline void setBumpMap(const std::shared_ptr<const video::FileTexture>& bumpMap) { m_bumpMap = bumpMap; }
 			
 		protected:
 			float getHeight(unsigned int x, unsigned int y) const;
