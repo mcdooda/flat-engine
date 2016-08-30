@@ -52,7 +52,7 @@ Matrix4& Layout::getTransform(Widget& widget)
 
 Widget& Layout::getParent(Widget& widget)
 {
-	FLAT_ASSERT(widget.m_parent);
+	FLAT_ASSERT(widget.m_parent != nullptr);
 	return *widget.m_parent;
 }
 
@@ -105,7 +105,7 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 {
 	Widget::PositionPolicy positionPolicy = widget.m_positionPolicy;
 
-	FLAT_ASSERT(widget.m_parent);
+	FLAT_ASSERT(widget.m_parent != nullptr);
 	Widget& parent = *widget.m_parent;
 
 	if (positionPolicy & Widget::PositionPolicy::LEFT)

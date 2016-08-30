@@ -58,7 +58,7 @@ class SharedReference : public std::shared_ptr<Reference<LuaType>>
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
 			Reference<LuaType>* reference = Super::get();
-			FLAT_ASSERT(reference);
+			FLAT_ASSERT(reference != nullptr);
 			int luaReference = reference->getLuaReference();
 			FLAT_ASSERT(luaReference != LUA_NOREF);
 			lua_rawgeti(L, LUA_REGISTRYINDEX, luaReference);
@@ -67,7 +67,7 @@ class SharedReference : public std::shared_ptr<Reference<LuaType>>
 		inline lua_State* getLuaState() const
 		{
 			Reference<LuaType>* reference = Super::get();
-			FLAT_ASSERT(reference);
+			FLAT_ASSERT(reference != nullptr);
 			return reference->getLuaState();
 		}
 };

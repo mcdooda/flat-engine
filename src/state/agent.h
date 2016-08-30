@@ -21,7 +21,7 @@ class Agent
 		template <class T>
 		T* to()
 		{
-			FLAT_ASSERT(dynamic_cast<T*>(this));
+			FLAT_ASSERT(dynamic_cast<T*>(this) != nullptr);
 			return static_cast<T*>(this);
 		}
 		

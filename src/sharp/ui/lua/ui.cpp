@@ -519,7 +519,7 @@ Widget* getRootWidget(lua_State* L)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	Widget* rootWidget = static_cast<Widget*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(rootWidget);
+	FLAT_ASSERT(rootWidget != nullptr);
 	lua_pop(L, 1);
 	return rootWidget;
 }
@@ -563,7 +563,7 @@ WidgetFactory* getWidgetFactory(lua_State* L)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	WidgetFactory* widgetFactory = static_cast<WidgetFactory*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(widgetFactory);
+	FLAT_ASSERT(widgetFactory != nullptr);
 	lua_pop(L, 1);
 	return widgetFactory;
 }

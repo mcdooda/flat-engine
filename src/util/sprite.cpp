@@ -57,7 +57,7 @@ void Sprite::setTexture(const std::shared_ptr<const video::Texture>& texture)
 {
 	m_texture = texture;
 	const video::Texture* t = texture.get();
-	FLAT_ASSERT_MSG(t, "Cannot set a null texture on a sprite");
+	FLAT_ASSERT_MSG(t != nullptr, "Cannot set a null texture on a sprite");
 	const Vector2& textureSize = t->getSize();
 	m_origin = textureSize / 2.f;
 	m_modelMatrixIsDirty = true;
@@ -70,7 +70,7 @@ void Sprite::setTexture(const std::shared_ptr<const video::Texture>& texture)
 void Sprite::draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const
 {
 	const video::Texture* texture = getTexture().get();
-	FLAT_ASSERT(texture);
+	FLAT_ASSERT(texture != nullptr);
 	renderSettings.textureUniform.set(texture);
 	renderSettings.colorUniform.set(m_color);
 	updateModelMatrix();

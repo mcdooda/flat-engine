@@ -195,7 +195,7 @@ Game* getGame(lua_State* L)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	Game* game = static_cast<Game*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(game);
+	FLAT_ASSERT(game != nullptr);
 	lua_pop(L, 1);
 	return game;
 }

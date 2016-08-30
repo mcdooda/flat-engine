@@ -47,7 +47,7 @@ void Program::load(const std::string& fragmentShader, const std::string& vertexS
 
 void Program::use(Window* window)
 {
-	FLAT_ASSERT(window);
+	FLAT_ASSERT(window != nullptr);
 	assertValid();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(m_programId);

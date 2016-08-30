@@ -111,7 +111,7 @@ void Widget::removeChild(Widget* widget)
 
 void Widget::removeFromParent()
 {
-	FLAT_ASSERT(m_parent);
+	FLAT_ASSERT(m_parent != nullptr);
 	m_parent->removeChild(this);
 }
 
