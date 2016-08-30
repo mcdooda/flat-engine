@@ -39,7 +39,7 @@ void Polygon::draw(video::Attribute vertexAttribute) const
 	{
 		glEnableVertexAttribArray(vertexAttribute);
 		glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, &m_vertices[0]);
-		glDrawArrays(GL_POLYGON, 0, m_vertices.size());
+		glDrawArrays(GL_POLYGON, 0, static_cast<GLsizei>(m_vertices.size()));
 		glDisableVertexAttribArray(vertexAttribute);
 	}
 }

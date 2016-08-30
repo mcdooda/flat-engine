@@ -86,21 +86,21 @@ void HeightMap::setHeightMap(const std::shared_ptr<const video::FileTexture>& he
 
 float HeightMap::getHeight(unsigned int x, unsigned int y) const
 {
-	video::Color color = m_heightMap->getPixel(Vector2(x, y));
+	video::Color color = m_heightMap->getPixel(Vector2(static_cast<float>(x), static_cast<float>(y)));
 	return static_cast<float>(color.r + color.g + color.b) / 3.f * m_multiplier;
 }
 
 Vertex3d* HeightMap::getVertex(unsigned int x, unsigned int y) const
 {
-	unsigned int width  = m_heightMap->getSize().x;
+	unsigned int width = static_cast<unsigned int>(m_heightMap->getSize().x);
 	return &m_vertices[x * width + y];
 }
 
 void HeightMap::computeHeightMap()
 {
-	unsigned int width  = m_heightMap->getSize().x;
-	unsigned int height = m_heightMap->getSize().y;
-	unsigned int numVertices = width * height;
+	const unsigned int width = static_cast<unsigned int>(m_heightMap->getSize().x);
+	const unsigned int height = static_cast<unsigned int>(m_heightMap->getSize().y);
+	const unsigned int numVertices = width * height;
 	m_vertices = new Vertex3d[numVertices];
 	
 	const flat::video::Texture* texture = getTexture().get();
@@ -113,11 +113,11 @@ void HeightMap::computeHeightMap()
 		for (y = 0; y < height; y++)
 		{
 			Vertex3d* v = getVertex(x, y);
-			v->x = ((float) x / (width - 1) - 0.5) * textureWidth;
-			v->y = ((float) y / (height - 1) - 0.5) * textureHeight;
+			v->x = (static_cast<float>(x) / (width - 1) - 0.5f) * textureWidth;
+			v->y = (static_cast<float>(y) / (height - 1) - 0.5f) * textureHeight;
 			v->z = getHeight(x, y + 1) * textureWidth; // y + 1 ????
-			v->u = (float) x / (width - 1);
-			v->v = (float) y / (height - 1);
+			v->u = static_cast<float>(x) / (width - 1);
+			v->v = static_cast<float>(y) / (height - 1);
 		}
 	}
 	

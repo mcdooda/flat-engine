@@ -34,7 +34,7 @@ class BitAccessor
 		operator bool() const
 		{
 			char bit = (m_buffer[m_byteIndex] >> m_bitIndex) & 0x01;
-			return bit;
+			return bit == 1;
 		}
 		
 	private:

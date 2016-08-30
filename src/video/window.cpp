@@ -27,7 +27,7 @@ void Window::open(const Vector2& size, bool fullScreen, bool vsync)
 	if (fullScreen)
 		windowFlags |= SDL_WINDOW_FULLSCREEN;
 	
-	m_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, size.x, size.y, windowFlags);
+	m_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, static_cast<int>(size.x), static_cast<int>(size.y), windowFlags);
 	
 	int rendererFlags = 0;
 	if (vsync) // TODO vsync
@@ -67,13 +67,13 @@ void Window::toggleFullScreen()
 	Vector2 desktopSize = getDesktopSize();
 	if (m_fullScreen)
 	{
-		SDL_SetWindowSize(m_window, desktopSize.x, desktopSize.y);
+		SDL_SetWindowSize(m_window, static_cast<int>(desktopSize.x), static_cast<int>(desktopSize.y));
 		SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN);
 	}
 	else
 	{
 		SDL_SetWindowFullscreen(m_window, 0);
-		SDL_SetWindowSize(m_window, desktopSize.x / 2, desktopSize.y / 2);
+		SDL_SetWindowSize(m_window, static_cast<int>(desktopSize.x / 2.f), static_cast<int>(desktopSize.y / 2.f));
 	}
 }
 
@@ -99,7 +99,7 @@ const Vector2& Window::getDesktopSize() const
 	{
 		SDL_DisplayMode desktopDisplayMode;
 		SDL_GetDesktopDisplayMode(0, &desktopDisplayMode);
-		desktopSize = Vector2(desktopDisplayMode.w, desktopDisplayMode.h);
+		desktopSize = Vector2(static_cast<float>(desktopDisplayMode.w), static_cast<float>(desktopDisplayMode.h));
 	}
 	return desktopSize;
 }

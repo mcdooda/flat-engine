@@ -43,7 +43,7 @@ Color FileTexture::getPixel(const Vector2& pixelPosition) const
 
 void FileTexture::load()
 {
-	m_size = Vector2(m_surface->w, m_surface->h);
+	m_size = Vector2(static_cast<float>(m_surface->w), static_cast<float>(m_surface->h));
 	
 	glGenTextures(1, &m_textureId);
 	glBindTexture(GL_TEXTURE_2D, m_textureId);

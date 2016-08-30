@@ -208,7 +208,7 @@ class Matrix4
 				      m_matrix[8] * m_matrix[2] * m_matrix[5];
 
 			float det = m_matrix[0] * inv[0] + m_matrix[1] * inv[4] + m_matrix[2] * inv[8] + m_matrix[3] * inv[12];
-			det = 1.0 / det;
+			det = 1.f / det;
 
 			for (int i = 0; i < 16; i++)
 				m_matrix[i] = inv[i] * det;
@@ -413,7 +413,7 @@ inline std::ostream& operator<<(std::ostream& out, const Matrix4& matrix4)
 	const int w = 8;
 	const int p = 3;
 	
-	int precision = out.precision();
+	std::streamsize precision = out.precision();
 	
 	out << std::setprecision(p)
 	    << "("

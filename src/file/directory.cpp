@@ -54,14 +54,9 @@ void Directory::read()
 
 bool Directory::isFileName(const std::string& name)
 {
-	int i;
+	size_t i;
 	for (i = name.size() - 1; i >= 0 && name[i] != '.' && name[i] != '/'; i--);
-
-	if (name[i] == '.')
-		return true;
-
-	else
-		return false;
+	return name[i] == '.';
 }
 
 void Directory::getFiles(std::vector<File*>& files) const

@@ -23,7 +23,7 @@ String::~String()
 
 void String::setText(const std::string& text)
 {
-	int textLength = text.size();
+	size_t textLength = text.size();
 	m_text = text;
 	
 	m_vertices.clear();

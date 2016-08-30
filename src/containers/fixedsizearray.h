@@ -77,7 +77,7 @@ class FixedSizeArray<bool, SIZE>
 			unsigned int byteIndex = index / 8;
 			unsigned char bitIndex = index % 8;
 			char bit = (m_buffer[byteIndex] >> bitIndex) & 0x01;
-			return bit;
+			return bit == 1;
 		}
 		
 		BitAccessor operator[](unsigned int index)

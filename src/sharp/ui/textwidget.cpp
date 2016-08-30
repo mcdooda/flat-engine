@@ -38,7 +38,7 @@ void TextWidget::draw(const util::RenderSettings& renderSettings) const
 	glEnableVertexAttribArray(renderSettings.uvAttribute);
 	glVertexAttribPointer(renderSettings.uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const float*>(&(getUv()[0])));
 	
-	glDrawArrays(GL_TRIANGLES, 0, getUv().size());
+	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(getUv().size()));
 	
 	glDisableVertexAttribArray(renderSettings.positionAttribute);
 	glDisableVertexAttribArray(renderSettings.uvAttribute);

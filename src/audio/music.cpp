@@ -81,7 +81,7 @@ bool Music::setPosition(double position)
 	}
 
 	if (moved)
-		m_timer->setTime(position);
+		m_timer->setTime(static_cast<float>(position));
 
 	return moved;
 }

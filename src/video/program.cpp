@@ -52,7 +52,7 @@ void Program::use(Window* window)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(m_programId);
 	const Vector2& windowSize = window->getSize();
-	glViewport(0, 0, windowSize.x, windowSize.y);
+	glViewport(0, 0, static_cast<GLsizei>(windowSize.x), static_cast<GLsizei>(windowSize.y));
 	
 	int i = 0;
 	for (std::vector<Texture>::iterator it = m_inputTextures.begin(); it != m_inputTextures.end(); it++)

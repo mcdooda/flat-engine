@@ -20,14 +20,14 @@ Font::Font(const std::string& font, int size) :
 		TTF_GlyphMetrics(m_font, c, &ci.minX, &ci.maxX, &ci.minY, &ci.maxY, &ci.advance);
 		x += ci.advance;
 	}
-	m_atlasSize.x = x;
-	m_atlasSize.y = TTF_FontHeight(m_font);
+	m_atlasSize.x = static_cast<float>(x);
+	m_atlasSize.y = static_cast<float>(TTF_FontHeight(m_font));
 	
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &m_atlasId);
 	glBindTexture(GL_TEXTURE_2D, m_atlasId);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_atlasSize.x, m_atlasSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(m_atlasSize.x), static_cast<GLsizei>(m_atlasSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	

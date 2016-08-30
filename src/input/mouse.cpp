@@ -19,7 +19,7 @@ Mouse::~Mouse()
 bool Mouse::isPressed(int button) const
 {
 	Uint8 buttonState = SDL_GetMouseState(nullptr, nullptr);
-	return buttonState & SDL_BUTTON(button);
+	return (buttonState & SDL_BUTTON(button)) != 0;
 }
 
 bool Mouse::isJustPressed(int button) const
@@ -53,26 +53,26 @@ void Mouse::addEvent(const SDL_Event& e)
 	switch (e.type)
 	{
 		case SDL_MOUSEBUTTONDOWN:
-		m_position.x = e.button.x;
+		m_position.x = static_cast<float>(e.button.x);
 		m_position.y = m_videoWindow->getSize().y - e.button.y;
 		m_justPressedButtons[e.button.button] = true;
 		break;
 
 		case SDL_MOUSEBUTTONUP:
-		m_position.x = e.button.x;
+		m_position.x = static_cast<float>(e.button.x);
 		m_position.y = m_videoWindow->getSize().y - e.button.y;
 		m_justReleasedButtons[e.button.button] = true;
 		break;
 
 		case SDL_MOUSEMOTION:
-		m_position.x = e.button.x;
+		m_position.x = static_cast<float>(e.button.x);
 		m_position.y = m_videoWindow->getSize().y - e.button.y;
 		m_moved = true;
 		break;
 		
 		case SDL_MOUSEWHEEL:
-		m_wheelMove.x = e.wheel.x;
-		m_wheelMove.y = e.wheel.y;
+		m_wheelMove.x = static_cast<float>(e.wheel.x);
+		m_wheelMove.y = static_cast<float>(e.wheel.y);
 		m_wheelMoved = true;
 		break;
 	}

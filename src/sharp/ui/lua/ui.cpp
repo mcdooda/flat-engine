@@ -220,8 +220,8 @@ int l_Widget_getSizePolicy(lua_State* L)
 int l_Widget_setSize(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
-	int width = luaL_checkint(L, 2);
-	int height = luaL_checkint(L, 3);
+	float width = static_cast<float>(luaL_checknumber(L, 2));
+	float height = static_cast<float>(luaL_checknumber(L, 3));
 	Widget::Size size(width, height);
 	widget->setSize(size);
 	return 0;
@@ -231,8 +231,8 @@ int l_Widget_getSize(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
 	const Widget::Size& size = widget->getSize();
-	lua_pushinteger(L, size.x);
-	lua_pushinteger(L, size.y);
+	lua_pushnumber(L, size.x);
+	lua_pushnumber(L, size.y);
 	return 2;
 }
 
@@ -255,8 +255,8 @@ int l_Widget_getPositionPolicy(lua_State* L)
 int l_Widget_setPosition(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
-	int x = luaL_checkint(L, 2);
-	int y = luaL_checkint(L, 3);
+	float x = static_cast<float>(luaL_checknumber(L, 2));
+	float y = static_cast<float>(luaL_checknumber(L, 3));
 	Widget::Position position(x, y);
 	widget->setPosition(position);
 	return 0;
@@ -266,17 +266,17 @@ int l_Widget_getPosition(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
 	const Widget::Position& position = widget->getPosition();
-	lua_pushinteger(L, position.x);
-	lua_pushinteger(L, position.y);
+	lua_pushnumber(L, position.x);
+	lua_pushnumber(L, position.y);
 	return 2;
 }
 
 int l_Widget_setRotation(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
-	float rotationX = luaL_checknumber(L, 2);
-	float rotationY = luaL_checknumber(L, 3);
-	float rotationZ = luaL_checknumber(L, 4);
+	float rotationX = static_cast<float>(luaL_checknumber(L, 2));
+	float rotationY = static_cast<float>(luaL_checknumber(L, 3));
+	float rotationZ = static_cast<float>(luaL_checknumber(L, 4));
 	widget->setRotation(Widget::Rotation(rotationX, rotationY, rotationZ));
 	return 0;
 }
@@ -284,7 +284,7 @@ int l_Widget_setRotation(lua_State* L)
 int l_Widget_setRotationZ(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
-	float rotationZ = luaL_checknumber(L, 2);
+	float rotationZ = static_cast<float>(luaL_checknumber(L, 2));
 	widget->setRotationZ(rotationZ);
 	return 0;
 }
@@ -333,7 +333,7 @@ int l_Widget_setBackgroundColor(lua_State* L)
 int l_Widget_setVisible(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
-	bool visible = lua_toboolean(L, 2);
+	bool visible = lua_toboolean(L, 2) == 1;
 	widget->setVisible(visible);
 	return 0;
 }
@@ -378,7 +378,7 @@ int l_Widget_click(lua_State* L)
 			lua_pushnumber(L, relativePosition.x);
 			lua_pushnumber(L, relativePosition.y);
 			lua_call(L, 3, 1);
-			eventHandled |= lua_toboolean(L, -1);
+			eventHandled = eventHandled || lua_toboolean(L, -1);
 			lua_pop(L, 1);
 		}
 	);
@@ -403,7 +403,7 @@ int l_Widget_mouseMove(lua_State* L)
 			lua_pushnumber(L, relativePosition.x);
 			lua_pushnumber(L, relativePosition.y);
 			lua_call(L, 3, 1);
-			eventHandled |= lua_toboolean(L, -1);
+			eventHandled = eventHandled || lua_toboolean(L, -1);
 			lua_pop(L, 1);
 		}
 	);
@@ -477,9 +477,9 @@ int l_Widget_makeImage(lua_State* L)
 int l_Widget_makeFixedSize(lua_State* L)
 {
 	WidgetFactory* widgetFactory = getWidgetFactory(L);
-	int x = luaL_checkint(L, 1);
-	int y = luaL_checkint(L, 2);
-	Widget::Size size(x, y);
+	float width = static_cast<float>(luaL_checknumber(L, 1));
+	float height = static_cast<float>(luaL_checknumber(L, 2));
+	Widget::Size size(width, height);
 	Widget* widget = widgetFactory->makeFixedSize(size);
 	pushWidget(L, widget);
 	return 1;

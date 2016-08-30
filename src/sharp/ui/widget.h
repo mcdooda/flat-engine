@@ -19,7 +19,7 @@ class Texture;
 
 namespace util
 {
-class RenderSettings;
+struct RenderSettings;
 }
 
 namespace sharp

@@ -43,8 +43,8 @@ void Circle::buildCircle()
 	m_vertices.reserve(numVertices);
 	for (int i = 0; i < numVertices; i++)
 	{
-		float alpha = M_PI * 2 * static_cast<float>(i) / numVertices;
-		m_vertices.emplace_back(m_center.x + cos(alpha) * m_radius, m_center.y + sin(alpha) * m_radius);
+		float alpha = static_cast<float>(static_cast<float>(i) / numVertices * M_PI * 2.0);
+		m_vertices.emplace_back(m_center.x + std::cos(alpha) * m_radius, m_center.y + std::sin(alpha) * m_radius);
 	}
 }
 

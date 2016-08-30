@@ -9,7 +9,7 @@ namespace random
 
 Random::Random()
 {
-	setSeed(time(nullptr));
+	setSeed(static_cast<int>(time(nullptr)));
 }
 
 Random::~Random()

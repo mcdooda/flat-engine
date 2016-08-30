@@ -56,7 +56,7 @@ float Time::getActualFrameRate()
 
 void Time::sleep(float duration)
 {
-	SDL_Delay(duration * 1000.0f);
+	SDL_Delay(static_cast<Uint32>(duration * 1000.f));
 }
 
 } // time

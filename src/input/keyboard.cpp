@@ -23,7 +23,7 @@ bool Keyboard::isPressed(Key k) const
 	const Uint8* pressedKeys = SDL_GetKeyboardState(nullptr);
 	
 	if (k < m_numKeys)
-		return static_cast<bool>(pressedKeys[k]);
+		return pressedKeys[k] != 0;
 		
 	else
 		return false;

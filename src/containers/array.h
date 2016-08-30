@@ -155,7 +155,7 @@ class Array<bool>
 			unsigned int byteIndex = index / 8;
 			unsigned char bitIndex = index % 8;
 			char bit = (m_buffer[byteIndex] >> bitIndex) & 0x01;
-			return bit;
+			return bit == 1;
 		}
 		
 		BitAccessor operator[](unsigned int index)
@@ -174,7 +174,7 @@ class Array<bool>
 	private:
 		size_t getBytesSize() const
 		{
-			return ceilf(static_cast<float>(m_size) / 8.f);
+			return static_cast<size_t>(ceilf(static_cast<float>(m_size) / 8.f));
 		}
 		
 	private:

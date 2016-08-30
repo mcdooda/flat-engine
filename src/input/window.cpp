@@ -36,7 +36,7 @@ void Window::addEvent(const SDL_Event& e)
 		{
 			case SDL_WINDOWEVENT_RESIZED:
 			m_resized = true;
-			m_videoWindow->resized(Vector2(e.window.data1, e.window.data2));
+			m_videoWindow->resized(Vector2(static_cast<float>(e.window.data1), static_cast<float>(e.window.data2)));
 			break;
 		}
 		break;
