@@ -25,6 +25,12 @@ void SpriteBatch::add(const Sprite& sprite)
 		FLAT_ASSERT(m_texture == nullptr);
 		m_texture = sprite.getTexture().get();
 	}
+	FLAT_DEBUG_ONLY(
+	else
+	{
+		FLAT_ASSERT(m_texture == sprite.getTexture().get());
+	}
+	)
 	FLAT_ASSERT(m_texture != nullptr);
 
 	const Matrix4& transform = sprite.getModelMatrix();
