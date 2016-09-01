@@ -29,6 +29,8 @@ class Texture
 		inline GLuint getTextureId() const { return m_textureId; }
 		inline const Vector2& getSize() const { return m_size; }
 		inline const std::string& getName() const { return m_name; }
+
+		inline std::uint32_t getHash() const { return static_cast<std::uint32_t>(m_textureId); }
 		
 		friend class Pass;
 		

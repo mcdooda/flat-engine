@@ -14,6 +14,9 @@ namespace flat
 class Matrix4
 {
 	public:
+		static const Matrix4 identity;
+
+	public:
 		inline Matrix4()
 		{
 			setIdentity();

@@ -23,6 +23,7 @@ struct RenderSettings
 	video::Attribute positionAttribute;
 	video::Attribute normalAttribute;
 	video::Attribute uvAttribute;
+	video::Attribute colorAttribute;
 };
 
 } // util

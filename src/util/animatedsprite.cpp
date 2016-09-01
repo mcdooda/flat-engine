@@ -39,12 +39,14 @@ void AnimatedSprite::setAtlasSize(int atlasWidth, int atlasHeight)
 	);
 	m_tileSizeRatio.x = 1.f / atlasWidth;
 	m_tileSizeRatio.y = 1.f / atlasHeight;
-	float atlasTileWidth = textureSize.x / atlasWidth;
-	float atlasTileHeight = textureSize.y / atlasHeight;
+	const float atlasTileWidth = textureSize.x / atlasWidth;
+	const float atlasTileHeight = textureSize.y / atlasHeight;
 	m_vertices[1].pos.x = atlasTileWidth;
-	m_vertices[2].pos.x = atlasTileWidth;
 	m_vertices[2].pos.y = atlasTileHeight;
+	m_vertices[3].pos.x = atlasTileWidth;
 	m_vertices[3].pos.y = atlasTileHeight;
+	m_vertices[4].pos.y = atlasTileHeight;
+	m_vertices[5].pos.x = atlasTileWidth;
 	setLine(0);
 	setColumn(0);
 }
@@ -62,6 +64,8 @@ void AnimatedSprite::setLine(int line)
 	m_vertices[1].uv.y = uvy0;
 	m_vertices[2].uv.y = uvy1;
 	m_vertices[3].uv.y = uvy1;
+	m_vertices[4].uv.y = uvy1;
+	m_vertices[5].uv.y = uvy0;
 }
 
 void AnimatedSprite::setColumn(int column)
@@ -75,8 +79,10 @@ void AnimatedSprite::setColumn(int column)
 	
 	m_vertices[0].uv.x = uvx0;
 	m_vertices[1].uv.x = uvx1;
-	m_vertices[2].uv.x = uvx1;
-	m_vertices[3].uv.x = uvx0;
+	m_vertices[2].uv.x = uvx0;
+	m_vertices[3].uv.x = uvx1;
+	m_vertices[4].uv.x = uvx0;
+	m_vertices[5].uv.x = uvx1;
 }
 
 void AnimatedSprite::playAnimation(int line, int numFrames, float frameDuration, int numLoops)

@@ -11,9 +11,12 @@ namespace flat
 {
 namespace util
 {
+class SpriteBatch;
 
 class Sprite
 {
+	friend class SpriteBatch;
+
 	public:
 		Sprite();
 		virtual ~Sprite();
@@ -55,7 +58,7 @@ class Sprite
 		virtual void draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const;
 		
 		void updateModelMatrix() const;
-		inline const Matrix4& getModelMatrix() { updateModelMatrix(); return m_modelMatrix; }
+		inline const Matrix4& getModelMatrix() const { updateModelMatrix(); return m_modelMatrix; }
 		
 		struct Vertex
 		{
@@ -66,7 +69,7 @@ class Sprite
 	protected:
 		std::shared_ptr<const video::Texture> m_texture;
 		
-		flat::containers::FixedSizeArray<Vertex, 4> m_vertices;
+		flat::containers::FixedSizeArray<Vertex, 6> m_vertices;
 		
 		video::Color m_color;
 		

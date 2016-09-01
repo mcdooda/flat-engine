@@ -43,6 +43,7 @@
 // util
 #include "util/animatedsprite.h"
 #include "util/heightmap.h"
+#include "util/spritebatch.h"
 
 // sharp
 // ui
