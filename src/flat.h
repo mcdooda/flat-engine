@@ -45,6 +45,9 @@
 #include "util/heightmap.h"
 #include "util/spritebatch.h"
 
+// containers
+#include "containers/pool.h"
+
 // sharp
 // ui
 #include "sharp/ui/widgetfactory.h"

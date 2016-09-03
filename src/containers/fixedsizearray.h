@@ -11,7 +11,7 @@ namespace flat
 namespace containers
 {
 
-template <class T, unsigned int SIZE>
+template <class T, unsigned int Size>
 class FixedSizeArray
 {
 	public:
@@ -20,12 +20,21 @@ class FixedSizeArray
 		
 		bool isInRange(unsigned int index) const
 		{
-			return index < SIZE;
+			return index < Size;
+		}
+
+		int indexOf(const T& object) const
+		{
+			std::ptrdiff_t index = &object - &m_buffer[0];
+			if (index >= 0 && index < Size)
+				return static_cast<int>(index);
+
+			return -1;
 		}
 		
 		unsigned int getSize() const
 		{
-			return SIZE;
+			return Size;
 		}
 		
 		const T& operator[](unsigned int index) const
@@ -42,7 +51,7 @@ class FixedSizeArray
 		
 		void memset(int c)
 		{
-			::memset(m_buffer, c, SIZE);
+			::memset(m_buffer, c, Size);
 		}
 		
 		const T* getBuffer() const
@@ -50,8 +59,8 @@ class FixedSizeArray
 			return m_buffer;
 		}
 		
-	private:
-		T m_buffer[SIZE];
+	protected:
+		T m_buffer[Size];
 };
 
 constexpr int getNumBytes(int numBits)
@@ -59,8 +68,8 @@ constexpr int getNumBytes(int numBits)
 	return static_cast<float>(numBits) / 8.f == static_cast<float>(numBits / 8) ? numBits / 8 : numBits / 8 + 1;
 }
 
-template <int SIZE>
-class FixedSizeArray<bool, SIZE>
+template <int Size>
+class FixedSizeArray<bool, Size>
 {
 	public:
 		FixedSizeArray() {}
@@ -68,7 +77,7 @@ class FixedSizeArray<bool, SIZE>
 		
 		bool isInRange(unsigned int index) const
 		{
-			return index < SIZE;
+			return index < Size;
 		}
 		
 		bool operator[](unsigned int index) const
@@ -90,11 +99,11 @@ class FixedSizeArray<bool, SIZE>
 		
 		void memset(int c)
 		{
-			::memset(m_buffer, c, getNumBytes(SIZE));
+			::memset(m_buffer, c, getNumBytes(Size));
 		}
 		
 	private:
-		char m_buffer[getNumBytes(SIZE)];
+		char m_buffer[getNumBytes(Size)];
 };
 
 } // containers

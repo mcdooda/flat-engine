@@ -32,11 +32,13 @@ class Game : public Flat, public state::Agent
 		inline void stop() { m_stop = true; }
 		
 		/* game launcher */
-		template <class T> static int run(int argc, char* argv[])
+		template <class GameType>
+		static int run(int argc, char* argv[])
 		{
+			static_assert(std::is_base_of<Game, GameType>::value, "GameType must inherit from Game");
 			std::vector<std::string> args;
 			args.assign(argv, argv + argc);
-			T* game = new T(args);
+			GameType* game = new GameType(args);
 			game->init();
 			game->loop();
 			delete game;

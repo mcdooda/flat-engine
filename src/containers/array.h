@@ -37,11 +37,8 @@ class Array
 		
 		void operator=(const Array<T>& array)
 		{
-			if (m_buffer)
-				FLAT_FREE(m_buffer);
-				
+			FLAT_FREE(m_buffer);
 			m_size = array.m_size;
-			
 			size_t numBytes = m_size * sizeof(T);
 			m_buffer = malloc(numBytes);
 			memcpy(m_buffer, array.m_buffer, numBytes);
@@ -61,6 +58,16 @@ class Array
 		bool isInRange(unsigned int index) const
 		{
 			return index < m_size;
+		}
+
+		int indexOf(const T& object) const
+		{
+			FLAT_ASSERT(m_buffer != nullptr);
+			int index = &object - &m_buffer[0];
+			if (index >= 0 && index < m_size)
+				return index;
+
+			return -1;
 		}
 		
 		unsigned int getSize() const

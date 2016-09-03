@@ -18,13 +18,17 @@ Machine::Machine(Agent* agent)
 
 Machine::~Machine()
 {
+	if (m_currentState != nullptr)
+	{
+		m_currentState->exit(m_agent);
+		FLAT_DELETE(m_currentState);
+	}
 	if (m_globalState != nullptr)
 	{
 		m_globalState->exit(m_agent);
 		FLAT_DELETE(m_globalState);
 	}
 	FLAT_DELETE(m_previousState);
-	FLAT_DELETE(m_currentState);
 }
 
 void Machine::setState(State* state)
