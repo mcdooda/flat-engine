@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "../containers/fixedsizearray.h"
-#include "../misc/vector2.h"
+#include "../misc/vector.h"
 #include "../video/video.h"
 #include "../video/view.h"
 

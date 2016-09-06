@@ -1,7 +1,7 @@
 #ifndef FLAT_GEOMETRY_LINESEGMENT_H
 #define FLAT_GEOMETRY_LINESEGMENT_H
 
-#include "../misc/vector2.h"
+#include "../misc/vector.h"
 #include "../video/attribute.h"
 
 namespace flat

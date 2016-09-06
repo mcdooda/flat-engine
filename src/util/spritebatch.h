@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "../video/color.h"
-#include "../misc/vector2.h"
+#include "../misc/vector.h"
 #include "../misc/matrix4.h"
 #include "../containers/fixedsizearray.h"
 

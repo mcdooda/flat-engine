@@ -4,7 +4,7 @@
 #include <string>
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
-#include "../../misc/vector2.h"
+#include "../../misc/vector.h"
 #include "../../containers/fixedsizearray.h"
 
 namespace flat

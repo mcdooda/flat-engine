@@ -3,7 +3,7 @@
 
 #include <string>
 #include <GL/glew.h>
-#include "../misc/vector2.h"
+#include "../misc/vector.h"
 
 namespace flat
 {

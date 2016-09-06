@@ -20,7 +20,7 @@ void RootLayout::layout(Widget& widget)
 	flat::video::Window* window = static_cast<RootWidget&>(widget).m_game.video->window;
 	widget.setSize(window->getSize());
 
-	getTransform(widget) = glm::mat4();
+	getTransform(widget) = Matrix4();
 }
 
 void RootLayout::postLayout(Widget& widget)

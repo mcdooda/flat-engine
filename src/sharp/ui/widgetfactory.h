@@ -2,7 +2,7 @@
 #define FLAT_SHARP_UI_WIDGETFACTORY_H
 
 #include <string>
-#include "../../misc/vector2.h"
+#include "../../misc/vector.h"
 
 namespace flat
 {

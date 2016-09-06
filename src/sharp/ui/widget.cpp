@@ -216,8 +216,8 @@ bool Widget::isInside(const Vector2& point) const
 
 Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 {
-	Matrix4 invTransform = glm::inverse(m_transform);
-	return Vector2(invTransform * glm::vec4(absolutePosition, 0.f, 1.f));
+	Matrix4 invTransform = inverse(m_transform);
+	return Vector2(invTransform * Vector4(absolutePosition, 0.f, 1.f));
 }
 
 void Widget::drawChildren(const util::RenderSettings& renderSettings) const

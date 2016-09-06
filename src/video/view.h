@@ -1,7 +1,7 @@
 #ifndef FLAT_VIDEO_VIEW_H
 #define FLAT_VIDEO_VIEW_H
 
-#include "../misc/vector2.h"
+#include "../misc/vector.h"
 #include "../misc/matrix4.h"
 
 namespace flat

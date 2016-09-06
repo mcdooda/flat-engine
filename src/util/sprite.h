@@ -4,7 +4,6 @@
 #include <memory>
 #include "rendersettings.h"
 #include "../video/texture.h"
-#include "../misc/vector3.h"
 #include "../containers/fixedsizearray.h"
 
 namespace flat

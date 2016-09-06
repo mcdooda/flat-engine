@@ -3,7 +3,7 @@
 
 #include "color.h"
 #include "texture.h"
-#include "../misc/vector3.h"
+#include "../misc/vector.h"
 #include "../misc/matrix4.h"
 
 namespace flat
@@ -118,7 +118,7 @@ public:
 
 	void set(const Matrix4& matrix4) const
 	{
-		glUniformMatrix4fv(m_uniformLocation, 1, GL_TRUE, glm::value_ptr(matrix4));
+		glUniformMatrix4fv(m_uniformLocation, 1, GL_TRUE, value_ptr(matrix4));
 	}
 };
 

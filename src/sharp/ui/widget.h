@@ -4,8 +4,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include "../../misc/vector2.h"
-#include "../../misc/vector3.h"
+#include "../../misc/vector.h"
 #include "../../misc/matrix4.h"
 #include "../../video/attribute.h"
 #include "../../video/color.h"
