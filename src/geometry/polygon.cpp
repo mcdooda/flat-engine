@@ -47,7 +47,7 @@ void Polygon::draw(video::Attribute vertexAttribute) const
 void Polygon::transform(const Matrix4& matrix4)
 {
 	for (std::vector<Vector2>::iterator it = m_vertices.begin(); it != m_vertices.end(); it++)
-		*it = matrix4 * *it;
+		*it = Vector2(matrix4 * glm::vec4(*it, 0.f, 1.f));
 }
 
 } // geometry

@@ -43,8 +43,7 @@ void HeightMap::draw(const RenderSettings& renderSettings, const Matrix4& viewMa
 	updateModelMatrix();
 	renderSettings.modelMatrixUniform.set(m_modelMatrix);
 	
-	Matrix4 normalMatrix = viewMatrix * m_modelMatrix;
-	normalMatrix.setInverseTranspose();
+	Matrix4 normalMatrix = glm::transpose(glm::inverse(viewMatrix * m_modelMatrix));
 	renderSettings.normalMatrixUniform.set(normalMatrix);
 	
 	glEnable(GL_DEPTH_TEST);
@@ -158,7 +157,7 @@ void HeightMap::computeHeightMap()
 			
 			flat::Vector3 dx(rightVertex->x - leftVertex->x, 0, rightVertex->z - leftVertex->z);
 			flat::Vector3 dy(0, topVertex->y - bottomVertex->y, topVertex->z - bottomVertex->z);
-			flat::Vector3 normal = dx.crossProduct(dy).normalize();
+			flat::Vector3 normal = glm::normalize(glm::cross(dx, dy));
 			//std::cout << "normal = " << normal << " / " << normal.normalize() << std::endl;
 			v->nx = normal.x;
 			v->ny = normal.y;

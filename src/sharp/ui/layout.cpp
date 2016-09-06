@@ -156,11 +156,17 @@ void Layout::computeTransform(Widget& widget)
 
 	Matrix4& transform = widget.m_transform;
 	transform = widget.m_parent->m_transform;
-	transform.translate(-widget.getSize() / 2.f);
-	transform.rotateZ(widget.getRotation().z);
-	transform.rotateY(widget.getRotation().y);
-	transform.rotateX(widget.getRotation().x);
-	transform.translate(position + widget.getSize() / 2.f);
+	//transform.translate(-widget.getSize() / 2.f);
+	//transform.rotateZ(widget.getRotation().z);
+	//transform.rotateY(widget.getRotation().y);
+	//transform.rotateX(widget.getRotation().x);
+	//transform.translate(position + widget.getSize() / 2.f);
+	transform = glm::translate(transform, glm::vec3(-widget.getSize() / 2.f, 0.f));
+	//transform = glm::rotate(transform, widget.getRotation().z, glm::vec3(0.f, 0.f, 1.f));
+	//transform = glm::rotate(transform, widget.getRotation().y, glm::vec3(0.f, 0.f, 0.f));
+	//transform = glm::rotate(transform, widget.getRotation().x, glm::vec3(0.f, 0.f, 0.f));
+	transform = glm::translate(transform, glm::vec3(position + widget.getSize() / 2.f, 0.f));
+
 }
 
 } // ui

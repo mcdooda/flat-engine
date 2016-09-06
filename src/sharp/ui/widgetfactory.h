@@ -2,11 +2,11 @@
 #define FLAT_SHARP_UI_WIDGETFACTORY_H
 
 #include <string>
+#include "../../misc/vector2.h"
 
 namespace flat
 {
 class Game;
-class Vector2;
 
 namespace video
 {

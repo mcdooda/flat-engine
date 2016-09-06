@@ -108,16 +108,23 @@ void Sprite::updateModelMatrix() const
 	if (m_modelMatrixIsDirty)
 	{
 		m_modelMatrixIsDirty = false;
-		m_modelMatrix.setIdentity();
-		m_modelMatrix.translate(-m_origin);
+		m_modelMatrix = glm::mat4();
+		//m_modelMatrix.translate(-m_origin);
+		m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(-m_origin, 0.f));
 		float scaleX = m_flipX ? -1.f : 1.f;
 		float scaleY = m_flipY ? -1.f : 1.f;
-		m_modelMatrix.scale(scaleX, scaleY);
-		m_modelMatrix.rotateZ(m_rotation.z);
-		m_modelMatrix.rotateY(m_rotation.y);
-		m_modelMatrix.rotateX(m_rotation.x);
-		m_modelMatrix.scale(m_scale);
-		m_modelMatrix.translate(m_position);
+		//m_modelMatrix.scale(scaleX, scaleY);
+		m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(scaleX, scaleY, 1.f));
+		//m_modelMatrix.rotateZ(m_rotation.z);
+		//m_modelMatrix = glm::rotate(m_modelMatrix, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
+		//m_modelMatrix.rotateY(m_rotation.y);
+		//m_modelMatrix = glm::rotate(m_modelMatrix, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
+		//m_modelMatrix.rotateX(m_rotation.x);
+		//m_modelMatrix = glm::rotate(m_modelMatrix, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
+		//m_modelMatrix.scale(m_scale);
+		m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(m_scale, m_scale, m_scale));
+		//m_modelMatrix.translate(m_position);
+		m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(m_position, 0.f));
 	}
 }
 

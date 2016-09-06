@@ -29,7 +29,7 @@ class View
 		
 		inline const Matrix4& getProjectionMatrix() const { return m_projectionMatrix; }
 		inline const Matrix4& getViewMatrix() const { return m_viewMatrix; }
-		inline Matrix4 getViewProjectionMatrix() const { return m_projectionMatrix * m_viewMatrix; }
+		inline Matrix4 getViewProjectionMatrix() const { return m_viewMatrix * m_projectionMatrix; }
 
 	private:
 		Matrix4 m_projectionMatrix;

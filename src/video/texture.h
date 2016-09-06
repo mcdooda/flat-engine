@@ -1,6 +1,7 @@
 #ifndef FLAT_VIDEO_TEXTURE_H
 #define FLAT_VIDEO_TEXTURE_H
 
+#include <string>
 #include <GL/glew.h>
 #include "../misc/vector2.h"
 

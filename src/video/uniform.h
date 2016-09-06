@@ -118,7 +118,7 @@ public:
 
 	void set(const Matrix4& matrix4) const
 	{
-		glUniformMatrix4fv(m_uniformLocation, 1, GL_TRUE, matrix4.getData());
+		glUniformMatrix4fv(m_uniformLocation, 1, GL_TRUE, glm::value_ptr(matrix4));
 	}
 };
 
