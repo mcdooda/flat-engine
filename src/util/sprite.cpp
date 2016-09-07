@@ -79,7 +79,7 @@ void Sprite::setTexture(const std::shared_ptr<const video::Texture>& texture)
 	m_vertices[5].pos.x = textureSize.x;
 }
 
-void Sprite::draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const
+void Sprite::draw(const RenderSettings& renderSettings, const Matrix4& /*viewMatrix*/) const
 {
 	const video::Texture* texture = getTexture().get();
 	FLAT_ASSERT(texture != nullptr);
@@ -109,22 +109,15 @@ void Sprite::updateModelMatrix() const
 	{
 		m_modelMatrixIsDirty = false;
 		m_modelMatrix = Matrix4();
-		//m_modelMatrix.translate(-m_origin);
-		m_modelMatrix = translate(m_modelMatrix, Vector3(-m_origin, 0.f));
+		m_modelMatrix = translate(m_modelMatrix, Vector3(m_position, 0.f));
+		m_modelMatrix = scale(m_modelMatrix, Vector3(m_scale, m_scale, m_scale));
+		m_modelMatrix = rotate(m_modelMatrix, m_rotation.z, Vector3(0.f, 0.f, 1.f));
+		m_modelMatrix = rotate(m_modelMatrix, m_rotation.y, Vector3(0.f, 1.f, 0.f));
+		m_modelMatrix = rotate(m_modelMatrix, m_rotation.x, Vector3(1.f, 0.f, 0.f));
 		float scaleX = m_flipX ? -1.f : 1.f;
 		float scaleY = m_flipY ? -1.f : 1.f;
-		//m_modelMatrix.scale(scaleX, scaleY);
 		m_modelMatrix = scale(m_modelMatrix, Vector3(scaleX, scaleY, 1.f));
-		//m_modelMatrix.rotateZ(m_rotation.z);
-		//m_modelMatrix = rotate(m_modelMatrix, m_rotation.z, Vector3(0.f, 0.f, 1.f));
-		//m_modelMatrix.rotateY(m_rotation.y);
-		//m_modelMatrix = rotate(m_modelMatrix, m_rotation.y, Vector3(0.f, 1.f, 0.f));
-		//m_modelMatrix.rotateX(m_rotation.x);
-		//m_modelMatrix = rotate(m_modelMatrix, m_rotation.x, Vector3(1.f, 0.f, 0.f));
-		//m_modelMatrix.scale(m_scale);
-		m_modelMatrix = scale(m_modelMatrix, Vector3(m_scale, m_scale, m_scale));
-		//m_modelMatrix.translate(m_position);
-		m_modelMatrix = translate(m_modelMatrix, Vector3(m_position, 0.f));
+		m_modelMatrix = translate(m_modelMatrix, Vector3(-m_origin, 0.f));
 	}
 }
 

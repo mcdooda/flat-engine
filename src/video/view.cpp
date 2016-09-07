@@ -23,7 +23,7 @@ void View::zoom(float factor)
 
 void View::move(const Vector2& move)
 {
-	m_viewMatrix = translate(m_viewMatrix, Vector3(move, 0.f));
+	m_viewMatrix = translate(m_viewMatrix, Vector3(-move, 0.f));
 }
 
 void View::rotateX(float angle)
