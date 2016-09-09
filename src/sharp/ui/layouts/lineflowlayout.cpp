@@ -39,9 +39,8 @@ void LineFlowLayout::layout(Widget& widget)
 
 		Matrix4& childTransform = getTransform(*child);
 		childTransform = Matrix4();
-		//childTransform.translate(Vector2(currentX + getPosition(*child).x, getPadding(widget).top + getMargin(*child).top + getPosition(*child).y));
-		childTransform = translate(childTransform, Vector3(currentX + getPosition(*child).x, getPadding(widget).top + getMargin(*child).top + getPosition(*child).y, 0.f));
-		childTransform = getTransform(widget) * childTransform;
+		translateBy(childTransform, Vector2(currentX + getPosition(*child).x, getPadding(widget).top + getMargin(*child).top + getPosition(*child).y));
+		transformBy(childTransform, getTransform(widget));
 
 		childrenLayout(*child);
 

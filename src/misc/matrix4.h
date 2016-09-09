@@ -45,6 +45,58 @@ using glm::transpose;
 using glm::ortho;
 using glm::value_ptr;
 
+inline void transformBy(Matrix4& transform, const Matrix4& other)
+{
+	transform = other * transform;
+}
+
+inline void translateBy(Matrix4& transform, const Vector2& translation)
+{
+	transform = translate(transform, Vector3(translation, 0.f));
+}
+
+inline void translateBy(Matrix4& transform, const Vector3& translation)
+{
+	transform = translate(transform, translation);
+}
+
+inline void rotateXBy(Matrix4& transform, float rotation)
+{
+	transform = rotate(transform, rotation, Vector3(1.f, 0.f, 0.f));
+}
+
+inline void rotateYBy(Matrix4& transform, float rotation)
+{
+	transform = rotate(transform, rotation, Vector3(0.f, 1.f, 0.f));
+}
+
+inline void rotateZBy(Matrix4& transform, float rotation)
+{
+	transform = rotate(transform, rotation, Vector3(0.f, 0.f, 1.f));
+}
+
+inline void rotateBy(Matrix4& transform, const Vector3& rotation)
+{
+	rotateZBy(transform, rotation.z);
+	rotateYBy(transform, rotation.y);
+	rotateXBy(transform, rotation.x);
+}
+
+inline void scaleBy(Matrix4& transform, float scale)
+{
+	transform = flat::scale(transform, Vector3(scale, scale, scale));
+}
+
+inline void scaleBy(Matrix4& transform, const Vector2& scale)
+{
+	transform = flat::scale(transform, Vector3(scale, 1.f));
+}
+
+inline void scaleBy(Matrix4& transform, const Vector3& scale)
+{
+	transform = flat::scale(transform, scale);
+}
+
 } // flat
 
 #endif // FLAT_GEOMETRY_MATRIX4_H

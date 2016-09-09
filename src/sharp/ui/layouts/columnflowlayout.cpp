@@ -43,9 +43,8 @@ void ColumnFlowLayout::layout(Widget& widget)
 
 		Matrix4& childTransform = getTransform(child);
 		childTransform = Matrix4();
-		//childTransform.translate(Vector2(getPadding(widget).left + getMargin(child).left + getPosition(child).x, currentY + getPosition(child).y));
-		childTransform = translate(childTransform, Vector3(getPadding(widget).left + getMargin(child).left + getPosition(child).x, currentY + getPosition(child).y, 0.f));
-		childTransform = getTransform(widget) * childTransform;
+		translateBy(childTransform, Vector2(getPadding(widget).left + getMargin(child).left + getPosition(child).x, currentY + getPosition(child).y));
+		transformBy(childTransform, getTransform(widget));
 
 		childrenLayout(child);
 

@@ -109,15 +109,13 @@ void Sprite::updateModelMatrix() const
 	{
 		m_modelMatrixIsDirty = false;
 		m_modelMatrix = Matrix4();
-		m_modelMatrix = translate(m_modelMatrix, Vector3(m_position, 0.f));
-		m_modelMatrix = scale(m_modelMatrix, Vector3(m_scale, m_scale, m_scale));
-		m_modelMatrix = rotate(m_modelMatrix, m_rotation.z, Vector3(0.f, 0.f, 1.f));
-		m_modelMatrix = rotate(m_modelMatrix, m_rotation.y, Vector3(0.f, 1.f, 0.f));
-		m_modelMatrix = rotate(m_modelMatrix, m_rotation.x, Vector3(1.f, 0.f, 0.f));
+		translateBy(m_modelMatrix, Vector3(m_position, 0.f));
+		scaleBy(m_modelMatrix, m_scale);
+		rotateBy(m_modelMatrix, m_rotation);
 		float scaleX = m_flipX ? -1.f : 1.f;
 		float scaleY = m_flipY ? -1.f : 1.f;
-		m_modelMatrix = scale(m_modelMatrix, Vector3(scaleX, scaleY, 1.f));
-		m_modelMatrix = translate(m_modelMatrix, Vector3(-m_origin, 0.f));
+		scaleBy(m_modelMatrix, Vector2(scaleX, scaleY));
+		translateBy(m_modelMatrix, Vector3(-m_origin, 0.f));
 	}
 }
 
