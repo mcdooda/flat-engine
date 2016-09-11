@@ -34,6 +34,8 @@ class Machine
 		void revertToPreviousState();
 		void setGlobalState(State* globalState);
 
+		inline State* getCurrentState() const { return m_currentState; }
+
 		void update();
 
 	private:
