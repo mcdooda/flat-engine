@@ -39,9 +39,17 @@ inline std::ostream& operator<<(std::ostream& out, const Vector4& v)
 
 using glm::length;
 using glm::length2;
-using glm::normalize;
 using glm::dot;
 using glm::cross;
+
+template <class T>
+inline T normalize(const T& vector)
+{
+	if (glm::length2(vector) == 0)
+		return vector;
+
+	return glm::normalize(vector);
+}
 
 const float PI = glm::pi<float>();
 
