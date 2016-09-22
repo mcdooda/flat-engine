@@ -10,7 +10,7 @@ namespace time
 Time::Time() : private_::TimerBase()
 {
 	m_frameTime = 0.0f;
-	setFrameRate(60.0f);
+	setFrameRate(10000.0f);
 }
 
 void Time::beginFrame()
