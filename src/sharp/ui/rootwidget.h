@@ -34,6 +34,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void updateInput();
 
+		inline bool isMouseOver() const { return m_mouseOverWidget != nullptr; }
+
 	private:
 		void handleClick();
 		void handleMouseMove();
