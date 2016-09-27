@@ -2,10 +2,10 @@
 #define FLAT_UTIL_SPRITEBATCH_H
 
 #include <vector>
+#include <array>
 #include "../video/color.h"
 #include "../misc/vector.h"
 #include "../misc/matrix4.h"
-#include "../containers/fixedsizearray.h"
 
 namespace flat
 {
@@ -35,8 +35,8 @@ public:
 	};
 
 private:
-	flat::containers::FixedSizeArray<Vertex, 2000> m_vertices;
-	unsigned int m_numVertices;
+	std::array<Vertex, 2000> m_vertices;
+	GLsizei m_numVertices;
 	const video::Texture* m_texture;
 };
 

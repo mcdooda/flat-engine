@@ -48,7 +48,7 @@ Font::Font(const std::string& font, int size) :
 			ci.visible = false;
 		}
 		
-		containers::FixedSizeArray<CharInfoUv, 6>& uv = ci.uv;
+		std::array<CharInfoUv, 6>& uv = ci.uv;
 		
 		float fx0 = static_cast<float>(x) / m_atlasSize.x;
 		float fx1 = (static_cast<float>(x) + ci.advance) / m_atlasSize.x;

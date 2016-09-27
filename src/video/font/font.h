@@ -1,11 +1,11 @@
 #ifndef FLAT_VIDEO_FONT_H
 #define FLAT_VIDEO_FONT_H
 
+#include <array>
 #include <string>
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
 #include "../../misc/vector.h"
-#include "../../containers/fixedsizearray.h"
 
 namespace flat
 {
@@ -24,7 +24,7 @@ class Font
 		};
 		struct CharInfo
 		{
-			containers::FixedSizeArray<CharInfoUv, 6> uv;
+			std::array<CharInfoUv, 6> uv;
 			int minX;
 			int maxX;
 			int minY;
@@ -50,7 +50,7 @@ class Font
 		
 		enum { ATLAS_FIRST_CHAR = 32, ATLAS_LAST_CHAR = 126, ATLAS_NUM_CHARS = ATLAS_LAST_CHAR - ATLAS_FIRST_CHAR + 1 };
 		
-		containers::FixedSizeArray<CharInfo, ATLAS_NUM_CHARS> m_chars;
+		std::array<CharInfo, ATLAS_NUM_CHARS> m_chars;
 		TTF_Font* m_font;
 		int m_fontSize;
 		GLuint m_atlasId;

@@ -36,11 +36,11 @@ void SpriteBatch::add(const Sprite& sprite)
 	const Matrix4& transform = sprite.getModelMatrix();
 	const video::Color& color = sprite.getColor();
 	const int numVertices = 6;
-	const Sprite::Vertex* vertices = sprite.m_vertices.getBuffer();
+	const Sprite::Vertex* vertices = sprite.m_vertices.data();
 	for (int i = 0; i < numVertices; ++i)
 	{
 		const Sprite::Vertex* spriteVertex = vertices + i;
-		Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
+		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
 		spriteBatchVertex.pos = Vector2(transform * Vector4(spriteVertex->pos, 0.f, 1.f));
 		spriteBatchVertex.uv = spriteVertex->uv;
 		spriteBatchVertex.color = color;

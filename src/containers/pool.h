@@ -1,4 +1,5 @@
-#include "fixedsizearray.h"
+#include <array>
+#include "../debug/assert.h"
 
 namespace flat
 {
@@ -13,7 +14,7 @@ union alignas(alignof(T)) PoolEntry
 };
 
 template <class T, unsigned int Size>
-class Pool : public FixedSizeArray<PoolEntry<T>, Size>
+class Pool : public std::array<PoolEntry<T>, Size>
 {
 public:
 	Pool()
@@ -21,10 +22,10 @@ public:
 	{
 		for (unsigned int i = 0; i < Size - 1; ++i)
 		{
-			setNext(m_buffer[i], m_buffer[i + 1]);
+			setNext((*this)[i], (*this)[i + 1]);
 		}
-		m_buffer[Size - 1].next = nullptr;
-		m_head = &m_buffer[0];
+		last().next = nullptr;
+		m_head = &first();
 	}
 
 	~Pool()
@@ -60,6 +61,24 @@ private:
 		FLAT_ASSERT(indexOf(entry) >= 0);
 		FLAT_ASSERT(indexOf(next) >= 0);
 		entry.next = &next;
+	}
+
+	inline PoolEntry<T>& first()
+	{
+		return (*this)[0];
+	}
+
+	inline PoolEntry<T>& last()
+	{
+		return (*this)[Size - 1];
+	}
+
+	std::ptrdiff_t indexOf(const PoolEntry<T>& entry)
+	{
+		if (&first() <= &entry && &entry <= &last())
+			return &entry - &first();
+
+		return -1;
 	}
 
 private:

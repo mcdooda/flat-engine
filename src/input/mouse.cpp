@@ -24,7 +24,7 @@ bool Mouse::isPressed(int button) const
 
 bool Mouse::isJustPressed(int button) const
 {
-	if (m_justPressedButtons.isInRange(button))
+	if (button < m_justPressedButtons.size())
 		return m_justPressedButtons[button];
 
 	return false;
@@ -32,7 +32,7 @@ bool Mouse::isJustPressed(int button) const
 
 bool Mouse::isJustReleased(int button) const
 {
-	if (m_justPressedButtons.isInRange(button))
+	if (button < m_justPressedButtons.size())
 		return m_justReleasedButtons[button];
 
 	return false;
@@ -44,8 +44,8 @@ void Mouse::clearEvents()
 	m_wheelMoved = false;
 	m_wheelMove.x = 0.f;
 	m_wheelMove.y = 0.f;
-	m_justPressedButtons.memset(0);
-	m_justReleasedButtons.memset(0);
+	m_justPressedButtons.fill(false);
+	m_justReleasedButtons.fill(false);
 }
 
 void Mouse::addEvent(const SDL_Event& e)

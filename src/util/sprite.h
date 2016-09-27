@@ -2,9 +2,9 @@
 #define FLAT_UTIL_SPRITE_H
 
 #include <memory>
+#include <array>
 #include "rendersettings.h"
 #include "../video/texture.h"
-#include "../containers/fixedsizearray.h"
 
 namespace flat
 {
@@ -68,7 +68,7 @@ class Sprite
 	protected:
 		std::shared_ptr<const video::Texture> m_texture;
 		
-		flat::containers::FixedSizeArray<Vertex, 6> m_vertices;
+		std::array<Vertex, 6> m_vertices;
 		
 		video::Color m_color;
 		

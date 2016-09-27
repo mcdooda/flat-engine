@@ -1,8 +1,8 @@
 #ifndef FLAT_INPUT_MOUSE_H
 #define FLAT_INPUT_MOUSE_H
 
+#include <array>
 #include <SDL2/SDL.h>
-#include "../containers/fixedsizearray.h"
 #include "../misc/vector.h"
 #include "../video/video.h"
 #include "../video/view.h"
@@ -35,8 +35,8 @@ class Mouse
 		void addEvent(const SDL_Event& e);
 		
 	private:
-		containers::FixedSizeArray<bool, NUM_BUTTONS> m_justPressedButtons;
-		containers::FixedSizeArray<bool, NUM_BUTTONS> m_justReleasedButtons;
+		std::array<bool, NUM_BUTTONS> m_justPressedButtons;
+		std::array<bool, NUM_BUTTONS> m_justReleasedButtons;
 		
 		video::Window* const m_videoWindow;
 

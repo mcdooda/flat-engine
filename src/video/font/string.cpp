@@ -57,7 +57,7 @@ void String::setText(const std::string& text)
 			m_vertices.emplace_back(fx0, fy1);
 			m_vertices.emplace_back(fx1, fy0);
 			
-			std::copy(ci.uv.getBuffer(), ci.uv.getBuffer() + 6, std::back_inserter(m_uv));
+			std::copy(ci.uv.begin(), ci.uv.end(), std::back_inserter(m_uv));
 		}
 		
 		x += ci.advance;
