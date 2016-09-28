@@ -35,11 +35,11 @@ void ColumnFlowLayout::layout(Widget& widget)
 	std::vector<Widget*>& children = getChildren(widget);
 	std::vector<Widget*>::reverse_iterator it = children.rbegin();
 	std::vector<Widget*>::reverse_iterator end = children.rend();
-	float currentY = getPadding(**it).top;
+	float currentY = getPadding(**it).bottom;
 	for (; it != end; ++it)
 	{
 		Widget& child = **it;
-		currentY += getMargin(child).top;
+		currentY += getMargin(child).bottom;
 
 		Matrix4& childTransform = getTransform(child);
 		childTransform = Matrix4();
@@ -48,7 +48,7 @@ void ColumnFlowLayout::layout(Widget& widget)
 
 		childrenLayout(child);
 
-		currentY += getSize(child).y + getMargin(child).bottom;
+		currentY += getSize(child).y + getMargin(child).top;
 	}
 }
 
