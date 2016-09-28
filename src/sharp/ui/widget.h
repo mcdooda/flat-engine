@@ -107,7 +107,11 @@ class Widget
 		Widget();
 		virtual ~Widget();
 		
-		void setMargin(const Margin& margin) { m_margin = margin; }
+		inline void setMargin(const Margin& margin) { m_margin = margin; }
+		inline const Margin& getMargin() const { return m_margin; }
+
+		inline void setPadding(const Padding& padding) { m_padding = padding; }
+		inline const Padding& getPadding() const { return m_padding; }
 		
 		void setSizePolicy(SizePolicy sizePolicy);
 		void setSizePolicyX(SizePolicy sizePolicyX);

@@ -43,6 +43,12 @@ int l_Widget_setRotation(lua_State* L);
 int l_Widget_setRotationZ(lua_State* L);
 int l_Widget_getRotation(lua_State* L);
 
+int l_Widget_setMargin(lua_State* L);
+int l_Widget_getMargin(lua_State* L);
+
+int l_Widget_setPadding(lua_State* L);
+int l_Widget_getPadding(lua_State* L);
+
 int l_Widget_setBackground(lua_State* L);
 int l_Widget_setBackgroundRepeat(lua_State* L);
 int l_Widget_setBackgroundColor(lua_State* L);

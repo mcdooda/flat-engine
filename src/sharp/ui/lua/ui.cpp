@@ -51,6 +51,12 @@ int open(lua_State* L)
 		{"setRotation",         l_Widget_setRotation},
 		{"setRotationZ",        l_Widget_setRotationZ},
 		{"getRotation",         l_Widget_getRotation},
+
+		{"setMargin",           l_Widget_setMargin},
+		{"getMargin",           l_Widget_getMargin},
+
+		{"setPadding",          l_Widget_setPadding},
+		{"getPadding",          l_Widget_getPadding},
 		
 		{"setBackground",       l_Widget_setBackground},
 		{"setBackgroundRepeat", l_Widget_setBackgroundRepeat},
@@ -297,6 +303,68 @@ int l_Widget_getRotation(lua_State* L)
 	lua_pushnumber(L, rotation.y);
 	lua_pushnumber(L, rotation.z);
 	return 3;
+}
+
+int l_Widget_setMargin(lua_State * L)
+{
+	Widget* widget = getWidget(L, 1);
+	int top = lua_gettop(L);
+	if (top != 2 && top != 5)
+	{
+		luaL_error(L, "setMargin must have 1 or 4 parameters, %d given", top - 1);
+	}
+	float marginTop = static_cast<float>(luaL_checknumber(L, 2));
+	Widget::Margin margin(marginTop);
+	if (top == 5)
+	{
+		margin.right  = static_cast<float>(luaL_checknumber(L, 3));
+		margin.bottom = static_cast<float>(luaL_checknumber(L, 4));
+		margin.left   = static_cast<float>(luaL_checknumber(L, 5));
+	}
+	widget->setMargin(margin);
+	return 0;
+}
+
+int l_Widget_getMargin(lua_State * L)
+{
+	Widget* widget = getWidget(L, 1);
+	const Widget::Margin& margin = widget->getMargin();
+	lua_pushnumber(L, margin.top);
+	lua_pushnumber(L, margin.right);
+	lua_pushnumber(L, margin.bottom);
+	lua_pushnumber(L, margin.left);
+	return 4;
+}
+
+int l_Widget_setPadding(lua_State * L)
+{
+	Widget* widget = getWidget(L, 1);
+	int top = lua_gettop(L);
+	if (top != 2 && top != 5)
+	{
+		luaL_error(L, "setPadding must have 1 or 4 parameters, %d given", top - 1);
+	}
+	float paddingTop = static_cast<float>(luaL_checknumber(L, 2));
+	Widget::Padding padding(paddingTop);
+	if (top == 5)
+	{
+		padding.right = static_cast<float>(luaL_checknumber(L, 3));
+		padding.bottom = static_cast<float>(luaL_checknumber(L, 4));
+		padding.left = static_cast<float>(luaL_checknumber(L, 5));
+	}
+	widget->setPadding(padding);
+	return 0;
+}
+
+int l_Widget_getPadding(lua_State * L)
+{
+	Widget* widget = getWidget(L, 1);
+	const Widget::Padding& padding = widget->getPadding();
+	lua_pushnumber(L, padding.top);
+	lua_pushnumber(L, padding.right);
+	lua_pushnumber(L, padding.bottom);
+	lua_pushnumber(L, padding.left);
+	return 4;
 }
 
 int l_Widget_setBackground(lua_State* L)
