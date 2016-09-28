@@ -129,16 +129,16 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 
 	if (positionPolicy & Widget::PositionPolicy::TOP)
 	{
-		position.y = parent.m_size.y - parent.m_padding.bottom
-				- widget.m_size.y - widget.m_margin.bottom;
+		position.y = parent.m_size.y - parent.m_padding.top
+				- widget.m_size.y - widget.m_margin.top;
 	}
 	else if (positionPolicy & Widget::PositionPolicy::BOTTOM)
 	{
-		position.y = parent.m_padding.top + widget.m_margin.top;
+		position.y = parent.m_padding.bottom + widget.m_margin.bottom;
 	}
 	else if (positionPolicy & Widget::PositionPolicy::CENTER_Y)
 	{
-		position.y = (parent.m_padding.top + parent.m_size.y - parent.m_padding.bottom) / 2.f
+		position.y = (parent.m_padding.bottom + parent.m_size.y - parent.m_padding.top) / 2.f
 				- getOuterHeight(widget) / 2.f;
 	}
 	else
