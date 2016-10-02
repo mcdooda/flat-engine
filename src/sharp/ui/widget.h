@@ -156,7 +156,7 @@ class Widget
 		virtual void draw(const util::RenderSettings& renderSettings) const;
 
 		template <class CandidateLayoutType>
-		bool hasLayout();
+		bool hasLayout() const;
 
 		bool isInside(const Vector2& point) const;
 		Vector2 getRelativePosition(const Vector2& absolutePosition) const;
@@ -169,19 +169,20 @@ class Widget
 	protected:
 		void drawChildren(const util::RenderSettings& renderSettings) const;
 		
-		float getInnerWidth() const { return m_size.x - m_padding.left - m_padding.right; }
-		void setInnerWidth(float innerWidth) { m_size.x = innerWidth + m_padding.left + m_padding.right; }
+		float getInnerWidth() const { return m_computedSize.x - m_padding.left - m_padding.right; }
+		void setInnerWidth(float innerWidth) { m_computedSize.x = innerWidth + m_padding.left + m_padding.right; }
 		
-		float getInnerHeight() const { return m_size.y - m_padding.top - m_padding.bottom; }
-		void setInnerHeight(float innerHeight) { m_size.y = innerHeight + m_padding.top + m_padding.bottom; }
+		float getInnerHeight() const { return m_computedSize.y - m_padding.top - m_padding.bottom; }
+		void setInnerHeight(float innerHeight) { m_computedSize.y = innerHeight + m_padding.top + m_padding.bottom; }
 
-		float getOuterWidth() const { return m_size.x + m_margin.left + m_margin.right; }
-		float getOuterHeight() const { return m_size.y + m_margin.top + m_margin.bottom; }
+		float getOuterWidth() const { return m_computedSize.x + m_margin.left + m_margin.right; }
+		float getOuterHeight() const { return m_computedSize.y + m_margin.top + m_margin.bottom; }
 
 		Widget* getMouseOverWidget(const Vector2& mousePosition);
 
 		virtual void setDirty();
 
+		virtual bool isRoot() const { return false; }
 		RootWidget* getRootIfAncestor();
 		Widget* getFixedLayoutAncestor();
 		
@@ -201,6 +202,7 @@ class Widget
 		bool m_mouseOver : 1;
 		bool m_visible : 1;
 
+		Vector2 m_computedSize;
 		Matrix4 m_transform;
 		
 		Widget* m_parent;
@@ -238,9 +240,9 @@ public:
 };
 
 template <class CandidateLayoutType>
-bool Widget::hasLayout()
+bool Widget::hasLayout() const
 {
-	return dynamic_cast<WidgetImpl<CandidateLayoutType>*>(this) != nullptr;
+	return dynamic_cast<const WidgetImpl<CandidateLayoutType>*>(this) != nullptr;
 }
 
 } // ui

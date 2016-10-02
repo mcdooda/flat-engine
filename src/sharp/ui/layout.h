@@ -28,7 +28,9 @@ protected:
 	static Widget& getParent(Widget& widget);
 	static Widget::PositionPolicy& getPositionPolicy(Widget& widget);
 	static Widget::Position& getPosition(Widget& widget);
+	static Widget::SizePolicy& getSizePolicy(Widget& widget);
 	static Widget::Size& getSize(Widget& widget);
+	static Widget::Size& getComputedSize(Widget& widget);
 	static Widget::Margin& getMargin(Widget& widget);
 	static Widget::Padding& getPadding(Widget& widget);
 
@@ -38,6 +40,8 @@ protected:
 	static float getParentRelativeRight(Widget& widget);
 	static float getParentRelativeBottom(Widget& widget);
 
+	static void computeWidth(Widget& widget);
+	static void computeHeight(Widget& widget);
 	static void computePosition(Widget& widget, Vector2& position);
 	static void computeTransform(Widget& widget);
 };

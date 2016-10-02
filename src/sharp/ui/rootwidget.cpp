@@ -14,7 +14,7 @@ RootWidget::RootWidget(Game& game) : Super(),
 	m_mouseOverWidget(nullptr),
 	m_dirty(true)
 {
-	
+	setSizePolicy(Widget::SizePolicy::FIXED);
 }
 
 void RootWidget::draw(const flat::util::RenderSettings& renderSettings) const

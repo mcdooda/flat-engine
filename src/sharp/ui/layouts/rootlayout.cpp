@@ -19,6 +19,7 @@ void RootLayout::layout(Widget& widget)
 {
 	flat::video::Window* window = static_cast<RootWidget&>(widget).m_game.video->window;
 	widget.setSize(window->getSize());
+	getComputedSize(widget) = getSize(widget);
 
 	getTransform(widget) = Matrix4();
 }

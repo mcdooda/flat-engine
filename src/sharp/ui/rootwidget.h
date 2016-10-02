@@ -36,6 +36,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		inline bool isMouseOver() const { return m_mouseOverWidget != nullptr; }
 
+		bool isRoot() const override { return true; }
+
 	private:
 		void handleClick();
 		void handleMouseMove();

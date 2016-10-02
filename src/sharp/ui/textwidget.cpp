@@ -8,16 +8,16 @@ namespace sharp
 namespace ui
 {
 
-TextWidget::TextWidget(const std::shared_ptr<const flat::video::font::Font>& font) : flat::video::font::String(font)
+TextWidget::TextWidget(const std::shared_ptr<const video::font::Font>& font) : video::font::String(font)
 {
 	
 }
 
 void TextWidget::setText(const std::string& text)
 {
-	flat::video::font::String::setText(text);
-	const flat::Vector2& size = getComputedSize();
-	setSize(size);
+	video::font::String::setText(text);
+	Widget::m_computedSize = video::font::String::getComputedSize();
+	Widget::m_size = m_computedSize;
 }
 
 void TextWidget::draw(const util::RenderSettings& renderSettings) const

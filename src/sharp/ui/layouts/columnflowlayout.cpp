@@ -1,3 +1,4 @@
+#include <iostream>
 #include "columnflowlayout.h"
 
 namespace flat
@@ -9,46 +10,135 @@ namespace ui
 
 void ColumnFlowLayout::preLayout(Widget& widget)
 {
+	Widget::SizePolicy sizePolicy = getSizePolicy(widget);
+
+	if (sizePolicy & Widget::SizePolicy::FIXED_X)
+	{
+		computeWidth(widget);
+	}
+	else if (sizePolicy & Widget::SizePolicy::EXPAND_X)
+	{
+		Widget& parent = getParent(widget);
+		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
+		if (parentSizePolicy & Widget::SizePolicy::FIXED_X)
+		{
+			getComputedSize(widget).x = getComputedSize(parent).x;
+		}
+	}
+
+	if (sizePolicy & Widget::SizePolicy::FIXED_Y)
+	{
+		computeHeight(widget);
+	}
+	else if (sizePolicy & Widget::SizePolicy::EXPAND_Y)
+	{
+		Widget& parent = getParent(widget);
+		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
+		if (parentSizePolicy & Widget::SizePolicy::FIXED_Y)
+		{
+			getComputedSize(widget).y = getComputedSize(parent).y;
+		}
+	}
+
+	computeTransform(widget);
+
 	childrenPreLayout(widget);
 }
 
 void ColumnFlowLayout::layout(Widget& widget)
 {
-	// compute size
-	Vector2 size(getPadding(widget).left + getPadding(widget).right, getPadding(widget).top + getPadding(widget).bottom);
+	// compute children size and widget compressed size
+	Widget::SizePolicy sizePolicy = getSizePolicy(widget);
+	bool compressedSizeX = (sizePolicy & Widget::SizePolicy::COMPRESS_X) != 0;
+	bool compressedSizeY = (sizePolicy & Widget::SizePolicy::COMPRESS_Y) != 0;
+
+	Vector2& size = getComputedSize(widget);
+	if (compressedSizeX)
+	{
+		size.x = getPadding(widget).left + getPadding(widget).right;
+	}
+	if (compressedSizeY)
+	{
+		size.y = getPadding(widget).bottom + getPadding(widget).top;
+	}
+
+	float totalFixedHeight = getPadding(widget).bottom + getPadding(widget).top;
+	int numFlexibleWidgets = 0;
 	for (Widget* child : getChildren(widget))
 	{
-		size.y += getOuterHeight(*child);
+		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 
-		float width = getPadding(widget).left + getPadding(widget).right + getOuterWidth(*child);
-		if (size.x < width)
+		// width
+		float outerWidth = 0.f;
+		if (childSizePolicy & Widget::SizePolicy::FIXED_X)
 		{
-			size.x = width;
+			computeWidth(*child);
+			outerWidth = getOuterWidth(*child);
+		}
+
+		if (compressedSizeX)
+		{
+			float width = getPadding(widget).left + getPadding(widget).right + outerWidth;
+			if (size.x < width)
+			{
+				size.x = width;
+			}
+		}
+
+		// height
+		float outerHeight = 0.f;
+		if (childSizePolicy & Widget::SizePolicy::FIXED_Y)
+		{
+			computeHeight(*child);
+			outerHeight = getOuterHeight(*child);
+			totalFixedHeight += outerHeight;
+		}
+		else if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
+		{
+			++numFlexibleWidgets;
+		}
+
+		if (compressedSizeY)
+		{
+			size.y += outerHeight;
 		}
 	}
 
-	getSize(widget) = size;
+	float totalFlexibleHeight = size.y - totalFixedHeight;
+	float flexibleWidgetsHeight = std::floor(totalFlexibleHeight / numFlexibleWidgets);
+	for (Widget* child : getChildren(widget))
+	{
+		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 
-	computeTransform(widget);
+		if (childSizePolicy & Widget::SizePolicy::EXPAND_X)
+		{
+			getComputedSize(*child).x = size.x - getPadding(widget).left - getPadding(widget).right;
+		}
+
+		if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
+		{
+			getComputedSize(*child).y = flexibleWidgetsHeight;
+		}
+	}
 
 	// compute children position (reverse order)
 	std::vector<Widget*>& children = getChildren(widget);
-	std::vector<Widget*>::reverse_iterator it = children.rbegin();
-	std::vector<Widget*>::reverse_iterator end = children.rend();
-	float currentY = getPadding(**it).bottom;
+	std::vector<Widget*>::iterator it = children.begin();
+	std::vector<Widget*>::iterator end = children.end();
+	float currentY = size.y - getPadding(widget).top;
 	for (; it != end; ++it)
 	{
 		Widget& child = **it;
-		currentY += getMargin(child).bottom;
+		currentY -= getMargin(child).top + getComputedSize(child).y;
 
 		Matrix4& childTransform = getTransform(child);
 		childTransform = Matrix4();
 		translateBy(childTransform, Vector2(getPadding(widget).left + getMargin(child).left + getPosition(child).x, currentY + getPosition(child).y));
 		transformBy(childTransform, getTransform(widget));
 
-		childrenLayout(child);
+		child.layout();
 
-		currentY += getSize(child).y + getMargin(child).top;
+		currentY -= getMargin(child).bottom;
 	}
 }
 

@@ -121,10 +121,29 @@ int open(lua_State* L)
 	flat::lua::table::pushTable(L, positionPolicyTable);
 	lua_settable(L, -3);
 
+	lua_pushstring(L, "SizePolicy");
+	const flat::lua::table::KeyValuePair<int> sizePolicyTable[] = {
+		{"COMPRESS",   Widget::SizePolicy::COMPRESS},
+		{"COMPRESS_X", Widget::SizePolicy::COMPRESS_X},
+		{"COMPRESS_Y", Widget::SizePolicy::COMPRESS_Y},
+
+		{"EXPAND",     Widget::SizePolicy::EXPAND},
+		{"EXPAND_X",   Widget::SizePolicy::EXPAND_X},
+		{"EXPAND_Y",   Widget::SizePolicy::EXPAND_Y},
+
+		{"FIXED",      Widget::SizePolicy::FIXED},
+		{"FIXED_X",    Widget::SizePolicy::FIXED_X},
+		{"FIXED_Y",    Widget::SizePolicy::FIXED_Y},
+
+		{nullptr, 0}
+	};
+	flat::lua::table::pushTable(L, sizePolicyTable);
+	lua_settable(L, -3);
+
 	lua_pushstring(L, "BackgroundRepeat");
 	const flat::lua::table::KeyValuePair<int> backgroundRepeatTable[] = {
-		{ "SCALED", Widget::BackgroundRepeat::SCALED },
-		{ "REPEAT", Widget::BackgroundRepeat::REPEAT },
+		{"SCALED", Widget::BackgroundRepeat::SCALED},
+		{"REPEAT", Widget::BackgroundRepeat::REPEAT},
 
 		{ nullptr, 0 },
 	};

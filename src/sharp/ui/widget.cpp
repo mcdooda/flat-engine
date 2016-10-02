@@ -23,7 +23,7 @@ Widget::Widget() :
 	m_rotation(0.f, 0.f, 0.f),
 	m_backgroundRepeat(BackgroundRepeat::SCALED),
 	m_backgroundColor(0.f, 0.f, 0.f, 0.f),
-	m_sizePolicy(SizePolicy::COMPRESS),
+	m_sizePolicy(SizePolicy::FIXED),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_mouseOver(false),
 	m_visible(true),
@@ -143,11 +143,13 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 
 		// enable vertex attrib array
 		// position
+		Vector2 size;
+
 		const float position[] = {
 			0.f, 0.f,
-			m_size.x, 0.f,
-			m_size.x, m_size.y,
-			0.f, m_size.y
+			m_computedSize.x, 0.f,
+			m_computedSize.x, m_computedSize.y,
+			0.f, m_computedSize.y
 		};
 
 		glEnableVertexAttribArray(renderSettings.positionAttribute);
@@ -160,9 +162,9 @@ void Widget::draw(const util::RenderSettings& renderSettings) const
 
 			// TODO compute during layout...
 			const float repeatUv[] = {
-				0.0f, m_size.y / background->getSize().y,
-				m_size.x / background->getSize().x, m_size.y / background->getSize().y,
-				m_size.x / background->getSize().x, 0.0f,
+				0.0f, m_computedSize.y / background->getSize().y,
+				m_computedSize.x / background->getSize().x, m_computedSize.y / background->getSize().y,
+				m_computedSize.x / background->getSize().x, 0.0f,
 				0.0f, 0.0f
 			};
 
@@ -210,8 +212,8 @@ bool Widget::isInside(const Vector2& point) const
 		return false;
 
 	Vector2 localPosition = getRelativePosition(point);
-	return localPosition.x >= 0 && localPosition.x <= m_size.x
-	    && localPosition.y >= 0 && localPosition.y <= m_size.y;
+	return localPosition.x >= 0 && localPosition.x <= m_computedSize.x
+	    && localPosition.y >= 0 && localPosition.y <= m_computedSize.y;
 }
 
 Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
@@ -257,7 +259,7 @@ RootWidget* Widget::getRootIfAncestor()
 	{
 		widget = widget->m_parent;
 	}
-	return dynamic_cast<RootWidget*>(widget);
+	return widget->isRoot() ? static_cast<RootWidget*>(widget) : nullptr;
 }
 
 Widget* Widget::getFixedLayoutAncestor()

@@ -12,10 +12,11 @@ namespace sharp
 namespace ui
 {
 
-class TextWidget : public WidgetImpl<FixedLayout>, public flat::video::font::String
+class TextWidget : public WidgetImpl<FixedLayout>, public video::font::String
 {
+	typedef WidgetImpl<FixedLayout> Widget;
 	public:
-		TextWidget(const std::shared_ptr<const flat::video::font::Font>& font);
+		TextWidget(const std::shared_ptr<const video::font::Font>& font);
 		
 		void setText(const std::string& text) override;
 		
