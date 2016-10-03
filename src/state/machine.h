@@ -19,8 +19,8 @@ class Machine
 
 		void setState(State* state);
 
-		inline State* getCurrentState() { return m_currentState.get(); }
-		inline const State* getCurrentState() const { return m_currentState.get(); }
+		inline State* getState() { return m_currentState.get(); }
+		inline const State* getState() const { return m_currentState.get(); }
 
 		void update();
 

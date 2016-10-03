@@ -19,7 +19,7 @@ Machine::~Machine()
 {
 	if (m_currentState)
 	{
-		m_currentState->exit(&m_agent);
+		m_currentState->exit(m_agent);
 	}
 }
 
@@ -27,17 +27,17 @@ void Machine::setState(State* state)
 {
 	if (m_currentState)
 	{
-		m_currentState->exit(&m_agent);
+		m_currentState->exit(m_agent);
 	}
 	m_currentState.reset(state);
-	state->enter(&m_agent);
+	state->enter(m_agent);
 }
 
 void Machine::update()
 {
 	if (m_currentState)
 	{
-		m_currentState->execute(&m_agent);
+		m_currentState->execute(m_agent);
 	}
 }
 

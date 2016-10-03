@@ -17,7 +17,7 @@ class Input;
 }
 namespace lua
 {
-lua_State* open(Game* game);
+lua_State* open(Game& game);
 void close(lua_State* L);
 
 void doFile(lua_State* L, const std::string& fileName);
@@ -30,16 +30,16 @@ const char* codeToString(int code);
 
 int panic(lua_State* L);
 
-Game* getGame(lua_State* L);
+Game& getGame(lua_State* L);
 time::Time* getTime(lua_State* L);
 input::Input* getInput(lua_State* L);
 
 template <class T>
-T* getGameAs(lua_State* L)
+T& getGameAs(lua_State* L)
 {
-	Game* game = getGame(L);
-	FLAT_ASSERT(dynamic_cast<T*>(game) != nullptr);
-	return static_cast<T*>(game);
+	Game& game = getGame(L);
+	FLAT_ASSERT(dynamic_cast<T*>(&game) != nullptr);
+	return static_cast<T&>(game);
 }
 
 } // lua

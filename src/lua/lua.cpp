@@ -10,7 +10,7 @@ namespace lua
 {
 static char gameRegistryIndex = 'G';
 
-lua_State* open(Game* game)
+lua_State* open(Game& game)
 {
 	lua_State* L = luaL_newstate();
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -24,7 +24,7 @@ lua_State* open(Game* game)
 	lua_atpanic(L, panic);
 	
 	// store Game in the registry
-	lua_pushlightuserdata(L, game);
+	lua_pushlightuserdata(L, &game);
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	
 	return L;
@@ -190,24 +190,24 @@ int panic(lua_State* L)
 	return 0;
 }
 
-Game* getGame(lua_State* L)
+Game& getGame(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	Game* game = static_cast<Game*>(lua_touserdata(L, -1));
 	FLAT_ASSERT(game != nullptr);
 	lua_pop(L, 1);
-	return game;
+	return *game;
 }
 
 time::Time* getTime(lua_State* L)
 {
-	return getGame(L)->time;
+	return getGame(L).time;
 }
 
 input::Input* getInput(lua_State* L)
 {
-	return getGame(L)->input;
+	return getGame(L).input;
 }
 
 } // lua

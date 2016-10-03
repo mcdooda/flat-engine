@@ -14,9 +14,9 @@ class State
 		State();
 		virtual ~State();
 
-		virtual void enter(Agent* agent) = 0;
-		virtual void execute(Agent* agent) = 0;
-		virtual void exit(Agent* agent) = 0;
+		virtual void enter(Agent& agent) = 0;
+		virtual void execute(Agent& agent) = 0;
+		virtual void exit(Agent& agent) = 0;
 };
 
 } // state

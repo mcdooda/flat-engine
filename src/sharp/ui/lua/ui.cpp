@@ -153,8 +153,8 @@ int open(lua_State* L)
 	lua_setglobal(L, "Widget");
 	
 	// TODO actual full userdata with __gc for WidgetFactory
-	Game* game = flat::lua::getGame(L);
-	WidgetFactory* widgetFactory = new WidgetFactory(*game);
+	Game& game = flat::lua::getGame(L);
+	WidgetFactory* widgetFactory = new WidgetFactory(game);
 	lua_pushlightuserdata(L, widgetFactory);
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	
@@ -390,8 +390,8 @@ int l_Widget_setBackground(lua_State* L)
 {
 	Widget* widget = getWidget(L, 1);
 	const char* backgroundFileName = luaL_checkstring(L, 2);
-	Game* game = flat::lua::getGame(L);
-	std::shared_ptr<const flat::video::FileTexture> background = game->video->getTexture(backgroundFileName);
+	Game& game = flat::lua::getGame(L);
+	std::shared_ptr<const flat::video::FileTexture> background = game.video->getTexture(backgroundFileName);
 	widget->setBackground(background);
 	return 0;
 }
