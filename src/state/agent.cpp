@@ -7,14 +7,15 @@ namespace flat
 namespace state
 {
 
-Agent::Agent()
+Agent::Agent() :
+	m_machine(*this)
 {
-	m_machine = new Machine(this);
+
 }
 
 Agent::~Agent()
 {
-	FLAT_DELETE(m_machine);
+
 }
 
 } // state

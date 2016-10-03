@@ -8,15 +8,14 @@ namespace flat
 namespace state
 {
 
-class Machine;
-
 class Agent
 {
 	public:
 		Agent();
 		virtual ~Agent();
 
-		inline Machine* getStateMachine() const { return m_machine; }
+		inline Machine& getStateMachine() { return m_machine; }
+		inline const Machine& getStateMachine() const { return m_machine; }
 
 		template <class T>
 		T* to()
@@ -33,7 +32,7 @@ class Agent
 		}
 
 	private:
-		Machine* m_machine;
+		Machine m_machine;
 };
 
 } // state

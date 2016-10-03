@@ -1,8 +1,6 @@
 #ifndef FLAT_STATE_STATE_H
 #define FLAT_STATE_STATE_H
 
-#include "agent.h"
-
 namespace flat
 {
 namespace state

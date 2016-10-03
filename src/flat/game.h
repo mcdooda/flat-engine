@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../flat.h"
+#include "../state/agent.h"
 
 namespace flat
 {
