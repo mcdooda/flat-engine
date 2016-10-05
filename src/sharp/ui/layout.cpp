@@ -111,48 +111,16 @@ float Layout::getParentRelativeBottom(Widget& widget)
 	return widget.m_position.y + widget.m_computedSize.y + widget.m_margin.bottom;
 }
 
-void Layout::computeWidth(Widget & widget)
+void Layout::computeFixedWidth(Widget & widget)
 {
-	Widget::SizePolicy sizePolicy = widget.m_sizePolicy;
-
-	if (sizePolicy & Widget::SizePolicy::FIXED_X)
-	{
-		widget.m_computedSize.x = widget.m_size.x;
-	}
-	else if (sizePolicy & Widget::SizePolicy::COMPRESS_X)
-	{
-		FLAT_ASSERT_MSG(false, "not implemented");
-	}
-	else if (sizePolicy & Widget::SizePolicy::EXPAND_X)
-	{
-		// already computed by the parent's layout
-	}
-	else
-	{
-		FLAT_ASSERT(false);
-	}
+	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::FIXED_X) != 0);
+	widget.m_computedSize.x = widget.m_size.x;
 }
 
-void Layout::computeHeight(Widget & widget)
+void Layout::computeFixedHeight(Widget & widget)
 {
-	Widget::SizePolicy sizePolicy = widget.m_sizePolicy;
-
-	if (sizePolicy & Widget::SizePolicy::FIXED_Y)
-	{
-		widget.m_computedSize.y = widget.m_size.y;
-	}
-	else if (sizePolicy & Widget::SizePolicy::COMPRESS_Y)
-	{
-		FLAT_ASSERT_MSG(false, "not implemented");
-	}
-	else if (sizePolicy & Widget::SizePolicy::EXPAND_Y)
-	{
-		// already computed by the parent's layout
-	}
-	else
-	{
-		FLAT_ASSERT(false);
-	}
+	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::FIXED_Y) != 0);
+	widget.m_computedSize.y = widget.m_size.y;
 }
 
 void Layout::computePosition(Widget& widget, Vector2& position)

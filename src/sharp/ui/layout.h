@@ -40,8 +40,8 @@ protected:
 	static float getParentRelativeRight(Widget& widget);
 	static float getParentRelativeBottom(Widget& widget);
 
-	static void computeWidth(Widget& widget);
-	static void computeHeight(Widget& widget);
+	static void computeFixedWidth(Widget& widget);
+	static void computeFixedHeight(Widget& widget);
 	static void computePosition(Widget& widget, Vector2& position);
 	static void computeTransform(Widget& widget);
 };

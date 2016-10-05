@@ -14,7 +14,7 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 
 	if (sizePolicy & Widget::SizePolicy::FIXED_X)
 	{
-		computeWidth(widget);
+		computeFixedWidth(widget);
 	}
 	else if (sizePolicy & Widget::SizePolicy::EXPAND_X)
 	{
@@ -28,7 +28,7 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 
 	if (sizePolicy & Widget::SizePolicy::FIXED_Y)
 	{
-		computeHeight(widget);
+		computeFixedHeight(widget);
 	}
 	else if (sizePolicy & Widget::SizePolicy::EXPAND_Y)
 	{
@@ -67,12 +67,26 @@ void ColumnFlowLayout::layout(Widget& widget)
 	for (Widget* child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
+		const bool childFixedX    = (childSizePolicy & Widget::SizePolicy::FIXED_X) != 0;
+		const bool childFixedY    = (childSizePolicy & Widget::SizePolicy::FIXED_Y) != 0;
+		const bool childCompressX = (childSizePolicy & Widget::SizePolicy::COMPRESS_X) != 0;
+		const bool childCompressY = (childSizePolicy & Widget::SizePolicy::COMPRESS_Y) != 0;
+		const bool childExpandY   = (childSizePolicy & Widget::SizePolicy::EXPAND_Y) != 0;
+
+		if (childCompressX || childCompressY)
+		{
+			child->layout();
+		}
 
 		// width
 		float outerWidth = 0.f;
-		if (childSizePolicy & Widget::SizePolicy::FIXED_X)
+		if (childFixedX)
 		{
-			computeWidth(*child);
+			computeFixedWidth(*child);
+			outerWidth = getOuterWidth(*child);
+		}
+		else if (childCompressX)
+		{
 			outerWidth = getOuterWidth(*child);
 		}
 
@@ -87,13 +101,18 @@ void ColumnFlowLayout::layout(Widget& widget)
 
 		// height
 		float outerHeight = 0.f;
-		if (childSizePolicy & Widget::SizePolicy::FIXED_Y)
+		if (childFixedY)
 		{
-			computeHeight(*child);
+			computeFixedHeight(*child);
 			outerHeight = getOuterHeight(*child);
 			totalFixedHeight += outerHeight;
 		}
-		else if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
+		else if (childCompressY)
+		{
+			outerHeight = getOuterHeight(*child);
+			totalFixedHeight += outerHeight;
+		}
+		else if (childExpandY)
 		{
 			++numFlexibleWidgets;
 		}

@@ -10,8 +10,8 @@ namespace ui
 
 void FixedLayout::preLayout(Widget& widget)
 {
-	computeHeight(widget);
-	computeWidth(widget);
+	computeFixedHeight(widget);
+	computeFixedWidth(widget);
 	computeTransform(widget);
 	childrenPreLayout(widget);
 }
