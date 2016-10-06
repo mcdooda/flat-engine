@@ -1,5 +1,5 @@
-#ifndef FLAT_SHARP_UI_ROOTLAYOUT_H
-#define FLAT_SHARP_UI_ROOTLAYOUT_H
+#ifndef FLAT_SHARP_UI_LAYOUTS_ROOTLAYOUT_H
+#define FLAT_SHARP_UI_LAYOUTS_ROOTLAYOUT_H
 
 #include "../layout.h"
 
@@ -23,7 +23,7 @@ public:
 } // sharp
 } // flat
 
-#endif // FLAT_SHARP_UI_WIDGET_H
+#endif // FLAT_SHARP_UI_LAYOUTS_ROOTLAYOUT_H
 
 
 

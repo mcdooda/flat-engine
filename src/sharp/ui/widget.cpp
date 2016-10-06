@@ -267,7 +267,10 @@ Widget* Widget::getFixedLayoutAncestor()
 	if (!m_parent)
 		return nullptr;
 
-	if (hasLayout<FixedLayout>() || hasLayout<RootLayout>())
+	if (hasLayout<FixedLayout>())
+		return this;
+
+	if (m_parent->isRoot() || isRoot())
 		return this;
 
 	return m_parent->getFixedLayoutAncestor();
