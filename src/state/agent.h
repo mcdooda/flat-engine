@@ -18,17 +18,30 @@ class Agent
 		inline const Machine& getStateMachine() const { return m_machine; }
 
 		template <class T>
-		T& to()
+		inline T& as()
+		{
+			return static_cast<T&>(*this);
+		}
+
+		template <class T>
+		inline const T& as() const
+		{
+			return static_cast<const T&>(*this);
+		}
+
+		// "to" = safe "as"
+		template <class T>
+		inline T& to()
 		{
 			FLAT_ASSERT(dynamic_cast<T*>(this) != nullptr);
-			return static_cast<T&>(*this);
+			return as<T>();
 		}
 		
 		template <class T>
-		const T& to() const
+		inline const T& to() const
 		{
 			FLAT_ASSERT(dynamic_cast<const T>(this) != nullptr);
-			return static_cast<const T&>(*this);
+			return as<T>();
 		}
 
 	private:
