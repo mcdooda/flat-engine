@@ -47,6 +47,7 @@
 
 // containers
 #include "containers/pool.h"
+#include "containers/dynamicpool.h"
 
 // sharp
 // ui
