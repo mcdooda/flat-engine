@@ -1,7 +1,9 @@
 #ifndef FLAT_SHARP_UI_LUA_H
 #define FLAT_SHARP_UI_LUA_H
 
-#include <lua5.2/lua.hpp>
+#include <memory>
+#include "../widget.h"
+#include "../../../lua/sharedcppreference.h"
 
 namespace flat
 {
@@ -10,7 +12,7 @@ namespace sharp
 {
 namespace ui
 {
-class Widget;
+class RootWidget;
 class TextWidget;
 class WidgetFactory;
 namespace lua
@@ -22,7 +24,6 @@ int close(lua_State* L);
 int setRootWidget(lua_State* L, Widget* rootWidget);
 
 // Widget methods
-int l_Widget_destroy(lua_State* L);
 int l_Widget_addChild(lua_State* L);
 int l_Widget_removeChild(lua_State* L);
 int l_Widget_removeFromParent(lua_State* L);
@@ -76,11 +77,11 @@ int l_Widget_makeColumnFlow(lua_State* L);
 int l_Widget_makeText(lua_State* L);
 
 // private
-Widget* getRootWidget(lua_State* L);
-Widget* getWidget(lua_State* L, int index);
-TextWidget* getTextWidget(lua_State* L, int index);
-void pushWidget(lua_State* L, Widget* widget);
-WidgetFactory* getWidgetFactory(lua_State* L);
+RootWidget& getRootWidget(lua_State* L);
+Widget& getWidget(lua_State* L, int index);
+TextWidget& getTextWidget(lua_State* L, int index);
+void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
+WidgetFactory& getWidgetFactory(lua_State* L);
 
 } // lua
 } // ui

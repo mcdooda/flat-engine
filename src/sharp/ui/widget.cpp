@@ -26,23 +26,14 @@ Widget::Widget() :
 	m_sizePolicy(SizePolicy::FIXED),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_mouseOver(false),
-	m_visible(true),
-	m_parent(nullptr)
+	m_visible(true)
 {
-	
+
 }
 
 Widget::~Widget()
 {
-	if (m_parent)
-		removeFromParent();
-	
-	for (Widget* child : m_children)
-	{
-		// hack to avoid removing from parent while traversing m_children
-		child->m_parent = nullptr;
-		FLAT_DELETE(child);
-	}
+
 }
 
 void Widget::setSizePolicy(SizePolicy sizePolicy)
@@ -87,23 +78,23 @@ void Widget::setPosition(const Position& position)
 		fixedLayoutAncestor->setDirty();
 }
 
-void Widget::addChild(Widget* widget)
+void Widget::addChild(const std::shared_ptr<Widget>& widget)
 {
-	FLAT_ASSERT(!widget->m_parent);
-	m_children.push_back(widget);
-	widget->m_parent = this;
+	FLAT_ASSERT(widget->m_parent.expired());
+	m_children.push_back(std::shared_ptr<Widget>(widget));
+	widget->m_parent = getWeakPtr();
 
 	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
 		fixedLayoutAncestor->setDirty();
 }
 
-void Widget::removeChild(Widget* widget)
+void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 {
-	FLAT_ASSERT(widget && widget->m_parent);
-	std::vector<Widget*>::iterator it = std::find(m_children.begin(), m_children.end(), widget);
+	FLAT_ASSERT(widget->m_parent.lock() == getWeakPtr().lock());
+	std::vector<std::shared_ptr<Widget>>::iterator it = std::find(m_children.begin(), m_children.end(), widget);
 	FLAT_ASSERT(it != m_children.end());
 	m_children.erase(it);
-	widget->m_parent = nullptr;
+	widget->m_parent.reset();
 
 	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
 		fixedLayoutAncestor->setDirty();
@@ -111,8 +102,8 @@ void Widget::removeChild(Widget* widget)
 
 void Widget::removeFromParent()
 {
-	FLAT_ASSERT(m_parent != nullptr);
-	m_parent->removeChild(this);
+	FLAT_ASSERT(!m_parent.expired());
+	m_parent.lock()->removeChild(getSharedPtr());
 }
 
 void Widget::draw(const util::RenderSettings& renderSettings) const
@@ -224,7 +215,7 @@ Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 
 void Widget::drawChildren(const util::RenderSettings& renderSettings) const
 {
-	for (Widget* child : m_children)
+	for (const std::shared_ptr<Widget>& child : m_children)
 	{
 		child->draw(renderSettings);
 	}
@@ -234,7 +225,7 @@ Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {
 	if (isInside(mousePosition))
 	{
-		for (Widget* child : m_children)
+		for (const std::shared_ptr<Widget>& child : m_children)
 		{
 			if (Widget* overWidget = child->getMouseOverWidget(mousePosition))
 				return overWidget;
@@ -254,26 +245,28 @@ void Widget::setDirty()
 
 RootWidget* Widget::getRootIfAncestor()
 {
-	Widget* widget = this;
-	while (widget && widget->m_parent)
+	std::weak_ptr<Widget> widget = getWeakPtr();
+	while (!widget.expired() && !widget.lock()->m_parent.expired())
 	{
-		widget = widget->m_parent;
+		widget = widget.lock()->m_parent;
 	}
-	return widget->isRoot() ? static_cast<RootWidget*>(widget) : nullptr;
+	FLAT_ASSERT(!widget.expired());
+	Widget* w = widget.lock().get();
+	return w->isRoot() ? static_cast<RootWidget*>(w) : nullptr;
 }
 
 Widget* Widget::getFixedLayoutAncestor()
 {
-	if (!m_parent)
+	if (m_parent.expired())
 		return nullptr;
 
 	if (hasLayout<FixedLayout>())
 		return this;
 
-	if (m_parent->isRoot() || isRoot())
+	if (m_parent.lock()->isRoot() || isRoot())
 		return this;
 
-	return m_parent->getFixedLayoutAncestor();
+	return m_parent.lock()->getFixedLayoutAncestor();
 }
 
 } // ui

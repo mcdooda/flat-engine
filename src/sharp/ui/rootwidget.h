@@ -34,7 +34,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void updateInput();
 
-		inline bool isMouseOver() const { return m_mouseOverWidget != nullptr; }
+		inline bool isMouseOver() const { return !m_mouseOverWidget.expired(); }
 
 		bool isRoot() const override { return true; }
 
@@ -46,7 +46,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		
 	private:
 		Game& m_game;
-		Widget* m_mouseOverWidget;
+		std::weak_ptr<Widget> m_mouseOverWidget;
 		std::vector<Widget*> m_dirtyWidgets;
 		bool m_dirty : 1;
 };

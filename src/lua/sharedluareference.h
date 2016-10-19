@@ -1,5 +1,5 @@
-#ifndef FLAT_LUA_REFERENCE_H
-#define FLAT_LUA_REFERENCE_H
+#ifndef FLAT_LUA_SHAREDLUAREFERENCE_H
+#define FLAT_LUA_SHAREDLUAREFERENCE_H
 
 #include <memory>
 #include "../debug/assert.h"
@@ -9,11 +9,13 @@ namespace flat
 namespace lua
 {
 
+// SharedLuaReference is used to hold a lua object through c++
+
 template <int LuaType>
-class Reference
+class LuaReference
 {
 	public:
-		Reference(lua_State* L, int index) :
+		LuaReference(lua_State* L, int index) :
 			m_luaState(L),
 			m_luaReference(LUA_NOREF)
 		{
@@ -22,7 +24,7 @@ class Reference
 			m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
 		}
 		
-		~Reference()
+		~LuaReference()
 		{
 			luaL_unref(m_luaState, LUA_REGISTRYINDEX, m_luaReference);
 			m_luaReference = LUA_NOREF;
@@ -37,27 +39,27 @@ class Reference
 };
 
 template <int LuaType>
-class SharedReference : public std::shared_ptr<Reference<LuaType>>
+class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 {
-	typedef std::shared_ptr<Reference<LuaType>> Super;
+	typedef std::shared_ptr<LuaReference<LuaType>> Super;
 	public:
-		SharedReference() {}
+		SharedLuaReference() {}
 		
-		SharedReference(lua_State* L, int index)
+		SharedLuaReference(lua_State* L, int index)
 		{
 			set(L, index);
 		}
 		
 		void set(lua_State* L, int index)
 		{
-			Reference<LuaType>* reference = new Reference<LuaType>(L, index);
+			LuaReference<LuaType>* reference = new LuaReference<LuaType>(L, index);
 			Super::reset(reference);
 		}
 		
 		void push(lua_State* L) const
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
-			Reference<LuaType>* reference = Super::get();
+			LuaReference<LuaType>* reference = Super::get();
 			FLAT_ASSERT(reference != nullptr);
 			int luaReference = reference->getLuaReference();
 			FLAT_ASSERT(luaReference != LUA_NOREF);
@@ -66,7 +68,7 @@ class SharedReference : public std::shared_ptr<Reference<LuaType>>
 		
 		inline lua_State* getLuaState() const
 		{
-			Reference<LuaType>* reference = Super::get();
+			LuaReference<LuaType>* reference = Super::get();
 			FLAT_ASSERT(reference != nullptr);
 			return reference->getLuaState();
 		}
@@ -75,7 +77,7 @@ class SharedReference : public std::shared_ptr<Reference<LuaType>>
 } // lua
 } // flat
 
-#endif // FLAT_LUA_REFERENCE_H
+#endif // FLAT_LUA_SHAREDLUAREFERENCE_H
 
 
 

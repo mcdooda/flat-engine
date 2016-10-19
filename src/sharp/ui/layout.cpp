@@ -10,7 +10,7 @@ namespace ui
 
 void Layout::childrenPreLayout(Widget& widget)
 {
-	for (Widget* child : widget.m_children)
+	for (const std::shared_ptr<Widget>& child : widget.m_children)
 	{
 		child->preLayout();
 	}
@@ -18,7 +18,7 @@ void Layout::childrenPreLayout(Widget& widget)
 
 void Layout::childrenLayout(Widget& widget)
 {
-	for (Widget* child : widget.m_children)
+	for (const std::shared_ptr<Widget>& child : widget.m_children)
 	{
 		child->layout();
 	}
@@ -26,7 +26,7 @@ void Layout::childrenLayout(Widget& widget)
 
 void Layout::childrenPostLayout(Widget& widget)
 {
-	for (Widget* child : widget.m_children)
+	for (const std::shared_ptr<Widget>& child : widget.m_children)
 	{
 		child->postLayout();
 	}
@@ -34,13 +34,13 @@ void Layout::childrenPostLayout(Widget& widget)
 
 void Layout::childrenFullLayout(Widget& widget)
 {
-	for (Widget* child : widget.m_children)
+	for (const std::shared_ptr<Widget>& child : widget.m_children)
 	{
 		child->fullLayout();
 	}
 }
 
-std::vector<Widget*>& Layout::getChildren(Widget& widget)
+std::vector<std::shared_ptr<Widget>>& Layout::getChildren(Widget& widget)
 {
 	return widget.m_children;
 }
@@ -52,8 +52,8 @@ Matrix4& Layout::getTransform(Widget& widget)
 
 Widget& Layout::getParent(Widget& widget)
 {
-	FLAT_ASSERT(widget.m_parent != nullptr);
-	return *widget.m_parent;
+	FLAT_ASSERT(!widget.m_parent.expired());
+	return *widget.m_parent.lock().get();
 }
 
 Widget::PositionPolicy& Layout::getPositionPolicy(Widget& widget)
@@ -126,9 +126,7 @@ void Layout::computeFixedHeight(Widget & widget)
 void Layout::computePosition(Widget& widget, Vector2& position)
 {
 	Widget::PositionPolicy positionPolicy = widget.m_positionPolicy;
-
-	FLAT_ASSERT(widget.m_parent != nullptr);
-	Widget& parent = *widget.m_parent;
+	Widget& parent = getParent(widget);
 
 	if (positionPolicy & Widget::PositionPolicy::LEFT)
 	{
@@ -176,8 +174,10 @@ void Layout::computeTransform(Widget& widget)
 	Vector2 position;
 	computePosition(widget, position);
 
+
+
 	Matrix4& transform = widget.m_transform;
-	transform = widget.m_parent->m_transform;
+	transform = getParent(widget).m_transform;
 	translateBy(transform, position + widget.m_computedSize / 2.f);
 	//transform.rotateZ(widget.getRotation().z);
 	//transform.rotateY(widget.getRotation().y);

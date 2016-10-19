@@ -106,6 +106,10 @@ class Widget
 	public:
 		Widget();
 		virtual ~Widget();
+
+		inline void setWeakPtr(const std::weak_ptr<Widget>& self) { m_self = self; }
+		inline const std::weak_ptr<Widget>& getWeakPtr() { return m_self; }
+		inline std::shared_ptr<Widget> getSharedPtr() const { return m_self.lock(); }
 		
 		inline void setMargin(const Margin& margin) { m_margin = margin; }
 		inline const Margin& getMargin() const { return m_margin; }
@@ -141,12 +145,11 @@ class Widget
 		inline void hide() { setVisible(false); }
 		inline void show() { setVisible(true); }
 		
-		void addChild(Widget* widget);
-		void removeChild(Widget* widget);
+		void addChild(const std::shared_ptr<Widget>& widget);
+		void removeChild(const std::shared_ptr<Widget>& widget);
 		void removeFromParent();
 
-		Widget* getParent() { return m_parent; }
-		const Widget* getParent() const { return m_parent; }
+		inline std::weak_ptr<Widget> getParent() { return m_parent; }
 
 		virtual void preLayout() = 0;
 		virtual void layout() = 0;
@@ -205,8 +208,9 @@ class Widget
 		Vector2 m_computedSize;
 		Matrix4 m_transform;
 		
-		Widget* m_parent;
-		std::vector<Widget*> m_children; //TODO std::vector<std::shared_ptr<Widget>>
+		std::weak_ptr<Widget> m_self;
+		std::weak_ptr<Widget> m_parent;
+		std::vector<std::shared_ptr<Widget>> m_children;
 };
 
 template <class LayoutType>

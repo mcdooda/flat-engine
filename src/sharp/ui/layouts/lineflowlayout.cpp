@@ -63,7 +63,7 @@ void LineFlowLayout::layout(Widget& widget)
 
 	float totalFixedWidth = getPadding(widget).left + getPadding(widget).right;
 	int numFlexibleWidgets = 0;
-	for (Widget* child : getChildren(widget))
+	for (const std::shared_ptr<Widget>& child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 		const bool childFixedX = (childSizePolicy & Widget::SizePolicy::FIXED_X) != 0;
@@ -124,7 +124,7 @@ void LineFlowLayout::layout(Widget& widget)
 
 	float totalFlexibleWidth = size.x - totalFixedWidth;
 	float flexibleWidgetsWidth = std::floor(totalFlexibleWidth / numFlexibleWidgets);
-	for (Widget* child : getChildren(widget))
+	for (const std::shared_ptr<Widget>& child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 
@@ -140,9 +140,9 @@ void LineFlowLayout::layout(Widget& widget)
 	}
 
 	// compute children position (reverse order)
-	std::vector<Widget*>& children = getChildren(widget);
-	std::vector<Widget*>::iterator it = children.begin();
-	std::vector<Widget*>::iterator end = children.end();
+	std::vector<std::shared_ptr<Widget>>& children = getChildren(widget);
+	std::vector<std::shared_ptr<Widget>>::iterator it = children.begin();
+	std::vector<std::shared_ptr<Widget>>::iterator end = children.end();
 	float currentX = getPadding(widget).left;
 	for (; it != end; ++it)
 	{

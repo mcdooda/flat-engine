@@ -11,7 +11,6 @@ namespace ui
 
 RootWidget::RootWidget(Game& game) : Super(),
 	m_game(game),
-	m_mouseOverWidget(nullptr),
 	m_dirty(true)
 {
 	setSizePolicy(Widget::SizePolicy::FIXED);
@@ -69,10 +68,17 @@ void RootWidget::updateInput()
 		if (mouseOverWidget == this) // root
 			mouseOverWidget = nullptr;
 
-		if (mouseOverWidget != m_mouseOverWidget)
+		if (mouseOverWidget != m_mouseOverWidget.lock().get())
 		{
 			handleMouseLeave();
-			m_mouseOverWidget = mouseOverWidget;
+			if (mouseOverWidget != nullptr)
+			{
+				m_mouseOverWidget = mouseOverWidget->getWeakPtr();
+			}
+			else
+			{
+				m_mouseOverWidget.reset();
+			}
 			handleMouseEnter();
 		}
 
@@ -86,40 +92,44 @@ void RootWidget::updateInput()
 void RootWidget::handleClick()
 {
 	bool eventHandled = false;
-	Widget* widget = m_mouseOverWidget;
-	while (widget && !eventHandled)
+	std::weak_ptr<Widget> widget = m_mouseOverWidget;
+	while (!widget.expired() && !eventHandled)
 	{
-		widget->click(widget, eventHandled);
-		widget = widget->getParent();
+		Widget* w = widget.lock().get();
+		FLAT_ASSERT(w != nullptr);
+		w->click(w, eventHandled);
+		widget = w->getParent();
 	}
 }
 
 void RootWidget::handleMouseMove()
 {
 	bool eventHandled = false;
-	Widget* widget = m_mouseOverWidget;
-	while (widget && !eventHandled)
+	std::weak_ptr<Widget> widget = m_mouseOverWidget;
+	while (!widget.expired() && !eventHandled)
 	{
-		widget->mouseMove(widget, eventHandled);
-		widget = widget->getParent();
+		Widget* w = widget.lock().get();
+		FLAT_ASSERT(w != nullptr);
+		w->mouseMove(w, eventHandled);
+		widget = w->getParent();
 	}
 }
 
 void RootWidget::handleMouseEnter()
 {
-	if (m_mouseOverWidget)
+	if (Widget* mouseOverWidget = m_mouseOverWidget.lock().get())
 	{
-		m_mouseOverWidget->m_mouseOver = true;
-		m_mouseOverWidget->mouseEnter(m_mouseOverWidget);
+		mouseOverWidget->m_mouseOver = true;
+		mouseOverWidget->mouseEnter(mouseOverWidget);
 	}
 }
 
 void RootWidget::handleMouseLeave()
 {
-	if (m_mouseOverWidget)
+	if (Widget* mouseOverWidget = m_mouseOverWidget.lock().get())
 	{
-		m_mouseOverWidget->m_mouseOver = false;
-		m_mouseOverWidget->mouseLeave(m_mouseOverWidget);
+		mouseOverWidget->m_mouseOver = false;
+		mouseOverWidget->mouseLeave(mouseOverWidget);
 	}
 }
 

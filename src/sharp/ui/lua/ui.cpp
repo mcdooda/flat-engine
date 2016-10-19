@@ -1,7 +1,8 @@
 #include "ui.h"
 #include "../../../flat/game.h"
 #include "../../../lua/lua.h"
-#include "../../../lua/reference.h"
+#include "../../../lua/sharedluareference.h"
+#include "../../../lua/sharedcppreference.h"
 #include "../../../lua/table.h"
 #include "../widget.h"
 #include "../textwidget.h"
@@ -24,14 +25,7 @@ int open(lua_State* L)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	
 	// Widget metatable
-	luaL_newmetatable(L, "Flat.Widget");
-	// mt.__index = mt
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "__index");
-	
 	static const luaL_Reg Widget_lib_m[] = {
-		{"destroy",             l_Widget_destroy},
-		
 		{"addChild",            l_Widget_addChild},
 		{"removeChild",         l_Widget_removeChild},
 		{"removeFromParent",    l_Widget_removeFromParent},
@@ -77,9 +71,7 @@ int open(lua_State* L)
 		{nullptr, nullptr}
 	};
 	
-	luaL_setfuncs(L, Widget_lib_m, 0);
-	
-	lua_pop(L, 1);
+	flat::lua::ClassRegistry::registerClass<Widget>("Flat.Widget", L, Widget_lib_m);
 	
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
@@ -164,8 +156,8 @@ int open(lua_State* L)
 int close(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	WidgetFactory* widgetFactory = getWidgetFactory(L);
-	delete widgetFactory;
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	delete &widgetFactory;//TODO SharedCppReference
 	lua_pushnil(L);
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	return 0;
@@ -173,89 +165,82 @@ int close(lua_State* L)
 
 int setRootWidget(lua_State* L, Widget* rootWidget)
 {
-	lua_pushlightuserdata(L, rootWidget);
+	lua_pushlightuserdata(L, rootWidget); // TODO custom types for weak_ptr
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	return 0;
 }
 
 // Widget methods
 
-int l_Widget_destroy(lua_State* L)
-{
-	Widget* widget = getWidget(L, 1);
-	delete widget;
-	return 0;
-}
-
 int l_Widget_addChild(lua_State* L)
 {
-	Widget* parent = getWidget(L, 1);
-	Widget* child = getWidget(L, 2);
-	parent->addChild(child);
+	Widget& parent = getWidget(L, 1);
+	Widget& child = getWidget(L, 2);
+	parent.addChild(child.getSharedPtr());
 	return 0;
 }
 
 int l_Widget_removeChild(lua_State* L)
 {
-	Widget* parent = getWidget(L, 1);
-	Widget* child = getWidget(L, 2);
-	parent->removeChild(child);
+	Widget& parent = getWidget(L, 1);
+	Widget& child = getWidget(L, 2);
+	parent.removeChild(child.getSharedPtr());
 	return 0;
 }
 
 int l_Widget_removeFromParent(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	widget->removeFromParent();
+	Widget& widget = getWidget(L, 1);
+	widget.removeFromParent();
 	return 0;
 }
 
 int l_Widget_setSizePolicy(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	Widget::SizePolicy sizePolicy = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
-	widget->setSizePolicy(sizePolicy);
+	widget.setSizePolicy(sizePolicy);
 	return 0;
 }
 
 int l_Widget_setSizePolicyX(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	Widget::SizePolicy sizePolicyX = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
-	widget->setSizePolicyX(sizePolicyX);
+	widget.setSizePolicyX(sizePolicyX);
 	return 0;
 }
 
 int l_Widget_setSizePolicyY(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	Widget::SizePolicy sizePolicyY = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
-	widget->setSizePolicyY(sizePolicyY);
+	widget.setSizePolicyY(sizePolicyY);
 	return 0;
 }
 
 int l_Widget_getSizePolicy(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	Widget::SizePolicy sizePolicy = widget->getSizePolicy();
+	Widget& widget = getWidget(L, 1);
+	Widget::SizePolicy sizePolicy = widget.getSizePolicy();
 	lua_pushinteger(L, sizePolicy);
 	return 1;
 }
 
 int l_Widget_setSize(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	float width = static_cast<float>(luaL_checknumber(L, 2));
 	float height = static_cast<float>(luaL_checknumber(L, 3));
 	Widget::Size size(width, height);
-	widget->setSize(size);
+	widget.setSize(size);
 	return 0;
 }
 
 int l_Widget_getSize(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	const Widget::Size& size = widget->getSize();
+	Widget& widget = getWidget(L, 1);
+	const Widget::Size& size = widget.getSize();
 	lua_pushnumber(L, size.x);
 	lua_pushnumber(L, size.y);
 	return 2;
@@ -263,34 +248,34 @@ int l_Widget_getSize(lua_State* L)
 
 int l_Widget_setPositionPolicy(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	Widget::PositionPolicy positionPolicy = static_cast<Widget::PositionPolicy>(luaL_checkint(L, 2));
-	widget->setPositionPolicy(positionPolicy);
+	widget.setPositionPolicy(positionPolicy);
 	return 0;
 }
 
 int l_Widget_getPositionPolicy(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	Widget::PositionPolicy positionPolicy = widget->getPositionPolicy();
+	Widget& widget = getWidget(L, 1);
+	Widget::PositionPolicy positionPolicy = widget.getPositionPolicy();
 	lua_pushinteger(L, positionPolicy);
 	return 1;
 }
 
 int l_Widget_setPosition(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	float x = static_cast<float>(luaL_checknumber(L, 2));
 	float y = static_cast<float>(luaL_checknumber(L, 3));
 	Widget::Position position(x, y);
-	widget->setPosition(position);
+	widget.setPosition(position);
 	return 0;
 }
 
 int l_Widget_getPosition(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	const Widget::Position& position = widget->getPosition();
+	Widget& widget = getWidget(L, 1);
+	const Widget::Position& position = widget.getPosition();
 	lua_pushnumber(L, position.x);
 	lua_pushnumber(L, position.y);
 	return 2;
@@ -298,26 +283,26 @@ int l_Widget_getPosition(lua_State* L)
 
 int l_Widget_setRotation(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	float rotationX = static_cast<float>(luaL_checknumber(L, 2));
 	float rotationY = static_cast<float>(luaL_checknumber(L, 3));
 	float rotationZ = static_cast<float>(luaL_checknumber(L, 4));
-	widget->setRotation(Widget::Rotation(rotationX, rotationY, rotationZ));
+	widget.setRotation(Widget::Rotation(rotationX, rotationY, rotationZ));
 	return 0;
 }
 
 int l_Widget_setRotationZ(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	float rotationZ = static_cast<float>(luaL_checknumber(L, 2));
-	widget->setRotationZ(rotationZ);
+	widget.setRotationZ(rotationZ);
 	return 0;
 }
 
 int l_Widget_getRotation(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	const Widget::Rotation& rotation = widget->getRotation();
+	Widget& widget = getWidget(L, 1);
+	const Widget::Rotation& rotation = widget.getRotation();
 	lua_pushnumber(L, rotation.x);
 	lua_pushnumber(L, rotation.y);
 	lua_pushnumber(L, rotation.z);
@@ -326,7 +311,7 @@ int l_Widget_getRotation(lua_State* L)
 
 int l_Widget_setMargin(lua_State * L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	int top = lua_gettop(L);
 	if (top != 2 && top != 5)
 	{
@@ -340,14 +325,14 @@ int l_Widget_setMargin(lua_State * L)
 		margin.bottom = static_cast<float>(luaL_checknumber(L, 4));
 		margin.left   = static_cast<float>(luaL_checknumber(L, 5));
 	}
-	widget->setMargin(margin);
+	widget.setMargin(margin);
 	return 0;
 }
 
 int l_Widget_getMargin(lua_State * L)
 {
-	Widget* widget = getWidget(L, 1);
-	const Widget::Margin& margin = widget->getMargin();
+	Widget& widget = getWidget(L, 1);
+	const Widget::Margin& margin = widget.getMargin();
 	lua_pushnumber(L, margin.top);
 	lua_pushnumber(L, margin.right);
 	lua_pushnumber(L, margin.bottom);
@@ -357,7 +342,7 @@ int l_Widget_getMargin(lua_State * L)
 
 int l_Widget_setPadding(lua_State * L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	int top = lua_gettop(L);
 	if (top != 2 && top != 5)
 	{
@@ -371,14 +356,14 @@ int l_Widget_setPadding(lua_State * L)
 		padding.bottom = static_cast<float>(luaL_checknumber(L, 4));
 		padding.left = static_cast<float>(luaL_checknumber(L, 5));
 	}
-	widget->setPadding(padding);
+	widget.setPadding(padding);
 	return 0;
 }
 
 int l_Widget_getPadding(lua_State * L)
 {
-	Widget* widget = getWidget(L, 1);
-	const Widget::Padding& padding = widget->getPadding();
+	Widget& widget = getWidget(L, 1);
+	const Widget::Padding& padding = widget.getPadding();
 	lua_pushnumber(L, padding.top);
 	lua_pushnumber(L, padding.right);
 	lua_pushnumber(L, padding.bottom);
@@ -388,80 +373,80 @@ int l_Widget_getPadding(lua_State * L)
 
 int l_Widget_setBackground(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	const char* backgroundFileName = luaL_checkstring(L, 2);
 	Game& game = flat::lua::getGame(L);
 	std::shared_ptr<const flat::video::FileTexture> background = game.video->getTexture(backgroundFileName);
-	widget->setBackground(background);
+	widget.setBackground(background);
 	return 0;
 }
 
 int l_Widget_setBackgroundRepeat(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	Widget::BackgroundRepeat backgroundRepeat = static_cast<Widget::BackgroundRepeat>(luaL_checkint(L, 2));
-	widget->setBackgroundRepeat(backgroundRepeat);
+	widget.setBackgroundRepeat(backgroundRepeat);
 	return 0;
 }
 
 int l_Widget_setBackgroundColor(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	uint32_t color = luaL_checkint(L, 2);
 	float r = static_cast<float>((color >> 24) & 0xFF) / 255.f;
 	float g = static_cast<float>((color >> 16) & 0xFF) / 255.f;
 	float b = static_cast<float>((color >> 8 ) & 0xFF) / 255.f;
 	float a = static_cast<float>((color >> 0 ) & 0xFF) / 255.f;
 	flat::video::Color backgroundColor(r, g, b, a);
-	widget->setBackgroundColor(backgroundColor);
+	widget.setBackgroundColor(backgroundColor);
 	return 0;
 }
 
 int l_Widget_setVisible(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	bool visible = lua_toboolean(L, 2) == 1;
-	widget->setVisible(visible);
+	widget.setVisible(visible);
 	return 0;
 }
 
 int l_Widget_isVisible(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	bool visible = widget->isVisible();
+	Widget& widget = getWidget(L, 1);
+	bool visible = widget.isVisible();
 	lua_pushboolean(L, visible);
 	return 1;
 }
 
 int l_Widget_hide(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	widget->hide();
+	Widget& widget = getWidget(L, 1);
+	widget.hide();
 	return 0;
 }
 
 int l_Widget_show(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
-	widget->show();
+	Widget& widget = getWidget(L, 1);
+	widget.show();
 	return 0;
 }
 
 int l_Widget_click(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
 	input::Mouse* mouse = flat::lua::getInput(L)->mouse;
-	widget->click.on(
+	widget.click.on(
 		[L, ref, mouse](Widget* w, bool& eventHandled)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
 			ref.push(L);
 			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w);
+			pushWidget(L, w->getSharedPtr());
 			lua_pushnumber(L, relativePosition.x);
 			lua_pushnumber(L, relativePosition.y);
 			lua_call(L, 3, 1);
@@ -474,19 +459,19 @@ int l_Widget_click(lua_State* L)
 
 int l_Widget_mouseMove(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
 	input::Mouse* mouse = flat::lua::getInput(L)->mouse;
-	widget->mouseMove.on(
+	widget.mouseMove.on(
 		[L, ref, mouse](Widget* w, bool& eventHandled)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
 			ref.push(L);
 			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w);
+			pushWidget(L, w->getSharedPtr());
 			lua_pushnumber(L, relativePosition.x);
 			lua_pushnumber(L, relativePosition.y);
 			lua_call(L, 3, 1);
@@ -499,17 +484,17 @@ int l_Widget_mouseMove(lua_State* L)
 
 int l_Widget_mouseEnter(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
-	widget->mouseEnter.on(
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	widget.mouseEnter.on(
 		[L, ref](Widget* w)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			ref.push(L);
 			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w);
+			pushWidget(L, w->getSharedPtr());
 			lua_call(L, 1, 0);
 		}
 	);
@@ -518,17 +503,17 @@ int l_Widget_mouseEnter(lua_State* L)
 
 int l_Widget_mouseLeave(lua_State* L)
 {
-	Widget* widget = getWidget(L, 1);
+	Widget& widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedReference<LUA_TFUNCTION> ref(L, 2);
-	widget->mouseLeave.on(
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	widget.mouseLeave.on(
 		[L, ref](Widget* w)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			ref.push(L);
 			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w);
+			pushWidget(L, w->getSharedPtr());
 			lua_call(L, 1, 0);
 		}
 	);
@@ -537,9 +522,9 @@ int l_Widget_mouseLeave(lua_State* L)
 
 int l_TextWidget_setText(lua_State* L)
 {
-	TextWidget* textWidget = getTextWidget(L, 1);
+	TextWidget& textWidget = getTextWidget(L, 1);
 	const char* text = luaL_checkstring(L, 2);
-	textWidget->setText(text);
+	textWidget.setText(text);
 	return 0;
 }
 
@@ -547,43 +532,43 @@ int l_TextWidget_setText(lua_State* L)
 
 int l_Widget_getRoot(lua_State* L)
 {
-	Widget* rootWidget = getRootWidget(L);
-	pushWidget(L, rootWidget);
+	RootWidget& rootWidget = getRootWidget(L);
+	pushWidget(L, rootWidget.getSharedPtr());
 	return 1;
 }
 
 int l_Widget_makeImage(lua_State* L)
 {
-	WidgetFactory* widgetFactory = getWidgetFactory(L);
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
 	std::string fileName = luaL_checkstring(L, 1);
-	Widget* widget = widgetFactory->makeImage(fileName);
+	std::shared_ptr<Widget> widget = widgetFactory.makeImage(fileName);
 	pushWidget(L, widget);
 	return 1;
 }
 
 int l_Widget_makeFixedSize(lua_State* L)
 {
-	WidgetFactory* widgetFactory = getWidgetFactory(L);
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
 	float width = static_cast<float>(luaL_checknumber(L, 1));
 	float height = static_cast<float>(luaL_checknumber(L, 2));
 	Widget::Size size(width, height);
-	Widget* widget = widgetFactory->makeFixedSize(size);
+	std::shared_ptr<Widget> widget = widgetFactory.makeFixedSize(size);
 	pushWidget(L, widget);
 	return 1;
 }
 
 int l_Widget_makeLineFlow(lua_State* L)
 {
-	WidgetFactory* widgetFactory = getWidgetFactory(L);
-	Widget* widget = widgetFactory->makeLineFlow();
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeLineFlow();
 	pushWidget(L, widget);
 	return 1;
 }
 
 int l_Widget_makeColumnFlow(lua_State* L)
 {
-	WidgetFactory* widgetFactory = getWidgetFactory(L);
-	Widget* widget = widgetFactory->makeColumnFlow();
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeColumnFlow();
 	pushWidget(L, widget);
 	return 1;
 }
@@ -593,51 +578,48 @@ int l_Widget_makeText(lua_State* L)
 	const char* text = luaL_checkstring(L, 1);
 	const char* fileName = luaL_checkstring(L, 2);
 	int fontSize = luaL_checkint(L, 3);
-	WidgetFactory* widgetFactory = getWidgetFactory(L);
-	Widget* widget = widgetFactory->makeText(text, fileName, fontSize);
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeText(text, fileName, fontSize);
 	pushWidget(L, widget);
 	return 1;
 }
 
 // private
 
-Widget* getRootWidget(lua_State* L)
+RootWidget& getRootWidget(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	Widget* rootWidget = static_cast<Widget*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(rootWidget != nullptr);
+	FLAT_ASSERT(dynamic_cast<RootWidget*>(rootWidget) != nullptr);
 	lua_pop(L, 1);
-	return rootWidget;
+	return *static_cast<RootWidget*>(rootWidget);
 }
 
-Widget* getWidget(lua_State* L, int index)
+Widget& getWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	return *static_cast<Widget**>(luaL_checkudata(L, index, "Flat.Widget"));
+	return *flat::lua::SharedCppReference<Widget>::getSharedPointer(L, index).get();
 }
 
-TextWidget* getTextWidget(lua_State* L, int index)
+TextWidget& getTextWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	Widget* widget = getWidget(L, index);
-	TextWidget* textWidget = dynamic_cast<TextWidget*>(widget);
+	Widget& widget = getWidget(L, index);
+	TextWidget* textWidget = dynamic_cast<TextWidget*>(&widget);
 	if (!textWidget)
 	{
 		luaL_error(L, "TextWidget required, Widget given");
 	}
-	return textWidget;
+	return *textWidget;
 }
 
-void pushWidget(lua_State* L, Widget* widget)
+void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
-	if (widget != nullptr)
+	if (widget)
 	{
-		Widget** widgetPointer = static_cast<Widget**>(lua_newuserdata(L, sizeof(Widget*)));
-		*widgetPointer = widget;
-		luaL_getmetatable(L, "Flat.Widget");
-		lua_setmetatable(L, -2);
+		flat::lua::SharedCppReference<Widget>::pushNew(L, widget);
 	}
 	else
 	{
@@ -645,14 +627,14 @@ void pushWidget(lua_State* L, Widget* widget)
 	}
 }
 
-WidgetFactory* getWidgetFactory(lua_State* L)
+WidgetFactory& getWidgetFactory(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	WidgetFactory* widgetFactory = static_cast<WidgetFactory*>(lua_touserdata(L, -1));
 	FLAT_ASSERT(widgetFactory != nullptr);
 	lua_pop(L, 1);
-	return widgetFactory;
+	return *widgetFactory;
 }
 
 } // lua

@@ -20,42 +20,48 @@ WidgetFactory::WidgetFactory(Game& game) :
 	
 }
 
-RootWidget* WidgetFactory::makeRoot() const
+std::shared_ptr<RootWidget> WidgetFactory::makeRoot() const
 {
-	return new RootWidget(m_game);
+	std::shared_ptr<RootWidget> rootWidget = std::make_shared<RootWidget>(m_game);
+	rootWidget->setWeakPtr(rootWidget);
+	return rootWidget;
 }
 
-Widget* WidgetFactory::makeImage(const std::string& fileName) const
+std::shared_ptr<Widget> WidgetFactory::makeImage(const std::string& fileName) const
 {
 	std::shared_ptr<const video::FileTexture> texture = m_game.video->getTexture(fileName);
-	Widget* widget = makeFixedSize(texture->getSize());
+	std::shared_ptr<Widget> widget = makeFixedSize(texture->getSize());
 	widget->setBackground(texture);
 	return widget;
 }
 
-Widget* WidgetFactory::makeFixedSize(const Vector2& size) const
+std::shared_ptr<Widget> WidgetFactory::makeFixedSize(const Vector2& size) const
 {
-	Widget* widget = new WidgetImpl<FixedLayout>();
+	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<FixedLayout>>();
+	widget->setWeakPtr(widget);
 	widget->setSize(size);
 	return widget;
 }
 
-Widget* WidgetFactory::makeLineFlow() const
+std::shared_ptr<Widget> WidgetFactory::makeLineFlow() const
 {
-	Widget* widget = new WidgetImpl<LineFlowLayout>();
+	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<LineFlowLayout>>();
+	widget->setWeakPtr(widget);
 	return widget;
 }
 
-Widget* WidgetFactory::makeColumnFlow() const
+std::shared_ptr<Widget> WidgetFactory::makeColumnFlow() const
 {
-	Widget* widget = new WidgetImpl<ColumnFlowLayout>();
+	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<ColumnFlowLayout>>();
+	widget->setWeakPtr(widget);
 	return widget;
 }
 
-Widget* WidgetFactory::makeText(const std::string& text, const std::string& fileName, int fontSize) const
+std::shared_ptr<TextWidget> WidgetFactory::makeText(const std::string& text, const std::string& fileName, int fontSize) const
 {
 	std::shared_ptr<const video::font::Font> font = m_game.video->getFont(fileName, fontSize);
-	TextWidget* widget = new TextWidget(font);
+	std::shared_ptr<TextWidget> widget = std::make_shared<TextWidget>(font);
+	widget->setWeakPtr(widget);
 	widget->setText(text);
 	return widget;
 }

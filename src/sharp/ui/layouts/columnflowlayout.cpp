@@ -64,7 +64,7 @@ void ColumnFlowLayout::layout(Widget& widget)
 
 	float totalFixedHeight = getPadding(widget).bottom + getPadding(widget).top;
 	int numFlexibleWidgets = 0;
-	for (Widget* child : getChildren(widget))
+	for (const std::shared_ptr<Widget>& child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 		const bool childFixedX    = (childSizePolicy & Widget::SizePolicy::FIXED_X) != 0;
@@ -125,7 +125,7 @@ void ColumnFlowLayout::layout(Widget& widget)
 
 	float totalFlexibleHeight = size.y - totalFixedHeight;
 	float flexibleWidgetsHeight = std::floor(totalFlexibleHeight / numFlexibleWidgets);
-	for (Widget* child : getChildren(widget))
+	for (const std::shared_ptr<Widget>& child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 
@@ -141,9 +141,9 @@ void ColumnFlowLayout::layout(Widget& widget)
 	}
 
 	// compute children position (reverse order)
-	std::vector<Widget*>& children = getChildren(widget);
-	std::vector<Widget*>::iterator it = children.begin();
-	std::vector<Widget*>::iterator end = children.end();
+	std::vector<std::shared_ptr<Widget>>& children = getChildren(widget);
+	std::vector<std::shared_ptr<Widget>>::iterator it = children.begin();
+	std::vector<std::shared_ptr<Widget>>::iterator end = children.end();
 	float currentY = size.y - getPadding(widget).top;
 	for (; it != end; ++it)
 	{

@@ -38,7 +38,8 @@
 // lua
 #include "lua/lua.h"
 #include "lua/debug.h"
-#include "lua/reference.h"
+#include "lua/sharedluareference.h"
+#include "lua/sharedcppreference.h"
 
 // util
 #include "util/animatedsprite.h"

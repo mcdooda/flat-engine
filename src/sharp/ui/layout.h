@@ -23,7 +23,7 @@ protected:
 	static void childrenPostLayout(Widget& widget);
 	static void childrenFullLayout(Widget& widget);
 
-	static std::vector<Widget*>& getChildren(Widget& widget);
+	static std::vector<std::shared_ptr<Widget>>& getChildren(Widget& widget);
 	static Matrix4& getTransform(Widget& widget);
 	static Widget& getParent(Widget& widget);
 	static Widget::PositionPolicy& getPositionPolicy(Widget& widget);
