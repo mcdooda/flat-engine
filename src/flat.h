@@ -40,10 +40,10 @@
 #include "lua/debug.h"
 #include "lua/reference.h"
 
-// util
-#include "util/animatedsprite.h"
-#include "util/heightmap.h"
-#include "util/spritebatch.h"
+// render
+#include "render/animatedsprite.h"
+#include "render/heightmap.h"
+#include "render/spritebatch.h"
 
 // containers
 #include "containers/pool.h"

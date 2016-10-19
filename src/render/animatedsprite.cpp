@@ -3,7 +3,7 @@
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 AnimatedSprite::AnimatedSprite() : Sprite(),
@@ -149,7 +149,7 @@ int AnimatedSprite::getAtlasHeight() const
 	return static_cast<int>(m_tileSizeRatio.y * textureSize.y);
 }
 
-} // util
+} // render
 } // flat
 
 

@@ -1,12 +1,12 @@
-#ifndef FLAT_UTIL_HEIGHTMAP_H
-#define FLAT_UTIL_HEIGHTMAP_H
+#ifndef FLAT_RENDER_HEIGHTMAP_H
+#define FLAT_RENDER_HEIGHTMAP_H
 
 #include "sprite.h"
 #include "../video/filetexture.h"
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 	struct Vertex3d
@@ -44,10 +44,10 @@ namespace util
 			float m_multiplier;
 	};
 
-} // util
+} // render
 } // flat
 
-#endif // FLAT_UTIL_HEIGHTMAP_H
+#endif // FLAT_RENDER_HEIGHTMAP_H
 
 
 

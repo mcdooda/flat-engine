@@ -1,5 +1,5 @@
-#ifndef FLAT_UTIL_SPRITE_H
-#define FLAT_UTIL_SPRITE_H
+#ifndef FLAT_RENDER_SPRITE_H
+#define FLAT_RENDER_SPRITE_H
 
 #include <memory>
 #include <array>
@@ -8,7 +8,7 @@
 
 namespace flat
 {
-namespace util
+namespace render
 {
 class SpriteBatch;
 
@@ -86,10 +86,9 @@ class Sprite
 		mutable Matrix4 m_modelMatrix;
 };
 
-} // util
+} // render
 } // flat
 
-#endif // FLAT_UTIL_SPRITE_H
-
+#endif // FLAT_RENDER_SPRITE_H
 
 

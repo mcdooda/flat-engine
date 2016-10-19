@@ -2,7 +2,7 @@
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 Sprite::Sprite() :
@@ -119,7 +119,7 @@ void Sprite::updateModelMatrix() const
 	}
 }
 
-} // util
+} // render
 } // flat
 
 

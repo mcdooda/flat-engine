@@ -20,7 +20,7 @@ class TextWidget : public WidgetImpl<FixedLayout>, public video::font::String
 		
 		void setText(const std::string& text) override;
 		
-		void draw(const util::RenderSettings& renderSettings) const override;
+		void draw(const render::RenderSettings& renderSettings) const override;
 };
 
 } // ui

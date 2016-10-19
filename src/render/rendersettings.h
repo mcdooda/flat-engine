@@ -1,12 +1,12 @@
-#ifndef FLAT_UTIL_RENDERSETTINGS_H
-#define FLAT_UTIL_RENDERSETTINGS_H
+#ifndef FLAT_RENDER_RENDERSETTINGS_H
+#define FLAT_RENDER_RENDERSETTINGS_H
 
 #include "../video/uniform.h"
 #include "../video/attribute.h"
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 struct RenderSettings
@@ -26,10 +26,10 @@ struct RenderSettings
 	video::Attribute colorAttribute;
 };
 
-} // util
+} // render
 } // flat
 
-#endif // FLAT_UTIL_RENDERSETTINGS_H
+#endif // FLAT_RENDER_RENDERSETTINGS_H
 
 
 

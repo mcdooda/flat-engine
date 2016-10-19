@@ -1,5 +1,5 @@
-#ifndef FLAT_UTIL_SPRITEBATCH_H
-#define FLAT_UTIL_SPRITEBATCH_H
+#ifndef FLAT_RENDER_SPRITEBATCH_H
+#define FLAT_RENDER_SPRITEBATCH_H
 
 #include <vector>
 #include <array>
@@ -13,7 +13,7 @@ namespace video
 {
 class Texture;
 }
-namespace util
+namespace render
 {
 class Sprite;
 struct RenderSettings;
@@ -40,9 +40,9 @@ private:
 	const video::Texture* m_texture;
 };
 
-} // util
+} // render
 } // flat
 
-#endif // FLAT_UTIL_SPRITEBATCH_H
+#endif // FLAT_RENDER_SPRITEBATCH_H
 
 
