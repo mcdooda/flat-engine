@@ -16,7 +16,7 @@ RootWidget::RootWidget(Game& game) : Super(),
 	setSizePolicy(Widget::SizePolicy::FIXED);
 }
 
-void RootWidget::draw(const flat::util::RenderSettings& renderSettings) const
+void RootWidget::draw(const flat::render::RenderSettings& renderSettings) const
 {
 	drawChildren(renderSettings);
 }

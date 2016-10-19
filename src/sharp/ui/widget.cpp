@@ -3,7 +3,7 @@
 #include "widget.h"
 #include "rootwidget.h"
 #include "layouts/fixedlayout.h"
-#include "../../util/rendersettings.h"
+#include "../../render/rendersettings.h"
 #include "../../video/color.h"
 #include "../../video/texture.h"
 #include "../../memory/memory.h"
@@ -106,7 +106,7 @@ void Widget::removeFromParent()
 	m_parent.lock()->removeChild(getSharedPtr());
 }
 
-void Widget::draw(const util::RenderSettings& renderSettings) const
+void Widget::draw(const render::RenderSettings& renderSettings) const
 {
 	if (!m_visible)
 		return;
@@ -213,7 +213,7 @@ Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 	return Vector2(invTransform * Vector4(absolutePosition, 0.f, 1.f));
 }
 
-void Widget::drawChildren(const util::RenderSettings& renderSettings) const
+void Widget::drawChildren(const render::RenderSettings& renderSettings) const
 {
 	for (const std::shared_ptr<Widget>& child : m_children)
 	{

@@ -1,3 +1,6 @@
+#ifndef FLAT_CONTAINERS_POOL_H
+#define FLAT_CONTAINERS_POOL_H
+
 #include <array>
 #include "../debug/assert.h"
 
@@ -9,6 +12,7 @@ namespace containers
 template <class T>
 union alignas(alignof(T)) PoolEntry
 {
+	static_assert(sizeof(T) != 0, "T undeclared?");
 	uint8_t objectData[sizeof(T)];
 	PoolEntry<T>* next;
 };
@@ -36,11 +40,12 @@ public:
 	template <typename... ConstructorArgs>
 	T* create(ConstructorArgs... constructorArgs)
 	{
+		FLAT_ASSERT(m_numAllocatedObjects < Size);
 		FLAT_ASSERT(m_head != nullptr);
 		T* object = reinterpret_cast<T*>(&m_head->objectData);
 		m_head = m_head->next;
 		new (object) T(constructorArgs...);
-		FLAT_DEBUG_ONLY(++m_numAllocatedObjects);
+		FLAT_DEBUG_ONLY(++m_numAllocatedObjects;)
 		return object;
 	}
 
@@ -52,7 +57,7 @@ public:
 		object->~T();
 		setNext(entry, *m_head);
 		m_head = &entry;
-		FLAT_DEBUG_ONLY(--m_numAllocatedObjects);
+		FLAT_DEBUG_ONLY(--m_numAllocatedObjects;)
 	}
 
 private:
@@ -83,10 +88,12 @@ private:
 
 private:
 	PoolEntry<T>* m_head;
-	FLAT_DEBUG_ONLY(int m_numAllocatedObjects);
+	FLAT_DEBUG_ONLY(int m_numAllocatedObjects;)
 };
 
 } // containers
 } // flat
+
+#endif // FLAT_CONTAINERS_POOL_H
 
 

@@ -17,7 +17,7 @@ namespace video
 class Texture;
 }
 
-namespace util
+namespace render
 {
 struct RenderSettings;
 }
@@ -156,7 +156,7 @@ class Widget
 		virtual void postLayout() = 0;
 		virtual void fullLayout() = 0;
 
-		virtual void draw(const util::RenderSettings& renderSettings) const;
+		virtual void draw(const render::RenderSettings& renderSettings) const;
 
 		template <class CandidateLayoutType>
 		bool hasLayout() const;
@@ -170,7 +170,7 @@ class Widget
 		Slot<Widget*> mouseLeave;
 		
 	protected:
-		void drawChildren(const util::RenderSettings& renderSettings) const;
+		void drawChildren(const render::RenderSettings& renderSettings) const;
 		
 		float getInnerWidth() const { return m_computedSize.x - m_padding.left - m_padding.right; }
 		void setInnerWidth(float innerWidth) { m_computedSize.x = innerWidth + m_padding.left + m_padding.right; }

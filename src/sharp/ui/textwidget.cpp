@@ -1,5 +1,5 @@
 #include "textwidget.h"
-#include "../../util/rendersettings.h"
+#include "../../render/rendersettings.h"
 
 namespace flat
 {
@@ -20,7 +20,7 @@ void TextWidget::setText(const std::string& text)
 	Widget::m_size = m_computedSize;
 }
 
-void TextWidget::draw(const util::RenderSettings& renderSettings) const
+void TextWidget::draw(const render::RenderSettings& renderSettings) const
 {
 	if (!m_visible)
 		return;

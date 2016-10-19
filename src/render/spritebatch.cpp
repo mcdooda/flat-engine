@@ -3,7 +3,7 @@
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 SpriteBatch::SpriteBatch() :
@@ -72,7 +72,7 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	glDisableVertexAttribArray(colorAttribute);
 }
 
-} // util
+} // render
 } // flat
 
 

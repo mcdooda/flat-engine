@@ -3,7 +3,7 @@
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 HeightMap::HeightMap() :
@@ -197,7 +197,7 @@ void HeightMap::computeHeightMap()
 	}
 }
 
-} // util
+} // render
 } // flat
 
 

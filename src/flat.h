@@ -41,13 +41,14 @@
 #include "lua/sharedluareference.h"
 #include "lua/sharedcppreference.h"
 
-// util
-#include "util/animatedsprite.h"
-#include "util/heightmap.h"
-#include "util/spritebatch.h"
+// render
+#include "render/animatedsprite.h"
+#include "render/heightmap.h"
+#include "render/spritebatch.h"
 
 // containers
 #include "containers/pool.h"
+#include "containers/dynamicpool.h"
 
 // sharp
 // ui

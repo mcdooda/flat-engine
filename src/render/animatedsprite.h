@@ -1,12 +1,12 @@
-#ifndef FLAT_UTIL_ANIMATEDSPRITE_H
-#define FLAT_UTIL_ANIMATEDSPRITE_H
+#ifndef FLAT_RENDER_ANIMATEDSPRITE_H
+#define FLAT_RENDER_ANIMATEDSPRITE_H
 
 #include <iostream>
 #include "sprite.h"
 
 namespace flat
 {
-namespace util
+namespace render
 {
 
 class AnimatedSprite : public Sprite
@@ -58,10 +58,10 @@ class AnimatedSprite : public Sprite
 		bool m_animationStarted : 1;
 };
 
-} // util
+} // render
 } // flat
 
-#endif // FLAT_UTIL_ANIMATEDSPRITE_H
+#endif // FLAT_RENDER_ANIMATEDSPRITE_H
 
 
 
