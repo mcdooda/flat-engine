@@ -252,7 +252,7 @@ RootWidget* Widget::getRootIfAncestor()
 	}
 	FLAT_ASSERT(!widget.expired());
 	Widget* w = widget.lock().get();
-	return w->isRoot() ? static_cast<RootWidget*>(w) : nullptr;
+	return w->isRoot() ? w->asP<RootWidget>() : nullptr;
 }
 
 Widget* Widget::getFixedLayoutAncestor()

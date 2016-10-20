@@ -9,6 +9,7 @@
 #include "../../video/attribute.h"
 #include "../../video/color.h"
 #include "../../misc/slot.h"
+#include "../../util/convertible.h"
 
 namespace flat
 {
@@ -30,7 +31,7 @@ namespace ui
 class Layout;
 class RootWidget;
 
-class Widget
+class Widget : public util::Convertible<Widget>
 {
 	friend class Layout;
 	friend class RootWidget;

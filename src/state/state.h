@@ -1,6 +1,8 @@
 #ifndef FLAT_STATE_STATE_H
 #define FLAT_STATE_STATE_H
 
+#include "../util/convertible.h"
+
 namespace flat
 {
 namespace state
@@ -8,7 +10,7 @@ namespace state
 
 class Agent;
 
-class State
+class State : public util::Convertible<State>
 {
 	public:
 		State();

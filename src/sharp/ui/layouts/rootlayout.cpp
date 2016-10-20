@@ -12,12 +12,12 @@ namespace ui
 
 void RootLayout::preLayout(Widget& widget)
 {
-	static_cast<RootWidget&>(widget).m_dirtyWidgets.clear();
+	widget.to<RootWidget>().m_dirtyWidgets.clear();
 }
 
 void RootLayout::layout(Widget& widget)
 {
-	flat::video::Window* window = static_cast<RootWidget&>(widget).m_game.video->window;
+	flat::video::Window* window = widget.to<RootWidget>().m_game.video->window;
 	widget.setSize(window->getSize());
 	getComputedSize(widget) = getSize(widget);
 

@@ -596,8 +596,7 @@ RootWidget& getRootWidget(lua_State* L)
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	Widget* rootWidget = flat::lua::SharedCppReference<Widget>::getSharedPointer(L, -1).get();
 	lua_pop(L, 1);
-	FLAT_ASSERT(dynamic_cast<RootWidget*>(rootWidget) != nullptr);
-	return *static_cast<RootWidget*>(rootWidget);
+	return rootWidget->to<RootWidget>();
 }
 
 Widget& getWidget(lua_State* L, int index)
