@@ -144,10 +144,10 @@ int open(lua_State* L)
 	
 	lua_setglobal(L, "Widget");
 	
-	// TODO actual full userdata with __gc for WidgetFactory
+
+	flat::lua::ClassRegistry::registerClass<WidgetFactory>("Flat.WidgetFactory", L);
 	Game& game = flat::lua::getGame(L);
-	WidgetFactory* widgetFactory = new WidgetFactory(game);
-	lua_pushlightuserdata(L, widgetFactory);
+	flat::lua::SharedCppReference<WidgetFactory>::pushNew(L, new WidgetFactory(game));
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	
 	return 0;
@@ -156,16 +156,20 @@ int open(lua_State* L)
 int close(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	WidgetFactory& widgetFactory = getWidgetFactory(L);
-	delete &widgetFactory;//TODO SharedCppReference
+
 	lua_pushnil(L);
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
+
+	lua_pushnil(L);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
+
 	return 0;
 }
 
 int setRootWidget(lua_State* L, Widget* rootWidget)
 {
-	lua_pushlightuserdata(L, rootWidget); // TODO custom types for weak_ptr
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	flat::lua::SharedCppReference<Widget>::pushNew(L, rootWidget->getSharedPtr());
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	return 0;
 }
@@ -590,9 +594,9 @@ RootWidget& getRootWidget(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
-	Widget* rootWidget = static_cast<Widget*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(dynamic_cast<RootWidget*>(rootWidget) != nullptr);
+	Widget* rootWidget = flat::lua::SharedCppReference<Widget>::getSharedPointer(L, -1).get();
 	lua_pop(L, 1);
+	FLAT_ASSERT(dynamic_cast<RootWidget*>(rootWidget) != nullptr);
 	return *static_cast<RootWidget*>(rootWidget);
 }
 
@@ -631,8 +635,7 @@ WidgetFactory& getWidgetFactory(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
-	WidgetFactory* widgetFactory = static_cast<WidgetFactory*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(widgetFactory != nullptr);
+	WidgetFactory* widgetFactory = flat::lua::SharedCppReference<WidgetFactory>::getSharedPointer(L, -1).get();
 	lua_pop(L, 1);
 	return *widgetFactory;
 }
