@@ -34,8 +34,10 @@ class Sprite
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; m_modelMatrixIsDirty = true; }
 		inline const Vector3& getRotation() const { return m_rotation; }
 		
-		inline void setScale(float scale) { m_scale = scale; m_modelMatrixIsDirty = true; }
-		inline float getScale() const { return m_scale; }
+		inline void setScale(const Vector2& scale) { m_scale = scale; m_modelMatrixIsDirty = true; }
+		inline void setScaleX(float scaleX) { m_scale.x = scaleX; m_modelMatrixIsDirty = true; }
+		inline void setScaleY(float scaleY) { m_scale.y = scaleY; m_modelMatrixIsDirty = true; }
+		inline const Vector2& getScale() const { return m_scale; }
 		
 		inline void setPosition(const Vector2& position) { m_position = position; m_modelMatrixIsDirty = true; }
 		inline void setPositionX(float x) { m_position.x = x; m_modelMatrixIsDirty = true; }
@@ -75,7 +77,7 @@ class Sprite
 		Vector3 m_rotation;
 		Vector2 m_position;
 		Vector2 m_origin;
-		float m_scale;
+		Vector2 m_scale;
 		
 		bool m_flipX : 1;
 		bool m_flipY : 1;

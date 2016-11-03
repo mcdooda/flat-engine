@@ -110,8 +110,8 @@ void Sprite::updateModelMatrix() const
 		m_modelMatrixIsDirty = false;
 		m_modelMatrix = Matrix4();
 		translateBy(m_modelMatrix, Vector3(m_position, 0.f));
-		scaleBy(m_modelMatrix, m_scale);
 		rotateBy(m_modelMatrix, m_rotation);
+		scaleBy(m_modelMatrix, m_scale);
 		float scaleX = m_flipX ? -1.f : 1.f;
 		float scaleY = m_flipY ? -1.f : 1.f;
 		scaleBy(m_modelMatrix, Vector2(scaleX, scaleY));
