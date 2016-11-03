@@ -52,6 +52,7 @@ inline T normalize(const T& vector)
 }
 
 const float PI = glm::pi<float>();
+const float PI2 = PI * 2.f;
 
 } // flat
 
