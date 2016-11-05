@@ -52,6 +52,7 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 		
 		void set(lua_State* L, int index)
 		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			LuaReference<LuaType>* reference = new LuaReference<LuaType>(L, index);
 			Super::reset(reference);
 		}
