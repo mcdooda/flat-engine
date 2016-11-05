@@ -61,7 +61,7 @@ class Slot
 
 		void operator()(T... params)
 		{
-			for (Callback* callback : m_callbacks)
+			for (std::unique_ptr<Callback>& callback : m_callbacks)
 				(*callback)(params...);
 		}
 
@@ -79,7 +79,7 @@ class Slot
 			static_assert(std::is_same<MethodType, void (std::remove_const<PointerType>::type::*)(T...)>::value, "");
 			FLAT_ASSERT(object && callbackMethod);
 			Callback* callback = new CallbackMethodImpl<PointerType>(object, callbackMethod);
-			m_callbacks.push_back(callback);
+			m_callbacks.emplace_back(callback);
 		}
 
 		template <typename Func>
@@ -87,7 +87,7 @@ class Slot
 		{
 			//FLAT_ASSERT(callbackFunc); // no operator! for lambdas
 			Callback* callback = new CallbackFunctionImpl<Func>(callbackFunc);
-			m_callbacks.push_back(callback);
+			m_callbacks.emplace_back(callback);
 		}
 
 		template <typename U>
@@ -138,7 +138,6 @@ class Slot
 					{
 						if (callbackMethodImpl->m_object == object)
 						{
-							delete callbackMethodImpl;
 							return true;
 						}
 					}
@@ -150,14 +149,11 @@ class Slot
 
 		void off()
 		{
-			for (Callback* callback : m_callbacks)
-				delete callback;
-
 			m_callbacks.clear();
 		}
 
 	private:
-		std::vector<Callback*> m_callbacks;
+		std::vector<std::unique_ptr<Callback>> m_callbacks;
 };
 
 } // flat
