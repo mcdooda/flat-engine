@@ -260,13 +260,15 @@ Widget* Widget::getFixedLayoutAncestor()
 	if (m_parent.expired())
 		return nullptr;
 
-	if (hasLayout<FixedLayout>())
+	Widget* parent = m_parent.lock().get();
+
+	if (parent->hasLayout<FixedLayout>())
+		return parent;
+
+	if (parent->isRoot() || isRoot())
 		return this;
 
-	if (m_parent.lock()->isRoot() || isRoot())
-		return this;
-
-	return m_parent.lock()->getFixedLayoutAncestor();
+	return parent->getFixedLayoutAncestor();
 }
 
 } // ui

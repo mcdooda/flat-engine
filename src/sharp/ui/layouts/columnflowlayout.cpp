@@ -40,7 +40,10 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 		}
 	}
 
-	computeTransform(widget);
+	if ((sizePolicy & Widget::SizePolicy::COMPRESS) == 0)
+	{
+		computeTransform(widget);
+	}
 
 	childrenPreLayout(widget);
 }
@@ -140,7 +143,12 @@ void ColumnFlowLayout::layout(Widget& widget)
 		}
 	}
 
-	// compute children position (reverse order)
+	if (compressedSizeX || compressedSizeY)
+	{
+		computeTransform(widget);
+	}
+
+	// compute children position
 	std::vector<std::shared_ptr<Widget>>& children = getChildren(widget);
 	std::vector<std::shared_ptr<Widget>>::iterator it = children.begin();
 	std::vector<std::shared_ptr<Widget>>::iterator end = children.end();

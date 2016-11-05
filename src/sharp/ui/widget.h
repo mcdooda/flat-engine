@@ -165,6 +165,9 @@ class Widget : public util::Convertible<Widget>
 		bool isInside(const Vector2& point) const;
 		Vector2 getRelativePosition(const Vector2& absolutePosition) const;
 
+		virtual void setDirty();
+
+	public:
 		Slot<Widget*, bool> click;
 		Slot<Widget*, bool> mouseMove;
 		Slot<Widget*> mouseEnter;
@@ -183,8 +186,6 @@ class Widget : public util::Convertible<Widget>
 		float getOuterHeight() const { return m_computedSize.y + m_margin.top + m_margin.bottom; }
 
 		Widget* getMouseOverWidget(const Vector2& mousePosition);
-
-		virtual void setDirty();
 
 		virtual bool isRoot() const { return false; }
 		RootWidget* getRootIfAncestor();

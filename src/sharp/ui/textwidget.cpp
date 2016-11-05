@@ -18,6 +18,9 @@ void TextWidget::setText(const std::string& text)
 	video::font::String::setText(text);
 	Widget::m_computedSize = video::font::String::getComputedSize();
 	Widget::m_size = m_computedSize;
+
+	if (ui::Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
 }
 
 void TextWidget::draw(const render::RenderSettings& renderSettings) const
