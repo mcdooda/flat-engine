@@ -19,24 +19,6 @@ inline float vector2_angle(const Vector2& vector2)
 	return std::atan2f(vector2.y, vector2.x);
 }
 
-inline std::ostream& operator<<(std::ostream& out, const Vector2& v)
-{
-	out << "Vector2(" << v.x << "," << v.y << ")";
-	return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const Vector3& v)
-{
-	out << "Vector3(" << v.x << "," << v.y << "," << v.z << ")";
-	return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const Vector4& v)
-{
-	out << "Vector4(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
-	return out;
-}
-
 using glm::length;
 using glm::length2;
 using glm::dot;
@@ -55,6 +37,21 @@ const float PI = glm::pi<float>();
 const float PI2 = PI * 2.f;
 
 } // flat
+
+inline std::ostream& operator<<(std::ostream& out, const flat::Vector2& v)
+{
+	return out << "Vector2(" << v.x << "," << v.y << ")";
+}
+
+inline std::ostream& operator<<(std::ostream& out, const flat::Vector3& v)
+{
+	return out << "Vector3(" << v.x << "," << v.y << "," << v.z << ")";
+}
+
+inline std::ostream& operator<<(std::ostream& out, const flat::Vector4& v)
+{
+	return out << "Vector4(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+}
 
 #endif // FLAT_GEOMETRY_VECTOR2_H
 
