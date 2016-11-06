@@ -76,7 +76,7 @@ class Slot
 		template <typename PointerType, typename MethodType>
 		void on(PointerType* object, MethodType callbackMethod)
 		{
-			static_assert(std::is_same<MethodType, void (std::remove_const<PointerType>::type::*)(T...)>::value, "");
+			static_assert(std::is_same<MethodType, void (std::remove_const<PointerType>::type::*)(T...)>::value, "Callback must be a method of the given object");
 			FLAT_ASSERT(object && callbackMethod);
 			Callback* callback = new CallbackMethodImpl<PointerType>(object, callbackMethod);
 			m_callbacks.emplace_back(callback);

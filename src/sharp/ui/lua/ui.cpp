@@ -26,47 +26,48 @@ int open(lua_State* L)
 	
 	// Widget metatable
 	static const luaL_Reg Widget_lib_m[] = {
-		{"addChild",            l_Widget_addChild},
-		{"removeChild",         l_Widget_removeChild},
-		{"removeFromParent",    l_Widget_removeFromParent},
+		{"addChild",              l_Widget_addChild},
+		{"removeChild",           l_Widget_removeChild},
+		{"removeFromParent",      l_Widget_removeFromParent},
 		
-		{"setSizePolicy",       l_Widget_setSizePolicy},
-		{"setSizePolicyX",      l_Widget_setSizePolicyX},
-		{"setSizePolicyY",      l_Widget_setSizePolicyY},
-		{"getSizePolicy",       l_Widget_getSizePolicy},
-		{"setSize",             l_Widget_setSize},
-		{"getSize",             l_Widget_getSize},
+		{"setSizePolicy",         l_Widget_setSizePolicy},
+		{"setSizePolicyX",        l_Widget_setSizePolicyX},
+		{"setSizePolicyY",        l_Widget_setSizePolicyY},
+		{"getSizePolicy",         l_Widget_getSizePolicy},
+		{"setSize",               l_Widget_setSize},
+		{"getSize",               l_Widget_getSize},
 		
-		{"setPositionPolicy",   l_Widget_setPositionPolicy},
-		{"getPositionPolicy",   l_Widget_getPositionPolicy},
-		{"setPosition",         l_Widget_setPosition},
-		{"getPosition",         l_Widget_getPosition},
+		{"setPositionPolicy",     l_Widget_setPositionPolicy},
+		{"getPositionPolicy",     l_Widget_getPositionPolicy},
+		{"setPosition",           l_Widget_setPosition},
+		{"getPosition",           l_Widget_getPosition},
 		
-		{"setRotation",         l_Widget_setRotation},
-		{"setRotationZ",        l_Widget_setRotationZ},
-		{"getRotation",         l_Widget_getRotation},
+		{"setRotation",           l_Widget_setRotation},
+		{"setRotationZ",          l_Widget_setRotationZ},
+		{"getRotation",           l_Widget_getRotation},
 
-		{"setMargin",           l_Widget_setMargin},
-		{"getMargin",           l_Widget_getMargin},
+		{"setMargin",             l_Widget_setMargin},
+		{"getMargin",             l_Widget_getMargin},
 
-		{"setPadding",          l_Widget_setPadding},
-		{"getPadding",          l_Widget_getPadding},
+		{"setPadding",            l_Widget_setPadding},
+		{"getPadding",            l_Widget_getPadding},
 		
-		{"setBackground",       l_Widget_setBackground},
-		{"setBackgroundRepeat", l_Widget_setBackgroundRepeat},
-		{"setBackgroundColor",  l_Widget_setBackgroundColor},
+		{"setBackground",         l_Widget_setBackground},
+		{"setBackgroundRepeat",   l_Widget_setBackgroundRepeat},
+		{"setBackgroundColor",    l_Widget_setBackgroundColor},
+		{"setBackgroundPosition", l_Widget_setBackgroundPosition},
 		
-		{"setVisible",          l_Widget_setVisible},
-		{"getVisible",          l_Widget_isVisible},
-		{"hide",                l_Widget_hide},
-		{"show",                l_Widget_show},
+		{"setVisible",            l_Widget_setVisible},
+		{"getVisible",            l_Widget_isVisible},
+		{"hide",                  l_Widget_hide},
+		{"show",                  l_Widget_show},
 		
-		{"click",               l_Widget_click},
-		{"mouseMove",           l_Widget_mouseMove},
-		{"mouseEnter",          l_Widget_mouseEnter},
-		{"mouseLeave",          l_Widget_mouseLeave},
+		{"click",                 l_Widget_click},
+		{"mouseMove",             l_Widget_mouseMove},
+		{"mouseEnter",            l_Widget_mouseEnter},
+		{"mouseLeave",            l_Widget_mouseLeave},
 		
-		{"setText",             l_TextWidget_setText},
+		{"setText",               l_TextWidget_setText},
 		
 		{nullptr, nullptr}
 	};
@@ -403,6 +404,15 @@ int l_Widget_setBackgroundColor(lua_State* L)
 	float a = static_cast<float>((color >> 0 ) & 0xFF) / 255.f;
 	flat::video::Color backgroundColor(r, g, b, a);
 	widget.setBackgroundColor(backgroundColor);
+	return 0;
+}
+
+int l_Widget_setBackgroundPosition(lua_State * L)
+{
+	Widget& widget = getWidget(L, 1);
+	float x = static_cast<float>(luaL_checknumber(L, 2));
+	float y = static_cast<float>(luaL_checknumber(L, 3));
+	widget.setBackgroundPosition(Vector2(x, y));
 	return 0;
 }
 

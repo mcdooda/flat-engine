@@ -21,6 +21,7 @@ Widget::Widget() :
 	m_size(0.f, 0.f),
 	m_position(0.f, 0.f),
 	m_rotation(0.f, 0.f, 0.f),
+	m_backgroundPosition(0.f, 0.f),
 	m_backgroundRepeat(BackgroundRepeat::SCALED),
 	m_backgroundColor(0.f, 0.f, 0.f, 0.f),
 	m_sizePolicy(SizePolicy::FIXED),
@@ -151,27 +152,31 @@ void Widget::draw(const render::RenderSettings& renderSettings) const
 			// uv
 			const float* uv = nullptr;
 
-			// TODO compute during layout...
-			const float repeatUv[] = {
-				0.0f, m_computedSize.y / background->getSize().y,
-				m_computedSize.x / background->getSize().x, m_computedSize.y / background->getSize().y,
-				m_computedSize.x / background->getSize().x, 0.0f,
-				0.0f, 0.0f
-			};
-
-			static const float scaledUv[] = {
-				0.0f, 1.0f,
-				1.0f, 1.0f,
-				1.0f, 0.0f,
-				0.0f, 0.0f
-			};
-
 			if (m_backgroundRepeat == BackgroundRepeat::REPEAT)
 			{
+				// TODO compute during layout...
+				const Vector2& backgroundSize = background->getSize();
+				const float uvx0 = m_backgroundPosition.x / backgroundSize.x;
+				const float uvx1 = (m_backgroundPosition.x + m_computedSize.x) / backgroundSize.x;
+				const float uvy0 = m_backgroundPosition.y / backgroundSize.y;
+				const float uvy1 = (m_backgroundPosition.y + m_computedSize.y) / backgroundSize.y;
+				const float repeatUv[] = {
+					uvx0, m_computedSize.y / background->getSize().y,
+					uvx1, m_computedSize.y / background->getSize().y,
+					uvx1, 0.0f,
+					uvx0, 0.0f
+				};
+
 				uv = repeatUv;
 			}
 			else if (m_backgroundRepeat == BackgroundRepeat::SCALED)
 			{
+				static const float scaledUv[] = {
+					0.0f, 1.0f,
+					1.0f, 1.0f,
+					1.0f, 0.0f,
+					0.0f, 0.0f
+				};
 				uv = scaledUv;
 			}
 			else

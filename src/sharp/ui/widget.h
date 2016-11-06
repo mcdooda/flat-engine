@@ -103,6 +103,8 @@ class Widget : public util::Convertible<Widget>
 			SCALED,
 			REPEAT
 		};
+
+		typedef Vector2 BackgroundPosition;
 		
 	public:
 		Widget();
@@ -135,8 +137,12 @@ class Widget : public util::Convertible<Widget>
 		inline const Rotation& getRotation() const { return m_rotation; }
 		
 		inline void setBackground(const std::shared_ptr<const video::Texture>& background) { m_background = background; setBackgroundColor(flat::video::Color::WHITE); }
+
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
 		inline const video::Texture* getBackground() const { return m_background.get(); }
+
+		inline void setBackgroundPosition(const BackgroundPosition& backgroundPosition) { m_backgroundPosition = backgroundPosition; }
+		inline const BackgroundPosition& getBackgroundPosition() const { return m_backgroundPosition; }
 
 		inline void setBackgroundColor(const flat::video::Color& backgroundColor) { m_backgroundColor = backgroundColor; }
 		inline const flat::video::Color& getBackgroundColor() const { return m_backgroundColor; }
@@ -168,8 +174,8 @@ class Widget : public util::Convertible<Widget>
 		virtual void setDirty();
 
 	public:
-		Slot<Widget*, bool> click;
-		Slot<Widget*, bool> mouseMove;
+		Slot<Widget*, bool&> click;
+		Slot<Widget*, bool&> mouseMove;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
 		
@@ -198,6 +204,7 @@ class Widget : public util::Convertible<Widget>
 		Rotation m_rotation;
 
 		std::shared_ptr<const video::Texture> m_background;
+		BackgroundPosition m_backgroundPosition;
 		BackgroundRepeat m_backgroundRepeat;
 		flat::video::Color m_backgroundColor;
 		
