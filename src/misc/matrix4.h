@@ -10,6 +10,7 @@
 namespace flat
 {
 
+using Matrix3 = glm::mat3;
 using Matrix4 = glm::mat4;
 
 inline std::ostream& operator<<(std::ostream& out, const Matrix4& m)
