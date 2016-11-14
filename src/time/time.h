@@ -17,12 +17,13 @@ class Time final : public private_::TimerBase
 		void endFrame();
 		
 		void setFrameRate(float rate);
-		float getFrameRate();
+		float getFrameRate() const;
 		void setNoLimitFrameRate();
-		float getFrameTime();
-		float getActualFrameRate();
+		float getFrameTime() const;
+		float getActualFrameTime() const;
+		float getActualFrameRate() const;
 
-		void sleep(float duration);
+		void sleep(float duration) const;
 		
 	private:
 		float m_frameTime;

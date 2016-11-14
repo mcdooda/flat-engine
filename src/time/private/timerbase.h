@@ -18,7 +18,7 @@ public:
 	inline bool isPaused() const { return m_timePaused; }
 	void togglePause();
 
-	float getTime();
+	float getTime() const;
 
 protected:
 	static float getRealTime();
