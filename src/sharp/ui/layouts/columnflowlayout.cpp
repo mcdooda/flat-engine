@@ -127,7 +127,7 @@ void ColumnFlowLayout::layout(Widget& widget)
 	}
 
 	float totalFlexibleHeight = size.y - totalFixedHeight;
-	float flexibleWidgetsHeight = std::floor(totalFlexibleHeight / numFlexibleWidgets);
+	float flexibleWidgetsHeight = numFlexibleWidgets > 0.f ? std::floor(totalFlexibleHeight / numFlexibleWidgets) : 0.f;
 	for (const std::shared_ptr<Widget>& child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
@@ -139,7 +139,8 @@ void ColumnFlowLayout::layout(Widget& widget)
 
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
 		{
-			getComputedSize(*child).y = flexibleWidgetsHeight;
+			if (flexibleWidgetsHeight > 0.f)
+				getComputedSize(*child).y = flexibleWidgetsHeight;
 		}
 	}
 

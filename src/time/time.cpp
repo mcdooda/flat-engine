@@ -56,7 +56,7 @@ float Time::getActualFrameTime() const
 
 float Time::getActualFrameRate() const
 {
-	return std::min(1.f / m_frameTime, getFrameRate());
+	return m_frameTime > 0.f ? std::min(1.f / m_frameTime, getFrameRate()) : getFrameRate();
 }
 
 void Time::sleep(float duration) const
