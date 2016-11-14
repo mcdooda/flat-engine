@@ -126,14 +126,15 @@ void LineFlowLayout::layout(Widget& widget)
 	}
 
 	float totalFlexibleWidth = size.x - totalFixedWidth;
-	float flexibleWidgetsWidth = std::floor(totalFlexibleWidth / numFlexibleWidgets);
+	float flexibleWidgetsWidth = numFlexibleWidgets > 0.f ? std::floor(totalFlexibleWidth / numFlexibleWidgets) : 0.f;
 	for (const std::shared_ptr<Widget>& child : getChildren(widget))
 	{
 		Widget::SizePolicy childSizePolicy = getSizePolicy(*child);
 
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_X)
 		{
-			getComputedSize(*child).x = flexibleWidgetsWidth;
+			if (flexibleWidgetsWidth > 0.f)
+				getComputedSize(*child).x = flexibleWidgetsWidth;
 		}
 
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
