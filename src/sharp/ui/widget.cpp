@@ -156,15 +156,15 @@ void Widget::draw(const render::RenderSettings& renderSettings) const
 			{
 				// TODO compute during layout...
 				const Vector2& backgroundSize = background->getSize();
-				const float uvx0 = m_backgroundPosition.x / backgroundSize.x;
-				const float uvx1 = (m_backgroundPosition.x + m_computedSize.x) / backgroundSize.x;
-				const float uvy0 = m_backgroundPosition.y / backgroundSize.y;
-				const float uvy1 = (m_backgroundPosition.y + m_computedSize.y) / backgroundSize.y;
+				const float uvx0 = m_backgroundPosition.x;
+				const float uvx1 = m_backgroundPosition.x + m_computedSize.x / backgroundSize.x;
+				const float uvy0 = m_backgroundPosition.y;
+				const float uvy1 = m_backgroundPosition.y + m_computedSize.y / backgroundSize.y;
 				const float repeatUv[] = {
-					uvx0, m_computedSize.y / background->getSize().y,
-					uvx1, m_computedSize.y / background->getSize().y,
-					uvx1, 0.0f,
-					uvx0, 0.0f
+					uvx0, uvy1,
+					uvx1, uvy1,
+					uvx1, uvy0,
+					uvx0, uvy0
 				};
 
 				uv = repeatUv;
