@@ -23,7 +23,7 @@ class AnimatedSprite : public Sprite
 		
 		void setAtlasSize(int atlasWidth, int atlasHeight);
 		
-		inline void setAnimated(bool animated) { m_animated = animated; }
+		void setAnimated(bool animated);
 		inline bool isAnimated() const { return m_animated; }
 		
 		inline void setFrameDuration(float frameDuration) { m_frameDuration = frameDuration; }
@@ -34,7 +34,12 @@ class AnimatedSprite : public Sprite
 		inline bool hasInfiniteLoop() const { return m_numLoops == INFINITE_LOOP; }
 		
 		void setLine(int line);
+		inline int getCurrentLine() const { return m_currentLine; }
+
 		void setColumn(int column);
+		inline int getCurrentColumn() const { return m_currentColumn; }
+
+		inline float getLastUpdateTime() const { return m_lastUpdateTime; }
 		
 		void playAnimation(int line, int numFrames, float frameDuration, int numLoops = 1);
 		

@@ -51,6 +51,15 @@ void AnimatedSprite::setAtlasSize(int atlasWidth, int atlasHeight)
 	setColumn(0);
 }
 
+void AnimatedSprite::setAnimated(bool animated)
+{
+	if (!m_animated && animated)
+	{
+		m_animationStarted = false;
+	}
+	m_animated = animated;
+}
+
 void AnimatedSprite::setLine(int line)
 {
 	FLAT_ASSERT(0 <= line && line < getAtlasWidth());
