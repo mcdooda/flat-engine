@@ -36,6 +36,14 @@ inline T normalize(const T& vector)
 const float PI = glm::pi<float>();
 const float PI2 = PI * 2.f;
 
+const float SQRT2 = 1.41421356237f;
+
+template <typename T>
+int8_t sign(T number)
+{
+	return (T(0) < number) - (number < T(0));
+}
+
 } // flat
 
 inline std::ostream& operator<<(std::ostream& out, const flat::Vector2& v)
