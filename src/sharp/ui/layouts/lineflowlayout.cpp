@@ -43,12 +43,12 @@ void LineFlowLayout::preLayout(Widget& widget)
 	{
 		computeTransform(widget);
 	}
-
-	childrenPreLayout(widget);
 }
 
 void LineFlowLayout::layout(Widget& widget)
 {
+	childrenPreLayout(widget);
+
 	// compute children size and widget compressed size
 	Widget::SizePolicy sizePolicy = getSizePolicy(widget);
 	bool compressedSizeX = (sizePolicy & Widget::SizePolicy::COMPRESS_X) != 0;

@@ -13,11 +13,11 @@ void FixedLayout::preLayout(Widget& widget)
 	computeFixedHeight(widget);
 	computeFixedWidth(widget);
 	computeTransform(widget);
-	childrenPreLayout(widget);
 }
 
 void FixedLayout::layout(Widget& widget)
 {
+	childrenPreLayout(widget);
 	childrenLayout(widget);
 }
 
