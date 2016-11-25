@@ -20,7 +20,7 @@ void Layout::childrenLayout(Widget& widget)
 {
 	for (const std::shared_ptr<Widget>& child : widget.m_children)
 	{
-		child->layout();
+		child->layout(true);
 	}
 }
 
@@ -173,8 +173,6 @@ void Layout::computeTransform(Widget& widget)
 {
 	Vector2 position;
 	computePosition(widget, position);
-
-
 
 	Matrix4& transform = widget.m_transform;
 	transform = getParent(widget).m_transform;

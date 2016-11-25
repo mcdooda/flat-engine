@@ -15,7 +15,7 @@ void FixedLayout::preLayout(Widget& widget)
 	computeTransform(widget);
 }
 
-void FixedLayout::layout(Widget& widget)
+void FixedLayout::layout(Widget& widget, bool computePosition)
 {
 	childrenPreLayout(widget);
 	childrenLayout(widget);

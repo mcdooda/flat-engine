@@ -45,7 +45,7 @@ void LineFlowLayout::preLayout(Widget& widget)
 	}
 }
 
-void LineFlowLayout::layout(Widget& widget)
+void LineFlowLayout::layout(Widget& widget, bool computePosition)
 {
 	childrenPreLayout(widget);
 
@@ -77,7 +77,7 @@ void LineFlowLayout::layout(Widget& widget)
 
 		if (childCompressX || childCompressY)
 		{
-			child->layout();
+			child->layout(false);
 		}
 
 		// width
@@ -143,7 +143,7 @@ void LineFlowLayout::layout(Widget& widget)
 		}
 	}
 
-	if (compressedSizeX || compressedSizeY)
+	if (computePosition && (compressedSizeX || compressedSizeY))
 	{
 		computeTransform(widget);
 	}
@@ -163,7 +163,7 @@ void LineFlowLayout::layout(Widget& widget)
 		translateBy(childTransform, Vector2(currentX + getPosition(child).x, getPadding(widget).bottom + getMargin(child).bottom + getPosition(child).y));
 		transformBy(childTransform, getTransform(widget));
 
-		child.layout();
+		child.layout(false);
 
 		currentX += getComputedSize(child).x + getMargin(child).right;
 	}

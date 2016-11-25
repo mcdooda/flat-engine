@@ -14,7 +14,7 @@ class FixedLayout : public Layout
 {
 public:
 	static void preLayout(Widget& widget);
-	static void layout(Widget& widget);
+	static void layout(Widget& widget, bool computePosition);
 	static void postLayout(Widget& widget);
 };
 

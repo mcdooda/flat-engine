@@ -159,7 +159,7 @@ class Widget : public util::Convertible<Widget>
 		inline std::weak_ptr<Widget> getParent() { return m_parent; }
 
 		virtual void preLayout() = 0;
-		virtual void layout() = 0;
+		virtual void layout(bool computePosition) = 0;
 		virtual void postLayout() = 0;
 		virtual void fullLayout() = 0;
 
@@ -234,9 +234,9 @@ public:
 		LayoutType::preLayout(*this);
 	}
 
-	void layout() override final
+	void layout(bool computePosition) override final
 	{
-		LayoutType::layout(*this);
+		LayoutType::layout(*this, computePosition);
 	}
 
 	void postLayout() override final
@@ -247,7 +247,7 @@ public:
 	void fullLayout() override final
 	{
 		LayoutType::preLayout(*this);
-		LayoutType::layout(*this);
+		LayoutType::layout(*this, true);
 		LayoutType::postLayout(*this);
 	}
 };

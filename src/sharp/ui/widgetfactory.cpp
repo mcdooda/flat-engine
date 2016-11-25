@@ -47,6 +47,7 @@ std::shared_ptr<Widget> WidgetFactory::makeLineFlow() const
 {
 	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<LineFlowLayout>>();
 	widget->setWeakPtr(widget);
+	widget->setSizePolicy(Widget::SizePolicy::COMPRESS);
 	return widget;
 }
 
@@ -54,6 +55,7 @@ std::shared_ptr<Widget> WidgetFactory::makeColumnFlow() const
 {
 	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<ColumnFlowLayout>>();
 	widget->setWeakPtr(widget);
+	widget->setSizePolicy(Widget::SizePolicy::COMPRESS);
 	return widget;
 }
 

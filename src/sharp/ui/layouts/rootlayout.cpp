@@ -15,7 +15,7 @@ void RootLayout::preLayout(Widget& widget)
 	widget.to<RootWidget>().m_dirtyWidgets.clear();
 }
 
-void RootLayout::layout(Widget& widget)
+void RootLayout::layout(Widget& widget, bool computePosition)
 {
 	flat::video::Window* window = widget.to<RootWidget>().m_game.video->window;
 	widget.setSize(window->getSize());
