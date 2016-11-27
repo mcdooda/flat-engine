@@ -60,6 +60,15 @@ void RootWidget::setDirty()
 	m_dirtyWidgets.clear();
 }
 
+void RootWidget::update()
+{
+	if (m_game.input->window->isResized())
+		fullLayout();
+
+	bool updateMouseOver = updateDirtyWidgets();
+	updateInput(updateMouseOver);
+}
+
 void RootWidget::updateInput(bool updateMouseOver)
 {
 	const flat::input::Mouse* mouse = m_game.input->mouse;
