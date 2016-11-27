@@ -29,10 +29,10 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void draw(const flat::render::RenderSettings& renderSettings) const override; // final
 
 		void addDirtyWidget(Widget* widget);
-		void updateDirtyWidgets();
+		bool updateDirtyWidgets();
 		void setDirty() override;
 
-		void updateInput();
+		void updateInput(bool updateMouseOver);
 
 		inline bool isMouseOver() const { return !m_mouseOverWidget.expired(); }
 

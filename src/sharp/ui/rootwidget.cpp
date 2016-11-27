@@ -33,21 +33,24 @@ void RootWidget::addDirtyWidget(Widget* widget)
 	}
 }
 
-void RootWidget::updateDirtyWidgets()
+bool RootWidget::updateDirtyWidgets()
 {
 	if (m_dirty)
 	{
 		FLAT_ASSERT(m_dirtyWidgets.empty());
 		fullLayout();
 		m_dirty = false;
+		return true;
 	}
 	else
 	{
+		bool widgetsLayout = !m_dirtyWidgets.empty();
 		for (Widget* widget : m_dirtyWidgets)
 		{
 			widget->fullLayout();
 		}
 		m_dirtyWidgets.clear();
+		return widgetsLayout;
 	}
 }
 
@@ -57,16 +60,18 @@ void RootWidget::setDirty()
 	m_dirtyWidgets.clear();
 }
 
-void RootWidget::updateInput()
+void RootWidget::updateInput(bool updateMouseOver)
 {
 	const flat::input::Mouse* mouse = m_game.input->mouse;
-	if (mouse->justMoved())
-	{
-		Vector2 mousePosition = mouse->getPosition();
-		Widget* mouseOverWidget = getMouseOverWidget(mousePosition);
 
+	if (updateMouseOver || mouse->justMoved())
+	{
+		std::cout << "updateMouseOver" << std::endl;
+		Widget* mouseOverWidget = getMouseOverWidget(mouse->getPosition());
 		if (mouseOverWidget == this) // root
+		{
 			mouseOverWidget = nullptr;
+		}
 
 		if (mouseOverWidget != m_mouseOverWidget.lock().get())
 		{
@@ -86,7 +91,9 @@ void RootWidget::updateInput()
 	}
 
 	if (mouse->isJustPressed(M(LEFT)))
+	{
 		handleClick();
+	}
 }
 
 void RootWidget::handleClick()
