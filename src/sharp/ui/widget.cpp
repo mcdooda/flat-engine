@@ -230,8 +230,12 @@ Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {
 	if (isInside(mousePosition))
 	{
-		for (const std::shared_ptr<Widget>& child : m_children)
+		// iterate in reverse order to find top most widgets first
+		const std::vector<std::shared_ptr<Widget>>::reverse_iterator end = m_children.rend();
+		for (std::vector<std::shared_ptr<Widget>>::reverse_iterator it = m_children.rbegin(); it != end; ++it)
 		{
+			Widget* child = it->get();
+			FLAT_ASSERT(child != nullptr);
 			if (Widget* overWidget = child->getMouseOverWidget(mousePosition))
 				return overWidget;
 		}
