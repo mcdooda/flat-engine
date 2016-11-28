@@ -75,7 +75,6 @@ void RootWidget::updateInput(bool updateMouseOver)
 
 	if (updateMouseOver || mouse->justMoved())
 	{
-		std::cout << "updateMouseOver" << std::endl;
 		Widget* mouseOverWidget = getMouseOverWidget(mouse->getPosition());
 		if (mouseOverWidget == this) // root
 		{
