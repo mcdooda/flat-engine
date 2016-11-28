@@ -65,6 +65,14 @@ void Widget::setSizePolicyY(SizePolicy sizePolicyY)
 	m_sizePolicy = static_cast<SizePolicy>((m_sizePolicy & ~(SizePolicy::COMPRESS_Y | SizePolicy::EXPAND_Y | SizePolicy::FIXED_Y)) | sizePolicyY);
 }
 
+void Widget::setSize(const Size& size)
+{
+	m_size = size;
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
+}
+
 void Widget::setPositionPolicy(PositionPolicy positionPolicy)
 {
 	FLAT_ASSERT(!((positionPolicy & PositionPolicy::FLOW_X) && (positionPolicy & PositionPolicy::FLOW_Y)));
