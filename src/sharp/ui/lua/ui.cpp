@@ -68,6 +68,7 @@ int open(lua_State* L)
 		{"mouseLeave",            l_Widget_mouseLeave},
 		
 		{"setText",               l_TextWidget_setText},
+		{"setTextColor",          l_TextWidget_setTextColor},
 		
 		{nullptr, nullptr}
 	};
@@ -398,11 +399,7 @@ int l_Widget_setBackgroundColor(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	uint32_t color = luaL_checkint(L, 2);
-	float r = static_cast<float>((color >> 24) & 0xFF) / 255.f;
-	float g = static_cast<float>((color >> 16) & 0xFF) / 255.f;
-	float b = static_cast<float>((color >> 8 ) & 0xFF) / 255.f;
-	float a = static_cast<float>((color >> 0 ) & 0xFF) / 255.f;
-	flat::video::Color backgroundColor(r, g, b, a);
+	flat::video::Color backgroundColor(color);
 	widget.setBackgroundColor(backgroundColor);
 	return 0;
 }
@@ -539,6 +536,15 @@ int l_TextWidget_setText(lua_State* L)
 	TextWidget& textWidget = getTextWidget(L, 1);
 	const char* text = luaL_checkstring(L, 2);
 	textWidget.setText(text);
+	return 0;
+}
+
+int l_TextWidget_setTextColor(lua_State * L)
+{
+	TextWidget& textWidget = getTextWidget(L, 1);
+	uint32_t color = luaL_checkint(L, 2);
+	flat::video::Color textColor(color);
+	textWidget.setTextColor(textColor);
 	return 0;
 }
 

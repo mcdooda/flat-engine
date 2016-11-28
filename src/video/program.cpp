@@ -116,9 +116,9 @@ void Program::checkProgram(GLuint programId)
 	{
 		GLsizei infoLogLength;
 		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar message[256]; // TODO fix
-		glGetProgramInfoLog(programId, infoLogLength, nullptr, message);
-		std::cerr << "Warning: " << message << std::endl;
+		std::vector<GLchar> message(infoLogLength);
+		glGetProgramInfoLog(programId, infoLogLength, nullptr, message.data());
+		std::cerr << "Warning: " << message.data() << std::endl;
 		m_valid = false;
 	}
 }
@@ -132,9 +132,9 @@ void Program::checkShader(const std::string& shaderFile, GLuint shaderId)
 	{
 		GLsizei infoLogLength;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar message[256]; // TODO fix
-		glGetShaderInfoLog(shaderId, infoLogLength, nullptr, message);
-		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message << std::endl;
+		std::vector<GLchar> message(infoLogLength);
+		glGetShaderInfoLog(shaderId, infoLogLength, nullptr, message.data());
+		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message.data() << std::endl;
 		m_valid = false;
 	}
 }

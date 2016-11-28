@@ -67,6 +67,7 @@ int l_Widget_mouseLeave(lua_State* L);
 
 // TextWidget only!
 int l_TextWidget_setText(lua_State* L);
+int l_TextWidget_setTextColor(lua_State* L);
 
 // static Widget functions
 int l_Widget_getRoot(lua_State* L);

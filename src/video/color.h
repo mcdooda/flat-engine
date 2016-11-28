@@ -1,6 +1,7 @@
 #ifndef FLAT_VIDEO_COLOR_H
 #define FLAT_VIDEO_COLOR_H
 
+#include <cstdint>
 #include <GL/glew.h>
 
 namespace flat
@@ -17,6 +18,12 @@ class Color
 		Color(const Color& color) : r(color.r), g(color.g), b(color.b), a(color.a) {}
 		Color(AttributeType r, AttributeType g, AttributeType b, AttributeType a) : r(r), g(g), b(b), a(a) {}
 		explicit Color(AttributeType gray) : r(gray), g(gray), b(gray), a(1.f) {}
+		explicit Color(uint32_t rgba) :
+			r(static_cast<float>((rgba >> 24) & 0xFF) / 255.f),
+			g(static_cast<float>((rgba >> 16) & 0xFF) / 255.f),
+			b(static_cast<float>((rgba >> 8 ) & 0xFF) / 255.f),
+			a(static_cast<float>((rgba >> 0 ) & 0xFF) / 255.f)
+		{}
 		
 		static Color WHITE;
 		static Color BLACK;

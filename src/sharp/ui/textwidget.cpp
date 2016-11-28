@@ -31,7 +31,7 @@ void TextWidget::draw(const render::RenderSettings& renderSettings) const
 	renderSettings.textureUniform.set(getFont()->getAtlasId());
 	renderSettings.modelMatrixUniform.set(m_transform);
 	
-	renderSettings.colorUniform.set(video::Color::WHITE);
+	renderSettings.colorUniform.set(m_textColor);
 	renderSettings.secondaryColorUniform.set(video::Color::BLACK);
 	renderSettings.textureGivenUniform.set(true);
 	

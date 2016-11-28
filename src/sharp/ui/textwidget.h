@@ -18,9 +18,13 @@ class TextWidget : public WidgetImpl<FixedLayout>, public video::font::String
 	public:
 		TextWidget(const std::shared_ptr<const video::font::Font>& font);
 		
-		void setText(const std::string& text) override;
+		void setText(const std::string& text);
+		inline void setTextColor(const video::Color& textColor) { m_textColor = textColor; }
 		
 		void draw(const render::RenderSettings& renderSettings) const override;
+
+	private:
+		video::Color m_textColor;
 };
 
 } // ui

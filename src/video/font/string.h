@@ -29,7 +29,7 @@ class String
 		inline void setWrapLength(int wrapLength) { m_wrapLength = wrapLength; }
 		inline void setNoWrap() { setWrapLength(0); }
 		
-		virtual void setText(const std::string& text);
+		void setText(const std::string& text);
 		inline const std::string& getText() const { return m_text; }
 		
 		inline const std::vector<CharacterVertex>& getVertices() const { return m_vertices; }
