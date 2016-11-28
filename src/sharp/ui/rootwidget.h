@@ -28,8 +28,10 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void draw(const flat::render::RenderSettings& renderSettings) const override; // final
 
-		void addDirtyWidget(Widget* widget);
+		void addDirtyWidget(const std::weak_ptr<Widget>& widget);
+		void removeDirtyWidget(const std::weak_ptr<Widget>& widget);
 		void setDirty() override;
+		FLAT_DEBUG_ONLY(void clearDirty() override;)
 
 		void update();
 
@@ -50,7 +52,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 	private:
 		Game& m_game;
 		std::weak_ptr<Widget> m_mouseOverWidget;
-		std::vector<Widget*> m_dirtyWidgets;
+		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;
 };
 

@@ -21,15 +21,41 @@ void RootWidget::draw(const flat::render::RenderSettings& renderSettings) const
 	drawChildren(renderSettings);
 }
 
-void RootWidget::addDirtyWidget(Widget* widget)
+void RootWidget::addDirtyWidget(const std::weak_ptr<Widget>& widget)
 {
+	FLAT_ASSERT(!widget.expired());
+
 	if (m_dirty)
 		return;
 
-	std::vector<Widget*>::iterator it = std::find(m_dirtyWidgets.begin(), m_dirtyWidgets.end(), widget);
+	Widget* widgetPtr = widget.lock().get();
+	std::vector<std::weak_ptr<Widget>>::iterator it = std::find_if(
+		m_dirtyWidgets.begin(),
+		m_dirtyWidgets.end(),
+		[widgetPtr](std::weak_ptr<Widget>& w) { return w.lock().get() == widgetPtr; }
+	);
 	if (it == m_dirtyWidgets.end())
 	{
 		m_dirtyWidgets.push_back(widget);
+	}
+}
+
+void RootWidget::removeDirtyWidget(const std::weak_ptr<Widget>& widget)
+{
+	FLAT_ASSERT(!widget.expired());
+
+	if (m_dirty)
+		return;
+
+	Widget* widgetPtr = widget.lock().get();
+	std::vector<std::weak_ptr<Widget>>::iterator it = std::find_if(
+		m_dirtyWidgets.begin(),
+		m_dirtyWidgets.end(),
+		[widgetPtr](std::weak_ptr<Widget>& w) { return w.lock().get() == widgetPtr; }
+	);
+	if (it != m_dirtyWidgets.end())
+	{
+		m_dirtyWidgets.erase(it);
 	}
 }
 
@@ -45,9 +71,12 @@ bool RootWidget::updateDirtyWidgets()
 	else
 	{
 		bool widgetsLayout = !m_dirtyWidgets.empty();
-		for (Widget* widget : m_dirtyWidgets)
+		for (std::weak_ptr<Widget>& widget : m_dirtyWidgets)
 		{
-			widget->fullLayout();
+			if (!widget.expired())
+			{
+				widget.lock()->fullLayout();
+			}
 		}
 		m_dirtyWidgets.clear();
 		return widgetsLayout;
@@ -59,6 +88,13 @@ void RootWidget::setDirty()
 	m_dirty = true;
 	m_dirtyWidgets.clear();
 }
+
+#ifdef FLAT_DEBUG
+void RootWidget::clearDirty()
+{
+	FLAT_ASSERT_MSG(false, "clearDirty on RootWidget");
+}
+#endif
 
 void RootWidget::update()
 {

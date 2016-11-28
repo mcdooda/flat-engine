@@ -172,6 +172,7 @@ class Widget : public util::Convertible<Widget>
 		Vector2 getRelativePosition(const Vector2& absolutePosition) const;
 
 		virtual void setDirty();
+		virtual void clearDirty();
 
 	public:
 		Slot<Widget*, bool&> click;

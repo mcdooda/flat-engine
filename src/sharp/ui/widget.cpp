@@ -112,6 +112,10 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 void Widget::removeFromParent()
 {
 	FLAT_ASSERT(!m_parent.expired());
+	if (RootWidget* root = getRootIfAncestor())
+	{
+		root->removeDirtyWidget(getWeakPtr());
+	}
 	m_parent.lock()->removeChild(getSharedPtr());
 }
 
@@ -256,7 +260,15 @@ void Widget::setDirty()
 {
 	if (RootWidget* rootWidget = getRootIfAncestor())
 	{
-		rootWidget->addDirtyWidget(this);
+		rootWidget->addDirtyWidget(getWeakPtr());
+	}
+}
+
+void Widget::clearDirty()
+{
+	if (RootWidget* rootWidget = getRootIfAncestor())
+	{
+		rootWidget->removeDirtyWidget(getWeakPtr());
 	}
 }
 
