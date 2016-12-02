@@ -91,7 +91,7 @@ int open(lua_State* L)
 	luaL_newlib(L, Widget_lib_s);
 	
 	lua_pushstring(L, "PositionPolicy");
-	const flat::lua::table::KeyValuePair<int> positionPolicyTable[] = {
+	static const flat::lua::table::KeyValuePair<int> positionPolicyTable[] = {
 		{"LEFT",         Widget::PositionPolicy::LEFT},
 		{"CENTER_X",     Widget::PositionPolicy::CENTER_X},
 		{"RIGHT",        Widget::PositionPolicy::RIGHT},
@@ -116,7 +116,7 @@ int open(lua_State* L)
 	lua_settable(L, -3);
 
 	lua_pushstring(L, "SizePolicy");
-	const flat::lua::table::KeyValuePair<int> sizePolicyTable[] = {
+	static const flat::lua::table::KeyValuePair<int> sizePolicyTable[] = {
 		{"COMPRESS",   Widget::SizePolicy::COMPRESS},
 		{"COMPRESS_X", Widget::SizePolicy::COMPRESS_X},
 		{"COMPRESS_Y", Widget::SizePolicy::COMPRESS_Y},
@@ -135,7 +135,7 @@ int open(lua_State* L)
 	lua_settable(L, -3);
 
 	lua_pushstring(L, "BackgroundRepeat");
-	const flat::lua::table::KeyValuePair<int> backgroundRepeatTable[] = {
+	static const flat::lua::table::KeyValuePair<int> backgroundRepeatTable[] = {
 		{"SCALED", Widget::BackgroundRepeat::SCALED},
 		{"REPEAT", Widget::BackgroundRepeat::REPEAT},
 

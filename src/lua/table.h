@@ -16,19 +16,19 @@ struct KeyValuePair
 };
 
 template <typename ValueType>
-void pushValue(lua_State* L, ValueType value)
+inline void pushValue(lua_State* L, ValueType value)
 {
 	FLAT_ASSERT_MSG(false, "Cannot lua_push* this type");
 }
 
 template <>
-void pushValue<int>(lua_State* L, int value)
+inline void pushValue<int>(lua_State* L, int value)
 {
 	lua_pushinteger(L, value);
 }
 
 template <typename ValueType>
-int pushTable(lua_State* L, const KeyValuePair<ValueType>* values)
+inline int pushTable(lua_State* L, const KeyValuePair<ValueType>* values)
 {
 	int tableLength;
 	for (tableLength = 0; values[tableLength].key; ++tableLength);
@@ -41,7 +41,7 @@ int pushTable(lua_State* L, const KeyValuePair<ValueType>* values)
 	return 1;
 }
 
-}
+} // table
 } // lua
 } // flat
 

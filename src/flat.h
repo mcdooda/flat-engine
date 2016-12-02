@@ -40,6 +40,7 @@
 #include "lua/debug.h"
 #include "lua/sharedluareference.h"
 #include "lua/sharedcppreference.h"
+#include "lua/table.h"
 
 // render
 #include "render/animatedsprite.h"
