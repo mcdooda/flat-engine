@@ -19,7 +19,7 @@ class LuaReference
 			m_luaState(L),
 			m_luaReference(LUA_NOREF)
 		{
-			FLAT_ASSERT(lua_type(L, index) == LuaType);
+			luaL_argcheck(L, lua_type(L, index) == LuaType, index, "Wrong type for LuaReference");
 			lua_pushvalue(L, index);
 			m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
 		}
