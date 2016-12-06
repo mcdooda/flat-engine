@@ -32,6 +32,7 @@ class LuaReference
 		
 		inline lua_State* getLuaState() const { return m_luaState; }
 		inline int getLuaReference() const { return m_luaReference; }
+		inline bool isEmpty() const { return m_luaReference == LUA_NOREF; }
 		
 	private:
 		lua_State* m_luaState;
@@ -50,14 +51,14 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 			set(L, index);
 		}
 		
-		void set(lua_State* L, int index)
+		inline void set(lua_State* L, int index)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			LuaReference<LuaType>* reference = new LuaReference<LuaType>(L, index);
 			Super::reset(reference);
 		}
 		
-		void push(lua_State* L) const
+		inline void push(lua_State* L) const
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
 			LuaReference<LuaType>* reference = Super::get();
@@ -72,6 +73,12 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 			LuaReference<LuaType>* reference = Super::get();
 			FLAT_ASSERT(reference != nullptr);
 			return reference->getLuaState();
+		}
+
+		inline bool isEmpty() const
+		{
+			LuaReference<LuaType>* reference = Super::get();
+			return reference == nullptr || reference->isEmpty();
 		}
 };
 
