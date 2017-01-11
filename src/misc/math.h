@@ -4,15 +4,6 @@
 namespace flat
 {
 
-template <class T>
-inline T normalize(const T& vector)
-{
-	if (glm::length2(vector) == 0)
-		return vector;
-
-	return glm::normalize(vector);
-}
-
 constexpr float PI = 3.14159265358979323846264338327950288f;
 constexpr float PI2 = PI * 2.f;
 

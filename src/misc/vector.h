@@ -22,6 +22,15 @@ inline float vector2_angle(const Vector2& vector2)
 	return std::atan2(vector2.y, vector2.x);
 }
 
+template <class T>
+inline T normalize(const T& vector)
+{
+	if (glm::length2(vector) == 0)
+		return vector;
+
+	return glm::normalize(vector);
+}
+
 using glm::length;
 using glm::length2;
 using glm::dot;
