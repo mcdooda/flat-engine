@@ -2,6 +2,7 @@
 #define FLAT_MISC_VECTOR_H
 
 #include <ostream>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "../debug/assert.h"
