@@ -22,7 +22,7 @@
 
 
 #define FLAT_ASSERT_MSG(cond, format, ...) \
-	static_assert(std::is_same<std::decay<decltype(cond)>::type, bool>::value, "condition must be a boolean"); \
+	static_assert(std::is_same<typename std::decay<decltype(cond)>::type, bool>::value, "condition must be a boolean"); \
 	if (!(cond)) \
 	{ \
 		fprintf(stderr, "assertion failed: " #cond " ; " format "\n" \
@@ -33,7 +33,7 @@
 	}
 
 #define FLAT_ASSERT(cond) \
-	static_assert(std::is_same<std::decay<decltype(cond)>::type, bool>::value, "condition must be a boolean"); \
+	static_assert(std::is_same<typename std::decay<decltype(cond)>::type, bool>::value, "condition must be a boolean"); \
 	if (!(cond)) \
 	{ \
 		fprintf(stderr, "assertion failed: " #cond "\n" \
