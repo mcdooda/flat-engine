@@ -58,6 +58,9 @@
 #include "sharp/ui/textwidget.h"
 #include "sharp/ui/lua/ui.h"
 
+// misc
+#include "misc/std.h"
+
 namespace flat
 {
 
