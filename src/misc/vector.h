@@ -19,7 +19,7 @@ using Vector4 = glm::vec4;
 inline float vector2_angle(const Vector2& vector2)
 {
 	FLAT_ASSERT(vector2.x != 0 || vector2.y != 0);
-	return std::atan2f(vector2.y, vector2.x);
+	return std::atan2(vector2.y, vector2.x);
 }
 
 using glm::length;
