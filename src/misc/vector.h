@@ -1,10 +1,11 @@
-#ifndef FLAT_GEOMETRY_VECTOR2_H
-#define FLAT_GEOMETRY_VECTOR2_H
+#ifndef FLAT_MISC_VECTOR_H
+#define FLAT_MISC_VECTOR_H
 
 #include <ostream>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "../debug/assert.h"
+#include "math.h"
 
 namespace flat
 {
@@ -24,26 +25,6 @@ using glm::length2;
 using glm::dot;
 using glm::cross;
 
-template <class T>
-inline T normalize(const T& vector)
-{
-	if (glm::length2(vector) == 0)
-		return vector;
-
-	return glm::normalize(vector);
-}
-
-const float PI = glm::pi<float>();
-const float PI2 = PI * 2.f;
-
-const float SQRT2 = 1.41421356237f;
-
-template <typename T>
-int8_t sign(T number)
-{
-	return (T(0) < number) - (number < T(0));
-}
-
 } // flat
 
 inline std::ostream& operator<<(std::ostream& out, const flat::Vector2& v)
@@ -61,6 +42,6 @@ inline std::ostream& operator<<(std::ostream& out, const flat::Vector4& v)
 	return out << "Vector4(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
 }
 
-#endif // FLAT_GEOMETRY_VECTOR2_H
+#endif // FLAT_MISC_VECTOR_H
 
 
