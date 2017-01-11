@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "attribute.h"
 #include "uniform.h"
 #include "window.h"
