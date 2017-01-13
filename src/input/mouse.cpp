@@ -24,7 +24,7 @@ bool Mouse::isPressed(int button) const
 
 bool Mouse::isJustPressed(int button) const
 {
-	if (button < m_justPressedButtons.size())
+	if (button < static_cast<int>(m_justPressedButtons.size()))
 		return m_justPressedButtons[button];
 
 	return false;
@@ -32,7 +32,7 @@ bool Mouse::isJustPressed(int button) const
 
 bool Mouse::isJustReleased(int button) const
 {
-	if (button < m_justPressedButtons.size())
+	if (button < static_cast<int>(m_justPressedButtons.size()))
 		return m_justReleasedButtons[button];
 
 	return false;
