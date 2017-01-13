@@ -37,7 +37,7 @@ void String::setText(const std::string& text)
 	
 	float x = 0.f;
 	float y = 0.f;
-	for (int i = 0; i < textLength; ++i)
+	for (size_t i = 0; i < textLength; ++i)
 	{
 		char c = text[i];
 		const Font::CharInfo& ci = font->getCharInfo(c);
