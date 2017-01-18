@@ -109,7 +109,7 @@ private:
 	void* m_head;
 	size_t m_size;
 	size_t m_objectSize;
-	FLAT_DEBUG_ONLY(int m_numAllocatedObjects;)
+	FLAT_DEBUG_ONLY(size_t m_numAllocatedObjects;)
 };
 
 } // containers

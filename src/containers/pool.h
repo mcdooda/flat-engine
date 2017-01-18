@@ -88,7 +88,7 @@ private:
 
 private:
 	PoolEntry<T>* m_head;
-	FLAT_DEBUG_ONLY(int m_numAllocatedObjects;)
+	FLAT_DEBUG_ONLY(size_t m_numAllocatedObjects;)
 };
 
 } // containers
