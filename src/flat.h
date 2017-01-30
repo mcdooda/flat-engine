@@ -41,6 +41,7 @@
 #include "lua/sharedluareference.h"
 #include "lua/sharedcppreference.h"
 #include "lua/table.h"
+#include "lua/thread.h"
 
 // render
 #include "render/animatedsprite.h"

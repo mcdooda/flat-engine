@@ -21,6 +21,7 @@ lua_State* open(Game& game);
 void close(lua_State* L);
 
 void doFile(lua_State* L, const std::string& fileName);
+void loadFile(lua_State* L, const std::string& fileName);
 void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName);
 
 lua_State* getMainThread(lua_State* L);

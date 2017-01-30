@@ -2,7 +2,7 @@
 #define FLAT_LUA_SHAREDLUAREFERENCE_H
 
 #include <memory>
-#include "../debug/assert.h"
+#include "debug.h"
 
 namespace flat
 {

@@ -1,0 +1,83 @@
+#include "thread.h"
+#include "lua.h"
+
+namespace flat
+{
+namespace lua
+{
+
+Thread::Thread() :
+	m_status(LUA_OK)
+{
+
+}
+
+void Thread::set(lua_State* L, int index)
+{
+	m_function.set(L, index);
+}
+
+void Thread::start(int numParams)
+{
+	FLAT_ASSERT(m_thread.isEmpty());
+
+	lua_State* L = m_function.getLuaState();
+	{
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, -numParams);
+
+		lua_State* L1 = lua_newthread(L);
+		m_thread.set(L, -1);
+
+		m_function.push(L);
+		
+		int firstParamIndex = lua_absindex(L, -2 - numParams);
+		for (int i = 0; i < numParams; ++i)
+		{
+			int index = firstParamIndex + i; 
+			lua_pushvalue(L, index);
+		}
+		lua_xmove(L, L1, numParams + 1);
+
+		m_status = lua_resume(L1, nullptr, numParams);
+		if (m_status == LUA_OK)
+		{
+			m_thread.reset();
+		}
+		else if (m_status != LUA_YIELD)
+		{
+			lua_error(L1);
+		}
+
+		lua_pop(L, numParams + 1);
+	}
+}
+
+void Thread::update()
+{
+	FLAT_ASSERT(isRunning());
+
+	lua_State* L = m_function.getLuaState();
+	{
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+
+		m_thread.push(L);
+		lua_State* L1 = lua_tothread(L, -1);
+		FLAT_ASSERT(L1 != nullptr);
+
+		m_status = lua_resume(L1, nullptr, 0);
+		if (m_status == LUA_OK)
+		{
+			m_thread.reset();
+		}
+		else if (m_status != LUA_YIELD)
+		{
+			lua_error(L1);
+		}
+
+		lua_pop(L, 1);
+	}
+}
+
+} // lua
+} // flat
+

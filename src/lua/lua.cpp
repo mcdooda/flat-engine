@@ -45,6 +45,21 @@ void doFile(lua_State* L, const std::string& fileName)
 	lua_call(L, 0, 0);
 }
 
+void loadFile(lua_State* L, const std::string& fileName)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
+	int code = luaL_loadfile(L, fileName.c_str());
+	if (code == LUA_ERRFILE)
+	{
+		lua_pop(L, 1);
+		lua_pushnil(L);
+	}
+	else if (code != LUA_OK)
+	{
+		lua_error(L);
+	}
+}
+
 void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
