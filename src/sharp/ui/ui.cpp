@@ -13,7 +13,6 @@ Ui::Ui(Flat& flat) :
 	factory(flat)
 {
 	root = factory.makeRoot();
-	lua::setRootWidget(flat.lua->state, root.get());
 }
 
 } // ui

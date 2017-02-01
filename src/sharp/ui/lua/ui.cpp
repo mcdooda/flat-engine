@@ -18,7 +18,6 @@ namespace lua
 {
 
 static char widgetFactoryRegistryIndex = 'W';
-static char rootWidgetRegistryIndex = 'R';
 
 int open(lua_State* L)
 {
@@ -162,17 +161,6 @@ int close(lua_State* L)
 	lua_pushnil(L);
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 
-	lua_pushnil(L);
-	lua_rawsetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
-
-	return 0;
-}
-
-int setRootWidget(lua_State* L, Widget* rootWidget)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	flat::lua::SharedCppReference<Widget>::pushNew(L, rootWidget->getSharedPtr());
-	lua_rawsetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
 	return 0;
 }
 
@@ -552,8 +540,9 @@ int l_TextWidget_setTextColor(lua_State * L)
 
 int l_Widget_getRoot(lua_State* L)
 {
-	RootWidget& rootWidget = getRootWidget(L);
-	pushWidget(L, rootWidget.getSharedPtr());
+	RootWidget* root = flat::lua::getGame(L).ui->root.get();
+	FLAT_ASSERT(root != nullptr);
+	pushWidget(L, root->getSharedPtr());
 	return 1;
 }
 
@@ -606,15 +595,6 @@ int l_Widget_makeText(lua_State* L)
 
 // private
 
-RootWidget& getRootWidget(lua_State* L)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	lua_rawgetp(L, LUA_REGISTRYINDEX, &rootWidgetRegistryIndex);
-	Widget* rootWidget = flat::lua::SharedCppReference<Widget>::getSharedPointer(L, -1).get();
-	lua_pop(L, 1);
-	return rootWidget->to<RootWidget>();
-}
-
 Widget& getWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -648,11 +628,7 @@ void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)
 
 WidgetFactory& getWidgetFactory(lua_State* L)
 {
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	lua_rawgetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
-	WidgetFactory* widgetFactory = flat::lua::SharedCppReference<WidgetFactory>::getSharedPointer(L, -1).get();
-	lua_pop(L, 1);
-	return *widgetFactory;
+	return flat::lua::getGame(L).ui->factory;
 }
 
 } // lua

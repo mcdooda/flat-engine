@@ -21,8 +21,6 @@ namespace lua
 int open(lua_State* L);
 int close(lua_State* L);
 
-int setRootWidget(lua_State* L, Widget* rootWidget);
-
 // Widget methods
 int l_Widget_addChild(lua_State* L);
 int l_Widget_removeChild(lua_State* L);
@@ -79,7 +77,6 @@ int l_Widget_makeColumnFlow(lua_State* L);
 int l_Widget_makeText(lua_State* L);
 
 // private
-RootWidget& getRootWidget(lua_State* L);
 Widget& getWidget(lua_State* L, int index);
 TextWidget& getTextWidget(lua_State* L, int index);
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
