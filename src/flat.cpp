@@ -18,16 +18,18 @@ Flat::Flat()
 	audio = new audio::Audio;
 	random = new random::Random;
 	input = new input::Input(video->window);
+	lua = new lua::Lua(*this);
 }
 
 Flat::~Flat()
 {
 	SDL_Quit();
-	FLAT_DELETE(time);
-	FLAT_DELETE(video);
-	FLAT_DELETE(audio);
-	FLAT_DELETE(random);
+	FLAT_DELETE(lua);
 	FLAT_DELETE(input);
+	FLAT_DELETE(random);
+	FLAT_DELETE(audio);
+	FLAT_DELETE(video);
+	FLAT_DELETE(time);
 }
 
 } // flat

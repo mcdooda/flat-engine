@@ -6,6 +6,7 @@
 
 namespace flat
 {
+class Flat;
 class Game;
 namespace time
 {
@@ -17,7 +18,21 @@ class Input;
 }
 namespace lua
 {
-lua_State* open(Game& game);
+
+class Lua
+{
+	public:
+		Lua(Flat& flat);
+		~Lua();
+
+		void doFile(const std::string& fileName);
+		void loadFile(const std::string& fileName);
+		void loadLib(const std::string& fileName, const std::string& globalName);
+
+	public:
+		lua_State* state;
+};
+
 void close(lua_State* L);
 
 void doFile(lua_State* L, const std::string& fileName);

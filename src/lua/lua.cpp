@@ -3,39 +3,69 @@
 #include "../flat.h"
 #include "../flat/game.h"
 #include "lua.h"
+#include "../time/lua/time.h"
+#include "../input/lua/mouse.h"
+#include "../sharp/ui/lua/ui.h"
 
 namespace flat
 {
 namespace lua
 {
-static char gameRegistryIndex = 'G';
+static char gameRegistryIndex = 'F';
 
-lua_State* open(Game& game)
+Lua::Lua(Flat& flat)
 {
-	lua_State* L = luaL_newstate();
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	luaL_openlibs(L);
-	
-	// remove os lib
-	lua_pushnil(L);
-	lua_setglobal(L, "os");
-	
-	// panic function
-	lua_atpanic(L, panic);
-	
-	// store Game in the registry
-	lua_pushlightuserdata(L, &game);
-	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
-	
-	return L;
+	state = luaL_newstate();
+
+	lua_State* L = state;
+	{
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+		luaL_openlibs(L);
+
+		// remove os lib
+		lua_pushnil(L);
+		lua_setglobal(L, "os");
+
+		// panic function
+		lua_atpanic(L, panic);
+
+		// store Game in the registry
+		lua_pushlightuserdata(L, &flat);
+		lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
+
+		time::lua::open(L);
+		input::lua::mouse::open(L);
+		sharp::ui::lua::open(L);
+	}
 }
 
-void close(lua_State* L)
+Lua::~Lua()
 {
-	lua_pushnil(L);
-	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
-	
+	lua_State* L = state;
+	{
+		sharp::ui::lua::close(L);
+
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+		lua_pushnil(L);
+		lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
+	}
+
 	lua_close(L);
+}
+
+void Lua::doFile(const std::string& fileName)
+{
+	lua::doFile(state, fileName);
+}
+
+void Lua::loadFile(const std::string& fileName)
+{
+	lua::loadFile(state, fileName);
+}
+
+void Lua::loadLib(const std::string& fileName, const std::string& globalName)
+{
+	lua::loadLib(state, fileName, globalName);
 }
 
 void doFile(lua_State* L, const std::string& fileName)

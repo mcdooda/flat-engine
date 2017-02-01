@@ -72,6 +72,7 @@ class Flat
 		virtual ~Flat();
 		
 	public:
+		lua::Lua* lua;
 		input::Input* input;
 		time::Time* time;
 		video::Video* video;
