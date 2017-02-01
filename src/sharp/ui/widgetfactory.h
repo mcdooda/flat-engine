@@ -7,7 +7,7 @@
 
 namespace flat
 {
-class Game;
+class Flat;
 
 namespace video
 {
@@ -28,7 +28,7 @@ class TextWidget;
 class WidgetFactory
 {
 	public:
-		WidgetFactory(Game& game);
+		WidgetFactory(Flat& flat);
 		
 		std::shared_ptr<RootWidget> makeRoot() const;
 		std::shared_ptr<Widget> makeImage(const std::string& fileName) const;
@@ -38,7 +38,7 @@ class WidgetFactory
 		std::shared_ptr<TextWidget> makeText(const std::string& text, const std::string& fileName, int fontSize) const;
 		
 	private:
-		Game& m_game;
+		Flat& m_flat;
 };
 
 } // ui

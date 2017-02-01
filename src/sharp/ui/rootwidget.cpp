@@ -1,6 +1,6 @@
 #include "rootwidget.h"
 #include "../../video/window.h"
-#include "../../flat/game.h"
+#include "../../flat.h"
 
 namespace flat
 {
@@ -9,8 +9,8 @@ namespace sharp
 namespace ui
 {
 
-RootWidget::RootWidget(Game& game) : Super(),
-	m_game(game),
+RootWidget::RootWidget(Flat& flat) : Super(),
+	m_flat(flat),
 	m_dirty(true)
 {
 	setSizePolicy(Widget::SizePolicy::FIXED);
@@ -98,7 +98,7 @@ void RootWidget::clearDirty()
 
 void RootWidget::update()
 {
-	if (m_game.input->window->isResized())
+	if (m_flat.input->window->isResized())
 		fullLayout();
 
 	bool updateMouseOver = updateDirtyWidgets();
@@ -107,7 +107,7 @@ void RootWidget::update()
 
 void RootWidget::updateInput(bool updateMouseOver)
 {
-	const flat::input::Mouse* mouse = m_game.input->mouse;
+	const flat::input::Mouse* mouse = m_flat.input->mouse;
 
 	if (updateMouseOver || mouse->justMoved())
 	{

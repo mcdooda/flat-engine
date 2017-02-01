@@ -17,7 +17,8 @@ void RootLayout::preLayout(Widget& widget)
 
 void RootLayout::layout(Widget& widget, bool computePosition)
 {
-	flat::video::Window* window = widget.to<RootWidget>().m_game.video->window;
+	Flat& flat = widget.to<RootWidget>().m_flat;
+	flat::video::Window* window = flat.video->window;
 	widget.setSize(window->getSize());
 	getComputedSize(widget) = getSize(widget);
 

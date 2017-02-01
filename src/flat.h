@@ -54,6 +54,7 @@
 
 // sharp
 // ui
+#include "sharp/ui/ui.h"
 #include "sharp/ui/widgetfactory.h"
 #include "sharp/ui/rootwidget.h"
 #include "sharp/ui/textwidget.h"
@@ -72,12 +73,13 @@ class Flat
 		virtual ~Flat();
 		
 	public:
-		lua::Lua* lua;
-		input::Input* input;
 		time::Time* time;
 		video::Video* video;
 		audio::Audio* audio;
+		input::Input* input;
 		random::Random* random;
+		sharp::ui::Ui* ui;
+		lua::Lua* lua;
 };
 
 } // flat

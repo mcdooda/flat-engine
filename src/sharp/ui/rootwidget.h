@@ -6,7 +6,7 @@
 
 namespace flat
 {
-class Game;
+class Flat;
 
 namespace video
 {
@@ -24,7 +24,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 	typedef WidgetImpl<RootLayout> Super;
 	public:
-		RootWidget(Game& game);
+		RootWidget(Flat& flat);
 
 		void draw(const flat::render::RenderSettings& renderSettings) const override; // final
 
@@ -50,7 +50,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseLeave();
 		
 	private:
-		Game& m_game;
+		Flat& m_flat;
 		std::weak_ptr<Widget> m_mouseOverWidget;
 		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;
