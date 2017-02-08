@@ -62,6 +62,7 @@
 
 // misc
 #include "misc/std.h"
+#include "misc/aabb.h"
 
 namespace flat
 {
