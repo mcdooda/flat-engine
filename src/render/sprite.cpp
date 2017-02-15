@@ -119,6 +119,29 @@ void Sprite::updateModelMatrix() const
 	}
 }
 
+bool Sprite::overlaps(const Sprite& sprite) const
+{
+	const Matrix4& aMatrix = getModelMatrix();
+	Vector4 aPos00 = aMatrix * Vector4(m_vertices[0].pos, 0.f, 1.f);
+	Vector4 aPos11 = aMatrix * Vector4(m_vertices[3].pos, 0.f, 1.f);
+
+	if (m_flipX)
+		std::swap(aPos00.x, aPos11.x);
+	if (m_flipY)
+		std::swap(aPos00.y, aPos11.y);
+
+	const Matrix4& bMatrix = sprite.getModelMatrix();
+	Vector4 bPos00 = bMatrix * Vector4(sprite.m_vertices[0].pos, 0.f, 1.f);
+	Vector4 bPos11 = bMatrix * Vector4(sprite.m_vertices[3].pos, 0.f, 1.f);
+
+	if (sprite.m_flipX)
+		std::swap(bPos00.x, bPos11.x);
+	if (sprite.m_flipY)
+		std::swap(bPos00.y, bPos11.y);
+
+	return aPos11.x >= bPos00.x && aPos00.x <= bPos11.x && aPos11.y >= bPos00.y && aPos00.y <= bPos11.y;
+}
+
 } // render
 } // flat
 

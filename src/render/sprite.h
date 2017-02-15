@@ -60,6 +60,8 @@ class Sprite
 		
 		void updateModelMatrix() const;
 		inline const Matrix4& getModelMatrix() const { updateModelMatrix(); return m_modelMatrix; }
+
+		bool overlaps(const Sprite& sprite) const;
 		
 		struct Vertex
 		{
