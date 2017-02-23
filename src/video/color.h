@@ -24,6 +24,14 @@ class Color
 			b(static_cast<float>((rgba >> 8 ) & 0xFF) / 255.f),
 			a(static_cast<float>((rgba >> 0 ) & 0xFF) / 255.f)
 		{}
+
+		operator uint32_t() const
+		{
+			return static_cast<uint32_t>(r * 255.f) << 24
+			     | static_cast<uint32_t>(g * 255.f) << 16
+			     | static_cast<uint32_t>(b * 255.f) << 8
+			     | static_cast<uint32_t>(a * 255.f);
+		}
 		
 		static Color WHITE;
 		static Color BLACK;
