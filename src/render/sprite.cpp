@@ -1,4 +1,6 @@
 #include "sprite.h"
+#include "../video/filetexture.h"
+#include "../misc/aabb2.h"
 
 namespace flat
 {
@@ -119,27 +121,60 @@ void Sprite::updateModelMatrix() const
 	}
 }
 
-bool Sprite::overlaps(const Sprite& sprite) const
+void Sprite::getAABB(AABB2& aabb) const
 {
 	const Matrix4& aMatrix = getModelMatrix();
-	Vector4 aPos00 = aMatrix * Vector4(m_vertices[0].pos, 0.f, 1.f);
-	Vector4 aPos11 = aMatrix * Vector4(m_vertices[3].pos, 0.f, 1.f);
+	aabb.min = Vector2(aMatrix * Vector4(m_vertices[0].pos, 0.f, 1.f));
+	aabb.max = Vector2(aMatrix * Vector4(m_vertices[3].pos, 0.f, 1.f));
+
+	if (aabb.min.x > aabb.max.x)
+		std::swap(aabb.min.x, aabb.max.x);
+	if (aabb.min.y > aabb.max.y)
+		std::swap(aabb.min.y, aabb.max.y);
+
+	FLAT_ASSERT(aabb.isValid());
+}
+
+bool Sprite::overlaps(const Sprite& sprite) const
+{
+	AABB2 a;
+	getAABB(a);
+
+	AABB2 b;
+	sprite.getAABB(b);
+
+	return a.max.x >= b.min.x && a.min.x <= b.max.x && a.max.y >= b.min.y && a.min.y <= b.max.y;
+}
+
+bool Sprite::isInside(const Vector2& point) const
+{
+	AABB2 aabb;
+	getAABB(aabb);
+	return aabb.isInside(point);
+}
+
+void Sprite::getPixel(const Vector2& point, video::Color& color) const
+{
+	AABB2 aabb;
+	getAABB(aabb);
+	FLAT_ASSERT(aabb.isInside(point));
+	FLAT_ASSERT_MSG(dynamic_cast<const video::FileTexture*>(m_texture.get()) != nullptr, "Can only get pixel color from a file texture");
+	const video::FileTexture* texture = static_cast<const video::FileTexture*>(m_texture.get());
+
+	float rx = (point.x - aabb.min.x) / (aabb.max.x - aabb.min.x);
+	float ry = 1.f - (point.y - aabb.min.y) / (aabb.max.y - aabb.min.y);
 
 	if (m_flipX)
-		std::swap(aPos00.x, aPos11.x);
+		rx = 1.f - rx;
+
 	if (m_flipY)
-		std::swap(aPos00.y, aPos11.y);
+		ry = 1.f - ry;
 
-	const Matrix4& bMatrix = sprite.getModelMatrix();
-	Vector4 bPos00 = bMatrix * Vector4(sprite.m_vertices[0].pos, 0.f, 1.f);
-	Vector4 bPos11 = bMatrix * Vector4(sprite.m_vertices[3].pos, 0.f, 1.f);
-
-	if (sprite.m_flipX)
-		std::swap(bPos00.x, bPos11.x);
-	if (sprite.m_flipY)
-		std::swap(bPos00.y, bPos11.y);
-
-	return aPos11.x >= bPos00.x && aPos00.x <= bPos11.x && aPos11.y >= bPos00.y && aPos00.y <= bPos11.y;
+	Vector2 pixelPosition(
+		rx * texture->getSize().x,
+		ry * texture->getSize().y
+	);
+	texture->getPixel(pixelPosition, color);
 }
 
 } // render

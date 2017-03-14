@@ -1,5 +1,7 @@
 #include <cmath>
 #include "animatedsprite.h"
+#include "../misc/aabb2.h"
+#include "../video/filetexture.h"
 
 namespace flat
 {
@@ -22,6 +24,31 @@ AnimatedSprite::AnimatedSprite() : Sprite(),
 AnimatedSprite::~AnimatedSprite()
 {
 	
+}
+
+void AnimatedSprite::getPixel(const Vector2& point, video::Color& color) const
+{
+	AABB2 aabb;
+	getAABB(aabb);
+	FLAT_ASSERT(aabb.isInside(point));
+	FLAT_ASSERT_MSG(dynamic_cast<const video::FileTexture*>(m_texture.get()) != nullptr, "Can only get pixel color from a file texture");
+	const video::FileTexture* texture = static_cast<const video::FileTexture*>(m_texture.get());
+
+	float rx =       (point.x - aabb.min.x) / (aabb.max.x - aabb.min.x);
+	float ry = 1.f - (point.y - aabb.min.y) / (aabb.max.y - aabb.min.y);
+
+	if (m_flipX)
+		rx = 1.f - rx;
+
+	if (m_flipY)
+		ry = 1.f - ry;
+
+	Vector2 pixelPosition(
+		(rx + m_currentColumn) * m_tileSizeRatio.x * texture->getSize().x,
+		(ry + m_currentLine  ) * m_tileSizeRatio.y * texture->getSize().y
+	);
+
+	texture->getPixel(pixelPosition, color);
 }
 
 void AnimatedSprite::setAtlasSize(int atlasWidth, int atlasHeight)

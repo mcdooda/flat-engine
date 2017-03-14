@@ -85,7 +85,8 @@ void HeightMap::setHeightMap(const std::shared_ptr<const video::FileTexture>& he
 
 float HeightMap::getHeight(unsigned int x, unsigned int y) const
 {
-	video::Color color = m_heightMap->getPixel(Vector2(static_cast<float>(x), static_cast<float>(y)));
+	video::Color color;
+	m_heightMap->getPixel(Vector2(static_cast<float>(x), static_cast<float>(y)), color);
 	return static_cast<float>(color.r + color.g + color.b) / 3.f * m_multiplier;
 }
 

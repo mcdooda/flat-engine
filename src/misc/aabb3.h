@@ -1,5 +1,5 @@
-#ifndef FLAT_MISC_AABB_H
-#define FLAT_MISC_AABB_H
+#ifndef FLAT_MISC_AABB3_H
+#define FLAT_MISC_AABB3_H
 
 #include "vector.h"
 
@@ -57,6 +57,6 @@ class AABB3
 
 } // flat
 
-#endif // FLAT_MISC_AABB_H
+#endif // FLAT_MISC_AABB3_H
 
 

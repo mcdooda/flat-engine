@@ -20,7 +20,7 @@ class FileTexture : public Texture
 
 		inline const std::string& getFileName() const { return m_fileName; }
 		
-		Color getPixel(const Vector2& pixelPosition) const;
+		void getPixel(const Vector2& pixelPosition, Color& color) const;
 
 	protected:
 		FileTexture();

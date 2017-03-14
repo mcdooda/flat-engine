@@ -20,6 +20,8 @@ class AnimatedSprite : public Sprite
 	public:
 		AnimatedSprite();
 		~AnimatedSprite() override;
+
+		void getPixel(const Vector2& point, video::Color& color) const override;
 		
 		void setAtlasSize(int atlasWidth, int atlasHeight);
 		
