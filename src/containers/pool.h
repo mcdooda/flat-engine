@@ -44,6 +44,7 @@ public:
 		FLAT_ASSERT(m_head != nullptr);
 		T* object = reinterpret_cast<T*>(&m_head->objectData);
 		m_head = m_head->next;
+		FLAT_DEBUG_ONLY(memset(object, FLAT_INIT_VALUE, sizeof(T));)
 		new (object) T(constructorArgs...);
 		FLAT_DEBUG_ONLY(++m_numAllocatedObjects;)
 		return object;
@@ -55,6 +56,7 @@ public:
 		PoolEntry<T>& entry = reinterpret_cast<PoolEntry<T>&>(*object);
 		FLAT_ASSERT(indexOf(entry) >= 0);
 		object->~T();
+		FLAT_DEBUG_ONLY(memset(object, FLAT_WIPE_VALUE, sizeof(T));)
 		setNext(entry, *m_head);
 		m_head = &entry;
 		FLAT_DEBUG_ONLY(--m_numAllocatedObjects;)

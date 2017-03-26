@@ -451,6 +451,7 @@ int l_Widget_click(lua_State* L)
 			lua_call(L, 3, 1);
 			eventHandled = eventHandled || lua_toboolean(L, -1);
 			lua_pop(L, 1);
+			return true;
 		}
 	);
 	return 0;
@@ -476,6 +477,7 @@ int l_Widget_mouseMove(lua_State* L)
 			lua_call(L, 3, 1);
 			eventHandled = eventHandled || lua_toboolean(L, -1);
 			lua_pop(L, 1);
+			return true;
 		}
 	);
 	return 0;
@@ -495,6 +497,7 @@ int l_Widget_mouseEnter(lua_State* L)
 			luaL_checktype(L, -1, LUA_TFUNCTION);
 			pushWidget(L, w->getSharedPtr());
 			lua_call(L, 1, 0);
+			return true;
 		}
 	);
 	return 0;
@@ -514,6 +517,7 @@ int l_Widget_mouseLeave(lua_State* L)
 			luaL_checktype(L, -1, LUA_TFUNCTION);
 			pushWidget(L, w->getSharedPtr());
 			lua_call(L, 1, 0);
+			return true;
 		}
 	);
 	return 0;

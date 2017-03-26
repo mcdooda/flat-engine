@@ -7,6 +7,9 @@
 
 #define FLAT_FREE(obj) free(obj); obj = nullptr;
 
+#define FLAT_INIT_VALUE 0x11
+#define FLAT_WIPE_VALUE 0xEE
+
 #endif // FLAT_MEMORY_H
 
 
