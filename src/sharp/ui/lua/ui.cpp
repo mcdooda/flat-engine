@@ -192,7 +192,7 @@ int l_Widget_removeFromParent(lua_State* L)
 int l_Widget_setSizePolicy(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	Widget::SizePolicy sizePolicy = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
+	Widget::SizePolicy sizePolicy = static_cast<Widget::SizePolicy>(luaL_checkinteger(L, 2));
 	widget.setSizePolicy(sizePolicy);
 	return 0;
 }
@@ -200,7 +200,7 @@ int l_Widget_setSizePolicy(lua_State* L)
 int l_Widget_setSizePolicyX(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	Widget::SizePolicy sizePolicyX = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
+	Widget::SizePolicy sizePolicyX = static_cast<Widget::SizePolicy>(luaL_checkinteger(L, 2));
 	widget.setSizePolicyX(sizePolicyX);
 	return 0;
 }
@@ -208,7 +208,7 @@ int l_Widget_setSizePolicyX(lua_State* L)
 int l_Widget_setSizePolicyY(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	Widget::SizePolicy sizePolicyY = static_cast<Widget::SizePolicy>(luaL_checkint(L, 2));
+	Widget::SizePolicy sizePolicyY = static_cast<Widget::SizePolicy>(luaL_checkinteger(L, 2));
 	widget.setSizePolicyY(sizePolicyY);
 	return 0;
 }
@@ -243,7 +243,7 @@ int l_Widget_getSize(lua_State* L)
 int l_Widget_setPositionPolicy(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	Widget::PositionPolicy positionPolicy = static_cast<Widget::PositionPolicy>(luaL_checkint(L, 2));
+	Widget::PositionPolicy positionPolicy = static_cast<Widget::PositionPolicy>(luaL_checkinteger(L, 2));
 	widget.setPositionPolicy(positionPolicy);
 	return 0;
 }
@@ -378,7 +378,7 @@ int l_Widget_setBackground(lua_State* L)
 int l_Widget_setBackgroundRepeat(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	Widget::BackgroundRepeat backgroundRepeat = static_cast<Widget::BackgroundRepeat>(luaL_checkint(L, 2));
+	Widget::BackgroundRepeat backgroundRepeat = static_cast<Widget::BackgroundRepeat>(luaL_checkinteger(L, 2));
 	widget.setBackgroundRepeat(backgroundRepeat);
 	return 0;
 }
@@ -386,7 +386,7 @@ int l_Widget_setBackgroundRepeat(lua_State* L)
 int l_Widget_setBackgroundColor(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	uint32_t color = luaL_checkint(L, 2);
+	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	flat::video::Color backgroundColor(color);
 	widget.setBackgroundColor(backgroundColor);
 	return 0;
@@ -534,7 +534,7 @@ int l_TextWidget_setText(lua_State* L)
 int l_TextWidget_setTextColor(lua_State * L)
 {
 	TextWidget& textWidget = getTextWidget(L, 1);
-	uint32_t color = luaL_checkint(L, 2);
+	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	flat::video::Color textColor(color);
 	textWidget.setTextColor(textColor);
 	return 0;
@@ -590,7 +590,7 @@ int l_Widget_makeText(lua_State* L)
 {
 	const char* text = luaL_checkstring(L, 1);
 	const char* fileName = luaL_checkstring(L, 2);
-	int fontSize = luaL_checkint(L, 3);
+	int fontSize = static_cast<int>(luaL_checkinteger(L, 3));
 	WidgetFactory& widgetFactory = getWidgetFactory(L);
 	std::shared_ptr<Widget> widget = widgetFactory.makeText(text, fileName, fontSize);
 	pushWidget(L, widget);

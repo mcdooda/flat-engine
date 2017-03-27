@@ -1,6 +1,7 @@
 #ifdef FLAT_DEBUG
 
 #include <iostream>
+#include <lua5.3/lua.hpp>
 #include "debug.h"
 #include "lua.h"
 #include "../debug/assert.h"

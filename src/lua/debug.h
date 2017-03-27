@@ -3,8 +3,9 @@
 
 #ifdef FLAT_DEBUG
 
-#include <lua5.2/lua.hpp>
 #include "../debug/assert.h"
+
+struct lua_State;
 
 namespace flat
 {

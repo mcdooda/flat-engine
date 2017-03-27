@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include <lua5.2/lua.hpp>
+#include <lua5.3/lua.hpp>
 #include "debug.h"
 
 namespace flat

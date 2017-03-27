@@ -2,7 +2,8 @@
 #define FLAT_LUA_LUA_H
 
 #include <string>
-#include <lua5.2/lua.hpp>
+
+struct lua_State;
 
 namespace flat
 {

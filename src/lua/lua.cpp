@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <lua5.3/lua.hpp>
 #include "../flat.h"
 #include "../flat/game.h"
 #include "lua.h"

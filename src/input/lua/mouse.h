@@ -1,7 +1,7 @@
 #ifndef FLAT_INPUT_LUA_MOUSE_H
 #define FLAT_INPUT_LUA_MOUSE_H
 
-#include <lua5.2/lua.hpp>
+struct lua_State;
 
 namespace flat
 {

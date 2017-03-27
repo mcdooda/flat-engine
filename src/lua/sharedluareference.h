@@ -2,6 +2,7 @@
 #define FLAT_LUA_SHAREDLUAREFERENCE_H
 
 #include <memory>
+#include <lua5.3/lua.hpp>
 #include "debug.h"
 
 namespace flat

@@ -1,7 +1,7 @@
 #ifndef FLAT_TIME_LUA_TIME_H
 #define FLAT_TIME_LUA_TIME_H
 
-#include <lua5.2/lua.hpp>
+struct lua_State;
 
 namespace flat
 {
