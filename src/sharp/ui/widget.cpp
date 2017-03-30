@@ -119,6 +119,18 @@ void Widget::removeFromParent()
 	m_parent.lock()->removeChild(getSharedPtr());
 }
 
+void Widget::removeAllChildren()
+{
+	for (const std::shared_ptr<Widget>& child : m_children)
+	{
+		child->m_parent.reset();
+	}
+	m_children.clear();
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
+}
+
 void Widget::draw(const render::RenderSettings& renderSettings) const
 {
 	if (!m_visible)

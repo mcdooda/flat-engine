@@ -155,6 +155,7 @@ class Widget : public util::Convertible<Widget>
 		void addChild(const std::shared_ptr<Widget>& widget);
 		void removeChild(const std::shared_ptr<Widget>& widget);
 		void removeFromParent();
+		void removeAllChildren();
 
 		inline std::weak_ptr<Widget> getParent() { return m_parent; }
 

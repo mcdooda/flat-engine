@@ -28,6 +28,7 @@ int open(lua_State* L)
 		{"addChild",              l_Widget_addChild},
 		{"removeChild",           l_Widget_removeChild},
 		{"removeFromParent",      l_Widget_removeFromParent},
+		{"removeAllChildren",     l_Widget_removeAllChildren},
 		
 		{"setSizePolicy",         l_Widget_setSizePolicy},
 		{"setSizePolicyX",        l_Widget_setSizePolicyX},
@@ -186,6 +187,13 @@ int l_Widget_removeFromParent(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	widget.removeFromParent();
+	return 0;
+}
+
+int l_Widget_removeAllChildren(lua_State * L)
+{
+	Widget& widget = getWidget(L, 1);
+	widget.removeAllChildren();
 	return 0;
 }
 
