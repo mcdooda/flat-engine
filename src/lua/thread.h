@@ -15,10 +15,12 @@ class Thread
 
 		void set(lua_State* L, int index);
 
-		void start(int numParams);
+		void start(int numArgs);
 		void update();
 
-		inline bool isRunning() const { return m_status == LUA_YIELD; }
+		void stop();
+
+		inline bool isRunning() const { return !m_thread.isEmpty() && m_status == LUA_YIELD; }
 		inline bool isFinished() const { return m_status == LUA_OK; }
 
 	protected:
