@@ -39,6 +39,7 @@
 #include "lua/lua.h"
 #include "lua/debug.h"
 #include "lua/sharedluareference.h"
+#include "lua/uniqueluareference.h"
 #include "lua/sharedcppreference.h"
 #include "lua/table.h"
 #include "lua/thread.h"

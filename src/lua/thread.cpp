@@ -19,7 +19,7 @@ void Thread::set(lua_State* L, int index)
 
 void Thread::start(int numArgs)
 {
-	FLAT_ASSERT(m_thread.isEmpty());
+	FLAT_ASSERT(isEmpty());
 
 	lua_State* L = m_function.getLuaState();
 	{

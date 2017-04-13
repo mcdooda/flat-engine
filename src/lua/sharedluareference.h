@@ -2,8 +2,7 @@
 #define FLAT_LUA_SHAREDLUAREFERENCE_H
 
 #include <memory>
-#include <lua5.3/lua.hpp>
-#include "debug.h"
+#include "luareference.h"
 
 namespace flat
 {
@@ -11,34 +10,6 @@ namespace lua
 {
 
 // SharedLuaReference is used to hold a lua object through c++
-
-template <int LuaType>
-class LuaReference
-{
-	public:
-		LuaReference(lua_State* L, int index) :
-			m_luaState(L),
-			m_luaReference(LUA_NOREF)
-		{
-			luaL_argcheck(L, lua_type(L, index) == LuaType, index, "Wrong type for LuaReference");
-			lua_pushvalue(L, index);
-			m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
-		}
-		
-		~LuaReference()
-		{
-			luaL_unref(m_luaState, LUA_REGISTRYINDEX, m_luaReference);
-			m_luaReference = LUA_NOREF;
-		}
-		
-		inline lua_State* getLuaState() const { return m_luaState; }
-		inline int getLuaReference() const { return m_luaReference; }
-		inline bool isEmpty() const { return m_luaReference == LUA_NOREF; }
-		
-	private:
-		lua_State* m_luaState;
-		int m_luaReference;
-};
 
 template <int LuaType>
 class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
