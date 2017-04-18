@@ -1,9 +1,9 @@
 #ifndef FLAT_LUA_DEBUG_H
 #define FLAT_LUA_DEBUG_H
 
-#ifdef FLAT_DEBUG
-
 #include "../debug/assert.h"
+
+#ifdef FLAT_DEBUG
 
 struct lua_State;
 
