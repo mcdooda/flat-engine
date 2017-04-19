@@ -37,6 +37,8 @@ public:
 		FLAT_ASSERT(m_numAllocatedObjects == 0);
 	}
 
+	FLAT_DEBUG_ONLY(inline size_t getNumAllocatedObjects() { return m_numAllocatedObjects; })
+
 	template <typename... ConstructorArgs>
 	T* create(ConstructorArgs... constructorArgs)
 	{
