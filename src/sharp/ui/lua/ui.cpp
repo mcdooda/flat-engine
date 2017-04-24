@@ -417,10 +417,10 @@ int l_Widget_setVisible(lua_State* L)
 	return 0;
 }
 
-int l_Widget_isVisible(lua_State* L)
+int l_Widget_getVisible(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	bool visible = widget.isVisible();
+	bool visible = widget.getVisible();
 	lua_pushboolean(L, visible);
 	return 1;
 }

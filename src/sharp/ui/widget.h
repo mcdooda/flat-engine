@@ -148,7 +148,7 @@ class Widget : public util::Convertible<Widget>
 		inline const flat::video::Color& getBackgroundColor() const { return m_backgroundColor; }
 		
 		inline void setVisible(bool visible) { m_visible = visible; }
-		inline bool isVisible() const { return m_visible; }
+		inline bool getVisible() const { return m_visible; }
 		inline void hide() { setVisible(false); }
 		inline void show() { setVisible(true); }
 		
