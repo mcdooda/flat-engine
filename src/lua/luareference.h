@@ -39,6 +39,14 @@ class LuaReference
 			
 			m_luaState = L;
 		}
+
+		inline void setIfNotNil(lua_State* L, int index)
+		{
+			if (!lua_isnil(L, index))
+			{
+				set(L, index);
+			}
+		}
 		
 		inline lua_State* getLuaState() const { return m_luaState; }
 		inline int getLuaReference() const { return m_luaReference; }

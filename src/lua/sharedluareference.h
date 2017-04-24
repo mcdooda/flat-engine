@@ -29,6 +29,14 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 			LuaReference<LuaType>* reference = new LuaReference<LuaType>(L, index);
 			Super::reset(reference);
 		}
+
+		inline void setIfNotNil(lua_State* L, int index)
+		{
+			if (!lua_isnil(L, index))
+			{
+				set(L, index);
+			}
+		}
 		
 		inline void push(lua_State* L) const
 		{
