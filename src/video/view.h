@@ -8,11 +8,15 @@ namespace flat
 {
 namespace video
 {
+class Window;
 
 class View
 {
 	public:
 		View();
+		View(const Window* window);
+
+		inline void setWindow(const Window* window) { m_window = window; }
 		
 		void reset();
 		
@@ -23,9 +27,13 @@ class View
 		void rotateZ(float angle);
 		void flipY();
 		
-		Vector2 getRelativePosition(const Vector2& windowPosition, const Vector2& windowSize) const;
+		// window to "2d world" position
+		Vector2 getRelativePosition(const Vector2& windowPosition) const;
 
-		void updateProjection(const Vector2& windowSize);
+		// "2d world" to window position
+		Vector2 getWindowPosition(const Vector2& relativePosition) const;
+
+		void updateProjection();
 		
 		inline const Matrix4& getProjectionMatrix() const { return m_projectionMatrix; }
 		inline const Matrix4& getViewMatrix() const { return m_viewMatrix; }
@@ -34,6 +42,7 @@ class View
 	private:
 		Matrix4 m_projectionMatrix;
 		Matrix4 m_viewMatrix;
+		const Window* m_window;
 };
 
 } // video

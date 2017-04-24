@@ -27,7 +27,7 @@ class Window
 		inline bool isFullScreen() const { return m_fullScreen; }
 		inline bool isVsyncEnabled() const { return m_vsync; }
 
-		inline const Vector2& getSize() { return m_size; }
+		inline const Vector2& getSize() const { return m_size; }
 		void resized(const Vector2& size);
 
 		const Vector2& getDesktopSize() const;
