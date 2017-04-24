@@ -55,7 +55,7 @@ int l_Widget_setBackgroundColor(lua_State* L);
 int l_Widget_setBackgroundPosition(lua_State* L);
 
 int l_Widget_setVisible(lua_State* L);
-int l_Widget_isVisible(lua_State* L);
+int l_Widget_getVisible(lua_State* L);
 int l_Widget_hide(lua_State* L);
 int l_Widget_show(lua_State* L);
 

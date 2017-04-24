@@ -58,7 +58,7 @@ int open(lua_State* L)
 		{"setBackgroundPosition", l_Widget_setBackgroundPosition},
 		
 		{"setVisible",            l_Widget_setVisible},
-		{"getVisible",            l_Widget_isVisible},
+		{"getVisible",            l_Widget_getVisible},
 		{"hide",                  l_Widget_hide},
 		{"show",                  l_Widget_show},
 		
