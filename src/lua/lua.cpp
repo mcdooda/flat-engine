@@ -6,6 +6,7 @@
 #include "lua.h"
 #include "../time/lua/time.h"
 #include "../input/lua/mouse.h"
+#include "../video/lua/image.h"
 #include "../sharp/ui/lua/ui.h"
 
 namespace flat
@@ -36,6 +37,7 @@ Lua::Lua(Flat& flat)
 
 		time::lua::open(L);
 		input::lua::mouse::open(L);
+		video::lua::image::open(L);
 		sharp::ui::lua::open(L);
 	}
 }
