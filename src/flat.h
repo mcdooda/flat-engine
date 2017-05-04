@@ -66,6 +66,9 @@
 #include "misc/aabb2.h"
 #include "misc/aabb3.h"
 
+// debug
+#include "debug/helpers.h"
+
 namespace flat
 {
 
