@@ -37,6 +37,7 @@ class QuadTreeCell
 template<class T>
 inline void QuadTreeCell<T>::addObject(const T* object)
 {
+	FLAT_ASSERT(std::find(m_objects.begin(), m_objects.end(), object) == m_objects.end());
 	m_objects.push_back(object);
 }
 

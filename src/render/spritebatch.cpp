@@ -20,6 +20,7 @@ void SpriteBatch::clear()
 
 void SpriteBatch::add(const Sprite& sprite)
 {
+	static const int numVerticesPerSprite = 6;
 	if (m_numVertices == 0)
 	{
 		FLAT_ASSERT(m_texture == nullptr);
@@ -28,6 +29,7 @@ void SpriteBatch::add(const Sprite& sprite)
 	FLAT_DEBUG_ONLY(
 	else
 	{
+		FLAT_ASSERT(m_numVertices > 0 && m_numVertices + numVerticesPerSprite < m_vertices.size());
 		FLAT_ASSERT(m_texture == sprite.getTexture().get());
 	}
 	)
@@ -35,13 +37,13 @@ void SpriteBatch::add(const Sprite& sprite)
 
 	const Matrix4& transform = sprite.getModelMatrix();
 	const video::Color& color = sprite.getColor();
-	const int numVertices = 6;
 	const Sprite::Vertex* vertices = sprite.m_vertices.data();
-	for (int i = 0; i < numVertices; ++i)
+	for (int i = 0; i < numVerticesPerSprite; ++i)
 	{
 		const Sprite::Vertex* spriteVertex = vertices + i;
 		FLAT_ASSERT(m_numVertices + 1 > 0);
 		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
+		FLAT_ASSERT(m_numVertices > 0);
 		spriteBatchVertex.pos = Vector2(transform * Vector4(spriteVertex->pos, 0.f, 1.f));
 		spriteBatchVertex.uv = spriteVertex->uv;
 		spriteBatchVertex.color = color;
