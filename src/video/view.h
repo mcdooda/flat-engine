@@ -3,6 +3,7 @@
 
 #include "../misc/vector.h"
 #include "../misc/matrix4.h"
+#include "../misc/aabb2.h"
 
 namespace flat
 {
@@ -34,6 +35,8 @@ class View
 		Vector2 getWindowPosition(const Vector2& relativePosition) const;
 
 		void updateProjection();
+
+		void getScreenAABB(flat::AABB2& aabb) const;
 		
 		inline const Matrix4& getProjectionMatrix() const { return m_projectionMatrix; }
 		inline const Matrix4& getViewMatrix() const { return m_viewMatrix; }

@@ -25,6 +25,7 @@
 #include "geometry/linesegment.h"
 #include "geometry/circle.h"
 #include "geometry/rectangle.h"
+#include "geometry/quadtree.h"
 
 // video
 #include "video/pass.h"

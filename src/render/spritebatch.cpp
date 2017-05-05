@@ -40,6 +40,7 @@ void SpriteBatch::add(const Sprite& sprite)
 	for (int i = 0; i < numVertices; ++i)
 	{
 		const Sprite::Vertex* spriteVertex = vertices + i;
+		FLAT_ASSERT(m_numVertices + 1 > 0);
 		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
 		spriteBatchVertex.pos = Vector2(transform * Vector4(spriteVertex->pos, 0.f, 1.f));
 		spriteBatchVertex.uv = spriteVertex->uv;

@@ -38,6 +38,12 @@ class AABB2
 			return max - min;
 		}
 
+		inline bool contains(const AABB2& other) const
+		{
+			return min.x <= other.min.x && min.y <= other.min.y
+				&& other.max.x <= max.x && other.max.y <= max.y;
+		}
+
 		inline static bool overlap(const AABB2& a, const AABB2& b)
 		{
 			Vector2 aCenter = a.getCenter();

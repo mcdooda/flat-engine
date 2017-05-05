@@ -84,6 +84,13 @@ void View::updateProjection()
 	m_projectionMatrix = ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000.0f, 1000.0f);
 }
 
+void View::getScreenAABB(flat::AABB2& aabb) const
+{
+	aabb.min = getRelativePosition(flat::Vector2(0, 0));
+	aabb.max = getRelativePosition(m_window->getSize());
+	std::swap(aabb.min.y, aabb.max.y);
+}
+
 } // video
 } // flat
 
