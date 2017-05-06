@@ -80,6 +80,7 @@ class QuadTree
 		void updateAllObjects(std::unordered_map<const T*, int>& objectCellIndices);
 		void clear();
 		void getObjects(const flat::AABB2& aabb, std::vector<const T*>& objects) const;
+		void getObjects(const flat::Vector2& point, std::vector<const T*>& objects) const;
 
 	private:
 		void initAABBs(Cell& cell, const flat::AABB2& aabb);
@@ -95,6 +96,7 @@ class QuadTree
 		Cell& findChildCellForAABB(Cell& cell, const flat::AABB2& aabb);
 		Cell& findParentCellForAABB(Cell& cell, const flat::AABB2& aabb);
 		void getObjectsInCell(const Cell& cell, const flat::AABB2& aabb, std::vector<const T*>& objects) const;
+		void getObjectsInCell(const Cell& cell, const flat::Vector2& point, std::vector<const T*>& objects) const;
 		void updateCellObjects(Cell& cell);
 		Cell& updateObjectCell(Cell& cell, const T* object, const flat::AABB2& aabb);
 
@@ -187,6 +189,12 @@ template<class T, int depth>
 inline void QuadTree<T, depth>::getObjects(const flat::AABB2& aabb, std::vector<const T*>& objects) const
 {
 	getObjectsInCell(getRootCell(), aabb, objects);
+}
+
+template<class T, int depth>
+inline void QuadTree<T, depth>::getObjects(const flat::Vector2& point, std::vector<const T*>& objects) const
+{
+	getObjectsInCell(getRootCell(), point, objects);
 }
 
 template<class T, int depth>
@@ -348,6 +356,38 @@ inline void QuadTree<T, depth>::getObjectsInCell(const Cell& cell, const flat::A
 
 			const Cell& topRightCell = getChild(cell, ChildPosition::TOP_RIGHT);
 			getObjectsInCell(topRightCell, aabb, objects);
+		}
+	}
+}
+
+template<class T, int depth>
+inline void QuadTree<T, depth>::getObjectsInCell(const Cell& cell, const flat::Vector2& point, std::vector<const T*>& objects) const
+{
+	if (cell.isInside(point))
+	{
+		const std::vector<const T*> cellObjects = cell.getObjects();
+		for (const T* object : cellObjects)
+		{
+			const flat::AABB2& objectAABB = object->getAABB();
+			if (objectAABB.isInside(point))
+			{
+				objects.push_back(object);
+			}
+		}
+
+		if (!isLeaf(cell))
+		{
+			const Cell& bottomLeftCell = getChild(cell, ChildPosition::BOTTOM_LEFT);
+			getObjectsInCell(bottomLeftCell, point, objects);
+
+			const Cell& bottomRightCell = getChild(cell, ChildPosition::BOTTOM_RIGHT);
+			getObjectsInCell(bottomRightCell, point, objects);
+
+			const Cell& topLeftCell = getChild(cell, ChildPosition::TOP_LEFT);
+			getObjectsInCell(topLeftCell, point, objects);
+
+			const Cell& topRightCell = getChild(cell, ChildPosition::TOP_RIGHT);
+			getObjectsInCell(topRightCell, point, objects);
 		}
 	}
 }

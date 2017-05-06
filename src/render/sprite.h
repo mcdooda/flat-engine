@@ -66,8 +66,6 @@ class Sprite
 		inline const Matrix4& getModelMatrix() const { updateModelMatrix(); return m_modelMatrix; }
 
 		void getAABB(AABB2& aabb) const;
-		bool overlaps(const Sprite& sprite) const;
-		bool isInside(const Vector2& point) const;
 
 		virtual void getPixel(const Vector2& point, video::Color& color) const;
 		

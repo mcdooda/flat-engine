@@ -124,6 +124,7 @@ void Sprite::updateModelMatrix() const
 void Sprite::getAABB(AABB2& aabb) const
 {
 	const Matrix4& aMatrix = getModelMatrix();
+	// TODO: wrong for rotated sprites
 	aabb.min = Vector2(aMatrix * Vector4(m_vertices[0].pos, 0.f, 1.f));
 	aabb.max = Vector2(aMatrix * Vector4(m_vertices[3].pos, 0.f, 1.f));
 
@@ -135,24 +136,6 @@ void Sprite::getAABB(AABB2& aabb) const
 	FLAT_ASSERT(aabb.isValid());
 }
 
-bool Sprite::overlaps(const Sprite& sprite) const
-{
-	AABB2 a;
-	getAABB(a);
-
-	AABB2 b;
-	sprite.getAABB(b);
-
-	return a.max.x >= b.min.x && a.min.x <= b.max.x && a.max.y >= b.min.y && a.min.y <= b.max.y;
-}
-
-bool Sprite::isInside(const Vector2& point) const
-{
-	AABB2 aabb;
-	getAABB(aabb);
-	return aabb.isInside(point);
-}
-
 void Sprite::getPixel(const Vector2& point, video::Color& color) const
 {
 	AABB2 aabb;
@@ -161,6 +144,7 @@ void Sprite::getPixel(const Vector2& point, video::Color& color) const
 	FLAT_ASSERT_MSG(dynamic_cast<const video::FileTexture*>(m_texture.get()) != nullptr, "Can only get pixel color from a file texture");
 	const video::FileTexture* texture = static_cast<const video::FileTexture*>(m_texture.get());
 
+	// TODO: wrong for rotated sprites
 	float rx = (point.x - aabb.min.x) / (aabb.max.x - aabb.min.x);
 	float ry = 1.f - (point.y - aabb.min.y) / (aabb.max.y - aabb.min.y);
 

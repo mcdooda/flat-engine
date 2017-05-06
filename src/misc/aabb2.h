@@ -19,6 +19,8 @@ class AABB2
 			max(max)
 		{}
 
+		inline bool operator==(const AABB2& other) const { return min == other.min && max == other.max; }
+
 		inline bool isValid() const { return min.x <= max.x && min.y <= max.y; }
 
 		inline bool isInside(const Vector2& point) const
