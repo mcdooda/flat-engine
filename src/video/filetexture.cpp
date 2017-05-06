@@ -33,10 +33,14 @@ FileTexture::~FileTexture()
 
 void FileTexture::getPixel(const Vector2& pixelPosition, Color& color) const
 {
-	int x = static_cast<int>(std::round(pixelPosition.x));
-	int y = static_cast<int>(std::round(pixelPosition.y));
-	Uint32 pixel = *(static_cast<Uint32*>(m_surface->pixels) + (m_surface->h - y) * m_surface->w + x);
-	Uint8 r, g, b, a;
+	int x = static_cast<int>(std::floor(pixelPosition.x));
+	int y = static_cast<int>(std::ceil(pixelPosition.y));
+	FLAT_ASSERT(x >= 0 && x <= m_surface->w);
+	FLAT_ASSERT(y >= 0 && y <= m_surface->h);
+
+	int pixelIndex = (m_surface->h - y) * m_surface->w + x;
+	std::uint32_t pixel = *(static_cast<std::uint32_t*>(m_surface->pixels) + pixelIndex);
+	std::uint8_t r, g, b, a;
 	SDL_GetRGBA(pixel, m_surface->format, &r, &g, &b, &a);
 	color = Color(r, g, b, a);
 }

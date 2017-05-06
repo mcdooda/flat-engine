@@ -44,8 +44,8 @@ void AnimatedSprite::getPixel(const Vector2& point, video::Color& color) const
 		ry = 1.f - ry;
 
 	Vector2 pixelPosition(
-		(rx + m_currentColumn) * m_tileSizeRatio.x * texture->getSize().x,
-		(ry + m_currentLine  ) * m_tileSizeRatio.y * texture->getSize().y
+		(rx + m_currentColumn                   ) * m_tileSizeRatio.x * texture->getSize().x,
+		(ry + (getAtlasHeight() - 1 - m_currentLine)) * m_tileSizeRatio.y * texture->getSize().y
 	);
 
 	texture->getPixel(pixelPosition, color);
@@ -89,7 +89,7 @@ void AnimatedSprite::setAnimated(bool animated)
 
 void AnimatedSprite::setLine(int line)
 {
-	FLAT_ASSERT(0 <= line && line < getAtlasWidth());
+	FLAT_ASSERT(0 <= line && line < getAtlasHeight());
 	m_currentLine = line;
 	
 	// update uv
@@ -106,7 +106,7 @@ void AnimatedSprite::setLine(int line)
 
 void AnimatedSprite::setColumn(int column)
 {
-	FLAT_ASSERT(0 <= column && column < getAtlasHeight());
+	FLAT_ASSERT(0 <= column && column < getAtlasWidth());
 	m_currentColumn = column;
 	
 	// update uv
@@ -171,18 +171,12 @@ void AnimatedSprite::update(float currentTime)
 
 int AnimatedSprite::getAtlasWidth() const
 {
-	const flat::video::Texture* texture = getTexture().get();
-	FLAT_ASSERT(texture != nullptr);
-	const flat::Vector2& textureSize = texture->getSize();
-	return static_cast<int>(m_tileSizeRatio.x * textureSize.x);
+	return static_cast<int>(1.f / m_tileSizeRatio.x);
 }
 
 int AnimatedSprite::getAtlasHeight() const
 {
-	const flat::video::Texture* texture = getTexture().get();
-	FLAT_ASSERT(texture != nullptr);
-	const flat::Vector2& textureSize = texture->getSize();
-	return static_cast<int>(m_tileSizeRatio.y * textureSize.y);
+	return static_cast<int>(1.f / m_tileSizeRatio.y);
 }
 
 } // render
