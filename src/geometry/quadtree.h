@@ -102,7 +102,7 @@ class QuadTree
 		static constexpr int getNumCells();
 
 	private:
-		static const int NUM_CELLS = getNumCells();
+		static constexpr int NUM_CELLS = getNumCells();
 		std::array<Cell, NUM_CELLS> m_cells;
 };
 
