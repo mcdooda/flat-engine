@@ -332,7 +332,7 @@ inline void QuadTree<T, depth>::getObjectsInCell(const Cell& cell, const AABB2& 
 {
 	if (cell.overlap(aabb))
 	{
-		const std::vector<const T*> cellObjects = cell.getObjects();
+		const std::vector<const T*>& cellObjects = cell.getObjects();
 		for (const T* object : cellObjects)
 		{
 			const AABB2& objectAABB = object->getAABB();
@@ -364,7 +364,7 @@ inline void QuadTree<T, depth>::getObjectsInCell(const Cell& cell, const Vector2
 {
 	if (cell.isInside(point))
 	{
-		const std::vector<const T*> cellObjects = cell.getObjects();
+		const std::vector<const T*>& cellObjects = cell.getObjects();
 		for (const T* object : cellObjects)
 		{
 			const AABB2& objectAABB = object->getAABB();
