@@ -48,12 +48,10 @@ class AABB2
 
 		inline static bool overlap(const AABB2& a, const AABB2& b)
 		{
-			Vector2 aCenter = a.getCenter();
-			Vector2 bCenter = b.getCenter();
-			Vector2 aSize = a.getSize();
-			Vector2 bSize = b.getSize();
-			return (std::abs(aCenter.x - bCenter.x) * 2.f < aSize.x + bSize.x)
-				&& (std::abs(aCenter.y - bCenter.y) * 2.f < aSize.y + bSize.y);
+			return a.max.x > b.min.x
+				&& a.min.x < b.max.x
+				&& a.max.y > b.min.y
+				&& a.min.y < b.max.y;
 		}
 
 	public:

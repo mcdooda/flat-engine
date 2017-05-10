@@ -47,13 +47,12 @@ class AABB3
 
 		inline static bool overlap(const AABB3& a, const AABB3& b)
 		{
-			Vector3 aCenter = a.getCenter();
-			Vector3 bCenter = b.getCenter();
-			Vector3 aSize = a.getSize();
-			Vector3 bSize = b.getSize();
-			return (std::abs(aCenter.x - bCenter.x) * 2.f < aSize.x + bSize.x)
-				&& (std::abs(aCenter.y - bCenter.y) * 2.f < aSize.y + bSize.y)
-				&& (std::abs(aCenter.z - bCenter.z) * 2.f < aSize.z + bSize.z);
+			return a.max.x > b.min.x
+				&& a.min.x < b.max.x
+				&& a.max.y > b.min.y
+				&& a.min.y < b.max.y
+				&& a.max.z > b.min.z
+				&& a.min.z < b.max.z;
 		}
 
 	public:
