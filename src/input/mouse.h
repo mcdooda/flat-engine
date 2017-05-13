@@ -24,6 +24,7 @@ class Mouse
 		bool isPressed(int button) const;
 		bool isJustPressed(int button) const;
 		bool isJustReleased(int button) const;
+		bool isJustDoubleClicked(int button) const;
 
 		inline bool justMoved() const { return m_moved; }
 		inline const Vector2& getPosition() const { return m_position; }
@@ -37,6 +38,7 @@ class Mouse
 	private:
 		std::array<bool, NUM_BUTTONS> m_justPressedButtons;
 		std::array<bool, NUM_BUTTONS> m_justReleasedButtons;
+		std::array<bool, NUM_BUTTONS> m_justDoubleClickedButtons;
 		
 		video::Window* const m_videoWindow;
 

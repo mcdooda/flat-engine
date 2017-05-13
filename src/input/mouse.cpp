@@ -32,8 +32,16 @@ bool Mouse::isJustPressed(int button) const
 
 bool Mouse::isJustReleased(int button) const
 {
-	if (button < static_cast<int>(m_justPressedButtons.size()))
+	if (button < static_cast<int>(m_justReleasedButtons.size()))
 		return m_justReleasedButtons[button];
+
+	return false;
+}
+
+bool Mouse::isJustDoubleClicked(int button) const
+{
+	if (button < static_cast<int>(m_justDoubleClickedButtons.size()))
+		return m_justDoubleClickedButtons[button];
 
 	return false;
 }
@@ -46,6 +54,7 @@ void Mouse::clearEvents()
 	m_wheelMove.y = 0.f;
 	m_justPressedButtons.fill(false);
 	m_justReleasedButtons.fill(false);
+	m_justDoubleClickedButtons.fill(false);
 }
 
 void Mouse::addEvent(const SDL_Event& e)
@@ -56,6 +65,10 @@ void Mouse::addEvent(const SDL_Event& e)
 		m_position.x = static_cast<float>(e.button.x);
 		m_position.y = m_videoWindow->getSize().y - e.button.y;
 		m_justPressedButtons[e.button.button] = true;
+		if (e.button.clicks > 1)
+		{
+			m_justDoubleClickedButtons[e.button.button] = true;
+		}
 		break;
 
 		case SDL_MOUSEBUTTONUP:

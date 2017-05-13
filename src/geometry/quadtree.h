@@ -195,6 +195,7 @@ inline void QuadTree<T, depth>::clear()
 template<class T, int depth>
 inline void QuadTree<T, depth>::getObjects(const AABB2& aabb, std::vector<const T*>& objects) const
 {
+	FLAT_ASSERT(aabb.isValid());
 	getObjectsInCell(getRootCell(), aabb, objects);
 }
 
