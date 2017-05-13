@@ -17,6 +17,9 @@ class QuadTreeCell
 		~QuadTreeCell() = default;
 
 		inline void setAABB(const AABB2& aabb) { m_aabb = aabb; }
+#ifdef FLAT_DEBUG
+		inline const AABB2& getAABB() const { return m_aabb; }
+#endif
 
 		inline const std::vector<const T*>& getObjects() const { return m_objects; }
 		inline std::vector<const T*>& getObjects() { return m_objects; }
@@ -57,8 +60,10 @@ inline void QuadTreeCell<T>::clear()
 template <class T, int depth>
 class QuadTree
 {
-	private:
+	public:
 		using Cell = QuadTreeCell<T>;
+
+	private:
 		enum ChildPosition
 		{
 			BOTTOM_LEFT  = 1,
@@ -81,6 +86,10 @@ class QuadTree
 		void getObjects(const AABB2& aabb, std::vector<const T*>& objects) const;
 		void getObjects(const Vector2& point, std::vector<const T*>& objects) const;
 
+#ifdef FLAT_DEBUG
+		const Cell& getCell(int index) const { return m_cells[index]; }
+#endif
+
 	private:
 		void initAABBs(Cell& cell, const AABB2& aabb);
 		int  getCellIndex(const Cell& cell) const;
@@ -93,11 +102,10 @@ class QuadTree
 		Cell& getParentCell(Cell& cell);
 		const Cell& getParentCell(const Cell& cell) const;
 		Cell& findChildCellForAABB(Cell& cell, const AABB2& aabb);
-		Cell& findParentCellForAABB(Cell& cell, const AABB2& aabb);
 		void getObjectsInCell(const Cell& cell, const AABB2& aabb, std::vector<const T*>& objects) const;
 		void getObjectsInCell(const Cell& cell, const Vector2& point, std::vector<const T*>& objects) const;
 		void updateCellObjects(Cell& cell);
-		Cell& updateObjectCell(Cell& cell, const T* object, const AABB2& aabb);
+		Cell& updateObjectCell(Cell& cell, const AABB2& aabb);
 
 		static constexpr int cpow(int m, int n);
 		static constexpr int getNumCells();
@@ -128,7 +136,7 @@ inline int QuadTree<T, depth>::updateObject(const T* object, int previousCellInd
 {
 	Cell& previousCell = m_cells[previousCellIndex];
 	const AABB2& aabb = object->getAABB();
-	Cell& newCell = updateObjectCell(previousCell, object, aabb);
+	Cell& newCell = updateObjectCell(previousCell, aabb);
 	if (&newCell != &previousCell)
 	{
 		previousCell.removeObject(object);
@@ -205,7 +213,7 @@ inline void QuadTree<T, depth>::initAABBs(Cell& cell, const AABB2& aabb)
 		Cell& bottomLeftCell = getChild(cell, ChildPosition::BOTTOM_LEFT);
 		initAABBs(bottomLeftCell, AABB2(aabb.min, aabb.getCenter()));
 
-		Cell& bottomRightCell = getChild(cell, ChildPosition::TOP_LEFT);
+		Cell& bottomRightCell = getChild(cell, ChildPosition::BOTTOM_RIGHT);
 		initAABBs(bottomRightCell, AABB2(Vector2(aabb.getCenter().x, aabb.min.y), Vector2(aabb.max.x, aabb.getCenter().y)));
 
 		Cell& topLeftCell = getChild(cell, ChildPosition::TOP_LEFT);
@@ -236,47 +244,47 @@ inline bool QuadTree<T, depth>::isLeaf(const Cell& cell) const
 }
 
 template<class T, int depth>
-inline QuadTreeCell<T>& QuadTree<T, depth>::getRootCell()
+inline typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::getRootCell()
 {
 	return m_cells[0];
 }
 
 template<class T, int depth>
-inline const QuadTreeCell<T>& QuadTree<T, depth>::getRootCell() const
+inline const typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::getRootCell() const
 {
 	return m_cells[0];
 }
 
 template<class T, int depth>
-inline QuadTreeCell<T>& QuadTree<T, depth>::getChild(const Cell& cell, ChildPosition childPosition)
+inline typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::getChild(const Cell& cell, ChildPosition childPosition)
 {
 	int index = getCellIndex(cell);
 	return m_cells[index * 4 + childPosition];
 }
 
 template<class T, int depth>
-inline const QuadTreeCell<T>& QuadTree<T, depth>::getChild(const Cell & cell, ChildPosition childPosition) const
+inline const typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::getChild(const Cell& cell, ChildPosition childPosition) const
 {
 	int index = getCellIndex(cell);
 	return m_cells[index * 4 + childPosition];
 }
 
 template<class T, int depth>
-inline QuadTreeCell<T>& QuadTree<T, depth>::getParentCell(Cell& cell)
+inline typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::getParentCell(Cell& cell)
 {
 	int index = getCellIndex(cell);
 	return m_cells[(index - 1) / 4];
 }
 
 template<class T, int depth>
-inline const QuadTreeCell<T>& QuadTree<T, depth>::getParentCell(const Cell& cell) const
+inline const typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::getParentCell(const Cell& cell) const
 {
 	int index = getCellIndex(cell);
 	return m_cells[(index - 1) / 4];
 }
 
 template<class T, int depth>
-inline QuadTreeCell<T>& QuadTree<T, depth>::findChildCellForAABB(Cell& cell, const AABB2& aabb)
+inline typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::findChildCellForAABB(Cell& cell, const AABB2& aabb)
 {
 	if (!isLeaf(cell))
 	{
@@ -306,25 +314,6 @@ inline QuadTreeCell<T>& QuadTree<T, depth>::findChildCellForAABB(Cell& cell, con
 	}
 
 	return cell;
-}
-
-template<class T, int depth>
-inline QuadTreeCell<T>& QuadTree<T, depth>::findParentCellForAABB(Cell& cell, const AABB2& aabb)
-{
-	if (cell.contains(aabb))
-	{
-		return findChildCellForAABB(cell, aabb);
-	}
-	else if (isRoot(cell))
-	{
-		FLAT_ASSERT_MSG(false, "AABB is outside of the quad tree's root cell");
-		return cell;
-	}
-	else
-	{
-		Cell& parentCell = getParentCell(cell);
-		return findParentCellForAABB(parentCell, aabb);
-	}
 }
 
 template<class T, int depth>
@@ -413,15 +402,23 @@ inline void QuadTree<T, depth>::updateCellObjects(Cell& cell)
 }
 
 template<class T, int depth>
-inline QuadTreeCell<T>& QuadTree<T, depth>::updateObjectCell(Cell& cell, const T* object, const AABB2& aabb)
+inline typename QuadTree<T, depth>::Cell& QuadTree<T, depth>::updateObjectCell(Cell& cell, const AABB2& aabb)
 {
-	if (!cell.contains(aabb))
-	{
-		return findParentCellForAABB(cell, aabb);
-	}
-	else
+	if (cell.contains(aabb))
 	{
 		return findChildCellForAABB(cell, aabb);
+	}
+#ifdef FLAT_DEBUG
+	else if (isRoot(cell))
+	{
+		FLAT_ASSERT_MSG(false, "AABB is outside of the quad tree's root cell");
+		return cell;
+	}
+#endif
+	else
+	{
+		Cell& parentCell = getParentCell(cell);
+		return updateObjectCell(parentCell, aabb);
 	}
 }
 
