@@ -9,6 +9,8 @@ constexpr float PI2 = PI * 2.f;
 
 constexpr float SQRT2 = 1.41421356237f;
 
+constexpr float EPSILON = 0.00001f;
+
 template <typename T>
 int8_t sign(T number)
 {
