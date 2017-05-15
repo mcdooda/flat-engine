@@ -76,7 +76,7 @@ void Game::loop()
 	{
 		time->beginFrame();
 		
-		input->poll();
+		input->pollEvents();
 		
 		getStateMachine().update();
 		running = !input->window->isClosed() && !m_stop;

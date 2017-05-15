@@ -445,9 +445,9 @@ int l_Widget_click(lua_State* L)
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	input::Mouse* mouse = flat::lua::getInput(L)->mouse;
+	auto& mouse = flat::lua::getInput(L)->mouse;
 	widget.click.on(
-		[L, ref, mouse](Widget* w, bool& eventHandled)
+		[L, ref, &mouse](Widget* w, bool& eventHandled)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
@@ -471,9 +471,9 @@ int l_Widget_mouseMove(lua_State* L)
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	input::Mouse* mouse = flat::lua::getInput(L)->mouse;
+	auto& mouse = flat::lua::getInput(L)->mouse;
 	widget.mouseMove.on(
-		[L, ref, mouse](Widget* w, bool& eventHandled)
+		[L, ref, &mouse](Widget* w, bool& eventHandled)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());

@@ -107,7 +107,7 @@ void RootWidget::update()
 
 void RootWidget::updateInput(bool updateMouseOver)
 {
-	const flat::input::Mouse* mouse = m_flat.input->mouse;
+	auto& mouse = m_flat.input->mouse;
 
 	if (updateMouseOver || mouse->justMoved())
 	{

@@ -2,40 +2,38 @@
 #define FLAT_INPUT_KEYBOARD_H
 
 #include <vector>
-#include <SDL2/SDL.h>
+#include <memory>
 
-#include "../containers/array.h"
-
-#define K(k) SDL_SCANCODE_##k
+#include "key.h"
 
 namespace flat
 {
 namespace input
 {
-
-typedef SDL_Scancode Key;
+namespace context
+{
+class InputContext;
+}
 
 class Keyboard
 {
 	public:
-		Keyboard();
-		~Keyboard();
+		Keyboard() = delete;
+		Keyboard(const Keyboard&) = delete;
+		Keyboard(Keyboard&&) = delete;
+		Keyboard(const std::shared_ptr<context::InputContext>& globalInputContext);
+		~Keyboard() = default;
 		
-		bool isPressed(Key k) const;
-		bool isJustPressed(Key k) const;
-		bool isJustReleased(Key k) const;
+		bool isPressed(Key key) const;
+		bool isJustPressed(Key key) const;
+		bool isJustReleased(Key key) const;
 
 		void getPressedKeys(std::vector<Key>& pressedKeys) const;
 		void getJustPressedKeys(std::vector<Key>& justPressedKeys) const;
 		void getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const;
 
-		void clearEvents();
-		void addEvent(const SDL_Event& e);
-		
 	private:
-		containers::Array<bool> m_justPressedKeys;
-		containers::Array<bool> m_justReleasedKeys;
-		int m_numKeys;
+		std::shared_ptr<context::InputContext> m_globalInputContext;
 };
 
 } // input

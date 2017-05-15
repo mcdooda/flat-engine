@@ -1,31 +1,31 @@
 #ifndef FLAT_INPUT_WINDOW_H
 #define FLAT_INPUT_WINDOW_H
 
-#include <SDL2/SDL.h>
-#include "../video/video.h"
+#include <memory>
 
 namespace flat
 {
 namespace input
 {
+namespace context
+{
+class InputContext;
+}
 
 class Window
 {
 	public:
-		Window(video::Window* videoWindow);
-		~Window();
+		Window() = delete;
+		Window(const Window&) = delete;
+		Window(Window&&) = delete;
+		Window(const std::shared_ptr<context::InputContext>& globalInputContext);
+		~Window() = default;
 		
-		inline bool isClosed() const { return m_closed; }
-		inline bool isResized() const { return m_resized; }
-
-		void clearEvents();
-		void addEvent(const SDL_Event& e);
+		bool isClosed() const;
+		bool isResized() const;
 		
 	private:
-		video::Window* m_videoWindow;
-		
-		bool m_closed;
-		bool m_resized;
+		std::shared_ptr<context::InputContext> m_globalInputContext;
 };
 
 } // input

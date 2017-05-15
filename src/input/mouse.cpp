@@ -1,94 +1,55 @@
 #include "mouse.h"
 
+#include "context/inputcontext.h"
+
 namespace flat
 {
 namespace input
 {
 
-Mouse::Mouse(video::Window* videoWindow) :
-	m_videoWindow(videoWindow)
+Mouse::Mouse(const std::shared_ptr<context::InputContext>& globalInputContext) :
+	m_globalInputContext(globalInputContext)
 {
-	clearEvents();
-}
-
-Mouse::~Mouse()
-{
-
 }
 
 bool Mouse::isPressed(int button) const
 {
-	Uint8 buttonState = SDL_GetMouseState(nullptr, nullptr);
-	return (buttonState & SDL_BUTTON(button)) != 0;
+	return m_globalInputContext->getMouseInputContext().isPressed(button);
 }
 
 bool Mouse::isJustPressed(int button) const
 {
-	if (button < static_cast<int>(m_justPressedButtons.size()))
-		return m_justPressedButtons[button];
-
-	return false;
+	return m_globalInputContext->getMouseInputContext().isJustPressed(button);
 }
 
 bool Mouse::isJustReleased(int button) const
 {
-	if (button < static_cast<int>(m_justReleasedButtons.size()))
-		return m_justReleasedButtons[button];
-
-	return false;
+	return m_globalInputContext->getMouseInputContext().isJustReleased(button);
 }
 
 bool Mouse::isJustDoubleClicked(int button) const
 {
-	if (button < static_cast<int>(m_justDoubleClickedButtons.size()))
-		return m_justDoubleClickedButtons[button];
-
-	return false;
+	return m_globalInputContext->getMouseInputContext().isJustDoubleClicked(button);
 }
 
-void Mouse::clearEvents()
+bool Mouse::justMoved() const
 {
-	m_moved = false;
-	m_wheelMoved = false;
-	m_wheelMove.x = 0.f;
-	m_wheelMove.y = 0.f;
-	m_justPressedButtons.fill(false);
-	m_justReleasedButtons.fill(false);
-	m_justDoubleClickedButtons.fill(false);
+	return m_globalInputContext->getMouseInputContext().justMoved();
 }
 
-void Mouse::addEvent(const SDL_Event& e)
+const Vector2& Mouse::getPosition() const
 {
-	switch (e.type)
-	{
-		case SDL_MOUSEBUTTONDOWN:
-		m_position.x = static_cast<float>(e.button.x);
-		m_position.y = m_videoWindow->getSize().y - e.button.y;
-		m_justPressedButtons[e.button.button] = true;
-		if (e.button.clicks > 1)
-		{
-			m_justDoubleClickedButtons[e.button.button] = true;
-		}
-		break;
+	return m_globalInputContext->getMouseInputContext().getPosition();
+}
 
-		case SDL_MOUSEBUTTONUP:
-		m_position.x = static_cast<float>(e.button.x);
-		m_position.y = m_videoWindow->getSize().y - e.button.y;
-		m_justReleasedButtons[e.button.button] = true;
-		break;
+bool Mouse::wheelJustMoved() const
+{
+	return m_globalInputContext->getMouseInputContext().wheelJustMoved();
+}
 
-		case SDL_MOUSEMOTION:
-		m_position.x = static_cast<float>(e.button.x);
-		m_position.y = m_videoWindow->getSize().y - e.button.y;
-		m_moved = true;
-		break;
-		
-		case SDL_MOUSEWHEEL:
-		m_wheelMove.x = static_cast<float>(e.wheel.x);
-		m_wheelMove.y = static_cast<float>(e.wheel.y);
-		m_wheelMoved = true;
-		break;
-	}
+const Vector2& Mouse::getWheelMove() const
+{
+	return m_globalInputContext->getMouseInputContext().getWheelMove();
 }
 
 } // input

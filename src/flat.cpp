@@ -17,7 +17,7 @@ Flat::Flat()
 	time = new time::Time;
 	video = new video::Video;
 	audio = new audio::Audio;
-	input = new input::Input(video->window);
+	input = new input::Input(*this);
 	random = new random::Random;
 	lua = new lua::Lua(*this);
 	ui = new sharp::ui::Ui(*this);

@@ -3,49 +3,44 @@
 
 #include <array>
 #include <SDL2/SDL.h>
+
 #include "../misc/vector.h"
 #include "../video/video.h"
 #include "../video/view.h"
 
 #define M(m) SDL_BUTTON_##m
-#define NUM_BUTTONS 255
 
 namespace flat
 {
 namespace input
 {
+namespace context
+{
+class InputContext;
+}
 
 class Mouse
 {
 	public:
-		Mouse(video::Window* videoWindow);
-		~Mouse();
+		Mouse() = delete;
+		Mouse(const Mouse&) = delete;
+		Mouse(Mouse&&) = delete;
+		Mouse(const std::shared_ptr<context::InputContext>& globalInputContext);
+		~Mouse() = default;
 		
 		bool isPressed(int button) const;
 		bool isJustPressed(int button) const;
 		bool isJustReleased(int button) const;
 		bool isJustDoubleClicked(int button) const;
 
-		inline bool justMoved() const { return m_moved; }
-		inline const Vector2& getPosition() const { return m_position; }
+		bool justMoved() const;
+		const Vector2& getPosition() const;
 		
-		inline bool wheelJustMoved() const { return m_wheelMoved; }
-		inline const Vector2& getWheelMove() const { return m_wheelMove; }
-
-		void clearEvents();
-		void addEvent(const SDL_Event& e);
+		bool wheelJustMoved() const;
+		const Vector2& getWheelMove() const;
 		
 	private:
-		std::array<bool, NUM_BUTTONS> m_justPressedButtons;
-		std::array<bool, NUM_BUTTONS> m_justReleasedButtons;
-		std::array<bool, NUM_BUTTONS> m_justDoubleClickedButtons;
-		
-		video::Window* const m_videoWindow;
-
-		Vector2 m_position;
-		Vector2 m_wheelMove;
-		bool m_moved : 1;
-		bool m_wheelMoved : 1;
+		std::shared_ptr<context::InputContext> m_globalInputContext;
 };
 
 } // input

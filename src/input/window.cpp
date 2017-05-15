@@ -1,46 +1,26 @@
 #include "window.h"
-#include "../video/video.h"
+
+#include "context/inputcontext.h"
 
 namespace flat
 {
 namespace input
 {
 
-Window::Window(video::Window* videoWindow) :
-	m_videoWindow(videoWindow)
+Window::Window(const std::shared_ptr<context::InputContext>& globalInputContext) :
+	m_globalInputContext(globalInputContext)
 {
-	clearEvents();
+
 }
 
-Window::~Window()
+bool Window::isClosed() const
 {
-	
+	return m_globalInputContext->getWindowInputContext().isClosed();
 }
 
-void Window::clearEvents()
+bool Window::isResized() const
 {
-	m_closed = false;
-	m_resized = false;
-}
-
-void Window::addEvent(const SDL_Event& e)
-{
-	switch (e.type)
-	{
-		case SDL_QUIT:
-		m_closed = true;
-		break;
-
-		case SDL_WINDOWEVENT:
-		switch (e.window.event)
-		{
-			case SDL_WINDOWEVENT_RESIZED:
-			m_resized = true;
-			m_videoWindow->resized(Vector2(static_cast<float>(e.window.data1), static_cast<float>(e.window.data2)));
-			break;
-		}
-		break;
-	}
+	return m_globalInputContext->getWindowInputContext().isResized();
 }
 
 } // input
