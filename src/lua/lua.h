@@ -48,8 +48,6 @@ const char* codeToString(int code);
 int panic(lua_State* L);
 
 Game& getGame(lua_State* L);
-time::Time* getTime(lua_State* L);
-input::Input* getInput(lua_State* L);
 
 } // lua
 } // flat

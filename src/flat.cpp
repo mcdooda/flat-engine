@@ -14,25 +14,19 @@ namespace flat
 Flat::Flat()
 {
 	SDL_Init(SDL_INIT_VIDEO);
-	time = new time::Time;
-	video = new video::Video;
-	audio = new audio::Audio;
-	input = new input::Input(*this);
-	random = new random::Random;
-	lua = new lua::Lua(*this);
-	ui = new sharp::ui::Ui(*this);
+
+	time = std::make_unique<time::Time>();
+	video = std::make_unique<video::Video>();
+	audio = std::make_unique<audio::Audio>();
+	input = std::make_unique<input::Input>(*this);
+	random = std::make_unique<random::Random>();
+	lua = std::make_unique<lua::Lua>(*this);
+	ui = std::make_unique<sharp::ui::Ui>(*this);
 }
 
 Flat::~Flat()
 {
 	SDL_Quit();
-	FLAT_DELETE(ui);
-	FLAT_DELETE(lua);
-	FLAT_DELETE(random);
-	FLAT_DELETE(input);
-	FLAT_DELETE(audio);
-	FLAT_DELETE(video);
-	FLAT_DELETE(time);
 }
 
 } // flat

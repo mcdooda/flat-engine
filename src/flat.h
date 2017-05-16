@@ -1,6 +1,8 @@
 #ifndef FLAT_FLAT_H
 #define FLAT_FLAT_H
 
+#include <memory>
+
 // single header public API
 
 #include "memory/memory.h"
@@ -77,16 +79,19 @@ class Flat
 {
 	public:
 		Flat();
+		Flat(const Flat&) = delete;
+		Flat(Flat&&) = delete;
 		virtual ~Flat();
+		Flat& operator=(const Flat&) = delete;
 		
 	public:
-		time::Time* time;
-		video::Video* video;
-		audio::Audio* audio;
-		input::Input* input;
-		random::Random* random;
-		sharp::ui::Ui* ui;
-		lua::Lua* lua;
+		std::unique_ptr<time::Time> time;
+		std::unique_ptr<video::Video> video;
+		std::unique_ptr<audio::Audio> audio;
+		std::unique_ptr<input::Input> input;
+		std::unique_ptr<random::Random> random;
+		std::unique_ptr<sharp::ui::Ui> ui;
+		std::unique_ptr<lua::Lua> lua;
 };
 
 } // flat

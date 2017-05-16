@@ -1,5 +1,5 @@
 #include <lua5.3/lua.hpp>
-#include <flat.h>
+#include <flat/game.h>
 #include "mouse.h"
 
 namespace flat
@@ -26,8 +26,7 @@ int open(lua_State* L)
 
 int l_Mouse_getPosition(lua_State* L)
 {
-	auto& mouse = flat::lua::getInput(L)->mouse;
-	const Vector2& position = mouse->getPosition();
+	const Vector2& position = flat::lua::getGame(L).input->mouse->getPosition();
 	lua_pushnumber(L, position.x);
 	lua_pushnumber(L, position.y);
 	return 2;

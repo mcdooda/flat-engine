@@ -445,7 +445,7 @@ int l_Widget_click(lua_State* L)
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	auto& mouse = flat::lua::getInput(L)->mouse;
+	const auto& mouse = flat::lua::getGame(L).input->mouse;
 	widget.click.on(
 		[L, ref, &mouse](Widget* w, bool& eventHandled)
 		{
@@ -471,7 +471,7 @@ int l_Widget_mouseMove(lua_State* L)
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	auto& mouse = flat::lua::getInput(L)->mouse;
+	const auto& mouse = flat::lua::getGame(L).input->mouse;
 	widget.mouseMove.on(
 		[L, ref, &mouse](Widget* w, bool& eventHandled)
 		{
