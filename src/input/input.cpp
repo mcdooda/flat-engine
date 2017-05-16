@@ -25,20 +25,13 @@ void Input::pollEvents()
 
 	FLAT_ASSERT(m_globalInputContext.get() != nullptr);
 	context::InputContext& globalInputContext = *m_globalInputContext.get();
-	context::KeyboardInputContext& keyboardInputContext = globalInputContext.getKeyboardInputContext();
-	context::MouseInputContext& mouseInputContext = globalInputContext.getMouseInputContext();
-	context::WindowInputContext& windowInputContext = globalInputContext.getWindowInputContext();
 
-	keyboardInputContext.clearEvents();
-	mouseInputContext.clearEvents();
-	windowInputContext.clearEvents();
+	globalInputContext.clearFrameEvents();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		keyboardInputContext.addEvent(event);
-		mouseInputContext.addEvent(event);
-		windowInputContext.addEvent(event);
+		globalInputContext.addEvent(event);
 	}
 
 	// copy the global context into the top context
@@ -50,7 +43,7 @@ void Input::pollEvents()
 	}
 }
 
-void Input::clearEvents()
+void Input::clearFrameEvents()
 {
 	SDL_Event e;
 	while (SDL_PollEvent(&e));
@@ -60,7 +53,7 @@ void Input::clearEvents()
 		context::InputContext* inputContext = inputContextWeakPtr.lock().get();
 		if (inputContext != nullptr)
 		{
-			inputContext->clearEvents();
+			inputContext->clearFrameEvents();
 		}
 	}
 }
@@ -68,7 +61,18 @@ void Input::clearEvents()
 void Input::pushContext(const std::shared_ptr<context::InputContext>& inputContext)
 {
 	FLAT_ASSERT(inputContext.get() != nullptr);
-	inputContext->clearEvents();
+
+	// clear current context if we have one and it is not the global one
+	if (m_inputContexts.size() > 1)
+	{
+		context::InputContext* topInputContext = m_inputContexts.back().lock().get();
+		if (topInputContext != nullptr)
+		{
+			topInputContext->clearAllEvents();
+		}
+	}
+
+	inputContext->clearAllEvents();
 	m_inputContexts.push_back(inputContext);
 }
 

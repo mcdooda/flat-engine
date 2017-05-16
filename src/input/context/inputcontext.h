@@ -24,7 +24,8 @@ class InputContext
 		InputContext& operator=(const InputContext&) = default;
 
 		void addEvent(const SDL_Event& event);
-		void clearEvents();
+		void clearFrameEvents();
+		void clearAllEvents();
 
 		inline KeyboardInputContext& getKeyboardInputContext() { return m_keyboardInputContext; }
 		inline const KeyboardInputContext& getKeyboardInputContext() const { return m_keyboardInputContext; }
@@ -39,6 +40,7 @@ class InputContext
 		KeyboardInputContext m_keyboardInputContext;
 		MouseInputContext m_mouseInputContext;
 		WindowInputContext m_windowInputContext;
+		bool m_isEnabled;
 };
 
 } // context

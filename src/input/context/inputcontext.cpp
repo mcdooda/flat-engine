@@ -11,7 +11,8 @@ namespace context
 
 InputContext::InputContext(Flat& flat) :
 	m_mouseInputContext(flat.video->window),
-	m_windowInputContext(flat.video->window)
+	m_windowInputContext(flat.video->window),
+	m_isEnabled(false)
 {
 }
 
@@ -22,11 +23,18 @@ void InputContext::addEvent(const SDL_Event& event)
 	m_windowInputContext.addEvent(event);
 }
 
-void InputContext::clearEvents()
+void InputContext::clearFrameEvents()
 {
-	m_keyboardInputContext.clearEvents();
-	m_mouseInputContext.clearEvents();
-	m_windowInputContext.clearEvents();
+	m_keyboardInputContext.clearFrameEvents();
+	m_mouseInputContext.clearFrameEvents();
+	m_windowInputContext.clearFrameEvents();
+}
+
+void InputContext::clearAllEvents()
+{
+	m_keyboardInputContext.clearAllEvents();
+	m_mouseInputContext.clearAllEvents();
+	m_windowInputContext.clearAllEvents();
 }
 
 } // context

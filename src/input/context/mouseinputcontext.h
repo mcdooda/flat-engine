@@ -31,7 +31,8 @@ class MouseInputContext
 		MouseInputContext& operator=(const MouseInputContext&) = default;
 
 		void addEvent(const SDL_Event& event);
-		void clearEvents();
+		void clearFrameEvents();
+		void clearAllEvents();
 
 		bool isPressed(int button) const;
 		bool isJustPressed(int button) const;

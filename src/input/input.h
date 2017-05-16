@@ -31,7 +31,7 @@ class Input
 		Input& operator=(const Input&) = delete;
 		
 		void pollEvents();
-		void clearEvents();
+		void clearFrameEvents();
 
 		void pushContext(const std::shared_ptr<context::InputContext>& inputContext);
 		void popContext(const std::shared_ptr<context::InputContext>& inputContext);

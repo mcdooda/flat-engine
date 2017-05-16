@@ -25,7 +25,8 @@ class WindowInputContext
 		WindowInputContext& operator=(const WindowInputContext&) = default;
 
 		void addEvent(const SDL_Event& event);
-		void clearEvents();
+		void clearFrameEvents();
+		void clearAllEvents();
 
 		inline bool isClosed() const { return m_closed; }
 		inline bool isResized() const { return m_resized; }

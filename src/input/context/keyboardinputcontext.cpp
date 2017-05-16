@@ -15,8 +15,7 @@ KeyboardInputContext::KeyboardInputContext()
 	m_justPressedKeys.resize(m_numKeys);
 	m_justReleasedKeys.resize(m_numKeys);
 
-	m_pressedKeys.memset(0);
-	clearEvents();
+	clearAllEvents();
 }
 
 void KeyboardInputContext::addEvent(const SDL_Event& event)
@@ -41,10 +40,16 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 	}
 }
 
-void KeyboardInputContext::clearEvents()
+void KeyboardInputContext::clearFrameEvents()
 {
 	m_justPressedKeys.memset(0);
 	m_justReleasedKeys.memset(0);
+}
+
+void KeyboardInputContext::clearAllEvents()
+{
+	m_pressedKeys.memset(0);
+	clearFrameEvents();
 }
 
 bool KeyboardInputContext::isPressed(Key key) const

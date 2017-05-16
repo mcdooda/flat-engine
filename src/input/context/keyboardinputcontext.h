@@ -24,7 +24,8 @@ class KeyboardInputContext
 		KeyboardInputContext& operator=(const KeyboardInputContext&) = default;
 		
 		void addEvent(const SDL_Event& event);
-		void clearEvents();
+		void clearFrameEvents();
+		void clearAllEvents();
 
 		bool isPressed(Key key) const;
 		bool isJustPressed(Key key) const;

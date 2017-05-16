@@ -12,7 +12,7 @@ namespace context
 WindowInputContext::WindowInputContext(video::Window* videoWindow) :
 	m_videoWindow(videoWindow)
 {
-
+	clearAllEvents();
 }
 
 void WindowInputContext::addEvent(const SDL_Event& event)
@@ -35,10 +35,15 @@ void WindowInputContext::addEvent(const SDL_Event& event)
 	}
 }
 
-void WindowInputContext::clearEvents()
+void WindowInputContext::clearFrameEvents()
 {
 	m_closed = false;
 	m_resized = false;
+}
+
+void WindowInputContext::clearAllEvents()
+{
+	clearFrameEvents();
 }
 
 } // context

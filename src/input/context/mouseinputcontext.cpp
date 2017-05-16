@@ -15,7 +15,7 @@ MouseInputContext::MouseInputContext(video::Window* videoWindow) :
 	m_videoWindow(videoWindow)
 {
 	m_pressedButtons.fill(false);
-	clearEvents();
+	clearAllEvents();
 }
 
 void MouseInputContext::addEvent(const SDL_Event& event)
@@ -54,7 +54,7 @@ void MouseInputContext::addEvent(const SDL_Event& event)
 	}
 }
 
-void MouseInputContext::clearEvents()
+void MouseInputContext::clearFrameEvents()
 {
 	m_moved = false;
 	m_wheelMoved = false;
@@ -63,6 +63,12 @@ void MouseInputContext::clearEvents()
 	m_justPressedButtons.fill(false);
 	m_justReleasedButtons.fill(false);
 	m_justDoubleClickedButtons.fill(false);
+}
+
+void MouseInputContext::clearAllEvents()
+{
+	m_pressedButtons.fill(false);
+	clearFrameEvents();
 }
 
 bool MouseInputContext::isPressed(int button) const
