@@ -21,7 +21,7 @@ Input::Input(Flat& flat)
 
 void Input::pollEvents()
 {
-	cleanTopContexts();
+	cleanTopExpiredContexts();
 
 	FLAT_ASSERT(m_globalInputContext.get() != nullptr);
 	context::InputContext& globalInputContext = *m_globalInputContext.get();
@@ -61,17 +61,7 @@ void Input::clearFrameEvents()
 void Input::pushContext(const std::shared_ptr<context::InputContext>& inputContext)
 {
 	FLAT_ASSERT(inputContext.get() != nullptr);
-
-	// clear current context if we have one and it is not the global one
-	if (m_inputContexts.size() > 1)
-	{
-		context::InputContext* topInputContext = m_inputContexts.back().lock().get();
-		if (topInputContext != nullptr)
-		{
-			topInputContext->clearAllEvents();
-		}
-	}
-
+	clearTopContext();
 	inputContext->clearAllEvents();
 	m_inputContexts.push_back(inputContext);
 }
@@ -80,9 +70,10 @@ void Input::popContext(const std::shared_ptr<context::InputContext>& inputContex
 {
 	FLAT_ASSERT(inputContext == m_inputContexts.back().lock());
 	m_inputContexts.pop_back();
+	clearTopContext();
 }
 
-void Input::cleanTopContexts()
+void Input::cleanTopExpiredContexts()
 {
 	FLAT_ASSERT(!m_inputContexts.empty() && !m_inputContexts[0].expired());
 
@@ -95,6 +86,19 @@ void Input::cleanTopContexts()
 		}
 
 		m_inputContexts.erase(m_inputContexts.begin() + i + 1, m_inputContexts.end());
+	}
+}
+
+void Input::clearTopContext()
+{
+	// clear current context if we have one and it is not the global one
+	if (m_inputContexts.size() > 1)
+	{
+		context::InputContext* topInputContext = m_inputContexts.back().lock().get();
+		if (topInputContext != nullptr)
+		{
+			topInputContext->clearAllEvents();
+		}
 	}
 }
 

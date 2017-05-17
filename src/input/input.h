@@ -42,7 +42,8 @@ class Input
 		std::unique_ptr<Window> window;
 
 	private:
-		void cleanTopContexts();
+		void cleanTopExpiredContexts();
+		void clearTopContext();
 
 	private:
 		std::shared_ptr<context::InputContext> m_globalInputContext;
