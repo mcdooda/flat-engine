@@ -53,6 +53,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 	private:
 		Flat& m_flat;
 		std::weak_ptr<Widget> m_mouseOverWidget;
+		std::weak_ptr<Widget> m_focusWidget;
 		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;
 };

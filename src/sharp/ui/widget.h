@@ -52,7 +52,7 @@ class Widget : public util::Convertible<Widget>
 			FIXED    = FIXED_X | FIXED_Y
 		};
 		
-		typedef Vector2 Size;
+		using Size = Vector2;
 		
 		enum PositionPolicy : unsigned char
 		{
@@ -75,7 +75,7 @@ class Widget : public util::Convertible<Widget>
 			LINE_FLOW    = FLOW_X   | CENTER_Y
 		};
 		
-		typedef Vector2 Position;
+		using Position = Vector2;
 		
 		struct Margin
 		{
@@ -94,9 +94,9 @@ class Widget : public util::Convertible<Widget>
 			float left;
 		};
 		
-		typedef Margin Padding;
+		using Padding = Margin;
 
-		typedef Vector3 Rotation;
+		using Rotation = Vector3;
 
 		enum BackgroundRepeat : unsigned char
 		{
@@ -104,11 +104,14 @@ class Widget : public util::Convertible<Widget>
 			REPEAT
 		};
 
-		typedef Vector2 BackgroundPosition;
+		using BackgroundPosition = Vector2;
 		
 	public:
 		Widget();
+		Widget(const Widget&) = delete;
+		Widget(Widget&&) = delete;
 		virtual ~Widget();
+		Widget& operator=(const Widget&) = delete;
 
 		inline void setWeakPtr(const std::weak_ptr<Widget>& self) { m_self = self; }
 		inline const std::weak_ptr<Widget>& getWeakPtr() { return m_self; }
@@ -175,6 +178,8 @@ class Widget : public util::Convertible<Widget>
 		virtual void setDirty();
 		virtual void clearDirty();
 
+		virtual bool canBeFocused() const;
+
 	public:
 		Slot<Widget*, bool&> click;
 		Slot<Widget*, bool&> mouseMove;
@@ -214,6 +219,7 @@ class Widget : public util::Convertible<Widget>
 		PositionPolicy m_positionPolicy;
 
 		bool m_mouseOver : 1;
+		bool m_hasFocus : 1;
 		bool m_visible : 1;
 
 		Vector2 m_computedSize;
@@ -225,7 +231,7 @@ class Widget : public util::Convertible<Widget>
 };
 
 template <class LayoutType>
-class WidgetImpl : public Widget
+class WidgetImpl : public virtual Widget
 {
 	typedef Widget Super;
 public:

@@ -1,4 +1,5 @@
 #include "rootwidget.h"
+#include "focusablewidget.h"
 #include "../../video/window.h"
 #include "../../flat.h"
 
@@ -142,14 +143,46 @@ void RootWidget::updateInput(bool updateMouseOver)
 
 void RootWidget::handleClick()
 {
-	bool eventHandled = false;
-	std::weak_ptr<Widget> widget = m_mouseOverWidget;
-	while (!widget.expired() && !eventHandled)
 	{
-		Widget* w = widget.lock().get();
-		FLAT_ASSERT(w != nullptr);
-		w->click(w, eventHandled);
-		widget = w->getParent();
+		// propagate click until the event is handled
+		bool eventHandled = false;
+		Widget* widget = m_mouseOverWidget.lock().get();
+		while (widget != nullptr && !eventHandled)
+		{
+			widget->click(widget, eventHandled);
+			widget = widget->getParent().lock().get();
+		}
+	}
+
+	{
+		Widget* widget = m_mouseOverWidget.lock().get();
+		while (widget != nullptr && widget->canBeFocused())
+		{
+			widget = widget->getParent().lock().get();
+		}
+		
+		Widget* previousFocusWidget = m_focusWidget.lock().get();
+		Widget* newFocusWidget = widget != nullptr && widget->canBeFocused() ? widget : nullptr;
+
+		FLAT_ASSERT(previousFocusWidget == nullptr || previousFocusWidget->canBeFocused());
+		FLAT_ASSERT(newFocusWidget == nullptr || newFocusWidget->canBeFocused());
+
+		if (previousFocusWidget != newFocusWidget)
+		{
+			if (previousFocusWidget != nullptr)
+			{
+				FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(previousFocusWidget);
+				FLAT_ASSERT(focusableWidget != nullptr);
+				focusableWidget->leaveFocus(previousFocusWidget);
+			}
+
+			if (newFocusWidget != nullptr)
+			{
+				FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(newFocusWidget);
+				FLAT_ASSERT(focusableWidget != nullptr);
+				focusableWidget->enterFocus(newFocusWidget);
+			}
+		}
 	}
 }
 

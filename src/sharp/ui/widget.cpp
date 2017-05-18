@@ -27,6 +27,7 @@ Widget::Widget() :
 	m_sizePolicy(SizePolicy::FIXED),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_mouseOver(false),
+	m_hasFocus(false),
 	m_visible(true)
 {
 
@@ -152,10 +153,13 @@ void Widget::draw(const render::RenderSettings& renderSettings) const
 
 		renderSettings.colorUniform.set(m_backgroundColor);
 
+		video::Color color = video::Color::WHITE;
 		if (!m_mouseOver || !click.on())
-			renderSettings.secondaryColorUniform.set(video::Color::BLACK);
-		else
-			renderSettings.secondaryColorUniform.set(video::Color::WHITE);
+		{
+			color = video::Color::BLACK;
+		}
+
+		renderSettings.secondaryColorUniform.set(color);
 
 		// enable vertex attrib array
 		// position
@@ -284,6 +288,11 @@ void Widget::clearDirty()
 	}
 }
 
+bool Widget::canBeFocused() const
+{
+	return false;
+}
+
 RootWidget* Widget::getRootIfAncestor()
 {
 	std::weak_ptr<Widget> widget = getWeakPtr();
@@ -293,7 +302,7 @@ RootWidget* Widget::getRootIfAncestor()
 	}
 	FLAT_ASSERT(!widget.expired());
 	Widget* w = widget.lock().get();
-	return w->isRoot() ? w->asP<RootWidget>() : nullptr;
+	return w->isRoot() ? dynamic_cast<RootWidget*>(w) : nullptr;
 }
 
 Widget* Widget::getFixedLayoutAncestor()

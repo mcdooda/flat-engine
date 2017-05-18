@@ -12,7 +12,7 @@ namespace sharp
 namespace ui
 {
 
-class TextWidget : public WidgetImpl<FixedLayout>, public video::font::String
+class TextWidget : public virtual WidgetImpl<FixedLayout>, public video::font::String
 {
 	typedef WidgetImpl<FixedLayout> Widget;
 	public:
