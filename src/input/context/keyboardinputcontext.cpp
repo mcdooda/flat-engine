@@ -27,6 +27,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 		{
 			m_pressedKeys[event.key.keysym.scancode] = true;
 			m_justPressedKeys[event.key.keysym.scancode] = true;
+			keyJustPressed(event.key.keysym.scancode);
 		}
 		break;
 
@@ -35,6 +36,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 		{
 			m_pressedKeys[event.key.keysym.scancode] = false;
 			m_justReleasedKeys[event.key.keysym.scancode] = true;
+			keyJustReleased(event.key.keysym.scancode);
 		}
 		break;
 	}

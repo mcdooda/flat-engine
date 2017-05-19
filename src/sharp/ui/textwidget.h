@@ -16,7 +16,11 @@ class TextWidget : public virtual WidgetImpl<FixedLayout>, public video::font::S
 {
 	typedef WidgetImpl<FixedLayout> Widget;
 	public:
+		TextWidget() = delete;
+		TextWidget(const TextWidget&) = delete;
+		TextWidget(TextWidget&&) = delete;
 		TextWidget(const std::shared_ptr<const video::font::Font>& font);
+		~TextWidget() = default;
 		
 		void setText(const std::string& text);
 		inline void setTextColor(const video::Color& textColor) { m_textColor = textColor; }

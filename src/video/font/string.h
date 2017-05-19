@@ -23,8 +23,12 @@ class String
 	};
 	
 	public:
+		String() = delete;
+		String(const String&) = delete;
+		String(String&&) = delete;
 		String(const std::shared_ptr<const Font>& font);
-		~String();
+		~String() = default;
+		String& operator=(const String&) = delete;
 		
 		inline void setWrapLength(int wrapLength) { m_wrapLength = wrapLength; }
 		inline void setNoWrap() { setWrapLength(0); }

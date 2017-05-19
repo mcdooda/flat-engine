@@ -16,11 +16,6 @@ String::String(const std::shared_ptr<const Font>& font) :
 	
 }
 
-String::~String()
-{
-	
-}
-
 void String::setText(const std::string& text)
 {
 	size_t textLength = text.size();

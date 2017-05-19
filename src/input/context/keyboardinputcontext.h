@@ -6,6 +6,7 @@
 #include "../key.h"
 
 #include "../../containers/array.h"
+#include "../../misc/slot.h"
 
 namespace flat
 {
@@ -34,6 +35,10 @@ class KeyboardInputContext
 		void getPressedKeys(std::vector<Key>& pressedKeys) const;
 		void getJustPressedKeys(std::vector<Key>& justPressedKeys) const;
 		void getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const;
+
+	public:
+		Slot<Key> keyJustPressed;
+		Slot<Key> keyJustReleased;
 
 	private:
 		containers::Array<bool> m_pressedKeys;
