@@ -156,7 +156,7 @@ void RootWidget::handleClick()
 
 	{
 		Widget* widget = m_mouseOverWidget.lock().get();
-		while (widget != nullptr && widget->canBeFocused())
+		while (widget != nullptr && !widget->canBeFocused())
 		{
 			widget = widget->getParent().lock().get();
 		}
@@ -173,6 +173,7 @@ void RootWidget::handleClick()
 			{
 				FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(previousFocusWidget);
 				FLAT_ASSERT(focusableWidget != nullptr);
+				focusableWidget->m_hasFocus = false;
 				focusableWidget->leaveFocus(previousFocusWidget);
 			}
 
@@ -180,8 +181,16 @@ void RootWidget::handleClick()
 			{
 				FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(newFocusWidget);
 				FLAT_ASSERT(focusableWidget != nullptr);
+				focusableWidget->m_hasFocus = true;
 				focusableWidget->enterFocus(newFocusWidget);
+
+				m_focusWidget = newFocusWidget->getWeakPtr();
 			}
+			else
+			{
+				m_focusWidget.reset();
+			}
+
 		}
 	}
 }

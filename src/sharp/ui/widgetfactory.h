@@ -24,6 +24,7 @@ namespace ui
 class RootWidget;
 class Widget;
 class TextWidget;
+class TextInputWidget;
 
 class WidgetFactory
 {
@@ -36,6 +37,7 @@ class WidgetFactory
 		std::shared_ptr<Widget> makeLineFlow() const;
 		std::shared_ptr<Widget> makeColumnFlow() const;
 		std::shared_ptr<TextWidget> makeText(const std::string& text, const std::string& fileName, int fontSize) const;
+		std::shared_ptr<TextInputWidget> makeTextInput(const std::string& fileName, int fontSize) const;
 		
 	private:
 		Flat& m_flat;

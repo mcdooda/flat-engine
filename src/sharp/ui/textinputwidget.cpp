@@ -1,3 +1,5 @@
+#include <cctype>
+
 #include "textinputwidget.h"
 
 #include "../../flat.h"
@@ -44,11 +46,26 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 
 	if (key == K(BACKSPACE))
 	{
-		text = text.substr(0, text.size() - 1);
+		if (!text.empty())
+		{
+			text = text.substr(0, text.size() - 1);
+		}
 	}
 	else
 	{
-		text += key;
+		char c = SDL_GetKeyFromScancode(key);
+		const video::font::Font* font = getFont().get();
+		FLAT_ASSERT(font != nullptr);
+		if (font->isValidChar(c))
+		{
+			const input::context::KeyboardInputContext& keyboardInputContext = m_inputContext->getKeyboardInputContext();
+			bool shiftPressed = keyboardInputContext.isPressed(K(LSHIFT)) || keyboardInputContext.isPressed(K(RSHIFT));
+			if (std::islower(c) && shiftPressed)
+			{
+				c = std::toupper(c);
+			}
+			text += c;
+		}
 	}
 
 	setText(text);

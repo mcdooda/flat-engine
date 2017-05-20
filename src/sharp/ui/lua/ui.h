@@ -76,6 +76,7 @@ int l_Widget_makeFixedSize(lua_State* L);
 int l_Widget_makeLineFlow(lua_State* L);
 int l_Widget_makeColumnFlow(lua_State* L);
 int l_Widget_makeText(lua_State* L);
+int l_Widget_makeTextInput(lua_State* L);
 
 // private
 Widget& getWidget(lua_State* L, int index);

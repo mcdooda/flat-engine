@@ -22,7 +22,7 @@ class KeyboardInputContext
 		KeyboardInputContext(const KeyboardInputContext&) = delete;
 		KeyboardInputContext(KeyboardInputContext&&) = delete;
 		~KeyboardInputContext() = default;
-		KeyboardInputContext& operator=(const KeyboardInputContext&) = default;
+		KeyboardInputContext& operator=(const KeyboardInputContext& other);
 		
 		void addEvent(const SDL_Event& event);
 		void clearFrameEvents();

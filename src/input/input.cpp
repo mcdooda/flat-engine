@@ -23,23 +23,24 @@ void Input::pollEvents()
 {
 	cleanTopExpiredContexts();
 
-	FLAT_ASSERT(m_globalInputContext.get() != nullptr);
-	context::InputContext& globalInputContext = *m_globalInputContext.get();
+	FLAT_ASSERT(!m_inputContexts.back().expired());
+	context::InputContext& topInputContext = *m_inputContexts.back().lock().get();
 
-	globalInputContext.clearFrameEvents();
+	topInputContext.clearFrameEvents();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		globalInputContext.addEvent(event);
+		topInputContext.addEvent(event);
 	}
 
-	// copy the global context into the top context
-	FLAT_ASSERT(!m_inputContexts.back().expired());
-	context::InputContext& topInputContext = *m_inputContexts.back().lock().get();
+	// copy the top context into the global context
+	//!\ warning: does NOT trigger key press/release slots on the global context!
+	FLAT_ASSERT(m_globalInputContext.get() != nullptr);
+	context::InputContext& globalInputContext = *m_globalInputContext.get();
 	if (&topInputContext != &globalInputContext)
 	{
-		topInputContext = globalInputContext;
+		globalInputContext = topInputContext;
 	}
 }
 
@@ -71,6 +72,7 @@ void Input::popContext(const std::shared_ptr<context::InputContext>& inputContex
 	FLAT_ASSERT(inputContext == m_inputContexts.back().lock());
 	m_inputContexts.pop_back();
 	clearTopContext();
+	FLAT_ASSERT_MSG(!m_inputContexts.empty(), "Cannot pop the global input context!");
 }
 
 void Input::cleanTopExpiredContexts()

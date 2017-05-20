@@ -18,6 +18,16 @@ KeyboardInputContext::KeyboardInputContext()
 	clearAllEvents();
 }
 
+KeyboardInputContext& KeyboardInputContext::operator=(const KeyboardInputContext& other)
+{
+	// do not copy slots or callbacks could be called twice!
+	m_pressedKeys = other.m_pressedKeys;
+	m_justPressedKeys = other.m_justPressedKeys;
+	m_justReleasedKeys = other.m_justReleasedKeys;
+	FLAT_ASSERT(m_numKeys == other.m_numKeys);
+	return *this;
+}
+
 void KeyboardInputContext::addEvent(const SDL_Event& event)
 {
 	switch (event.type)

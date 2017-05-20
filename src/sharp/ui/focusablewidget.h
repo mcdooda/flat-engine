@@ -12,11 +12,12 @@ namespace ui
 
 class FocusableWidget : public virtual Widget
 {
+	friend class RootWidget;
 	public:
-		FocusableWidget() = default;
+		FocusableWidget();
 		FocusableWidget(const FocusableWidget&) = delete;
 		FocusableWidget(FocusableWidget&&) = delete;
-		~FocusableWidget() = default;
+		~FocusableWidget();
 		FocusableWidget& operator=(const FocusableWidget&) = delete;
 
 		bool canBeFocused() const override;
@@ -24,6 +25,9 @@ class FocusableWidget : public virtual Widget
 	public:
 		Slot<Widget*> enterFocus;
 		Slot<Widget*> leaveFocus;
+
+	private:
+		bool m_hasFocus;
 };
 
 } // ui

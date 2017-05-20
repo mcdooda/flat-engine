@@ -28,6 +28,7 @@ void String::setText(const std::string& text)
 	m_uv.reserve(textLength * 6);
 	
 	const Font* font = m_font.get();
+	FLAT_ASSERT(font != nullptr);
 	float characterHeight = font->getAtlasSize().y;
 	
 	float x = 0.f;

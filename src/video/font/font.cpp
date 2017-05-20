@@ -96,6 +96,11 @@ const Font::CharInfo& Font::getCharInfo(char c) const
 	return m_chars[c - ATLAS_FIRST_CHAR];
 }
 
+bool Font::isValidChar(char c) const
+{
+	return ATLAS_FIRST_CHAR <= c && c <= ATLAS_LAST_CHAR;
+}
+
 Font::CharInfo& Font::getCharInfo(char c)
 {
 	return m_chars[c - ATLAS_FIRST_CHAR];

@@ -1,6 +1,7 @@
 #include "widgetfactory.h"
 #include "rootwidget.h"
 #include "textwidget.h"
+#include "textinputwidget.h"
 #include "../../flat/game.h"
 
 #include "layouts/fixedlayout.h"
@@ -65,6 +66,14 @@ std::shared_ptr<TextWidget> WidgetFactory::makeText(const std::string& text, con
 	std::shared_ptr<TextWidget> widget = std::make_shared<TextWidget>(font);
 	widget->setWeakPtr(widget);
 	widget->setText(text);
+	return widget;
+}
+
+std::shared_ptr<TextInputWidget> WidgetFactory::makeTextInput(const std::string& fileName, int fontSize) const
+{
+	std::shared_ptr<const video::font::Font> font = m_flat.video->getFont(fileName, fontSize);
+	std::shared_ptr<TextInputWidget> widget = std::make_shared<TextInputWidget>(m_flat, font);
+	widget->setWeakPtr(widget);
 	return widget;
 }
 

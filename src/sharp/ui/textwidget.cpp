@@ -25,7 +25,7 @@ void TextWidget::setText(const std::string& text)
 
 void TextWidget::draw(const render::RenderSettings& renderSettings) const
 {
-	if (!m_visible)
+	if (!m_visible || getVertices().empty())
 		return;
 	
 	renderSettings.textureUniform.set(getFont()->getAtlasId());

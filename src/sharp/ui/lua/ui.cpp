@@ -6,6 +6,7 @@
 #include "../../../lua/table.h"
 #include "../widget.h"
 #include "../textwidget.h"
+#include "../textinputwidget.h"
 #include "../widgetfactory.h"
 
 namespace flat
@@ -84,6 +85,7 @@ int open(lua_State* L)
 		{"makeLineFlow",   l_Widget_makeLineFlow},
 		{"makeColumnFlow", l_Widget_makeColumnFlow},
 		{"makeText",       l_Widget_makeText},
+		{"makeTextInput",  l_Widget_makeTextInput},
 		
 		{nullptr, nullptr}
 	};
@@ -601,6 +603,16 @@ int l_Widget_makeText(lua_State* L)
 	int fontSize = static_cast<int>(luaL_checkinteger(L, 3));
 	WidgetFactory& widgetFactory = getWidgetFactory(L);
 	std::shared_ptr<Widget> widget = widgetFactory.makeText(text, fileName, fontSize);
+	pushWidget(L, widget);
+	return 1;
+}
+
+int l_Widget_makeTextInput(lua_State* L)
+{
+	const char* fileName = luaL_checkstring(L, 1);
+	int fontSize = static_cast<int>(luaL_checkinteger(L, 2));
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeTextInput(fileName, fontSize);
 	pushWidget(L, widget);
 	return 1;
 }

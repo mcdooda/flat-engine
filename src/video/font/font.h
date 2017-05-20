@@ -34,8 +34,12 @@ class Font
 		};
 		
 	public:
+		Font() = delete;
+		Font(const Font&) = delete;
+		Font(Font&&) = delete;
 		Font(const std::string& font, int size);
 		~Font();
+		Font& operator=(const Font&) = delete;
 		
 		GLint getAtlasId() const { return m_atlasId; }
 		const Vector2& getAtlasSize() const { return m_atlasSize; }
@@ -44,6 +48,7 @@ class Font
 		static void close();
 		
 		const CharInfo& getCharInfo(char c) const;
+		bool isValidChar(char c) const;
 		
 	protected:
 		CharInfo& getCharInfo(char c);
