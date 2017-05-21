@@ -6,6 +6,7 @@
 #include "../../../lua/table.h"
 #include "../widget.h"
 #include "../textwidget.h"
+#include "../focusablewidget.h"
 #include "../textinputwidget.h"
 #include "../widgetfactory.h"
 
@@ -70,6 +71,9 @@ int open(lua_State* L)
 		
 		{"setText",               l_TextWidget_setText},
 		{"setTextColor",          l_TextWidget_setTextColor},
+
+		{"focus",                 l_FocusableWidget_focus},
+		{"blur",                  l_FocusableWidget_blur},
 		
 		{nullptr, nullptr}
 	};
@@ -550,6 +554,46 @@ int l_TextWidget_setTextColor(lua_State * L)
 	return 0;
 }
 
+int l_FocusableWidget_focus(lua_State * L)
+{
+	FocusableWidget& focusableWidget = getFocusableWidget(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	focusableWidget.enterFocus.on(
+		[L, ref](Widget* w)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			ref.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w->getSharedPtr());
+			lua_call(L, 1, 0);
+			return true;
+		}
+	);
+	return 0;
+}
+
+int l_FocusableWidget_blur(lua_State * L)
+{
+	FocusableWidget& focusableWidget = getFocusableWidget(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	focusableWidget.leaveFocus.on(
+		[L, ref](Widget* w)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			ref.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w->getSharedPtr());
+			lua_call(L, 1, 0);
+			return true;
+		}
+	);
+	return 0;
+}
+
 // static Widget functions
 
 int l_Widget_getRoot(lua_State* L)
@@ -635,6 +679,19 @@ TextWidget& getTextWidget(lua_State* L, int index)
 		luaL_error(L, "TextWidget required, Widget given");
 	}
 	return *textWidget;
+}
+
+FocusableWidget& getFocusableWidget(lua_State* L, int index)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	Widget& widget = getWidget(L, index);
+	if (!widget.canBeFocused())
+	{
+		luaL_error(L, "FocusableWidget required, Widget given");
+	}
+	FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(&widget);
+	FLAT_ASSERT(focusableWidget != nullptr);
+	return *focusableWidget;
 }
 
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)

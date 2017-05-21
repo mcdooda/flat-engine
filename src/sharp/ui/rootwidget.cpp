@@ -17,6 +17,17 @@ RootWidget::RootWidget(Flat& flat) : Super(),
 	setSizePolicy(Widget::SizePolicy::FIXED);
 }
 
+RootWidget::~RootWidget()
+{
+	// avoid calling leave focus as all the widgets are being destroyed
+	if (!m_focusWidget.expired())
+	{
+		FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(m_focusWidget.lock().get());
+		FLAT_ASSERT(focusableWidget != nullptr);
+		focusableWidget->m_hasFocus = false;
+	}
+}
+
 void RootWidget::draw(const flat::render::RenderSettings& renderSettings) const
 {
 	drawChildren(renderSettings);

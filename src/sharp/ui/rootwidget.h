@@ -24,7 +24,12 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 	typedef WidgetImpl<RootLayout> Super;
 	public:
+		RootWidget() = delete;
+		RootWidget(const RootWidget&) = delete;
+		RootWidget(RootWidget&&) = delete;
 		RootWidget(Flat& flat);
+		~RootWidget();
+		RootWidget& operator=(const RootWidget&) = delete;
 
 		void draw(const flat::render::RenderSettings& renderSettings) const override; // final
 

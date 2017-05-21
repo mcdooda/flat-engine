@@ -14,6 +14,7 @@ namespace ui
 {
 class RootWidget;
 class TextWidget;
+class FocusableWidget;
 class WidgetFactory;
 namespace lua
 {
@@ -68,6 +69,10 @@ int l_Widget_mouseLeave(lua_State* L);
 int l_TextWidget_setText(lua_State* L);
 int l_TextWidget_setTextColor(lua_State* L);
 
+// FocusableWidget only!
+int l_FocusableWidget_focus(lua_State* L);
+int l_FocusableWidget_blur(lua_State* L);
+
 // static Widget functions
 int l_Widget_getRoot(lua_State* L);
 
@@ -81,6 +86,7 @@ int l_Widget_makeTextInput(lua_State* L);
 // private
 Widget& getWidget(lua_State* L, int index);
 TextWidget& getTextWidget(lua_State* L, int index);
+FocusableWidget& getFocusableWidget(lua_State* L, int index);
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);
 
