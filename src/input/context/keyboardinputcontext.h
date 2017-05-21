@@ -36,6 +36,8 @@ class KeyboardInputContext
 		void getJustPressedKeys(std::vector<Key>& justPressedKeys) const;
 		void getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const;
 
+		inline void setEnableKeyRepeat(bool enableKeyRepeat) { m_enableKeyRepeat = enableKeyRepeat; }
+
 	public:
 		Slot<Key> keyJustPressed;
 		Slot<Key> keyJustReleased;
@@ -45,6 +47,8 @@ class KeyboardInputContext
 		containers::Array<bool> m_justPressedKeys;
 		containers::Array<bool> m_justReleasedKeys;
 		int m_numKeys;
+
+		bool m_enableKeyRepeat;
 };
 
 } // context

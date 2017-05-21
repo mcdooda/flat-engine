@@ -27,6 +27,7 @@ TextInputWidget::~TextInputWidget()
 bool TextInputWidget::enteredFocus(Widget* widget)
 {
 	m_inputContext = std::make_unique<input::context::InputContext>(m_flat);
+	m_inputContext->getKeyboardInputContext().setEnableKeyRepeat(true);
 	m_flat.input->pushContext(m_inputContext);
 	m_inputContext->getKeyboardInputContext().keyJustPressed.on(this, &TextInputWidget::keyJustPressed);
 	return true;

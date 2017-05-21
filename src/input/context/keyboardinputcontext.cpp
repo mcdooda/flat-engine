@@ -8,7 +8,8 @@ namespace input
 namespace context
 {
 
-KeyboardInputContext::KeyboardInputContext()
+KeyboardInputContext::KeyboardInputContext() :
+	m_enableKeyRepeat(false)
 {
 	SDL_GetKeyboardState(&m_numKeys);
 	m_pressedKeys.resize(m_numKeys);
@@ -21,6 +22,7 @@ KeyboardInputContext::KeyboardInputContext()
 KeyboardInputContext& KeyboardInputContext::operator=(const KeyboardInputContext& other)
 {
 	// do not copy slots or callbacks could be called twice!
+	// do not copy m_enableKeyRepeat either
 	m_pressedKeys = other.m_pressedKeys;
 	m_justPressedKeys = other.m_justPressedKeys;
 	m_justReleasedKeys = other.m_justReleasedKeys;
@@ -33,7 +35,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 	switch (event.type)
 	{
 	case SDL_KEYDOWN:
-		if (!event.key.repeat && m_justPressedKeys.isInRange(event.key.keysym.scancode))
+		if ((!event.key.repeat || m_enableKeyRepeat) && m_justPressedKeys.isInRange(event.key.keysym.scancode))
 		{
 			m_pressedKeys[event.key.keysym.scancode] = true;
 			m_justPressedKeys[event.key.keysym.scancode] = true;
