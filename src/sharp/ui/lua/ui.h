@@ -87,8 +87,14 @@ int l_Widget_makeTextInput(lua_State* L);
 Widget& getWidget(lua_State* L, int index);
 TextWidget& getTextWidget(lua_State* L, int index);
 FocusableWidget& getFocusableWidget(lua_State* L, int index);
+template <class T>
+T& getWidgetOfType(lua_State* L, int index);
+template <class T>
+int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot);
+
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);
+
 
 } // lua
 } // ui

@@ -499,42 +499,12 @@ int l_Widget_mouseMove(lua_State* L)
 
 int l_Widget_mouseEnter(lua_State* L)
 {
-	Widget& widget = getWidget(L, 1);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	widget.mouseEnter.on(
-		[L, ref](Widget* w)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_call(L, 1, 0);
-			return true;
-		}
-	);
-	return 0;
+	return addWidgetCallback<Widget>(L, &Widget::mouseEnter);
 }
 
 int l_Widget_mouseLeave(lua_State* L)
 {
-	Widget& widget = getWidget(L, 1);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	widget.mouseLeave.on(
-		[L, ref](Widget* w)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_call(L, 1, 0);
-			return true;
-		}
-	);
-	return 0;
+	return addWidgetCallback<Widget>(L, &Widget::mouseLeave);
 }
 
 int l_TextWidget_setText(lua_State* L)
@@ -554,44 +524,14 @@ int l_TextWidget_setTextColor(lua_State * L)
 	return 0;
 }
 
-int l_FocusableWidget_focus(lua_State * L)
+int l_FocusableWidget_focus(lua_State* L)
 {
-	FocusableWidget& focusableWidget = getFocusableWidget(L, 1);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	focusableWidget.enterFocus.on(
-		[L, ref](Widget* w)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_call(L, 1, 0);
-			return true;
-		}
-	);
-	return 0;
+	return addWidgetCallback<FocusableWidget>(L, &FocusableWidget::enterFocus);
 }
 
-int l_FocusableWidget_blur(lua_State * L)
+int l_FocusableWidget_blur(lua_State* L)
 {
-	FocusableWidget& focusableWidget = getFocusableWidget(L, 1);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	focusableWidget.leaveFocus.on(
-		[L, ref](Widget* w)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_call(L, 1, 0);
-			return true;
-		}
-	);
-	return 0;
+	return addWidgetCallback<FocusableWidget>(L, &FocusableWidget::leaveFocus);
 }
 
 // static Widget functions
@@ -692,6 +632,45 @@ FocusableWidget& getFocusableWidget(lua_State* L, int index)
 	FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(&widget);
 	FLAT_ASSERT(focusableWidget != nullptr);
 	return *focusableWidget;
+}
+
+template <>
+Widget& getWidgetOfType(lua_State* L, int index)
+{
+	return getWidget(L, index);
+}
+
+template <>
+TextWidget& getWidgetOfType(lua_State* L, int index)
+{
+	return getTextWidget(L, index);
+}
+
+template <>
+FocusableWidget& getWidgetOfType(lua_State* L, int index)
+{
+	return getFocusableWidget(L, index);
+}
+
+template <class T>
+int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot)
+{
+	T& widget = getWidgetOfType<T>(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
+	(widget.*slot).on(
+		[L, callback](Widget* w)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			callback.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w->getSharedPtr());
+			lua_call(L, 1, 0);
+			return true;
+		}
+	);
+	return 0;
 }
 
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)
