@@ -36,27 +36,35 @@ void String::setText(const std::string& text)
 	for (size_t i = 0; i < textLength; ++i)
 	{
 		char c = text[i];
-		const Font::CharInfo& ci = font->getCharInfo(c);
 		
-		if (ci.visible)
+		if (c == '\n')
 		{
-			float fx0 = x;
-			float fx1 = x + ci.advance;
-			float fy0 = y + characterHeight;
-			float fy1 = y;
-		
-			m_vertices.emplace_back(fx0, fy0);
-			m_vertices.emplace_back(fx1, fy0);
-			m_vertices.emplace_back(fx0, fy1);
-		
-			m_vertices.emplace_back(fx1, fy1);
-			m_vertices.emplace_back(fx0, fy1);
-			m_vertices.emplace_back(fx1, fy0);
-			
-			std::copy(ci.uv.begin(), ci.uv.end(), std::back_inserter(m_uv));
+			x = 0.f;
+			y += characterHeight;
 		}
+		else
+		{
+			const Font::CharInfo& ci = font->getCharInfo(c);
+			if (ci.visible)
+			{
+				float fx0 = x;
+				float fx1 = x + ci.advance;
+				float fy0 = y + characterHeight;
+				float fy1 = y;
 		
-		x += ci.advance;
+				m_vertices.emplace_back(fx0, fy0);
+				m_vertices.emplace_back(fx1, fy0);
+				m_vertices.emplace_back(fx0, fy1);
+		
+				m_vertices.emplace_back(fx1, fy1);
+				m_vertices.emplace_back(fx0, fy1);
+				m_vertices.emplace_back(fx1, fy0);
+			
+				std::copy(ci.uv.begin(), ci.uv.end(), std::back_inserter(m_uv));
+
+				x += ci.advance;
+			}
+		}
 	}
 	m_size.x = x;
 	m_size.y = y + characterHeight;
