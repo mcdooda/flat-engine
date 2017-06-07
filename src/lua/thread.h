@@ -25,6 +25,8 @@ class Thread
 		inline bool isFinished() const { return m_status == LUA_OK; }
 		inline bool isEmpty() const { return m_thread.isEmpty(); }
 
+		FLAT_DEBUG_ONLY(const flat::lua::UniqueLuaReference<LUA_TTHREAD>& getThread() const { return m_thread; })
+
 	protected:
 		flat::lua::SharedLuaReference<LUA_TFUNCTION> m_function;
 		flat::lua::UniqueLuaReference<LUA_TTHREAD> m_thread;
