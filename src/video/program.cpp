@@ -43,9 +43,11 @@ void Program::load(const std::string& fragmentShader, const std::string& vertexS
 	
 	loadAttributes();
 	loadUniforms();
+
+	assertValid();
 }
 
-void Program::use(Window* window)
+void Program::use(Window* window) const
 {
 	FLAT_ASSERT(window != nullptr);
 	assertValid();
@@ -55,17 +57,17 @@ void Program::use(Window* window)
 	glViewport(0, 0, static_cast<GLsizei>(windowSize.x), static_cast<GLsizei>(windowSize.y));
 	
 	int i = 0;
-	for (std::vector<Texture>::iterator it = m_inputTextures.begin(); it != m_inputTextures.end(); it++)
+	for (const Texture& texture : m_inputTextures)
 	{
-		Uniform<Texture> textureUniform = getUniform<Texture>(it->getName());
-		textureUniform.set(&*it, i);
+		Uniform<Texture> textureUniform = getUniform<Texture>(texture.getName());
+		textureUniform.set(&texture, i);
 		i++;
 	}
 }
 
-Attribute Program::getAttribute(const std::string& attributeName)
+Attribute Program::getAttribute(const std::string& attributeName) const
 {
-	std::map<std::string, Attribute>::iterator it = m_attributes.find(attributeName);
+	std::map<std::string, Attribute>::const_iterator it = m_attributes.find(attributeName);
 	
 	if (it != m_attributes.end())
 		return it->second;
@@ -82,7 +84,7 @@ void Program::addInputTexture(const Texture& inputTexture)
 	m_inputTextures.push_back(inputTexture);
 }
 
-void Program::assertValid()
+void Program::assertValid() const
 {
 	FLAT_ASSERT_MSG(m_valid, "Fatal error: using invalid shader program");
 }

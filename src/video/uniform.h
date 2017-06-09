@@ -19,6 +19,8 @@ public:
 
 	inline bool isValid() const { return m_uniformLocation != 0; }
 
+	inline std::uint32_t getHash() const { return static_cast<std::uint32_t>(m_uniformLocation); }
+
 protected:
 	GLint m_uniformLocation;
 };

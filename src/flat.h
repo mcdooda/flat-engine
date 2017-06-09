@@ -51,6 +51,7 @@
 #include "render/animatedsprite.h"
 #include "render/heightmap.h"
 #include "render/spritebatch.h"
+#include "render/programsettings.h"
 
 // containers
 #include "containers/pool.h"

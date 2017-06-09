@@ -19,20 +19,23 @@ class Program
 {
 	public:
 		Program();
+		Program(const Program&) = delete;
+		Program(Program&&) = delete;
 		virtual ~Program();
+		void operator=(const Program&) = delete;
 		
 		void load(const std::string& fragmentShader, const std::string& vertexShader);
 		
 		inline bool isValid() const { return m_valid; }
 		
-		void use(Window* window);
+		void use(Window* window) const;
 		
-		Attribute getAttribute(const std::string& attributeName);
+		Attribute getAttribute(const std::string& attributeName) const;
 
 		template <class T>
-		Uniform<T> getUniform(const std::string& uniformName)
+		Uniform<T> getUniform(const std::string& uniformName) const
 		{
-			std::map<std::string, GLint>::iterator it = m_uniforms.find(uniformName);
+			std::map<std::string, GLint>::const_iterator it = m_uniforms.find(uniformName);
 
 			if (it != m_uniforms.end())
 			{
@@ -46,9 +49,11 @@ class Program
 		}
 		
 		void addInputTexture(const Texture& inputTexture);
+
+		inline std::uint32_t getHash() const { return static_cast<std::uint32_t>(m_programId); }
 		
 	protected:
-		void assertValid();
+		void assertValid() const;
 		
 		GLuint compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId);
 		GLuint compileShader(const std::string& shader, GLuint shaderType);
