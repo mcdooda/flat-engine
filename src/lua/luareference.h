@@ -37,7 +37,7 @@ class LuaReference
 			lua_pushvalue(L, index);
 			m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
 			
-			m_luaState = L;
+			m_luaState = getMainThread(L);
 		}
 
 		inline void setIfNotNil(lua_State* L, int index)

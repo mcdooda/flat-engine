@@ -22,11 +22,16 @@ public:
 		
 	}
 
+	DynamicPool(const DynamicPool&) = delete;
+	DynamicPool(DynamicPool&&) = delete;
+
 	~DynamicPool()
 	{
 		FLAT_ASSERT(m_numAllocatedObjects == 0);
 		free(m_buffer);
 	}
+
+	void operator=(const DynamicPool&) = delete;
 
 	template <class T, unsigned int Size>
 	void init()
