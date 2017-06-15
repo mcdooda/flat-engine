@@ -2,17 +2,17 @@
 #define FLAT_SHARP_UI_LUA_H
 
 #include <memory>
-#include "../widget.h"
-#include "../../../lua/sharedcppreference.h"
+#include "../../../misc/slot.h"
+
+struct lua_State;
 
 namespace flat
 {
-class Game;
 namespace sharp
 {
 namespace ui
 {
-class RootWidget;
+class Widget;
 class TextWidget;
 class FocusableWidget;
 class WidgetFactory;
