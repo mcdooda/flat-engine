@@ -10,7 +10,7 @@ namespace containers
 {
 
 template <class T>
-union alignas(alignof(T)) PoolEntry
+union alignas(std::max(alignof(T), alignof(PoolEntry<T>*))) PoolEntry
 {
 	static_assert(sizeof(T) != 0, "T undeclared?");
 	uint8_t objectData[sizeof(T)];
