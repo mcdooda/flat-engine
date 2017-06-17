@@ -606,7 +606,7 @@ int l_Widget_makeTextInput(lua_State* L)
 Widget& getWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	return *flat::lua::SharedCppReference<Widget>::getSharedPointer(L, index).get();
+	return flat::lua::SharedCppReference<Widget>::get(L, index);
 }
 
 TextWidget& getTextWidget(lua_State* L, int index)

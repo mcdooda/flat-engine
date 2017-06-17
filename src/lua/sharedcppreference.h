@@ -12,67 +12,76 @@ namespace lua
 {
 
 template <class T>
-class SharedCppReference
+class SharedCppValue
 {
 	public:
-		typedef std::shared_ptr<T> PointerType;
-		static std::string mtName;
+		using ValueType = T;
+		static std::string metatableName;
 
 		static T& get(lua_State* L, int index)
 		{
-			return *getSharedPointer(L, index).get();
-		}
-
-		static const PointerType& getSharedPointer(lua_State* L, int index)
-		{
-			FLAT_ASSERT_MSG(!mtName.empty(), "Type not registered in ClassRegistry");
-			void* userData = luaL_checkudata(L, index, mtName.c_str());
+			FLAT_ASSERT_MSG(!metatableName.empty(), "Type not registered in ClassRegistry");
+			void* userData = luaL_checkudata(L, index, metatableName.c_str());
 			FLAT_ASSERT(userData != nullptr);
-			return *static_cast<PointerType*>(userData);
+			return *static_cast<ValueType*>(userData);
 		}
 
 		template <typename... ConstructorArgs>
-		static PointerType& pushNew(lua_State* L, ConstructorArgs... constructorArgs)
+		static ValueType& pushNew(lua_State* L, ConstructorArgs... constructorArgs)
 		{
-			FLAT_ASSERT_MSG(!mtName.empty(), "Type not registered in ClassRegistry");
+			FLAT_ASSERT_MSG(!metatableName.empty(), "Type not registered in ClassRegistry");
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
-			PointerType* userData = static_cast<PointerType*>(lua_newuserdata(L, sizeof(PointerType)));
-			new (userData) PointerType(constructorArgs...);
-			luaL_getmetatable(L, mtName.c_str());
+			ValueType* userData = static_cast<ValueType*>(lua_newuserdata(L, sizeof(ValueType)));
+			new (userData) ValueType(constructorArgs...);
+			luaL_getmetatable(L, metatableName.c_str());
 			lua_setmetatable(L, -2);
 			return *userData;
 		}
 
 		static int l_destroyObject(lua_State* L)
 		{
-			PointerType* sharedPointer = static_cast<PointerType*>(luaL_checkudata(L, 1, mtName.c_str()));
-			sharedPointer->~PointerType();
+			ValueType* value = &get(L, 1);
+			value->~ValueType();
+			FLAT_DEBUG_ONLY(memset(value, FLAT_WIPE_VALUE, sizeof(ValueType)));
 			return 0;
 		}
 };
 
 template <class T>
-std::string SharedCppReference<T>::mtName;
+std::string SharedCppValue<T>::metatableName;
+
+template <class T>
+class SharedCppReference : public SharedCppValue<std::shared_ptr<T>>
+{
+	using Super = SharedCppValue<std::shared_ptr<T>>;
+	public:
+		static T& get(lua_State* L, int index)
+		{
+			ValueType& sharedPointer = Super::get(L, index);
+			FLAT_ASSERT(sharedPointer != nullptr);
+			return *sharedPointer.get();
+		}
+};
 
 class ClassRegistry
 {
 	public:
-		template <class T>
-		static void registerClass(const char* mtName, lua_State* L, const luaL_Reg* methods = nullptr)
+		template <class T, template <class> class U = SharedCppReference>
+		static void registerClass(const char* metatableName, lua_State* L, const luaL_Reg* methods = nullptr)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
-			SharedCppReference<T>::mtName = mtName;
+			U<T>::metatableName = metatableName;
 
 			// create object metatable
-			luaL_newmetatable(L, SharedCppReference<T>::mtName.c_str());
+			luaL_newmetatable(L, metatableName);
 
 			// mt.__index = mt
 			lua_pushvalue(L, -1);
 			lua_setfield(L, -2, "__index");
 
 			// __gc
-			lua_pushcfunction(L, &SharedCppReference<T>::l_destroyObject);
+			lua_pushcfunction(L, &U<T>::l_destroyObject);
 			lua_setfield(L, -2, "__gc");
 
 			// others methods
