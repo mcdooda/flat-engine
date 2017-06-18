@@ -45,6 +45,32 @@ class SharedCppValue
 			FLAT_DEBUG_ONLY(memset(value, FLAT_WIPE_VALUE, sizeof(ValueType)));
 			return 0;
 		}
+
+		static void registerClass(const char* metatableName, lua_State* L, const luaL_Reg* methods = nullptr)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+
+			SharedCppValue<T>::metatableName = metatableName;
+
+			// create object metatable
+			luaL_newmetatable(L, metatableName);
+
+			// mt.__index = mt
+			lua_pushvalue(L, -1);
+			lua_setfield(L, -2, "__index");
+
+			// __gc
+			lua_pushcfunction(L, &SharedCppValue<T>::l_destroyObject);
+			lua_setfield(L, -2, "__gc");
+
+			// others methods
+			if (methods != nullptr)
+			{
+				luaL_setfuncs(L, methods, 0);
+			}
+
+			lua_pop(L, 1);
+		}
 };
 
 template <class T>
@@ -60,37 +86,6 @@ class SharedCppReference : public SharedCppValue<std::shared_ptr<T>>
 			ValueType& sharedPointer = Super::get(L, index);
 			FLAT_ASSERT(sharedPointer != nullptr);
 			return *sharedPointer.get();
-		}
-};
-
-class ClassRegistry
-{
-	public:
-		template <class T, template <class> class U = SharedCppReference>
-		static void registerClass(const char* metatableName, lua_State* L, const luaL_Reg* methods = nullptr)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-
-			U<T>::metatableName = metatableName;
-
-			// create object metatable
-			luaL_newmetatable(L, metatableName);
-
-			// mt.__index = mt
-			lua_pushvalue(L, -1);
-			lua_setfield(L, -2, "__index");
-
-			// __gc
-			lua_pushcfunction(L, &U<T>::l_destroyObject);
-			lua_setfield(L, -2, "__gc");
-
-			// others methods
-			if (methods != nullptr)
-			{
-				luaL_setfuncs(L, methods, 0);
-			}
-
-			lua_pop(L, 1);
 		}
 };
 

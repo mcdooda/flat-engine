@@ -19,6 +19,9 @@ namespace ui
 namespace lua
 {
 
+using LuaWidget = flat::lua::SharedCppReference<Widget>;
+using LuaWidgetFactory = flat::lua::SharedCppReference<WidgetFactory>;
+
 static char widgetFactoryRegistryIndex = 'W';
 
 int open(lua_State* L)
@@ -78,7 +81,7 @@ int open(lua_State* L)
 		{nullptr, nullptr}
 	};
 	
-	flat::lua::ClassRegistry::registerClass<Widget>("Flat.Widget", L, Widget_lib_m);
+	LuaWidget::registerClass("Flat.Widget", L, Widget_lib_m);
 	
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
@@ -153,9 +156,9 @@ int open(lua_State* L)
 	lua_setglobal(L, "Widget");
 	
 
-	flat::lua::ClassRegistry::registerClass<WidgetFactory>("Flat.WidgetFactory", L);
+	LuaWidgetFactory::registerClass("Flat.WidgetFactory", L);
 	Game& game = flat::lua::getGame(L);
-	flat::lua::SharedCppReference<WidgetFactory>::pushNew(L, new WidgetFactory(game));
+	LuaWidgetFactory::pushNew(L, new WidgetFactory(game));
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	
 	return 0;
@@ -606,7 +609,7 @@ int l_Widget_makeTextInput(lua_State* L)
 Widget& getWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	return flat::lua::SharedCppReference<Widget>::get(L, index);
+	return LuaWidget::get(L, index);
 }
 
 TextWidget& getTextWidget(lua_State* L, int index)
@@ -678,7 +681,7 @@ void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
 	if (widget)
 	{
-		flat::lua::SharedCppReference<Widget>::pushNew(L, widget);
+		LuaWidget::pushNew(L, widget);
 	}
 	else
 	{
