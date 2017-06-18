@@ -3,8 +3,6 @@
 
 namespace flat
 {
-namespace misc
-{
 namespace lua
 {
 
@@ -112,8 +110,5 @@ void pushVector2(lua_State* L, const Vector2& vector2)
 	LuaVector2::pushNew(L, vector2);
 }
 
-
-
 } // lua
-} // misc
 } // game

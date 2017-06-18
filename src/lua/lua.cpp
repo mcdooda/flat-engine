@@ -45,8 +45,8 @@ Lua::Lua(Flat& flat)
 		// Flat. libraries
 		lua_newtable(L);
 		lua_setglobal(L, "Flat");
-		misc::lua::openVector2(L);
-		misc::lua::openVector3(L);
+		lua::openVector2(L);
+		lua::openVector3(L);
 	}
 }
 

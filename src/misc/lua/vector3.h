@@ -7,8 +7,6 @@ struct lua_State;
 
 namespace flat
 {
-namespace misc
-{
 namespace lua
 {
 
@@ -30,7 +28,6 @@ Vector3& getVector3(lua_State* L, int index);
 void pushVector3(lua_State* L, const Vector3& vector3);
 
 } // lua
-} // misc
 } // game
 
 #endif // FLAT_MISC_LUA_VECTOR3_H
