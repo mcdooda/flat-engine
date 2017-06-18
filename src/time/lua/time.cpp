@@ -13,6 +13,8 @@ namespace lua
 
 int open(lua_State* L)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+
 	static const luaL_Reg Time_lib_s[] = {
 		{"getFrameRate", l_Time_getFrameRate},
 		{"getTime",      l_Time_getTime},

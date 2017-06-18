@@ -5,6 +5,7 @@
 #include <string>
 #include <lua5.3/lua.hpp>
 #include "debug.h"
+#include "../memory/memory.h"
 
 namespace flat
 {

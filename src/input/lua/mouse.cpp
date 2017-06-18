@@ -13,6 +13,8 @@ namespace mouse
 
 int open(lua_State* L)
 {
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+
 	static const luaL_Reg Mouse_lib_s[] = {
 		{"getPosition", l_Mouse_getPosition},
 		

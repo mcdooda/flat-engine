@@ -8,6 +8,7 @@
 #include "../input/lua/mouse.h"
 #include "../video/lua/image.h"
 #include "../sharp/ui/lua/ui.h"
+#include "../misc/lua/vector2.h"
 
 namespace flat
 {
@@ -39,6 +40,11 @@ Lua::Lua(Flat& flat)
 		input::lua::mouse::open(L);
 		video::lua::image::open(L);
 		sharp::ui::lua::open(L);
+
+		// Flat. libraries
+		lua_newtable(L);
+		lua_setglobal(L, "Flat");
+		misc::lua::openVector2(L);
 	}
 }
 
