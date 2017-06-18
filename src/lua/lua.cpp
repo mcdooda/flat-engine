@@ -9,6 +9,7 @@
 #include "../video/lua/image.h"
 #include "../sharp/ui/lua/ui.h"
 #include "../misc/lua/vector2.h"
+#include "../misc/lua/vector3.h"
 
 namespace flat
 {
@@ -45,6 +46,7 @@ Lua::Lua(Flat& flat)
 		lua_newtable(L);
 		lua_setglobal(L, "Flat");
 		misc::lua::openVector2(L);
+		misc::lua::openVector3(L);
 	}
 }
 
