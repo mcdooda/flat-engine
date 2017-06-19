@@ -20,8 +20,16 @@ int l_Vector2_y(lua_State* L);
 int l_Vector2_length(lua_State* L);
 int l_Vector2_length2(lua_State* L);
 
+int l_Vector2_getNormalized(lua_State* L);
+
+int l_Vector2_toVector3(lua_State* L);
+
 int l_Vector2_add(lua_State* L);
 int l_Vector2_sub(lua_State* L);
+
+int l_Vector2_mul(lua_State* L);
+
+int l_Vector2_tostring(lua_State* L);
 
 Vector2& getVector2(lua_State* L, int index);
 void pushVector2(lua_State* L, const Vector2& vector2);

@@ -1,4 +1,5 @@
 #include "vector3.h"
+#include "vector2.h"
 #include "../../lua/sharedcppreference.h"
 
 namespace flat
@@ -13,15 +14,23 @@ int openVector3(lua_State* L)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg Vector3_lib_m[] = {
-		{"x",       l_Vector3_x},
-		{"y",       l_Vector3_y},
-		{"z",       l_Vector3_z},
+		{"x",             l_Vector3_x},
+		{"y",             l_Vector3_y},
+		{"z",             l_Vector3_z},
 
-		{"length",  l_Vector3_length},
-		{"length2", l_Vector3_length2},
+		{"length",        l_Vector3_length},
+		{"length2",       l_Vector3_length2},
 
-		{"__add",   l_Vector3_add},
-		{"__sub",   l_Vector3_sub},
+		{"getNormalized", l_Vector3_getNormalized},
+
+		{"toVector2",     l_Vector3_toVector2},
+
+		{"__add",         l_Vector3_add},
+		{"__sub",         l_Vector3_sub},
+
+		{"__mul",        l_Vector3_mul},
+
+		{"__tostring",   l_Vector3_tostring},
 
 		{nullptr, nullptr}
 	};
@@ -105,6 +114,20 @@ int l_Vector3_length2(lua_State* L)
 	return 1;
 }
 
+int l_Vector3_getNormalized(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	pushVector3(L, normalize(vector3));
+	return 1;
+}
+
+int l_Vector3_toVector2(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	pushVector2(L, Vector2(vector3));
+	return 1;
+}
+
 int l_Vector3_add(lua_State* L)
 {
 	pushVector3(L, getVector3(L, 1) + getVector3(L, 2));
@@ -114,6 +137,21 @@ int l_Vector3_add(lua_State* L)
 int l_Vector3_sub(lua_State* L)
 {
 	pushVector3(L, getVector3(L, 1) - getVector3(L, 2));
+	return 1;
+}
+
+int l_Vector3_mul(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	float multiplier = static_cast<float>(luaL_checknumber(L, 2));
+	pushVector3(L, vector3 * multiplier);
+	return 1;
+}
+
+int l_Vector3_tostring(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	lua_pushfstring(L, "Flat.Vector3(%f,%f,%f)", vector3.x, vector3.y, vector3.z);
 	return 1;
 }
 

@@ -21,8 +21,16 @@ int l_Vector3_z(lua_State* L);
 int l_Vector3_length(lua_State* L);
 int l_Vector3_length2(lua_State* L);
 
+int l_Vector3_getNormalized(lua_State* L);
+
+int l_Vector3_toVector2(lua_State* L);
+
 int l_Vector3_add(lua_State* L);
 int l_Vector3_sub(lua_State* L);
+
+int l_Vector3_mul(lua_State* L);
+
+int l_Vector3_tostring(lua_State* L);
 
 Vector3& getVector3(lua_State* L, int index);
 void pushVector3(lua_State* L, const Vector3& vector3);

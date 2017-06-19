@@ -69,6 +69,8 @@
 #include "misc/std.h"
 #include "misc/aabb2.h"
 #include "misc/aabb3.h"
+#include "misc/lua/vector2.h"
+#include "misc/lua/vector3.h"
 
 // debug
 #include "debug/helpers.h"

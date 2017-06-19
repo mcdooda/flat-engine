@@ -199,7 +199,7 @@ int l_Widget_removeFromParent(lua_State* L)
 	return 0;
 }
 
-int l_Widget_removeAllChildren(lua_State * L)
+int l_Widget_removeAllChildren(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	widget.removeAllChildren();
@@ -320,7 +320,7 @@ int l_Widget_getRotation(lua_State* L)
 	return 3;
 }
 
-int l_Widget_setMargin(lua_State * L)
+int l_Widget_setMargin(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	int top = lua_gettop(L);
@@ -340,7 +340,7 @@ int l_Widget_setMargin(lua_State * L)
 	return 0;
 }
 
-int l_Widget_getMargin(lua_State * L)
+int l_Widget_getMargin(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	const Widget::Margin& margin = widget.getMargin();
@@ -351,7 +351,7 @@ int l_Widget_getMargin(lua_State * L)
 	return 4;
 }
 
-int l_Widget_setPadding(lua_State * L)
+int l_Widget_setPadding(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	int top = lua_gettop(L);
@@ -371,7 +371,7 @@ int l_Widget_setPadding(lua_State * L)
 	return 0;
 }
 
-int l_Widget_getPadding(lua_State * L)
+int l_Widget_getPadding(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	const Widget::Padding& padding = widget.getPadding();
@@ -409,7 +409,7 @@ int l_Widget_setBackgroundColor(lua_State* L)
 	return 0;
 }
 
-int l_Widget_setBackgroundPosition(lua_State * L)
+int l_Widget_setBackgroundPosition(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	float x = static_cast<float>(luaL_checknumber(L, 2));
@@ -518,7 +518,7 @@ int l_TextWidget_setText(lua_State* L)
 	return 0;
 }
 
-int l_TextWidget_setTextColor(lua_State * L)
+int l_TextWidget_setTextColor(lua_State* L)
 {
 	TextWidget& textWidget = getTextWidget(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
