@@ -30,6 +30,8 @@ class Lua
 		void loadFile(const std::string& fileName);
 		void loadLib(const std::string& fileName, const std::string& globalName);
 
+		void clearLoadedPackages();
+
 	public:
 		lua_State* state;
 };
@@ -39,6 +41,8 @@ void close(lua_State* L);
 void doFile(lua_State* L, const std::string& fileName);
 void loadFile(lua_State* L, const std::string& fileName);
 void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName);
+
+void clearLoadedPackages(lua_State* L);
 
 lua_State* getMainThread(lua_State* L);
 

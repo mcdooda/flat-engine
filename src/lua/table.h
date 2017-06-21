@@ -41,6 +41,8 @@ inline int pushTable(lua_State* L, const KeyValuePair<ValueType>* values)
 	return 1;
 }
 
+void clear(lua_State* L, int index);
+
 } // table
 } // lua
 } // flat

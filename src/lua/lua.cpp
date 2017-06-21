@@ -79,6 +79,11 @@ void Lua::loadLib(const std::string& fileName, const std::string& globalName)
 	lua::loadLib(state, fileName, globalName);
 }
 
+void Lua::clearLoadedPackages()
+{
+	lua::clearLoadedPackages(state);
+}
+
 void doFile(lua_State* L, const std::string& fileName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -107,6 +112,15 @@ void loadLib(lua_State* L, const std::string& fileName, const std::string& globa
 	luaL_loadfile(L, fileName.c_str());
 	lua_call(L, 0, 1);
 	lua_setglobal(L, globalName.c_str());
+}
+
+void clearLoadedPackages(lua_State* L)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "loaded");
+	flat::lua::table::clear(L, -1);
+	lua_pop(L, 2);
 }
 
 lua_State* getMainThread(lua_State* L)
