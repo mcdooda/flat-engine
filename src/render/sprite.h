@@ -31,6 +31,9 @@ class Sprite
 		
 		inline void setColor(const video::Color& color) { m_color = color; }
 		inline const video::Color& getColor() const { return m_color; }
+
+		inline void setNormal(const Vector3& normal) { m_normal = normal; }
+		inline const Vector3& getNormal() const { return m_normal; }
 		
 		inline void setRotation(const Vector3& rotation) { m_rotation = rotation; m_modelMatrixIsDirty = true; }
 		inline void setRotationX(float rotationX) { m_rotation.x = rotationX; m_modelMatrixIsDirty = true; }
@@ -81,6 +84,7 @@ class Sprite
 		std::array<Vertex, 6> m_vertices;
 		
 		video::Color m_color;
+		Vector3 m_normal;
 		
 		Vector3 m_rotation;
 		Vector2 m_position;

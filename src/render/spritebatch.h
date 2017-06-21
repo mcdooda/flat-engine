@@ -32,6 +32,7 @@ public:
 		Vector2 pos;
 		Vector2 uv;
 		video::Color color;
+		Vector3 normal;
 	};
 
 private:

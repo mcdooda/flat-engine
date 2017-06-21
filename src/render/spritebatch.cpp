@@ -37,6 +37,7 @@ void SpriteBatch::add(const Sprite& sprite)
 
 	const Matrix4& transform = sprite.getModelMatrix();
 	const video::Color& color = sprite.getColor();
+	const Vector3& normal = sprite.getNormal();
 	const Sprite::Vertex* vertices = sprite.m_vertices.data();
 	for (int i = 0; i < numVerticesPerSprite; ++i)
 	{
@@ -47,6 +48,7 @@ void SpriteBatch::add(const Sprite& sprite)
 		spriteBatchVertex.pos = Vector2(transform * Vector4(spriteVertex->pos, 0.f, 1.f));
 		spriteBatchVertex.uv = spriteVertex->uv;
 		spriteBatchVertex.color = color;
+		spriteBatchVertex.normal = normal;
 	}
 }
 
@@ -58,6 +60,7 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	const video::Attribute positionAttribute = renderSettings.positionAttribute;
 	const video::Attribute uvAttribute = renderSettings.uvAttribute;
 	const video::Attribute colorAttribute = renderSettings.colorAttribute;
+	const video::Attribute normalAttribute = renderSettings.normalAttribute;
 
 	glEnableVertexAttribArray(positionAttribute);
 	glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].pos);
@@ -68,11 +71,15 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	glEnableVertexAttribArray(colorAttribute);
 	glVertexAttribPointer(colorAttribute, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].color);
 
+	glEnableVertexAttribArray(normalAttribute);
+	glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].normal);
+
 	glDrawArrays(GL_TRIANGLES, 0, m_numVertices);
 
 	glDisableVertexAttribArray(positionAttribute);
 	glDisableVertexAttribArray(uvAttribute);
 	glDisableVertexAttribArray(colorAttribute);
+	glDisableVertexAttribArray(normalAttribute);
 }
 
 } // render
