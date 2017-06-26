@@ -12,6 +12,7 @@
 
 // time
 #include "time/time.h"
+#include "time/clock.h"
 #include "time/lua/time.h"
 
 // video

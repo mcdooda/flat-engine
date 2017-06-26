@@ -1,6 +1,7 @@
 #ifndef FLAT_AUDIO_MUSIC_H
 #define FLAT_AUDIO_MUSIC_H
 
+#include <memory>
 #include <string>
 #include <SDL2/SDL_mixer.h>
 
@@ -8,7 +9,7 @@ namespace flat
 {
 namespace time
 {
-class Timer;
+class Clock;
 }
 
 namespace audio
@@ -36,7 +37,7 @@ class Music
 		
 	private:
 		Mix_Music* m_music;
-		time::Timer* m_timer;
+		std::shared_ptr<time::Clock> m_clock;
 
 		static const Music* currentMusic;
 };

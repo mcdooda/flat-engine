@@ -1,6 +1,6 @@
 #include "music.h"
 
-#include "../time/timer.h"
+#include "../time/clock.h"
 #include "../memory/memory.h"
 #include "../debug/assert.h"
 
@@ -14,20 +14,19 @@ const Music* Music::currentMusic = nullptr;
 Music::Music(const std::string& filename)
 {
 	m_music = Mix_LoadMUS(filename.c_str());
-	m_timer = new time::Timer();
+	FLAT_ASSERT_MSG(false, "TODO: initialize m_clock");
 }
 
 Music::~Music()
 {
 	Mix_FreeMusic(m_music);
 	m_music = nullptr;
-	FLAT_DELETE(m_timer);
 }
 
 void Music::play(int loops) const
 {
 	Mix_PlayMusic(m_music, loops);
-	m_timer->start();
+	m_clock->restart();
 	currentMusic = this;
 }
 
@@ -35,25 +34,26 @@ void Music::stop() const
 {
 	FLAT_ASSERT(currentMusic == this);
 	Mix_HaltMusic();
-	m_timer->stop();
+	m_clock->pause();
 	currentMusic = nullptr;
 }
 
 float Music::getPosition() const
 {
-	return m_timer->getTime();
+	return m_clock->getTime();
 }
 
 bool Music::move(double delta)
 {
-	return setPosition(m_timer->getTime() + delta);
+	return setPosition(m_clock->getTime() + delta);
 }
 
 bool Music::setPosition(double position)
 {
 	Mix_MusicType musicType = Mix_GetMusicType(m_music);
 	bool moved = false;
-	const float currentPosition = m_timer->getTime();
+	time::Clock* clock = m_clock.get();
+	const float currentPosition = clock->getTime();
 
 	switch (musicType)
 	{
@@ -81,7 +81,9 @@ bool Music::setPosition(double position)
 	}
 
 	if (moved)
-		m_timer->setTime(static_cast<float>(position));
+	{
+		clock->setTime(static_cast<float>(position));
+	}
 
 	return moved;
 }
@@ -90,26 +92,26 @@ void Music::rewind()
 {
 	FLAT_ASSERT(currentMusic == this);
 	Mix_RewindMusic();
-	m_timer->stop();
+	m_clock->pause();
 }
 
 void Music::pause()
 {
 	FLAT_ASSERT(currentMusic == this);
 	Mix_PauseMusic();
-	m_timer->pause();
+	m_clock->pause();
 }
 
 void Music::resume()
 {
 	FLAT_ASSERT(currentMusic == this);
 	Mix_ResumeMusic();
-	m_timer->resume();
+	m_clock->resume();
 }
 
 bool Music::isPaused() const
 {
-	return m_timer->isPaused();
+	return m_clock->getDT() == 0.f;
 }
 
 void Music::togglePause()

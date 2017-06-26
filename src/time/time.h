@@ -1,14 +1,16 @@
 #ifndef FLAT_TIME_TIME_H
 #define FLAT_TIME_TIME_H
 
-#include "private/timerbase.h"
+#include <vector>
+#include <memory>
 
 namespace flat
 {
 namespace time
 {
+class Clock;
 
-class Time final : public private_::TimerBase
+class Time final
 {
 	public:
 		Time();
@@ -16,19 +18,24 @@ class Time final : public private_::TimerBase
 		void beginFrame();
 		void endFrame();
 		
-		void setFrameRate(float rate);
-		float getFrameRate() const;
-		void setNoLimitFrameRate();
-		float getFrameTime() const;
-		float getActualFrameTime() const;
+		void setPreferedFrameRate(float rate);
+		float getPreferedFrameRate() const;
+		void setNoLimitFrameRate();		
 		float getActualFrameRate() const;
 
-		void sleep(float duration) const;
+		std::shared_ptr<Clock> newClock();
+
+	private:
+		void updateClocks();
+
+		static void sleep(float duration);
+		static float getAbsoluteTime();
 		
 	private:
-		float m_frameTime;
+		std::vector<std::weak_ptr<Clock>> m_clocks;
 		float m_beginFrameTime;
 		float m_frameDuration;
+		float m_preferedFrameDuration;
 };
 
 } // time
