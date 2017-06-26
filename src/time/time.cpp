@@ -11,7 +11,7 @@ namespace time
 Time::Time()
 {
 	m_frameDuration = 0.f;
-	setPreferedFrameRate(600.f);
+	setPreferedFrameRate(100.f);
 }
 
 void Time::beginFrame()
@@ -33,17 +33,17 @@ void Time::endFrame()
 
 void Time::setPreferedFrameRate(float rate)
 {
-	m_frameDuration = 1.f / rate;
+	m_preferedFrameDuration = 1.f / rate;
 }
 
 float Time::getPreferedFrameRate() const
 {
-	return 1.f / m_frameDuration;
+	return m_preferedFrameDuration > 0.f ? 1.f / m_preferedFrameDuration : std::numeric_limits<float>::infinity();
 }
 
 void Time::setNoLimitFrameRate()
 {
-	m_frameDuration = 0.0f;
+	m_preferedFrameDuration = 0.0f;
 }
 
 float Time::getActualFrameRate() const
