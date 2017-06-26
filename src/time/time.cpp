@@ -11,7 +11,7 @@ namespace time
 Time::Time()
 {
 	m_frameDuration = 0.f;
-	setPreferedFrameRate(100.f);
+	setPreferedFrameRate(600.f);
 }
 
 void Time::beginFrame()
