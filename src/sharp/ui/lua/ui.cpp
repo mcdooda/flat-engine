@@ -73,6 +73,7 @@ int open(lua_State* L)
 		{"mouseLeave",            l_Widget_mouseLeave},
 		
 		{"setText",               l_TextWidget_setText},
+		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
 
 		{"focus",                 l_FocusableWidget_focus},
@@ -516,6 +517,13 @@ int l_TextWidget_setText(lua_State* L)
 	const char* text = luaL_checkstring(L, 2);
 	textWidget.setText(text);
 	return 0;
+}
+
+int l_TextWidget_getText(lua_State * L)
+{
+	TextWidget& textWidget = getTextWidget(L, 1);
+	lua_pushstring(L, textWidget.getText().c_str());
+	return 1;
 }
 
 int l_TextWidget_setTextColor(lua_State* L)
