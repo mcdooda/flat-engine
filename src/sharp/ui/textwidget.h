@@ -14,7 +14,7 @@ namespace ui
 
 class TextWidget : public virtual WidgetImpl<FixedLayout>, public video::font::String
 {
-	typedef WidgetImpl<FixedLayout> Widget;
+	using Widget = WidgetImpl<FixedLayout>;
 	public:
 		TextWidget() = delete;
 		TextWidget(const TextWidget&) = delete;

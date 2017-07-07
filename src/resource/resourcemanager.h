@@ -13,9 +13,9 @@ template <class T, typename... U>
 class ResourceManager
 {
 	protected:
-		typedef std::tuple<U...> CacheKeyType;
-		typedef std::weak_ptr<const T> CacheValueType;
-		typedef std::map<CacheKeyType, CacheValueType> CacheType;
+		using CacheKeyType = std::tuple<U...>;
+		using CacheValueType = std::weak_ptr<const T>;
+		using CacheType = std::map<CacheKeyType, CacheValueType>;
 		
 	public:
 		std::shared_ptr<const T> getResource(const U&... initializers) const

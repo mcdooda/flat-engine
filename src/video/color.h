@@ -12,7 +12,7 @@ namespace video
 class Color
 {
 	public:
-		typedef GLfloat AttributeType;
+		using AttributeType = GLfloat;
 		
 		Color() :
 			r(1.f),

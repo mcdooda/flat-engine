@@ -233,7 +233,7 @@ class Widget : public util::Convertible<Widget>
 template <class LayoutType>
 class WidgetImpl : public virtual Widget
 {
-	typedef Widget Super;
+	using Super = Widget;
 public:
 	WidgetImpl() : Super() {}
 

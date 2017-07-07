@@ -8,7 +8,7 @@ namespace flat
 namespace video
 {
 
-typedef GLint Attribute;
+using Attribute = GLint;
 
 } // video
 } // flat

@@ -22,7 +22,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 {
 	friend class RootLayout;
 
-	typedef WidgetImpl<RootLayout> Super;
+	using Super = WidgetImpl<RootLayout>;
 	public:
 		RootWidget() = delete;
 		RootWidget(const RootWidget&) = delete;

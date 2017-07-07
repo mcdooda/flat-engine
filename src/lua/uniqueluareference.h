@@ -13,7 +13,7 @@ namespace lua
 	template <int LuaType>
 	class UniqueLuaReference : public LuaReference<LuaType>
 	{
-		typedef LuaReference<LuaType> Super;
+		using Super = LuaReference<LuaType>;
 		public:
 			UniqueLuaReference() : Super() {}
 

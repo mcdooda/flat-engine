@@ -14,7 +14,7 @@ namespace lua
 template <int LuaType>
 class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 {
-	typedef std::shared_ptr<LuaReference<LuaType>> Super;
+	using Super = std::shared_ptr<LuaReference<LuaType>>;
 	public:
 		SharedLuaReference() {}
 		
