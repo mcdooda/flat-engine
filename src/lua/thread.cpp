@@ -17,7 +17,7 @@ void Thread::set(lua_State* L, int index)
 	m_function.set(L, index);
 }
 
-void Thread::start(int numArgs)
+bool Thread::start(int numArgs)
 {
 	FLAT_ASSERT(isEmpty());
 
@@ -45,11 +45,14 @@ void Thread::start(int numArgs)
 		}
 		else if (m_status != LUA_YIELD)
 		{
+			FLAT_LUA_IGNORE_ALL_STACK_GROWTH();
 			lua_error(L1);
+			return false;
 		}
 
 		lua_pop(L, numArgs + 1);
 	}
+	return true;
 }
 
 void Thread::update()

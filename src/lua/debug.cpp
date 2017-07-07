@@ -13,26 +13,37 @@ namespace lua
 namespace debug
 {
 
+bool ExpectStackGrowth::ignoreAll;
+
 ExpectStackGrowth::ExpectStackGrowth(lua_State* L, int n, const char* func, const char* file, int line) :
 	m_L(L),
 	m_func(func),
 	m_file(file),
 	m_line(line)
 {
+	ignoreAll = false;
 	m_expectedTop = lua_gettop(L) + n;
 }
 
 ExpectStackGrowth::~ExpectStackGrowth()
 {
-	int top = lua_gettop(m_L);
-	if (top != m_expectedTop)
+	if (!ignoreAll)
 	{
-		std::cerr << "lua_gettop(L) = " << top << ", expected " << m_expectedTop << std::endl
-			<< "in file " << m_file << ":" << m_line << std::endl
-			<< "in function " << m_func << std::endl;
-		flat::lua::printStack(m_L);
-		FLAT_BREAK();
+		int top = lua_gettop(m_L);
+		if (top != m_expectedTop)
+		{
+			std::cerr << "lua_gettop(L) = " << top << ", expected " << m_expectedTop << std::endl
+				<< "in file " << m_file << ":" << m_line << std::endl
+				<< "in function " << m_func << std::endl;
+			flat::lua::printStack(m_L);
+			FLAT_BREAK();
+		}
 	}
+}
+
+void ExpectStackGrowth::setIgnoreAll()
+{
+	ignoreAll = true;
 }
 
 } // debug
