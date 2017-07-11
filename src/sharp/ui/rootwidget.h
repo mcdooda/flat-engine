@@ -31,6 +31,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 		~RootWidget();
 		RootWidget& operator=(const RootWidget&) = delete;
 
+		void clearAll();
+
 		void draw(const flat::render::RenderSettings& renderSettings) const override; // final
 
 		void addDirtyWidget(const std::weak_ptr<Widget>& widget);

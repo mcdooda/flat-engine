@@ -17,7 +17,8 @@ class Machine
 		Machine(Agent& agent);
 		~Machine();
 
-		void setState(State* state);
+		void setState(std::unique_ptr<State>&& state);
+		void setNextState(std::unique_ptr<State>&& state);
 
 		inline State* getState() { return m_currentState.get(); }
 		inline const State* getState() const { return m_currentState.get(); }
@@ -26,6 +27,7 @@ class Machine
 
 	private:
 		std::unique_ptr<State> m_currentState;
+		std::unique_ptr<State> m_nextState;
 		Agent& m_agent;
 };
 

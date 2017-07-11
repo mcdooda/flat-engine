@@ -28,6 +28,14 @@ RootWidget::~RootWidget()
 	}
 }
 
+void RootWidget::clearAll()
+{
+	m_children.clear();
+	m_mouseOverWidget.reset();
+	m_focusWidget.reset();
+	setDirty();
+}
+
 void RootWidget::draw(const flat::render::RenderSettings& renderSettings) const
 {
 	drawChildren(renderSettings);

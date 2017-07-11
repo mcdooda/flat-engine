@@ -23,18 +23,28 @@ Machine::~Machine()
 	}
 }
 
-void Machine::setState(State* state)
+void Machine::setState(std::unique_ptr<State>&& state)
 {
 	if (m_currentState)
 	{
 		m_currentState->exit(m_agent);
 	}
-	m_currentState.reset(state);
-	state->enter(m_agent);
+	m_currentState = std::move(state);
+	m_currentState->enter(m_agent);
+}
+
+void Machine::setNextState(std::unique_ptr<State>&& state)
+{
+	m_nextState = std::move(state);
 }
 
 void Machine::update()
 {
+	if (m_nextState)
+	{
+		setState(std::move(m_nextState));
+	}
+
 	if (m_currentState)
 	{
 		m_currentState->execute(m_agent);
