@@ -12,6 +12,7 @@ function StringNode:execute(runtime)
 end
 
 function StringNode:setValue(value)
+    assert(type(value) == 'string')
     self.value = value
 end
 

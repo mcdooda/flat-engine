@@ -12,6 +12,7 @@ function NumberNode:execute(runtime)
 end
 
 function NumberNode:setValue(value)
+    assert(type(value) == 'number')
     self.value = value
 end
 

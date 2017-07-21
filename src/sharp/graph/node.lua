@@ -55,7 +55,7 @@ function Node:rebuildPins()
 end
 
 function Node:plugPins(outputPin, node, inputPin)
-    assert(outputPin.pinType == inputPin.pinType)
+    assert(outputPin.pinType == inputPin.pinType, 'pin types mismatch')
     outputPin.pluggedInputPins[#outputPin.pluggedInputPins + 1] = {
         inputPin = inputPin,
         node = node

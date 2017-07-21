@@ -1,3 +1,5 @@
+local PinTypes = require 'pintypes'
+
 local ScriptNodeRuntime = {}
 ScriptNodeRuntime.__index = ScriptNodeRuntime
 
@@ -32,7 +34,7 @@ end
 function ScriptNodeRuntime:writePin(outputPin, value)
     local pinValue = self.outputPinValues[outputPin]
     assert(pinValue, 'invalid output pin')
-    
+    assert(PinTypes[string.upper(type(value))] == outputPin.pinType, 'wrong value type ' .. tostring(value))
     pinValue.value = value
 end
 
