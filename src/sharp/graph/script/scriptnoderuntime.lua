@@ -18,17 +18,21 @@ function ScriptNodeRuntime:inherit()
 end
 
 function ScriptNodeRuntime:readPin(inputPin)
+    local pinValue = self.inputPinValues[inputPin]
+    assert(pinValue, 'invalid input pin')
+
     local pluggedOutputPin = inputPin.pluggedOutputPin
     local node = pluggedOutputPin.node
     local nodeRuntime = self.scriptRuntime:getNodeRuntime(node)
     node:prepareReadPin(nodeRuntime, inputPin)
 
-    local pinValue = self.inputPinValues[inputPin]
     return pinValue.value
 end
 
 function ScriptNodeRuntime:writePin(outputPin, value)
     local pinValue = self.outputPinValues[outputPin]
+    assert(pinValue, 'invalid output pin')
+    
     pinValue.value = value
 end
 
