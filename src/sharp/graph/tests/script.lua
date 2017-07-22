@@ -1,5 +1,7 @@
 local Graph = require 'graph'
+local PinTypes = require 'pintypes'
 local ScriptRuntime = require 'script/scriptruntime'
+local ScriptInputNode = require 'script/nodes/script/scriptinputnode'
 local InitNode = require 'script/nodes/initnode'
 local TestNode = require 'script/nodes/testnode'
 local NumberNode = require 'script/nodes/numbernode'
@@ -8,19 +10,16 @@ local MultiplyNode = require 'script/nodes/math/multiplynode'
 
 local script = Graph:new()
 
+local scriptInput = script:addNode(ScriptInputNode)
+local scriptInputNumber = scriptInput:addOutputPin(PinTypes.NUMBER)
+local scriptInputString = scriptInput:addOutputPin(PinTypes.STRING)
+
 local init = script:addNode(InitNode)
-
-
-
 local test1 = script:addNode(TestNode)
-do
-    local number = script:addNode(NumberNode)
-    number:setValue(3.14)
-    number:plugPins(number.numberOutPin, test1, test1.numberInPin)
-end
+scriptInput:plugPins(scriptInputNumber, test1, test1.numberInPin)
 do
     local string = script:addNode(StringNode)
-    string:setValue 'Hello World'
+    string:setValue 'Hello World from constant'
     string:plugPins(string.stringOutPin, test1, test1.stringInPin)
 end
 init:plugPins(init.impulseOutPin, test1, test1.impulseInPin)
@@ -35,9 +34,9 @@ end
 
 local test2 = script:addNode(TestNode)
 multiply:plugPins(multiply.resultOutPin, test2, test2.numberInPin)
-test1:plugPins(test1.stringOutPin, test2, test2.stringInPin)
+scriptInput:plugPins(scriptInputString, test2, test2.stringInPin)
 test1:plugPins(test1.impulseOutPin, test2, test2.impulseInPin)
 
 local scriptRuntime = ScriptRuntime:new(script)
-local runner = scriptRuntime:getRunner()
+local runner = scriptRuntime:getRunner(3.14, 'Hello world from script input')
 runner()

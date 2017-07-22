@@ -47,7 +47,27 @@ function ScriptRuntime:new(graph)
     return setmetatable(o, self)
 end
 
-function ScriptRuntime:getRunner()
+function ScriptRuntime:writeInputPins(...)
+    local numInputs = select('#', ...)
+    if numInputs == 0 then
+        return
+    end
+
+    local inputNode = self.graph.inputNode
+    assert(inputNode, 'script has no input node but has ' .. numInputs .. ' input values')
+
+    assert(numInputs == #inputNode.outputPins)
+    local inputNodeRuntime = self.nodeRuntimes[inputNode]
+    for i = 1, numInputs do
+        local outputPin = inputNode.outputPins[i]
+        local value = select(i, ...)
+        inputNodeRuntime:writePin(outputPin, value)
+    end
+end
+
+function ScriptRuntime:getRunner(...)
+    self:writeInputPins(...)
+
     local entryNodes = self.graph.entryNodes
     local nodeRuntimes = self.nodeRuntimes
     return function()
