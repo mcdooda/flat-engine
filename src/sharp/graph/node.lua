@@ -17,7 +17,11 @@ function Node:inherit()
 end
 
 function Node:addedToGraph(graph)
+    -- overidden when needed, called after the node is added to a graph
+end
 
+function Node:init(...)
+    -- overidden when needed, called after deserialization
 end
 
 function Node:addInputPin(pinType, pinName)
@@ -30,6 +34,10 @@ function Node:addInputPin(pinType, pinName)
     return inputPin
 end
 
+function Node:getInputPin(inputPinIndex)
+    return self.inputPins[inputPinIndex]
+end
+
 function Node:addOutputPin(pinType, pinName)
     local outputPin = {
         pinType = pinType,
@@ -38,6 +46,10 @@ function Node:addOutputPin(pinType, pinName)
     }
     self.outputPins[#self.outputPins + 1] = outputPin
     return outputPin
+end
+
+function Node:getOutputPin(outputPinIndex)
+    return self.outputPins[outputPinIndex]
 end
 
 function Node:clearPins()

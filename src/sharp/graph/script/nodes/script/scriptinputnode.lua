@@ -12,7 +12,14 @@ function ScriptInputNode:buildPins()
 end
 
 function ScriptInputNode:execute(runtime)
-    -- nothing to do, all the pins have already been written
+    -- nothing to do, all the pins have already been written in ScriptRuntime:getRunner()
+end
+
+function ScriptInputNode:init(...)
+    for i = 1, select('#', ...) do
+        local pinType = select(i, ...)
+        self:addOutputPin(pinType)
+    end
 end
 
 return ScriptInputNode

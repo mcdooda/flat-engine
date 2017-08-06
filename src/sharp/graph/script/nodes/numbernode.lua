@@ -16,4 +16,6 @@ function NumberNode:setValue(value)
     self.value = value
 end
 
+NumberNode.init = NumberNode.setValue
+
 return NumberNode

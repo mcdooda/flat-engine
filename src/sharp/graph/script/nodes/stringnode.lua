@@ -12,8 +12,10 @@ function StringNode:execute(runtime)
 end
 
 function StringNode:setValue(value)
-    assert(type(value) == 'string')
+    assert(type(value) == 'string', 'Wrong type for setValue: string expected, got ' .. type(value))
     self.value = value
 end
+
+StringNode.init = StringNode.setValue
 
 return StringNode
