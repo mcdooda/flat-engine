@@ -1,6 +1,10 @@
 #ifndef FLAT_DEBUG_ASSERT_H
 #define FLAT_DEBUG_ASSERT_H
 
+#ifdef _MSC_VER
+#define FLAT_VISUAL_STUDIO
+#endif
+
 #ifdef FLAT_DEBUG
 
 #include <cstdio>
@@ -8,9 +12,6 @@
 #include <csignal>
 #include <type_traits>
 
-#ifdef _MSC_VER
-#define FLAT_VISUAL_STUDIO
-#endif
 
 #ifdef FLAT_VISUAL_STUDIO
 #define FLAT_BREAK() __debugbreak()
