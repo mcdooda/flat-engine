@@ -17,8 +17,12 @@ namespace lua
 {
 static char gameRegistryIndex = 'F';
 
-Lua::Lua(Flat& flat)
+Lua::Lua(Flat& flat, const std::string& luaPath)
 {
+	m_luaPath = luaPath;
+	if (m_luaPath[m_luaPath.size() - 1] != '/')
+		m_luaPath += '/';
+
 	state = luaL_newstate();
 
 	lua_State* L = state;
@@ -44,9 +48,25 @@ Lua::Lua(Flat& flat)
 
 		// flat. libraries
 		lua_newtable(L);
+#ifdef FLAT_DEBUG
+		lua_pushboolean(L, true);
+#else
+		lua_pushboolean(L, false);
+#endif
+		lua_setfield(L, -2, "debug");
 		lua_setglobal(L, "flat");
+
 		lua::openVector2(L);
 		lua::openVector3(L);
+
+		openRequire(L);
+		openDofile(L);
+
+		// dofile flat-engine/lua/init.lua
+		lua_pushstring(L, m_luaPath.c_str());
+		lua_pushcclosure(L, l_flat_dofile, 1);
+		lua_pushstring(L, "init.lua");
+		lua_call(L, 1, 0);
 	}
 }
 
@@ -82,6 +102,49 @@ void Lua::loadLib(const std::string& fileName, const std::string& globalName)
 void Lua::clearLoadedPackages()
 {
 	lua::clearLoadedPackages(state);
+}
+
+int Lua::l_flat_require(lua_State* L)
+{
+	const char* path = luaL_checkstring(L, 1);
+	lua_settop(L, 1);
+	lua_pushvalue(L, lua_upvalueindex(1)); // push the flat lua/ directory path
+	lua_pushvalue(L, 1);
+	lua_concat(L, 2);
+	int top = lua_gettop(L);
+	lua_getglobal(L, "require");
+	lua_pushvalue(L, 1);
+	lua_call(L, 1, LUA_MULTRET);
+	return lua_gettop(L) - top;
+}
+
+void Lua::openRequire(lua_State* L)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_getglobal(L, "flat");
+	lua_pushstring(L, m_luaPath.c_str());
+	lua_pushcclosure(L, l_flat_require, 1);
+	lua_setfield(L, -2, "require");
+	lua_pop(L, 1);
+}
+
+int Lua::l_flat_dofile(lua_State* L)
+{
+	const char* flatLuaPath = luaL_checkstring(L, lua_upvalueindex(1)); // push the flat lua/ directory path
+	const char* path = luaL_checkstring(L, 1);
+	int top = lua_gettop(L);
+	luaL_dofile(L, (std::string(flatLuaPath) + path).c_str());
+	return lua_gettop(L) - top;
+}
+
+void Lua::openDofile(lua_State* L)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_getglobal(L, "flat");
+	lua_pushstring(L, m_luaPath.c_str());
+	lua_pushcclosure(L, l_flat_dofile, 1);
+	lua_setfield(L, -2, "dofile");
+	lua_pop(L, 1);
 }
 
 void doFile(lua_State* L, const std::string& fileName)

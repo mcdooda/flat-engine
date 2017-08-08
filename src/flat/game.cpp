@@ -4,7 +4,7 @@
 namespace flat
 {
 
-Game::Game(const std::vector<std::string>& args) :
+Game::Game(const std::vector<std::string>& args) : Super("flat-engine/lua/"),
 	m_args(args),
 	m_stop(false)
 {

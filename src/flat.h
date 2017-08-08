@@ -82,7 +82,7 @@ namespace flat
 class Flat
 {
 	public:
-		Flat();
+		Flat(const std::string& luaPath);
 		Flat(const Flat&) = delete;
 		Flat(Flat&&) = delete;
 		virtual ~Flat();

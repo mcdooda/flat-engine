@@ -11,7 +11,7 @@
 namespace flat
 {
 
-Flat::Flat()
+Flat::Flat(const std::string& luaPath)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -20,7 +20,7 @@ Flat::Flat()
 	audio = std::make_unique<audio::Audio>();
 	input = std::make_unique<input::Input>(*this);
 	random = std::make_unique<random::Random>();
-	lua = std::make_unique<lua::Lua>(*this);
+	lua = std::make_unique<lua::Lua>(*this, luaPath);
 	ui = std::make_unique<sharp::ui::Ui>(*this);
 }
 

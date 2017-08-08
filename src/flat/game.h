@@ -10,6 +10,7 @@ namespace flat
 
 class Game : public Flat, public state::Agent
 {
+	using Super = Flat;
 	public:
 		Game(const std::vector<std::string>& args);
 		~Game() override;
