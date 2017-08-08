@@ -34,10 +34,10 @@ int openVector3(lua_State* L)
 
 		{nullptr, nullptr}
 	};
-	LuaVector3::registerClass("Flat.Vector3", L, Vector3_lib_m);
+	LuaVector3::registerClass("flat.Vector3", L, Vector3_lib_m);
 
-	// constructor: Flat.Vector3(x, y, z)
-	lua_getglobal(L, "Flat");
+	// constructor: flat.Vector3(x, y, z)
+	lua_getglobal(L, "flat");
 	lua_pushcfunction(L, l_Vector3);
 	lua_setfield(L, -2, "Vector3");
 
@@ -151,7 +151,7 @@ int l_Vector3_mul(lua_State* L)
 int l_Vector3_tostring(lua_State* L)
 {
 	Vector3& vector3 = getVector3(L, 1);
-	lua_pushfstring(L, "Flat.Vector3(%f,%f,%f)", vector3.x, vector3.y, vector3.z);
+	lua_pushfstring(L, "flat.Vector3(%f,%f,%f)", vector3.x, vector3.y, vector3.z);
 	return 1;
 }
 

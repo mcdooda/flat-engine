@@ -82,7 +82,7 @@ int open(lua_State* L)
 		{nullptr, nullptr}
 	};
 	
-	LuaWidget::registerClass("Flat.Widget", L, Widget_lib_m);
+	LuaWidget::registerClass("flat.Widget", L, Widget_lib_m);
 	
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
@@ -157,7 +157,7 @@ int open(lua_State* L)
 	lua_setglobal(L, "Widget");
 	
 
-	LuaWidgetFactory::registerClass("Flat.WidgetFactory", L);
+	LuaWidgetFactory::registerClass("flat.WidgetFactory", L);
 	Game& game = flat::lua::getGame(L);
 	LuaWidgetFactory::pushNew(L, new WidgetFactory(game));
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);

@@ -42,9 +42,9 @@ Lua::Lua(Flat& flat)
 		video::lua::image::open(L);
 		sharp::ui::lua::open(L);
 
-		// Flat. libraries
+		// flat. libraries
 		lua_newtable(L);
-		lua_setglobal(L, "Flat");
+		lua_setglobal(L, "flat");
 		lua::openVector2(L);
 		lua::openVector3(L);
 	}
