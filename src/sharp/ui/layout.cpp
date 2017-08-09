@@ -111,13 +111,13 @@ float Layout::getParentRelativeBottom(Widget& widget)
 	return widget.m_position.y + widget.m_computedSize.y + widget.m_margin.bottom;
 }
 
-void Layout::computeFixedWidth(Widget & widget)
+void Layout::computeFixedWidth(Widget& widget)
 {
 	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::FIXED_X) != 0);
 	widget.m_computedSize.x = widget.m_size.x;
 }
 
-void Layout::computeFixedHeight(Widget & widget)
+void Layout::computeFixedHeight(Widget& widget)
 {
 	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::FIXED_Y) != 0);
 	widget.m_computedSize.y = widget.m_size.y;

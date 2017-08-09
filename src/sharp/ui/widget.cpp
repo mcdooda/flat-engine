@@ -94,7 +94,7 @@ void Widget::addChild(const std::shared_ptr<Widget>& widget)
 	m_children.push_back(std::shared_ptr<Widget>(widget));
 	widget->m_parent = getWeakPtr();
 
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+	if (Widget* fixedLayoutAncestor = widget->getFixedLayoutAncestor())
 		fixedLayoutAncestor->setDirty();
 }
 
