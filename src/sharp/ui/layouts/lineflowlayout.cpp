@@ -21,7 +21,7 @@ void LineFlowLayout::preLayout(Widget& widget)
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
 		if (parentSizePolicy & Widget::SizePolicy::FIXED_Y)
 		{
-			getComputedSize(widget).y = getComputedSize(parent).y;
+			getComputedSize(widget).y = getComputedSize(parent).y - getMargin(widget).bottom - getMargin(widget).top;
 		}
 	}
 
@@ -35,7 +35,7 @@ void LineFlowLayout::preLayout(Widget& widget)
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
 		if (parentSizePolicy & Widget::SizePolicy::FIXED_X)
 		{
-			getComputedSize(widget).x = getComputedSize(parent).x;
+			getComputedSize(widget).x = getComputedSize(parent).x - getMargin(widget).left - getMargin(widget).bottom;
 		}
 	}
 
@@ -134,12 +134,12 @@ void LineFlowLayout::layout(Widget& widget, bool computePosition)
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_X)
 		{
 			if (flexibleWidgetsWidth > 0.f)
-				getComputedSize(*child).x = flexibleWidgetsWidth;
+				getComputedSize(*child).x = flexibleWidgetsWidth - getMargin(*child).left - getMargin(*child).right;
 		}
 
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
 		{
-			getComputedSize(*child).y = size.y - getPadding(widget).top - getPadding(widget).bottom;
+			getComputedSize(*child).y = size.y - getPadding(widget).bottom - getPadding(widget).top - getMargin(*child).bottom - getMargin(*child).top;
 		}
 	}
 

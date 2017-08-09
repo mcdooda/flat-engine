@@ -134,13 +134,13 @@ void ColumnFlowLayout::layout(Widget& widget, bool computePosition)
 
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_X)
 		{
-			getComputedSize(*child).x = size.x - getPadding(widget).left - getPadding(widget).right;
+			getComputedSize(*child).x = size.x - getPadding(widget).left - getPadding(widget).right - getMargin(*child).left - getMargin(*child).bottom;
 		}
 
 		if (childSizePolicy & Widget::SizePolicy::EXPAND_Y)
 		{
 			if (flexibleWidgetsHeight > 0.f)
-				getComputedSize(*child).y = flexibleWidgetsHeight;
+				getComputedSize(*child).y = flexibleWidgetsHeight - getMargin(*child).bottom - getMargin(*child).top;
 		}
 	}
 
