@@ -22,7 +22,7 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
 		if (parentSizePolicy & Widget::SizePolicy::FIXED_X)
 		{
-			getComputedSize(widget).x = getComputedSize(parent).x;
+			getComputedSize(widget).x = getComputedSize(parent).x - getMargin(widget).left - getMargin(widget).right;
 		}
 	}
 
@@ -36,7 +36,7 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
 		if (parentSizePolicy & Widget::SizePolicy::FIXED_Y)
 		{
-			getComputedSize(widget).y = getComputedSize(parent).y;
+			getComputedSize(widget).y = getComputedSize(parent).y - getMargin(widget).bottom - getMargin(widget).top;
 		}
 	}
 
