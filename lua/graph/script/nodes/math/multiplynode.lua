@@ -1,4 +1,4 @@
-local BinaryOperatorNode = require 'script/nodes/math/binaryoperatornode'
+local BinaryOperatorNode = flat.require 'graph/script/nodes/math/binaryoperatornode'
 
 local MultiplyNode = BinaryOperatorNode:inherit()
 

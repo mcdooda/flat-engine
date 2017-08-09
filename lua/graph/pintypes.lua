@@ -1,6 +1,4 @@
-local enum = require 'enum'
-
-return enum(
+return flat.enum(
     'IMPULSE',
     'USERDATA',
     'BOOL',

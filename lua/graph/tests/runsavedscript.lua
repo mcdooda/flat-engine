@@ -1,6 +1,16 @@
+flat = {}
+flat.require = require
+flat.loadfile = loadfile
+flat.dofile = dofile
+require = nil
+loadfile = nil
+dofile = nil
+
+flat.dofile 'enum.lua'
+
 local function runSavedScript(scriptPath, ...)
-    local Graph = require 'graph'
-    local ScriptRuntime = require 'script/scriptruntime'
+    local Graph = flat.require 'graph/graph'
+    local ScriptRuntime = flat.require 'graph/script/scriptruntime'
     
     local script = Graph:new()
 
@@ -12,7 +22,7 @@ local function runSavedScript(scriptPath, ...)
 end
 
 runSavedScript(
-    'tests/savedscript.lua',
+    'graph/tests/savedscript.lua',
 
     3.14,
     'Hello world from script input'

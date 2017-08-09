@@ -1,5 +1,5 @@
-local Node = require 'node'
-local ScriptNodeRuntime = require 'script/scriptnoderuntime'
+local Node = flat.require 'graph/node'
+local ScriptNodeRuntime = flat.require 'graph/script/scriptnoderuntime'
 
 local ScriptNode = Node:inherit()
 

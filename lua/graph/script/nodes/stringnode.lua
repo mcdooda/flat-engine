@@ -1,5 +1,5 @@
-local FunctionalScriptNode = require 'script/functionalscriptnode'
-local PinTypes = require 'pintypes'
+local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
+local PinTypes = flat.require 'graph/pintypes'
 
 local StringNode = FunctionalScriptNode:inherit()
 

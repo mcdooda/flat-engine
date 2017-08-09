@@ -10,7 +10,7 @@ function Enum:toString(value)
     error('no value ' .. value .. ' in this enum')
 end
 
-local function enum(...)
+function flat.enum(...)
     local newEnum = {}
     for i = 1, select('#', ...) do
         newEnum[select(i, ...)] = i
@@ -18,4 +18,3 @@ local function enum(...)
     return setmetatable(newEnum, Enum)
 end
 
-return enum

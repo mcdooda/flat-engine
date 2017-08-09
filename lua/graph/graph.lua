@@ -22,17 +22,15 @@ function Graph:addEntryNode(node)
 end
 
 function Graph:loadGraph(graphPath)
-    local PinTypes = require 'pintypes'
+    local PinTypes = flat.require 'graph/pintypes'
 
     local env = { PinTypes = PinTypes }
-
-
     function env.__index(env, key)
         -- load a graph of type 'key'
         local nodeRegistry
         local ok, errorMessage = pcall(function()
-            local nodeRegistryPath = key .. '/' .. key .. 'noderegistry'
-            nodeRegistry = require(nodeRegistryPath)
+            local nodeRegistryPath = 'graph/' .. key .. '/' .. key .. 'noderegistry'
+            nodeRegistry = flat.require(nodeRegistryPath)
         end)
         if not ok then
             error('Could not load graph of type \'' .. tostring(key) .. '\': ' .. errorMessage)
@@ -44,7 +42,7 @@ function Graph:loadGraph(graphPath)
 
     setmetatable(env, env)
 
-    loadfile(graphPath, 'bt', env)()
+    flat.loadfile(graphPath, 'bt', env)()
 end
 
 function Graph:load(savedGraph, nodeRegistry)

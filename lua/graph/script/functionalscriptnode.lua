@@ -1,4 +1,4 @@
-local ScriptNode = require 'script/scriptnode'
+local ScriptNode = flat.require 'graph/script/scriptnode'
 
 local FunctionalScriptNode = ScriptNode:inherit()
 

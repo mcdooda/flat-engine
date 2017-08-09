@@ -1,4 +1,4 @@
-local PinTypes = require 'pintypes'
+local PinTypes = flat.require 'graph/pintypes'
 
 local ScriptRuntime = {}
 ScriptRuntime.__index = ScriptRuntime

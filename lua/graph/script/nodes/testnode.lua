@@ -1,5 +1,5 @@
-local ScriptNode = require 'script/scriptnode'
-local PinTypes = require 'pintypes'
+local ScriptNode = flat.require 'graph/script/scriptnode'
+local PinTypes = flat.require 'graph/pintypes'
 
 local TestNode = ScriptNode:inherit()
 

@@ -23,7 +23,7 @@ namespace lua
 class Lua
 {
 	public:
-		Lua(Flat& flat, const std::string& luaPath);
+		Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath);
 		~Lua();
 
 		void doFile(const std::string& fileName);
@@ -39,11 +39,15 @@ class Lua
 		static int l_flat_dofile(lua_State* L);
 		void openDofile(lua_State* L);
 
+		static int l_flat_assetPath(lua_State* L);
+		void openAssetPath(lua_State* L);
+
 	public:
 		lua_State* state;
 
 	private:
 		std::string m_luaPath;
+		std::string m_assetsPath;
 };
 
 void close(lua_State* L);

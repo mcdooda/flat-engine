@@ -10,6 +10,6 @@ local nodes = {
 
 local nodeTypes = {}
 for nodeName, nodePath in pairs(nodes) do
-    nodeTypes[nodeName] = require('script/nodes/' .. nodePath .. 'node')
+    nodeTypes[nodeName] = flat.require('graph/script/nodes/' .. nodePath .. 'node')
 end
 return nodeTypes
