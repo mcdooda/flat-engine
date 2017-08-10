@@ -36,7 +36,7 @@ void ColumnFlowLayout::preLayout(Widget& widget)
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
 		if (parentSizePolicy & Widget::SizePolicy::FIXED_Y)
 		{
-			getComputedSize(widget).y = getComputedSize(parent).y - getMargin(widget).bottom - getMargin(widget).top;
+			computeExpandHeight(widget);
 		}
 	}
 

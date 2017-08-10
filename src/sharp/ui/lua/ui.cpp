@@ -90,6 +90,7 @@ int open(lua_State* L)
 		
 		{"makeImage",      l_Widget_makeImage},
 		{"makeFixedSize",  l_Widget_makeFixedSize},
+		{"makeExpand",     l_Widget_makeExpand},
 		{"makeLineFlow",   l_Widget_makeLineFlow},
 		{"makeColumnFlow", l_Widget_makeColumnFlow},
 		{"makeText",       l_Widget_makeText},
@@ -519,7 +520,7 @@ int l_TextWidget_setText(lua_State* L)
 	return 0;
 }
 
-int l_TextWidget_getText(lua_State * L)
+int l_TextWidget_getText(lua_State* L)
 {
 	TextWidget& textWidget = getTextWidget(L, 1);
 	lua_pushstring(L, textWidget.getText().c_str());
@@ -571,6 +572,14 @@ int l_Widget_makeFixedSize(lua_State* L)
 	float height = static_cast<float>(luaL_checknumber(L, 2));
 	Widget::Size size(width, height);
 	std::shared_ptr<Widget> widget = widgetFactory.makeFixedSize(size);
+	pushWidget(L, widget);
+	return 1;
+}
+
+int l_Widget_makeExpand(lua_State * L)
+{
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeExpand();
 	pushWidget(L, widget);
 	return 1;
 }

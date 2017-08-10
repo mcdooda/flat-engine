@@ -10,8 +10,26 @@ namespace ui
 
 void FixedLayout::preLayout(Widget& widget)
 {
-	computeFixedHeight(widget);
-	computeFixedWidth(widget);
+	Widget::SizePolicy sizePolicy = getSizePolicy(widget);
+
+	if ((sizePolicy & Widget::SizePolicy::EXPAND_X) != 0)
+	{
+		computeExpandWidth(widget);
+	}
+	else
+	{
+		computeFixedWidth(widget);
+	}
+
+	if ((sizePolicy & Widget::SizePolicy::EXPAND_Y) != 0)
+	{
+		computeExpandHeight(widget);
+	}
+	else
+	{
+		computeFixedHeight(widget);
+	}
+
 	computeTransform(widget);
 }
 

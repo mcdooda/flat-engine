@@ -40,7 +40,16 @@ std::shared_ptr<Widget> WidgetFactory::makeFixedSize(const Vector2& size) const
 {
 	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<FixedLayout>>();
 	widget->setWeakPtr(widget);
+	widget->setSizePolicy(Widget::SizePolicy::FIXED);
 	widget->setSize(size);
+	return widget;
+}
+
+std::shared_ptr<Widget> WidgetFactory::makeExpand() const
+{
+	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<FixedLayout>>();
+	widget->setWeakPtr(widget);
+	widget->setSizePolicy(Widget::SizePolicy::EXPAND);
 	return widget;
 }
 

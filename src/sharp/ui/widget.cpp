@@ -312,6 +312,9 @@ Widget* Widget::getFixedLayoutAncestor()
 
 	Widget* parent = m_parent.lock().get();
 
+	if (hasLayout<FixedLayout>())
+		return parent->getFixedLayoutAncestor();
+
 	if (parent->hasLayout<FixedLayout>())
 		return parent;
 

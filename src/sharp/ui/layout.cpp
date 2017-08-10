@@ -66,7 +66,7 @@ Widget::Position& Layout::getPosition(Widget& widget)
 	return widget.m_position;
 }
 
-Widget::SizePolicy & Layout::getSizePolicy(Widget & widget)
+Widget::SizePolicy& Layout::getSizePolicy(Widget& widget)
 {
 	return widget.m_sizePolicy;
 }
@@ -121,6 +121,22 @@ void Layout::computeFixedHeight(Widget& widget)
 {
 	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::FIXED_Y) != 0);
 	widget.m_computedSize.y = widget.m_size.y;
+}
+
+void Layout::computeExpandWidth(Widget& widget)
+{
+	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::EXPAND_X) != 0);
+	FLAT_ASSERT(!widget.m_parent.expired());
+	Widget& parent = *widget.m_parent.lock();
+	widget.m_computedSize.x = parent.m_computedSize.x - widget.m_margin.left - widget.m_margin.right;
+}
+
+void Layout::computeExpandHeight(Widget& widget)
+{
+	FLAT_ASSERT((widget.m_sizePolicy & Widget::SizePolicy::EXPAND_Y) != 0);
+	FLAT_ASSERT(!widget.m_parent.expired());
+	Widget& parent = *widget.m_parent.lock();
+	widget.m_computedSize.y = parent.m_computedSize.y - widget.m_margin.bottom - widget.m_margin.top;
 }
 
 void Layout::computePosition(Widget& widget, Vector2& position)

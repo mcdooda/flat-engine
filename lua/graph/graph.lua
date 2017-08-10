@@ -42,38 +42,20 @@ function Graph:loadGraph(graphPath)
 
     setmetatable(env, env)
 
-    flat.loadfile(graphPath, 'bt', env)()
+    loadfile(graphPath, 'bt', env)()
 end
 
 function Graph:load(savedGraph, nodeRegistry)
-    local function dump(t, i)
-        i = i or ''
-        if type(t) == 'table' then
-            for k, v in pairs(t) do
-                if type(v) == 'table' then
-                    print(i, k)
-                    dump(v, i..'\t')
-                else
-                    print(i, k, v)
-                end
-            end
-        else
-            print(t)
-        end
-    end
-
     -- build nodes
     local nodes = savedGraph.nodes
     for i = 1, #nodes do
         local node = nodes[i]
         if type(node) == 'table' then
             local nodeName = node[1]
-
             local nodeInstance = self:addNode(nodeRegistry[nodeName])
             nodeInstance:init(select(2, table.unpack(node)))
         else
             local nodeName = node
-
             local nodeInstance = self:addNode(nodeRegistry[nodeName])
             nodeInstance:init()
         end

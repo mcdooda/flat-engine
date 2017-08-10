@@ -1,10 +1,8 @@
 flat = {}
 flat.require = require
-flat.loadfile = loadfile
+flat.loadfile = function(f, env) loadfile(f, 'bt', env) end
 flat.dofile = dofile
 require = nil
-loadfile = nil
-dofile = nil
 
 flat.dofile 'enum.lua'
 

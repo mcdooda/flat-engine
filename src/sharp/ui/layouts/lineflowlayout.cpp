@@ -35,7 +35,7 @@ void LineFlowLayout::preLayout(Widget& widget)
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
 		if (parentSizePolicy & Widget::SizePolicy::FIXED_X)
 		{
-			getComputedSize(widget).x = getComputedSize(parent).x - getMargin(widget).left - getMargin(widget).bottom;
+			computeExpandWidth(widget);
 		}
 	}
 
