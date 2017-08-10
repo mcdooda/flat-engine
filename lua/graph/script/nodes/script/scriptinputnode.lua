@@ -3,6 +3,10 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local ScriptInputNode = FunctionalScriptNode:inherit()
 
+function ScriptInputNode:getName()
+    return 'Script Input'
+end
+
 function ScriptInputNode:addedToGraph(graph)
     graph.inputNode = self
 end

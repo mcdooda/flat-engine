@@ -10,6 +10,10 @@ function Node:new()
     return o
 end
 
+function Node:getName()
+    error('pure virtual function')
+end
+
 function Node:inherit()
     local nodeType = {}
     nodeType.__index = nodeType

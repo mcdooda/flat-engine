@@ -2,6 +2,10 @@ local BinaryOperatorNode = flat.require 'graph/script/nodes/math/binaryoperatorn
 
 local MultiplyNode = BinaryOperatorNode:inherit()
 
+function MultiplyNode:getName()
+    return 'Multiply'
+end
+
 function MultiplyNode.compute(operand1, operand2)
     return operand1 * operand2
 end

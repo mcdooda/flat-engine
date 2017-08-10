@@ -3,6 +3,10 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local StringNode = FunctionalScriptNode:inherit()
 
+function StringNode:getName()
+    return 'String'
+end
+
 function StringNode:buildPins()
     self.stringOutPin = self:addOutputPin(PinTypes.STRING)
 end

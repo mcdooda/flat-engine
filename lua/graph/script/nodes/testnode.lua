@@ -3,6 +3,10 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local TestNode = ScriptNode:inherit()
 
+function TestNode:getName()
+    return 'Test'
+end
+
 function TestNode:buildPins()
     self.numberInPin = self:addInputPin(PinTypes.NUMBER)
     self.stringInPin = self:addInputPin(PinTypes.STRING)

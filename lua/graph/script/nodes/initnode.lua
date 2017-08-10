@@ -3,6 +3,10 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local InitNode = ScriptNode:inherit()
 
+function InitNode:getName()
+    return 'Init'
+end
+
 function InitNode:buildPins()
     self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE)
 end
