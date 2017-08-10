@@ -65,6 +65,7 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath)
 
 		openRequire(L);
 		openDofile(L);
+		openLoadfile(L);
 		openAssetPath(L);
 
 		// dofile flat-engine/lua/init.lua
@@ -153,6 +154,36 @@ void Lua::openDofile(lua_State* L)
 	lua_pushstring(L, m_luaPath.c_str());
 	lua_pushcclosure(L, l_flat_dofile, 1);
 	lua_setfield(L, -2, "dofile");
+	lua_pop(L, 1);
+}
+
+int Lua::l_flat_loadfile(lua_State * L)
+{
+	const char* flatLuaPath = luaL_checkstring(L, lua_upvalueindex(1)); // push the flat lua/ directory path
+	const char* path = luaL_checkstring(L, 1);
+	if (luaL_loadfile(L, (std::string(flatLuaPath) + path).c_str()))
+	{
+		lua_error(L);
+	}
+
+	// set environment if given
+	if (!lua_isnoneornil(L, 2))
+	{
+		luaL_checktype(L, 2, LUA_TTABLE);
+		lua_pushvalue(L, 2);
+		lua_setupvalue(L, -2, 1);
+	}
+
+	return 1;
+}
+
+void Lua::openLoadfile(lua_State * L)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_getglobal(L, "flat");
+	lua_pushstring(L, m_luaPath.c_str());
+	lua_pushcclosure(L, l_flat_loadfile, 1);
+	lua_setfield(L, -2, "loadfile");
 	lua_pop(L, 1);
 }
 

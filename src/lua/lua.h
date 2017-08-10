@@ -39,6 +39,9 @@ class Lua
 		static int l_flat_dofile(lua_State* L);
 		void openDofile(lua_State* L);
 
+		static int l_flat_loadfile(lua_State* L);
+		void openLoadfile(lua_State* L);
+
 		static int l_flat_assetPath(lua_State* L);
 		void openAssetPath(lua_State* L);
 
