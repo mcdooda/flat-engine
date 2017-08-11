@@ -8,7 +8,7 @@ function InitNode:getName()
 end
 
 function InitNode:buildPins()
-    self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE)
+    self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'Out')
 end
 
 function InitNode:execute(runtime)

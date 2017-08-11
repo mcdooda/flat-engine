@@ -12,7 +12,7 @@ function ScriptInputNode:addedToGraph(graph)
 end
 
 function ScriptInputNode:buildPins()
-    -- nothing to do, pins from this node are created manually
+    -- nothing to do, pins from this node are created manually from the outside
 end
 
 function ScriptInputNode:execute(runtime)
@@ -21,8 +21,10 @@ end
 
 function ScriptInputNode:init(...)
     for i = 1, select('#', ...) do
-        local pinType = select(i, ...)
-        self:addOutputPin(pinType)
+        local pin = select(i, ...)
+        local pinType = pin[1]
+        local pinName = pin[2]
+        self:addOutputPin(pinType, pinName)
     end
 end
 

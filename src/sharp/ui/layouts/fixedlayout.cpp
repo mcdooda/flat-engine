@@ -16,8 +16,13 @@ void FixedLayout::preLayout(Widget& widget)
 	{
 		computeExpandWidth(widget);
 	}
+	else if ((sizePolicy & Widget::SizePolicy::COMPRESS_X) != 0)
+	{
+		computeCompressWidth(widget);
+	}
 	else
 	{
+		FLAT_ASSERT((sizePolicy & Widget::SizePolicy::FIXED_X) != 0);
 		computeFixedWidth(widget);
 	}
 
@@ -25,8 +30,13 @@ void FixedLayout::preLayout(Widget& widget)
 	{
 		computeExpandHeight(widget);
 	}
+	else if ((sizePolicy & Widget::SizePolicy::COMPRESS_Y) != 0)
+	{
+		computeCompressHeight(widget);
+	}
 	else
 	{
+		FLAT_ASSERT((sizePolicy & Widget::SizePolicy::FIXED_Y) != 0);
 		computeFixedHeight(widget);
 	}
 

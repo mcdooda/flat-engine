@@ -8,7 +8,7 @@ function StringNode:getName()
 end
 
 function StringNode:buildPins()
-    self.stringOutPin = self:addOutputPin(PinTypes.STRING)
+    self.stringOutPin = self:addOutputPin(PinTypes.STRING, 'String')
 end
 
 function StringNode:execute(runtime)

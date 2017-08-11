@@ -8,13 +8,13 @@ function TestNode:getName()
 end
 
 function TestNode:buildPins()
-    self.numberInPin = self:addInputPin(PinTypes.NUMBER)
-    self.stringInPin = self:addInputPin(PinTypes.STRING)
-    self.impulseInPin = self:addInputPin(PinTypes.IMPULSE)
+    self.numberInPin = self:addInputPin(PinTypes.NUMBER, 'Number')
+    self.stringInPin = self:addInputPin(PinTypes.STRING, 'String')
+    self.impulseInPin = self:addInputPin(PinTypes.IMPULSE, 'In')
 
-    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER)
-    self.stringOutPin = self:addOutputPin(PinTypes.STRING)
-    self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE)
+    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, 'Number')
+    self.stringOutPin = self:addOutputPin(PinTypes.STRING, 'String')
+    self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'Out')
 end
 
 function TestNode:execute(runtime, inputPin)

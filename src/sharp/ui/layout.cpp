@@ -139,6 +139,46 @@ void Layout::computeExpandHeight(Widget& widget)
 	widget.m_computedSize.y = parent.m_computedSize.y - widget.m_margin.bottom - widget.m_margin.top;
 }
 
+void Layout::computeCompressWidth(Widget& widget)
+{
+	float compressWidth = 0;
+	for (const std::shared_ptr<Widget>& childSharedPtr : widget.m_children)
+	{
+		Widget* child = childSharedPtr.get();
+		const Widget::SizePolicy sizePolicy = child->getSizePolicy();
+		if ((sizePolicy & Widget::SizePolicy::FIXED_X) != 0)
+		{
+			compressWidth = std::max(compressWidth, child->m_computedSize.x);
+		}
+		else if ((sizePolicy & Widget::SizePolicy::COMPRESS_X) != 0)
+		{
+			computeCompressWidth(*child);
+			compressWidth = std::max(compressWidth, child->m_computedSize.x);
+		}
+	}
+	widget.m_computedSize.x = compressWidth;
+}
+
+void Layout::computeCompressHeight(Widget& widget)
+{
+	float compressHeight = 0;
+	for (const std::shared_ptr<Widget>& childSharedPtr : widget.m_children)
+	{
+		Widget* child = childSharedPtr.get();
+		const Widget::SizePolicy sizePolicy = child->getSizePolicy();
+		if ((sizePolicy & Widget::SizePolicy::FIXED_Y) != 0)
+		{
+			compressHeight = std::max(compressHeight, child->m_computedSize.y);
+		}
+		else if ((sizePolicy & Widget::SizePolicy::COMPRESS_Y) != 0)
+		{
+			computeCompressHeight(*child);
+			compressHeight = std::max(compressHeight, child->m_computedSize.y);
+		}
+	}
+	widget.m_computedSize.y = compressHeight;
+}
+
 void Layout::computePosition(Widget& widget, Vector2& position)
 {
 	Widget::PositionPolicy positionPolicy = widget.m_positionPolicy;
@@ -192,11 +232,12 @@ void Layout::computeTransform(Widget& widget)
 
 	Matrix4& transform = widget.m_transform;
 	transform = getParent(widget).m_transform;
-	translateBy(transform, position + widget.m_computedSize / 2.f);
+	translateBy(transform, { std::roundf(position.x), std::roundf(position.y) });
+	//translateBy(transform, position + widget.m_computedSize / 2.f);
 	//transform.rotateZ(widget.getRotation().z);
 	//transform.rotateY(widget.getRotation().y);
 	//transform.rotateX(widget.getRotation().x);
-	translateBy(transform, -widget.m_computedSize / 2.f);
+	//translateBy(transform, -widget.m_computedSize / 2.f);
 }
 
 } // ui

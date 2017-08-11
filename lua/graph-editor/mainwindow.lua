@@ -65,11 +65,19 @@ function MainWindow:makeNodeWidget(node)
     nodeWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
 
     do
-        local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))
-        nodeNameText:setTextColor(0x000000FF)
-        nodeNameText:setPositionPolicy(Widget.PositionPolicy.CENTER)
-        nodeNameText:setMargin(3)
-        nodeWidget:addChild(nodeNameText)
+        local nodeNameContainer = Widget.makeExpand()
+        nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+        nodeNameContainer:setBackgroundColor(0x333333FF)
+
+        do
+            local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))
+            nodeNameText:setTextColor(0xFFFFFFFF)
+            nodeNameText:setPositionPolicy(Widget.PositionPolicy.CENTER)
+            nodeNameText:setMargin(3)
+            nodeNameContainer:addChild(nodeNameText)
+        end
+
+        nodeWidget:addChild(nodeNameContainer)
     end
 
     do
@@ -80,7 +88,8 @@ function MainWindow:makeNodeWidget(node)
             inputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
             --inputPinsWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
             for i = 1, #node.inputPins do
-                local inputPinWidget = Widget.makeText('<-', table.unpack(flat.ui.settings.defaultFont))
+                local pin = node.inputPins[i]
+                local inputPinWidget = Widget.makeText('<- ' .. pin.pinName, table.unpack(flat.ui.settings.defaultFont))
                 inputPinWidget:setTextColor(0x000000FF)
                 inputPinsWidget:addChild(inputPinWidget)
             end
@@ -97,7 +106,8 @@ function MainWindow:makeNodeWidget(node)
             outputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
             --outputPinsWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
             for i = 1, #node.outputPins do
-                local outputPinWidget = Widget.makeText('->', table.unpack(flat.ui.settings.defaultFont))
+                local pin = node.outputPins[i]
+                local outputPinWidget = Widget.makeText(pin.pinName .. '->', table.unpack(flat.ui.settings.defaultFont))
                 outputPinWidget:setTextColor(0x000000FF)
                 outputPinWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
                 outputPinsWidget:addChild(outputPinWidget)

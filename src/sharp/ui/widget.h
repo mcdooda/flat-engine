@@ -203,6 +203,7 @@ class Widget : public util::Convertible<Widget>
 		virtual bool isRoot() const { return false; }
 		RootWidget* getRootIfAncestor();
 		Widget* getFixedLayoutAncestor();
+		bool hasFixedSize() const;
 		
 		Margin m_margin;
 		Padding m_padding;

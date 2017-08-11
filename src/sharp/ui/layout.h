@@ -44,6 +44,8 @@ protected:
 	static void computeFixedHeight(Widget& widget);
 	static void computeExpandWidth(Widget& widget);
 	static void computeExpandHeight(Widget& widget);
+	static void computeCompressWidth(Widget& widget);
+	static void computeCompressHeight(Widget& widget);
 	static void computePosition(Widget& widget, Vector2& position);
 	static void computeTransform(Widget& widget);
 };

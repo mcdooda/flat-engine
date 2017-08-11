@@ -8,7 +8,7 @@ function NumberNode:getName()
 end
 
 function NumberNode:buildPins()
-    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER)
+    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, 'Number')
 end
 
 function NumberNode:execute(runtime)

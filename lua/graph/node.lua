@@ -29,6 +29,8 @@ function Node:init(...)
 end
 
 function Node:addInputPin(pinType, pinName)
+    assert(pinType)
+    assert(pinName)
     local inputPin = {
         pinType = pinType,
         pinName = pinName,

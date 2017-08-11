@@ -312,16 +312,21 @@ Widget* Widget::getFixedLayoutAncestor()
 
 	Widget* parent = m_parent.lock().get();
 
-	if (hasLayout<FixedLayout>())
+	if (hasFixedSize())
 		return parent->getFixedLayoutAncestor();
 
-	if (parent->hasLayout<FixedLayout>())
+	if (parent->hasFixedSize())
 		return parent;
 
 	if (parent->isRoot() || isRoot())
 		return this;
 
 	return parent->getFixedLayoutAncestor();
+}
+
+bool Widget::hasFixedSize() const
+{
+	return hasLayout<FixedLayout>() && m_sizePolicy == Widget::SizePolicy::FIXED;
 }
 
 } // ui

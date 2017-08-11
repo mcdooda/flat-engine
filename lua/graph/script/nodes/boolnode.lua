@@ -8,7 +8,7 @@ function BoolNode:getName()
 end
 
 function BoolNode:buildPins()
-    self.boolOutPin = self:addOutputPin(PinTypes.BOOL)
+    self.boolOutPin = self:addOutputPin(PinTypes.BOOL, 'Bool')
 end
 
 function BoolNode:execute(runtime)

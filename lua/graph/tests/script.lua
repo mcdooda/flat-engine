@@ -11,8 +11,8 @@ local MultiplyNode = require 'script/nodes/math/multiplynode'
 local script = Graph:new()
 
 local scriptInput = script:addNode(ScriptInputNode)
-local scriptInputNumber = scriptInput:addOutputPin(PinTypes.NUMBER)
-local scriptInputString = scriptInput:addOutputPin(PinTypes.STRING)
+local scriptInputNumber = scriptInput:addOutputPin(PinTypes.NUMBER, 'Number')
+local scriptInputString = scriptInput:addOutputPin(PinTypes.STRING, 'String')
 
 local init = script:addNode(InitNode)
 local test1 = script:addNode(TestNode)
