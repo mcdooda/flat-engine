@@ -148,12 +148,12 @@ void Layout::computeCompressWidth(Widget& widget)
 		const Widget::SizePolicy sizePolicy = child->getSizePolicy();
 		if ((sizePolicy & Widget::SizePolicy::FIXED_X) != 0)
 		{
-			compressWidth = std::max(compressWidth, child->m_computedSize.x);
+			compressWidth = std::max(compressWidth, child->m_computedSize.x + child->m_margin.left + child->m_margin.right);
 		}
 		else if ((sizePolicy & Widget::SizePolicy::COMPRESS_X) != 0)
 		{
 			computeCompressWidth(*child);
-			compressWidth = std::max(compressWidth, child->m_computedSize.x);
+			compressWidth = std::max(compressWidth, child->m_computedSize.x + child->m_margin.left + child->m_margin.right);
 		}
 	}
 	widget.m_computedSize.x = compressWidth;
@@ -168,12 +168,12 @@ void Layout::computeCompressHeight(Widget& widget)
 		const Widget::SizePolicy sizePolicy = child->getSizePolicy();
 		if ((sizePolicy & Widget::SizePolicy::FIXED_Y) != 0)
 		{
-			compressHeight = std::max(compressHeight, child->m_computedSize.y);
+			compressHeight = std::max(compressHeight, child->m_computedSize.y + child->m_margin.bottom + child->m_margin.top);
 		}
 		else if ((sizePolicy & Widget::SizePolicy::COMPRESS_Y) != 0)
 		{
 			computeCompressHeight(*child);
-			compressHeight = std::max(compressHeight, child->m_computedSize.y);
+			compressHeight = std::max(compressHeight, child->m_computedSize.y + child->m_margin.bottom + child->m_margin.top);
 		}
 	}
 	widget.m_computedSize.y = compressHeight;
@@ -196,7 +196,7 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 	else if (positionPolicy & Widget::PositionPolicy::CENTER_X)
 	{
 		position.x = (parent.m_padding.left + parent.m_computedSize.x - parent.m_padding.right) / 2.f
-				- getOuterWidth(widget) / 2.f;
+				- (widget.m_computedSize.x + widget.m_margin.left - widget.m_margin.right) / 2.f;
 	}
 	else
 	{
@@ -215,7 +215,7 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 	else if (positionPolicy & Widget::PositionPolicy::CENTER_Y)
 	{
 		position.y = (parent.m_padding.bottom + parent.m_computedSize.y - parent.m_padding.top) / 2.f
-				- getOuterHeight(widget) / 2.f;
+				- (widget.m_computedSize.y + widget.m_margin.bottom - widget.m_margin.top) / 2.f;
 	}
 	else
 	{
