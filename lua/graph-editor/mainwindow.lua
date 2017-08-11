@@ -91,13 +91,14 @@ function MainWindow:makeNodeWidget(node)
                 local pin = node.inputPins[i]
                 local inputPinWidget = Widget.makeText('<- ' .. pin.pinName, table.unpack(flat.ui.settings.defaultFont))
                 inputPinWidget:setTextColor(0x000000FF)
+                inputPinWidget:setMargin(1, 0, 1, 0)
                 inputPinsWidget:addChild(inputPinWidget)
             end
             pinsWidget:addChild(inputPinsWidget)
         end
 
         do
-            local centerMargin = Widget.makeFixedSize(20, 20)
+            local centerMargin = Widget.makeFixedSize(20, 1)
             pinsWidget:addChild(centerMargin)
         end
 
@@ -107,8 +108,9 @@ function MainWindow:makeNodeWidget(node)
             --outputPinsWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
             for i = 1, #node.outputPins do
                 local pin = node.outputPins[i]
-                local outputPinWidget = Widget.makeText(pin.pinName .. '->', table.unpack(flat.ui.settings.defaultFont))
+                local outputPinWidget = Widget.makeText(pin.pinName .. ' ->', table.unpack(flat.ui.settings.defaultFont))
                 outputPinWidget:setTextColor(0x000000FF)
+                outputPinWidget:setMargin(1, 0, 1, 0)
                 outputPinWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
                 outputPinsWidget:addChild(outputPinWidget)
             end
