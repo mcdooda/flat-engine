@@ -1,4 +1,5 @@
 local Graph = flat.require 'graph/graph'
+local NodeWidget = flat.require 'graph-editor/nodewidget'
 
 local MainWindow = {}
 MainWindow.__index = MainWindow
@@ -16,13 +17,14 @@ function MainWindow:build()
     local window = Widget.makeColumnFlow()
     window:setMargin(25)
     window:setSizePolicy(Widget.SizePolicy.EXPAND)
-    window:setBackgroundColor(0x333333FF)
+    window:setBackgroundColor(0x2C3E50FF)
     local titleText = Widget.makeText('Node Graph Editor', table.unpack(flat.ui.settings.defaultFont))
+    titleText:setTextColor(0xECF0F1FF)
     titleText:setMargin(3, 0, 0, 3)
     window:addChild(titleText)
     local content = Widget.makeExpand()
     content:setMargin(3)
-    content:setBackgroundColor(0xCCCCCCFF)
+    content:setBackgroundColor(0xECF0F1FF)
     window:addChild(content)
     self.editorContainer:addChild(window)
     self.titleText = titleText
@@ -60,67 +62,8 @@ function MainWindow:loadGraphLayout(graphPath)
 end
 
 function MainWindow:makeNodeWidget(node)
-    local nodeWidget = Widget.makeColumnFlow()
-    nodeWidget:setBackgroundColor(0x888888FF)
-    nodeWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
-
-    do
-        local nodeNameContainer = Widget.makeExpand()
-        nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-        nodeNameContainer:setBackgroundColor(0x333333FF)
-
-        do
-            local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))
-            nodeNameText:setTextColor(0xFFFFFFFF)
-            nodeNameText:setPositionPolicy(Widget.PositionPolicy.CENTER)
-            nodeNameText:setMargin(3)
-            nodeNameContainer:addChild(nodeNameText)
-        end
-
-        nodeWidget:addChild(nodeNameContainer)
-    end
-
-    do
-        local pinsWidget = Widget.makeLineFlow()
-
-        do
-            local inputPinsWidget = Widget.makeColumnFlow()
-            inputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
-            --inputPinsWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-            for i = 1, #node.inputPins do
-                local pin = node.inputPins[i]
-                local inputPinWidget = Widget.makeText('<- ' .. pin.pinName, table.unpack(flat.ui.settings.defaultFont))
-                inputPinWidget:setTextColor(0x000000FF)
-                inputPinWidget:setMargin(1, 0, 1, 0)
-                inputPinsWidget:addChild(inputPinWidget)
-            end
-            pinsWidget:addChild(inputPinsWidget)
-        end
-
-        do
-            local centerMargin = Widget.makeFixedSize(20, 1)
-            pinsWidget:addChild(centerMargin)
-        end
-
-        do
-            local outputPinsWidget = Widget.makeColumnFlow()
-            outputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
-            --outputPinsWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-            for i = 1, #node.outputPins do
-                local pin = node.outputPins[i]
-                local outputPinWidget = Widget.makeText(pin.pinName .. ' ->', table.unpack(flat.ui.settings.defaultFont))
-                outputPinWidget:setTextColor(0x000000FF)
-                outputPinWidget:setMargin(1, 0, 1, 0)
-                outputPinWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
-                outputPinsWidget:addChild(outputPinWidget)
-            end
-            pinsWidget:addChild(outputPinsWidget)
-        end
-
-        nodeWidget:addChild(pinsWidget)
-    end
-
-    return nodeWidget
+    local nodeWidget = NodeWidget:new(node)
+    return nodeWidget.container
 end
 
 return MainWindow
