@@ -160,7 +160,23 @@ void LineFlowLayout::layout(Widget& widget, bool computePosition)
 
 		Matrix4& childTransform = getTransform(child);
 		childTransform = Matrix4();
-		translateBy(childTransform, Vector2(currentX + getPosition(child).x, getPadding(widget).bottom + getMargin(child).bottom + getPosition(child).y));
+		float y = 0.f;
+		Widget::PositionPolicy positionPolicy = getPositionPolicy(child);
+		if ((positionPolicy & Widget::PositionPolicy::BOTTOM) != 0)
+		{
+			y = getPadding(widget).bottom + getMargin(child).bottom + getPosition(child).y;
+		}
+		else if ((positionPolicy & Widget::PositionPolicy::TOP) != 0)
+		{
+			y = getComputedSize(widget).y - getComputedSize(child).y - getPadding(widget).top - getMargin(child).top + getPosition(child).y;
+		}
+		else
+		{
+			FLAT_ASSERT((positionPolicy & Widget::PositionPolicy::CENTER_Y) != 0);
+			y = (getPadding(widget).bottom + getMargin(child).bottom + getPosition(child).y
+				+ getComputedSize(widget).y - getComputedSize(child).y - getPadding(widget).top - getMargin(child).top + getPosition(child).y) / 2.f;
+		}
+		translateBy(childTransform, { currentX + getPosition(child).x, y });
 		transformBy(childTransform, getTransform(widget));
 
 		child.layout(false);

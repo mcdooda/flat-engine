@@ -47,6 +47,8 @@ protected:
 	static void computeCompressWidth(Widget& widget);
 	static void computeCompressHeight(Widget& widget);
 	static void computePosition(Widget& widget, Vector2& position);
+	static void computePositionX(Widget& widget, Vector2& position);
+	static void computePositionY(Widget& widget, Vector2& position);
 	static void computeTransform(Widget& widget);
 };
 

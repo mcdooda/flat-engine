@@ -161,7 +161,23 @@ void ColumnFlowLayout::layout(Widget& widget, bool computePosition)
 
 		Matrix4& childTransform = getTransform(child);
 		childTransform = Matrix4();
-		translateBy(childTransform, Vector2(getPadding(widget).left + getMargin(child).left + getPosition(child).x, currentY + getPosition(child).y));
+		float x = 0.f;
+		Widget::PositionPolicy positionPolicy = getPositionPolicy(child);
+		if ((positionPolicy & Widget::PositionPolicy::LEFT) != 0)
+		{
+			x = getPadding(widget).left + getMargin(child).left + getPosition(child).x;
+		}
+		else if ((positionPolicy & Widget::PositionPolicy::RIGHT) != 0)
+		{
+			x = getComputedSize(widget).x - getComputedSize(child).x - getPadding(widget).right - getMargin(child).right + getPosition(child).x;
+		}
+		else
+		{
+			FLAT_ASSERT((positionPolicy & Widget::PositionPolicy::CENTER_X) != 0);
+			x = (getPadding(widget).left + getMargin(child).left + getPosition(child).x
+				+ getComputedSize(widget).x - getComputedSize(child).x - getPadding(widget).right - getMargin(child).right + getPosition(child).x) / 2.f;
+		}
+		translateBy(childTransform, { x, currentY + getPosition(child).y });
 		transformBy(childTransform, getTransform(widget));
 
 		child.layout(false);

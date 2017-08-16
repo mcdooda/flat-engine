@@ -181,6 +181,12 @@ void Layout::computeCompressHeight(Widget& widget)
 
 void Layout::computePosition(Widget& widget, Vector2& position)
 {
+	computePositionX(widget, position);
+	computePositionY(widget, position);
+}
+
+void Layout::computePositionX(Widget& widget, Vector2& position)
+{
 	Widget::PositionPolicy positionPolicy = widget.m_positionPolicy;
 	Widget& parent = getParent(widget);
 
@@ -191,22 +197,30 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 	else if (positionPolicy & Widget::PositionPolicy::RIGHT)
 	{
 		position.x = parent.m_computedSize.x - parent.m_padding.right
-				- widget.m_computedSize.x - widget.m_margin.right;
+			- widget.m_computedSize.x - widget.m_margin.right;
 	}
 	else if (positionPolicy & Widget::PositionPolicy::CENTER_X)
 	{
 		position.x = (parent.m_padding.left + parent.m_computedSize.x - parent.m_padding.right) / 2.f
-				- (widget.m_computedSize.x + widget.m_margin.left - widget.m_margin.right) / 2.f;
+			- (widget.m_computedSize.x + widget.m_margin.left - widget.m_margin.right) / 2.f;
 	}
 	else
 	{
 		FLAT_ASSERT(false);
 	}
 
+	position.x += widget.m_position.x;
+}
+
+void Layout::computePositionY(Widget& widget, Vector2& position)
+{
+	Widget::PositionPolicy positionPolicy = widget.m_positionPolicy;
+	Widget& parent = getParent(widget);
+
 	if (positionPolicy & Widget::PositionPolicy::TOP)
 	{
 		position.y = parent.m_computedSize.y - parent.m_padding.top
-				- widget.m_computedSize.y - widget.m_margin.top;
+			- widget.m_computedSize.y - widget.m_margin.top;
 	}
 	else if (positionPolicy & Widget::PositionPolicy::BOTTOM)
 	{
@@ -215,14 +229,14 @@ void Layout::computePosition(Widget& widget, Vector2& position)
 	else if (positionPolicy & Widget::PositionPolicy::CENTER_Y)
 	{
 		position.y = (parent.m_padding.bottom + parent.m_computedSize.y - parent.m_padding.top) / 2.f
-				- (widget.m_computedSize.y + widget.m_margin.bottom - widget.m_margin.top) / 2.f;
+			- (widget.m_computedSize.y + widget.m_margin.bottom - widget.m_margin.top) / 2.f;
 	}
 	else
 	{
 		FLAT_ASSERT(false);
 	}
 
-	position += widget.m_position;
+	position.y += widget.m_position.y;
 }
 
 void Layout::computeTransform(Widget& widget)
