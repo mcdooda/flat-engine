@@ -90,7 +90,8 @@ void Widget::setPosition(const Position& position)
 
 void Widget::addChild(const std::shared_ptr<Widget>& widget)
 {
-	FLAT_ASSERT(widget->m_parent.expired());
+	FLAT_ASSERT_MSG(widget->m_parent.expired(), "Cannot add a node as child if it already has a parent");
+	FLAT_ASSERT_MSG(widget.get() != this, "A node cannot add itself as its child");
 	m_children.push_back(std::shared_ptr<Widget>(widget));
 	widget->m_parent = getWeakPtr();
 
