@@ -23,10 +23,18 @@ void TextWidget::setText(const std::string& text)
 		fixedLayoutAncestor->setDirty();
 }
 
-void TextWidget::draw(const render::RenderSettings& renderSettings) const
+void TextWidget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
 {
 	if (!m_visible || getVertices().empty())
+	{
 		return;
+	}
+
+	ScissorRectangle scissor;
+	if (!computeAndApplyScissor(scissor, parentScissor))
+	{
+		return;
+	}
 	
 	renderSettings.textureUniform.set(getFont()->getAtlasId());
 	renderSettings.modelMatrixUniform.set(m_transform);

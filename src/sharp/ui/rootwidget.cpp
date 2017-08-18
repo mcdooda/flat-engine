@@ -38,7 +38,11 @@ void RootWidget::clearAll()
 
 void RootWidget::draw(const flat::render::RenderSettings& renderSettings) const
 {
-	drawChildren(renderSettings);
+	glEnable(GL_SCISSOR_TEST);
+	ScissorRectangle screenScissor;
+	getScissor(screenScissor);
+	drawChildren(renderSettings, screenScissor);
+	glDisable(GL_SCISSOR_TEST);
 }
 
 void RootWidget::addDirtyWidget(const std::weak_ptr<Widget>& widget)

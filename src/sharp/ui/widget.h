@@ -105,6 +105,15 @@ class Widget : public util::Convertible<Widget>
 		};
 
 		using BackgroundPosition = Vector2;
+
+	protected:
+		struct ScissorRectangle
+		{
+			GLint x;
+			GLint y;
+			GLsizei width;
+			GLsizei height;
+		};
 		
 	public:
 		Widget();
@@ -167,7 +176,7 @@ class Widget : public util::Convertible<Widget>
 		virtual void postLayout() = 0;
 		virtual void fullLayout() = 0;
 
-		virtual void draw(const render::RenderSettings& renderSettings) const;
+		virtual void draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const;
 
 		template <class CandidateLayoutType>
 		bool hasLayout() const;
@@ -187,7 +196,11 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*> mouseLeave;
 		
 	protected:
-		void drawChildren(const render::RenderSettings& renderSettings) const;
+		static bool intersect(const ScissorRectangle& a, const ScissorRectangle& b);
+		static void computeParentScissorIntersection(ScissorRectangle& scissor, const ScissorRectangle& parentScissor);
+		void getScissor(ScissorRectangle& scissor) const;
+		bool computeAndApplyScissor(ScissorRectangle& scissor, const ScissorRectangle& parentScissor) const;
+		void drawChildren(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const;
 		
 		float getInnerWidth() const { return m_computedSize.x - m_padding.left - m_padding.right; }
 		void setInnerWidth(float innerWidth) { m_computedSize.x = innerWidth + m_padding.left + m_padding.right; }

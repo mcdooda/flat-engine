@@ -33,7 +33,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void clearAll();
 
-		void draw(const flat::render::RenderSettings& renderSettings) const override; // final
+		void draw(const flat::render::RenderSettings& renderSettings) const; // not an override
 
 		void addDirtyWidget(const std::weak_ptr<Widget>& widget);
 		void removeDirtyWidget(const std::weak_ptr<Widget>& widget);

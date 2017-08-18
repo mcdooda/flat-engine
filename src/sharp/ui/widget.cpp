@@ -7,6 +7,7 @@
 #include "../../video/color.h"
 #include "../../video/texture.h"
 #include "../../memory/memory.h"
+#include "../../debug/helpers.h"
 
 namespace flat
 {
@@ -133,10 +134,18 @@ void Widget::removeAllChildren()
 		fixedLayoutAncestor->setDirty();
 }
 
-void Widget::draw(const render::RenderSettings& renderSettings) const
+void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
 {
 	if (!m_visible)
+	{
 		return;
+	}
+
+	ScissorRectangle scissor;
+	if (!computeAndApplyScissor(scissor, parentScissor))
+	{
+		return;
+	}
 		
 	const video::Texture* background = m_background.get();
 	if (background != nullptr || m_backgroundColor.a > 0.f)
@@ -228,7 +237,7 @@ void Widget::draw(const render::RenderSettings& renderSettings) const
 		}
 	}
 
-	drawChildren(renderSettings);
+	drawChildren(renderSettings, scissor);
 }
 
 bool Widget::isInside(const Vector2& point) const
@@ -247,13 +256,65 @@ Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 	return Vector2(invTransform * Vector4(absolutePosition, 0.f, 1.f));
 }
 
-void Widget::drawChildren(const render::RenderSettings& renderSettings) const
+FLAT_OPTIMIZE_OFF()
+bool Widget::intersect(const ScissorRectangle& a, const ScissorRectangle& b)
+{
+	return a.x < b.x + b.width
+	    && b.x < a.x + a.width
+	    && a.y < b.y + b.height
+	    && b.y < a.y + a.height;
+}
+void Widget::computeParentScissorIntersection(ScissorRectangle& scissor, const ScissorRectangle& parentScissor)
+{
+	if (intersect(scissor, parentScissor))
+	{
+		GLint left = std::max(scissor.x, parentScissor.x);
+		GLint right = std::min(scissor.x + scissor.width, parentScissor.x + parentScissor.width);
+		GLint bottom = std::max(scissor.y, parentScissor.y);
+		GLint top = std::max(scissor.y + scissor.height, parentScissor.y + parentScissor.height);
+
+		scissor.x = left;
+		scissor.y = bottom;
+		scissor.width = right - left;
+		scissor.height = top - bottom;
+	}
+	else
+	{
+		scissor.x = 0;
+		scissor.y = 0;
+		scissor.width = 0;
+		scissor.height = 0;
+	}
+}
+
+void Widget::getScissor(ScissorRectangle& scissor) const
+{
+	scissor.x = static_cast<GLint>(m_transform[3][0]);
+	scissor.y = static_cast<GLint>(m_transform[3][1]);
+	scissor.width = static_cast<GLsizei>(m_computedSize.x);
+	scissor.height = static_cast<GLsizei>(m_computedSize.y);
+}
+
+bool Widget::computeAndApplyScissor(ScissorRectangle& scissor, const ScissorRectangle& parentScissor) const
+{
+	getScissor(scissor);
+	computeParentScissorIntersection(scissor, parentScissor);
+	if (scissor.width > 0 && scissor.height > 0)
+	{
+		glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+		return true;
+	}
+	return false;
+}
+
+void Widget::drawChildren(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
 {
 	for (const std::shared_ptr<Widget>& child : m_children)
 	{
-		child->draw(renderSettings);
+		child->draw(renderSettings, parentScissor);
 	}
 }
+FLAT_OPTIMIZE_ON()
 
 Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {
