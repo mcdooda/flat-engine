@@ -117,7 +117,7 @@ end
 local pinColors = {
     [PinTypes.IMPULSE]  = 0xE74C3CFF,
     [PinTypes.USERDATA] = 0x2ECC71FF,
-    [PinTypes.BOOL]     = 0x0000FFFF,
+    [PinTypes.BOOL]     = 0x27AE60FF,
     [PinTypes.NUMBER]   = 0xF39C12FF,
     [PinTypes.STRING]   = 0x3498DBFF,
 }
