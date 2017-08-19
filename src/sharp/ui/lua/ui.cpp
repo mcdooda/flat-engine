@@ -66,6 +66,13 @@ int open(lua_State* L)
 		{"getVisible",            l_Widget_getVisible},
 		{"hide",                  l_Widget_hide},
 		{"show",                  l_Widget_show},
+
+		{"setAllowScrollX",       l_Widget_setAllowScrollX},
+		{"getAllowScrollX",       l_Widget_getAllowScrollX},
+		{"setAllowScrollY",       l_Widget_setAllowScrollY},
+		{"getAllowScrollY",       l_Widget_getAllowScrollY},
+		{"setAllowScroll",        l_Widget_setAllowScroll},
+		{"getAllowScroll",        l_Widget_getAllowScroll},
 		
 		{"click",                 l_Widget_click},
 		{"mouseMove",             l_Widget_mouseMove},
@@ -448,6 +455,54 @@ int l_Widget_show(lua_State* L)
 	Widget& widget = getWidget(L, 1);
 	widget.show();
 	return 0;
+}
+
+int l_Widget_setAllowScrollX(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool allowScrollX = lua_toboolean(L, 2) == 1;
+	widget.setAllowScrollX(allowScrollX);
+	return 0;
+}
+
+int l_Widget_getAllowScrollX(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getAllowScrollX());
+	return 1;
+}
+
+int l_Widget_setAllowScrollY(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool allowScrollY = lua_toboolean(L, 2) == 1;
+	widget.setAllowScrollY(allowScrollY);
+	return 0;
+}
+
+int l_Widget_getAllowScrollY(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getAllowScrollY());
+	return 1;
+}
+
+int l_Widget_setAllowScroll(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool allowScrollX = lua_toboolean(L, 2) == 1;
+	bool allowScrollY = lua_toboolean(L, 3) == 1;
+	widget.setAllowScrollX(allowScrollX);
+	widget.setAllowScrollY(allowScrollY);
+	return 0;
+}
+
+int l_Widget_getAllowScroll(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getAllowScrollX());
+	lua_pushboolean(L, widget.getAllowScrollY());
+	return 2;
 }
 
 int l_Widget_click(lua_State* L)

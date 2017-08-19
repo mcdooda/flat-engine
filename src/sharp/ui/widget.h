@@ -106,6 +106,10 @@ class Widget : public util::Convertible<Widget>
 
 		using BackgroundPosition = Vector2;
 
+		using ScrollPosition = Vector2;
+
+		static constexpr float SCROLL_SPEED = 15.f;
+
 	protected:
 		struct ScissorRectangle
 		{
@@ -163,6 +167,16 @@ class Widget : public util::Convertible<Widget>
 		inline bool getVisible() const { return m_visible; }
 		inline void hide() { setVisible(false); }
 		inline void show() { setVisible(true); }
+
+		inline void setAllowScrollX(bool allowScrollX) { m_allowScrollX = allowScrollX; }
+		inline bool getAllowScrollX() const { return m_allowScrollX; }
+		inline void setAllowScrollY(bool allowScrollY) { m_allowScrollY = allowScrollY; }
+		inline bool getAllowScrollY() const { return m_allowScrollY; }
+
+		void scrollX(float scrollValueX);
+		void scrollY(float scrollValueY);
+
+		inline const ScrollPosition& getScrollPosition() const { return m_scrollPosition; }
 		
 		void addChild(const std::shared_ptr<Widget>& widget);
 		void removeChild(const std::shared_ptr<Widget>& widget);
@@ -218,6 +232,7 @@ class Widget : public util::Convertible<Widget>
 		Widget* getFixedLayoutAncestor();
 		bool hasFixedSize() const;
 		
+		// Widget settings
 		Margin m_margin;
 		Padding m_padding;
 		Size m_size;
@@ -232,12 +247,17 @@ class Widget : public util::Convertible<Widget>
 		SizePolicy m_sizePolicy;
 		PositionPolicy m_positionPolicy;
 
-		bool m_mouseOver : 1;
-		bool m_hasFocus : 1;
 		bool m_visible : 1;
 
-		Vector2 m_computedSize;
+		// computed
+		bool m_mouseOver : 1;
+		bool m_hasFocus : 1;
+		bool m_allowScrollX : 1;
+		bool m_allowScrollY : 1;
+
 		Matrix4 m_transform;
+		Size m_computedSize;
+		ScrollPosition m_scrollPosition;
 		
 		std::weak_ptr<Widget> m_self;
 		std::weak_ptr<Widget> m_parent;

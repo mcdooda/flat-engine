@@ -25,6 +25,7 @@ function MainWindow:build()
     local content = Widget.makeExpand()
     content:setMargin(3)
     content:setBackgroundColor(0xECF0F1FF)
+    content:setAllowScroll(true, true)
     window:addChild(content)
     self.editorContainer:addChild(window)
     self.titleText = titleText

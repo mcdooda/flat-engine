@@ -27,9 +27,11 @@ Widget::Widget() :
 	m_backgroundColor(0.f, 0.f, 0.f, 0.f),
 	m_sizePolicy(SizePolicy::FIXED),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
+	m_visible(true),
 	m_mouseOver(false),
 	m_hasFocus(false),
-	m_visible(true)
+	m_allowScrollX(false),
+	m_allowScrollY(false)
 {
 
 }
@@ -84,6 +86,22 @@ void Widget::setPositionPolicy(PositionPolicy positionPolicy)
 void Widget::setPosition(const Position& position)
 {
 	m_position = position;
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
+}
+
+void Widget::scrollX(float scrollValueX)
+{
+	m_scrollPosition.x += scrollValueX * SCROLL_SPEED;
+
+	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
+		fixedLayoutAncestor->setDirty();
+}
+
+void Widget::scrollY(float scrollValueY)
+{
+	m_scrollPosition.y += scrollValueY * SCROLL_SPEED;
 
 	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
 		fixedLayoutAncestor->setDirty();
@@ -256,7 +274,6 @@ Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 	return Vector2(invTransform * Vector4(absolutePosition, 0.f, 1.f));
 }
 
-FLAT_OPTIMIZE_OFF()
 bool Widget::intersect(const ScissorRectangle& a, const ScissorRectangle& b)
 {
 	return a.x < b.x + b.width
@@ -271,7 +288,7 @@ void Widget::computeParentScissorIntersection(ScissorRectangle& scissor, const S
 		GLint left = std::max(scissor.x, parentScissor.x);
 		GLint right = std::min(scissor.x + scissor.width, parentScissor.x + parentScissor.width);
 		GLint bottom = std::max(scissor.y, parentScissor.y);
-		GLint top = std::max(scissor.y + scissor.height, parentScissor.y + parentScissor.height);
+		GLint top = std::min(scissor.y + scissor.height, parentScissor.y + parentScissor.height);
 
 		scissor.x = left;
 		scissor.y = bottom;
@@ -314,7 +331,6 @@ void Widget::drawChildren(const render::RenderSettings& renderSettings, const Sc
 		child->draw(renderSettings, parentScissor);
 	}
 }
-FLAT_OPTIMIZE_ON()
 
 Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {

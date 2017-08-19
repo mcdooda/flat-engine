@@ -56,6 +56,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseMove();
 		void handleMouseEnter();
 		void handleMouseLeave();
+		void handleMouseWheel();
 		
 	private:
 		Flat& m_flat;

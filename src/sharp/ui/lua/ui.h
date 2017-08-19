@@ -60,6 +60,13 @@ int l_Widget_getVisible(lua_State* L);
 int l_Widget_hide(lua_State* L);
 int l_Widget_show(lua_State* L);
 
+int l_Widget_setAllowScrollX(lua_State* L);
+int l_Widget_getAllowScrollX(lua_State* L);
+int l_Widget_setAllowScrollY(lua_State* L);
+int l_Widget_getAllowScrollY(lua_State* L);
+int l_Widget_setAllowScroll(lua_State* L);
+int l_Widget_getAllowScroll(lua_State* L);
+
 int l_Widget_click(lua_State* L);
 int l_Widget_mouseMove(lua_State* L);
 int l_Widget_mouseEnter(lua_State* L);

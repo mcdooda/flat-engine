@@ -162,6 +162,11 @@ void RootWidget::updateInput(bool updateMouseOver)
 	{
 		handleClick();
 	}
+
+	if (mouse->wheelJustMoved())
+	{
+		handleMouseWheel();
+	}
 }
 
 void RootWidget::handleClick()
@@ -246,6 +251,40 @@ void RootWidget::handleMouseLeave()
 	{
 		mouseOverWidget->m_mouseOver = false;
 		mouseOverWidget->mouseLeave(mouseOverWidget);
+	}
+}
+
+void RootWidget::handleMouseWheel()
+{
+	auto& mouse = m_flat.input->mouse;
+	const Vector2& wheelMove = mouse->getWheelMove();
+
+	if (wheelMove.x != 0.f)
+	{
+		Widget* scrollableWidgetX = m_mouseOverWidget.lock().get();
+		while (scrollableWidgetX != nullptr && !scrollableWidgetX->getAllowScrollX())
+		{
+			scrollableWidgetX = scrollableWidgetX->getParent().lock().get();
+		}
+
+		if (scrollableWidgetX != nullptr)
+		{
+			scrollableWidgetX->scrollX(wheelMove.x);
+		}
+	}
+
+	if (wheelMove.y != 0.f)
+	{
+		Widget* scrollableWidgetY = m_mouseOverWidget.lock().get();
+		while (scrollableWidgetY != nullptr && !scrollableWidgetY->getAllowScrollY())
+		{
+			scrollableWidgetY = scrollableWidgetY->getParent().lock().get();
+		}
+
+		if (scrollableWidgetY != nullptr)
+		{
+			scrollableWidgetY->scrollY(wheelMove.y);
+		}
 	}
 }
 

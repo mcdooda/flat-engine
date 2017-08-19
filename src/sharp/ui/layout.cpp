@@ -91,6 +91,11 @@ Widget::Padding& Layout::getPadding(Widget& widget)
 	return widget.m_padding;
 }
 
+Widget::ScrollPosition& Layout::getScrollPosition(Widget& widget)
+{
+	return widget.m_scrollPosition;
+}
+
 float Layout::getOuterWidth(Widget& widget)
 {
 	return widget.getOuterWidth();
@@ -244,9 +249,19 @@ void Layout::computeTransform(Widget& widget)
 	Vector2 position;
 	computePosition(widget, position);
 
+	Widget& parent = getParent(widget);
+	const Widget::ScrollPosition& parentScrollPosition = getScrollPosition(parent);
+
 	Matrix4& transform = widget.m_transform;
-	transform = getParent(widget).m_transform;
-	translateBy(transform, { std::roundf(position.x), std::roundf(position.y) });
+	transform = parent.m_transform;
+	translateBy(
+		transform,
+		{
+			std::roundf(position.x - parentScrollPosition.x),
+			std::roundf(position.y - parentScrollPosition.y)
+		}
+	);
+
 	//translateBy(transform, position + widget.m_computedSize / 2.f);
 	//transform.rotateZ(widget.getRotation().z);
 	//transform.rotateY(widget.getRotation().y);
