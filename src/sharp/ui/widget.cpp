@@ -31,7 +31,9 @@ Widget::Widget() :
 	m_mouseOver(false),
 	m_hasFocus(false),
 	m_allowScrollX(false),
-	m_allowScrollY(false)
+	m_allowScrollY(false),
+	m_restrictScrollX(true),
+	m_restrictScrollY(true)
 {
 
 }
@@ -72,9 +74,7 @@ void Widget::setSizePolicyY(SizePolicy sizePolicyY)
 void Widget::setSize(const Size& size)
 {
 	m_size = size;
-
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	setAncestorDirty();
 }
 
 void Widget::setPositionPolicy(PositionPolicy positionPolicy)
@@ -86,25 +86,33 @@ void Widget::setPositionPolicy(PositionPolicy positionPolicy)
 void Widget::setPosition(const Position& position)
 {
 	m_position = position;
-
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	setAncestorDirty();
 }
 
 void Widget::scrollX(float scrollValueX)
 {
 	m_scrollPosition.x += scrollValueX * SCROLL_SPEED;
 
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	if (m_restrictScrollX)
+	{
+		m_scrollPosition.x = std::min(m_scrollPosition.x, 0.f);
+		m_scrollPosition.x = std::max(m_scrollPosition.x, m_minScrollPosition.x);
+	}
+
+	setAncestorDirty();
 }
 
 void Widget::scrollY(float scrollValueY)
 {
 	m_scrollPosition.y += scrollValueY * SCROLL_SPEED;
 
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	if (m_restrictScrollY)
+	{
+		m_scrollPosition.y = std::max(m_scrollPosition.y, m_minScrollPosition.y);
+		m_scrollPosition.y = std::min(m_scrollPosition.y, 0.f);
+	}
+
+	setAncestorDirty();
 }
 
 void Widget::addChild(const std::shared_ptr<Widget>& widget)
@@ -114,8 +122,7 @@ void Widget::addChild(const std::shared_ptr<Widget>& widget)
 	m_children.push_back(std::shared_ptr<Widget>(widget));
 	widget->m_parent = getWeakPtr();
 
-	if (Widget* fixedLayoutAncestor = widget->getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	setAncestorDirty();
 }
 
 void Widget::removeChild(const std::shared_ptr<Widget>& widget)
@@ -126,8 +133,7 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 	m_children.erase(it);
 	widget->m_parent.reset();
 
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	setAncestorDirty();
 }
 
 void Widget::removeFromParent()
@@ -148,8 +154,7 @@ void Widget::removeAllChildren()
 	}
 	m_children.clear();
 
-	if (Widget* fixedLayoutAncestor = getFixedLayoutAncestor())
-		fixedLayoutAncestor->setDirty();
+	setAncestorDirty();
 }
 
 void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
@@ -332,6 +337,25 @@ void Widget::drawChildren(const render::RenderSettings& renderSettings, const Sc
 	}
 }
 
+#pragma optimize("", off)
+Vector2 Widget::getMaxScrollPosition() const
+{
+	Vector2 maxScrollPosition;
+
+	for (const std::shared_ptr<Widget>& child : m_children)
+	{
+		float right = child->m_transform[3][0] + child->m_computedSize.x + child->m_margin.right;
+		maxScrollPosition.x = std::max(right, maxScrollPosition.x);
+		float bottom = child->m_transform[3][1] - child->m_margin.bottom;
+		maxScrollPosition.y = std::min(bottom, maxScrollPosition.y);
+	}
+
+	maxScrollPosition -= m_computedSize;
+
+	return maxScrollPosition;
+}
+#pragma optimize("", on)
+
 Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {
 	if (isInside(mousePosition))
@@ -400,6 +424,15 @@ Widget* Widget::getFixedLayoutAncestor()
 		return this;
 
 	return parent->getFixedLayoutAncestor();
+}
+
+void Widget::setAncestorDirty()
+{
+	Widget* fixedLayoutAncestor = getFixedLayoutAncestor();
+	if (fixedLayoutAncestor != nullptr)
+	{
+		fixedLayoutAncestor->setDirty();
+	}
 }
 
 bool Widget::hasFixedSize() const

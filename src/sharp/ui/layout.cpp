@@ -96,6 +96,11 @@ Widget::ScrollPosition& Layout::getScrollPosition(Widget& widget)
 	return widget.m_scrollPosition;
 }
 
+Widget::ScrollPosition& Layout::getMinScrollPosition(Widget & widget)
+{
+	return widget.m_minScrollPosition;
+}
+
 float Layout::getOuterWidth(Widget& widget)
 {
 	return widget.getOuterWidth();

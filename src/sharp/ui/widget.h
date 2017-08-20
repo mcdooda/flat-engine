@@ -173,6 +173,11 @@ class Widget : public util::Convertible<Widget>
 		inline void setAllowScrollY(bool allowScrollY) { m_allowScrollY = allowScrollY; }
 		inline bool getAllowScrollY() const { return m_allowScrollY; }
 
+		inline void setRestrictScrollX(bool restrictScrollX) { m_restrictScrollX = restrictScrollX; }
+		inline bool getRestrictScrollX() const { return m_restrictScrollX; }
+		inline void setRestrictScrollY(bool restrictScrollY) { m_restrictScrollY = restrictScrollY; }
+		inline bool getRestrictScrollY() const { return m_restrictScrollY; }
+
 		void scrollX(float scrollValueX);
 		void scrollY(float scrollValueY);
 
@@ -225,11 +230,14 @@ class Widget : public util::Convertible<Widget>
 		float getOuterWidth() const { return m_computedSize.x + m_margin.left + m_margin.right; }
 		float getOuterHeight() const { return m_computedSize.y + m_margin.top + m_margin.bottom; }
 
+		Vector2 getMaxScrollPosition() const;
+
 		Widget* getMouseOverWidget(const Vector2& mousePosition);
 
 		virtual bool isRoot() const { return false; }
 		RootWidget* getRootIfAncestor();
 		Widget* getFixedLayoutAncestor();
+		void setAncestorDirty();
 		bool hasFixedSize() const;
 		
 		// Widget settings
@@ -254,10 +262,13 @@ class Widget : public util::Convertible<Widget>
 		bool m_hasFocus : 1;
 		bool m_allowScrollX : 1;
 		bool m_allowScrollY : 1;
+		bool m_restrictScrollX : 1;
+		bool m_restrictScrollY : 1;
 
 		Matrix4 m_transform;
 		Size m_computedSize;
 		ScrollPosition m_scrollPosition;
+		ScrollPosition m_minScrollPosition;
 		
 		std::weak_ptr<Widget> m_self;
 		std::weak_ptr<Widget> m_parent;

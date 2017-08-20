@@ -150,6 +150,7 @@ void ColumnFlowLayout::layout(Widget& widget, bool computePosition)
 	}
 
 	// compute children position
+	Widget::ScrollPosition& scrollPosition = getScrollPosition(widget);
 	std::vector<std::shared_ptr<Widget>>& children = getChildren(widget);
 	std::vector<std::shared_ptr<Widget>>::iterator it = children.begin();
 	std::vector<std::shared_ptr<Widget>>::iterator end = children.end();
@@ -177,13 +178,26 @@ void ColumnFlowLayout::layout(Widget& widget, bool computePosition)
 			x = (getPadding(widget).left + getMargin(child).left + getPosition(child).x
 				+ getComputedSize(widget).x - getComputedSize(child).x - getPadding(widget).right - getMargin(child).right + getPosition(child).x) / 2.f;
 		}
-		translateBy(childTransform, { x, currentY + getPosition(child).y });
+		translateBy(
+			childTransform,
+			{
+				std::round(x - scrollPosition.x),
+				std::round(currentY + getPosition(child).y - scrollPosition.y)
+			}
+		);
 		transformBy(childTransform, getTransform(widget));
 
 		child.layout(false);
 
 		currentY -= getMargin(child).bottom;
 	}
+
+	Widget::ScrollPosition& minScrollPosition = getMinScrollPosition(widget);
+	minScrollPosition.x = 0.f;
+	minScrollPosition.y = currentY;
+
+	scrollPosition.y = std::max(scrollPosition.y, minScrollPosition.y);
+	scrollPosition.y = std::min(scrollPosition.y, 0.f);
 }
 
 void ColumnFlowLayout::postLayout(Widget& widget)

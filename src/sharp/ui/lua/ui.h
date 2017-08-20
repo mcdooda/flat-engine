@@ -67,6 +67,13 @@ int l_Widget_getAllowScrollY(lua_State* L);
 int l_Widget_setAllowScroll(lua_State* L);
 int l_Widget_getAllowScroll(lua_State* L);
 
+int l_Widget_setRestrictScrollX(lua_State* L);
+int l_Widget_getRestrictScrollX(lua_State* L);
+int l_Widget_setRestrictScrollY(lua_State* L);
+int l_Widget_getRestrictScrollY(lua_State* L);
+int l_Widget_setRestrictScroll(lua_State* L);
+int l_Widget_getRestrictScroll(lua_State* L);
+
 int l_Widget_click(lua_State* L);
 int l_Widget_mouseMove(lua_State* L);
 int l_Widget_mouseEnter(lua_State* L);

@@ -34,6 +34,7 @@ protected:
 	static Widget::Margin& getMargin(Widget& widget);
 	static Widget::Padding& getPadding(Widget& widget);
 	static Widget::ScrollPosition& getScrollPosition(Widget& widget);
+	static Widget::ScrollPosition& getMinScrollPosition(Widget& widget);
 
 	static float getOuterWidth(Widget& widget);
 	static float getOuterHeight(Widget& widget);

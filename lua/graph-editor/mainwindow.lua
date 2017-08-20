@@ -26,6 +26,7 @@ function MainWindow:build()
     content:setMargin(3)
     content:setBackgroundColor(0xECF0F1FF)
     content:setAllowScroll(true, true)
+    content:setRestrictScroll(false, false)
     window:addChild(content)
     self.editorContainer:addChild(window)
     self.titleText = titleText

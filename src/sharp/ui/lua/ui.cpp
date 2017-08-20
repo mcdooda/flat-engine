@@ -73,6 +73,13 @@ int open(lua_State* L)
 		{"getAllowScrollY",       l_Widget_getAllowScrollY},
 		{"setAllowScroll",        l_Widget_setAllowScroll},
 		{"getAllowScroll",        l_Widget_getAllowScroll},
+
+		{"setRestrictScrollX",    l_Widget_setRestrictScrollX},
+		{"getRestrictScrollX",    l_Widget_getRestrictScrollX},
+		{"setRestrictScrollY",    l_Widget_setRestrictScrollY},
+		{"getRestrictScrollY",    l_Widget_getRestrictScrollY},
+		{"setRestrictScroll",     l_Widget_setRestrictScroll},
+		{"getRestrictScroll",     l_Widget_getRestrictScroll},
 		
 		{"click",                 l_Widget_click},
 		{"mouseMove",             l_Widget_mouseMove},
@@ -502,6 +509,54 @@ int l_Widget_getAllowScroll(lua_State* L)
 	Widget& widget = getWidget(L, 1);
 	lua_pushboolean(L, widget.getAllowScrollX());
 	lua_pushboolean(L, widget.getAllowScrollY());
+	return 2;
+}
+
+int l_Widget_setRestrictScrollX(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool restrictScrollX = lua_toboolean(L, 2) == 1;
+	widget.setRestrictScrollX(restrictScrollX);
+	return 0;
+}
+
+int l_Widget_getRestrictScrollX(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getRestrictScrollX());
+	return 1;
+}
+
+int l_Widget_setRestrictScrollY(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool restrictScrollY = lua_toboolean(L, 2) == 1;
+	widget.setRestrictScrollY(restrictScrollY);
+	return 0;
+}
+
+int l_Widget_getRestrictScrollY(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getRestrictScrollY());
+	return 1;
+}
+
+int l_Widget_setRestrictScroll(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool restrictScrollX = lua_toboolean(L, 2) == 1;
+	bool restrictScrollY = lua_toboolean(L, 3) == 1;
+	widget.setRestrictScrollX(restrictScrollX);
+	widget.setRestrictScrollY(restrictScrollY);
+	return 0;
+}
+
+int l_Widget_getRestrictScroll(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getRestrictScrollX());
+	lua_pushboolean(L, widget.getRestrictScrollY());
 	return 2;
 }
 
