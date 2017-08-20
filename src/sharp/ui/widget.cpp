@@ -89,9 +89,9 @@ void Widget::setPosition(const Position& position)
 	setAncestorDirty();
 }
 
-void Widget::scrollX(float scrollValueX)
+void Widget::scrollX(float scrollValueX, float dt)
 {
-	m_scrollPosition.x += scrollValueX * SCROLL_SPEED;
+	m_scrollPosition.x += scrollValueX * dt * SCROLL_SPEED;
 
 	if (m_restrictScrollX)
 	{
@@ -102,9 +102,9 @@ void Widget::scrollX(float scrollValueX)
 	setAncestorDirty();
 }
 
-void Widget::scrollY(float scrollValueY)
+void Widget::scrollY(float scrollValueY, float dt)
 {
-	m_scrollPosition.y += scrollValueY * SCROLL_SPEED;
+	m_scrollPosition.y += scrollValueY * dt * SCROLL_SPEED;
 
 	if (m_restrictScrollY)
 	{

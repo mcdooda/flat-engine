@@ -40,7 +40,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void setDirty() override;
 		FLAT_DEBUG_ONLY(void clearDirty() override;)
 
-		void update();
+		void update(float dt);
 
 		inline bool isMouseOver() const { return !m_mouseOverWidget.expired(); }
 		inline const std::weak_ptr<Widget>& getCurrentMouseOverWidget() const { return m_mouseOverWidget; }
@@ -49,14 +49,14 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 	private:
 		bool updateDirtyWidgets();
-		void updateInput(bool updateMouseOver);
+		void updateInput(bool updateMouseOver, float dt);
 
 	private:
 		void handleClick();
 		void handleMouseMove();
 		void handleMouseEnter();
 		void handleMouseLeave();
-		void handleMouseWheel();
+		void handleMouseWheel(float dt);
 		
 	private:
 		Flat& m_flat;

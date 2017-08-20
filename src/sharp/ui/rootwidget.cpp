@@ -120,16 +120,16 @@ void RootWidget::clearDirty()
 }
 #endif
 
-void RootWidget::update()
+void RootWidget::update(float dt)
 {
 	if (m_flat.input->window->isResized())
 		fullLayout();
 
 	bool updateMouseOver = updateDirtyWidgets();
-	updateInput(updateMouseOver);
+	updateInput(updateMouseOver, dt);
 }
 
-void RootWidget::updateInput(bool updateMouseOver)
+void RootWidget::updateInput(bool updateMouseOver, float dt)
 {
 	auto& mouse = m_flat.input->mouse;
 
@@ -165,7 +165,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 
 	if (mouse->wheelJustMoved())
 	{
-		handleMouseWheel();
+		handleMouseWheel(dt);
 	}
 }
 
@@ -254,7 +254,7 @@ void RootWidget::handleMouseLeave()
 	}
 }
 
-void RootWidget::handleMouseWheel()
+void RootWidget::handleMouseWheel(float dt)
 {
 	auto& mouse = m_flat.input->mouse;
 	const Vector2& wheelMove = mouse->getWheelMove();
@@ -269,7 +269,7 @@ void RootWidget::handleMouseWheel()
 
 		if (scrollableWidgetX != nullptr)
 		{
-			scrollableWidgetX->scrollX(wheelMove.x);
+			scrollableWidgetX->scrollX(wheelMove.x, dt);
 		}
 	}
 
@@ -283,7 +283,7 @@ void RootWidget::handleMouseWheel()
 
 		if (scrollableWidgetY != nullptr)
 		{
-			scrollableWidgetY->scrollY(wheelMove.y);
+			scrollableWidgetY->scrollY(wheelMove.y, dt);
 		}
 	}
 }

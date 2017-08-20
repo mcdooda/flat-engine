@@ -108,7 +108,7 @@ class Widget : public util::Convertible<Widget>
 
 		using ScrollPosition = Vector2;
 
-		static constexpr float SCROLL_SPEED = 15.f;
+		static constexpr float SCROLL_SPEED = 50000.f;
 
 	protected:
 		struct ScissorRectangle
@@ -178,8 +178,8 @@ class Widget : public util::Convertible<Widget>
 		inline void setRestrictScrollY(bool restrictScrollY) { m_restrictScrollY = restrictScrollY; }
 		inline bool getRestrictScrollY() const { return m_restrictScrollY; }
 
-		void scrollX(float scrollValueX);
-		void scrollY(float scrollValueY);
+		void scrollX(float scrollValueX, float dt);
+		void scrollY(float scrollValueY, float dt);
 
 		inline const ScrollPosition& getScrollPosition() const { return m_scrollPosition; }
 		
