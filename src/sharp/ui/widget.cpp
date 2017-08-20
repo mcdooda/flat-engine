@@ -337,7 +337,6 @@ void Widget::drawChildren(const render::RenderSettings& renderSettings, const Sc
 	}
 }
 
-#pragma optimize("", off)
 Vector2 Widget::getMaxScrollPosition() const
 {
 	Vector2 maxScrollPosition;
@@ -354,7 +353,6 @@ Vector2 Widget::getMaxScrollPosition() const
 
 	return maxScrollPosition;
 }
-#pragma optimize("", on)
 
 Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
 {
