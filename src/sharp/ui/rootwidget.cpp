@@ -160,7 +160,11 @@ void RootWidget::updateInput(bool updateMouseOver, float dt)
 
 	if (mouse->isJustPressed(M(LEFT)))
 	{
-		handleClick();
+		handleMouseDown();
+	}
+	else if (mouse->isJustReleased(M(LEFT)))
+	{
+		handleMouseUp();
 	}
 
 	if (mouse->wheelJustMoved())
@@ -169,19 +173,14 @@ void RootWidget::updateInput(bool updateMouseOver, float dt)
 	}
 }
 
-void RootWidget::handleClick()
+void RootWidget::handleMouseDown()
 {
-	{
-		// propagate click until the event is handled
-		bool eventHandled = false;
-		Widget* widget = m_mouseOverWidget.lock().get();
-		while (widget != nullptr && !eventHandled)
-		{
-			widget->click(widget, eventHandled);
-			widget = widget->getParent().lock().get();
-		}
-	}
+	m_mouseDownWidget = m_mouseOverWidget;
 
+	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::click);
+	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseDown);
+
+	// find a focusable widget if possible
 	{
 		Widget* widget = m_mouseOverWidget.lock().get();
 		while (widget != nullptr && !widget->canBeFocused())
@@ -223,17 +222,14 @@ void RootWidget::handleClick()
 	}
 }
 
+void RootWidget::handleMouseUp()
+{
+	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseUp);
+}
+
 void RootWidget::handleMouseMove()
 {
-	bool eventHandled = false;
-	std::weak_ptr<Widget> widget = m_mouseOverWidget;
-	while (!widget.expired() && !eventHandled)
-	{
-		Widget* w = widget.lock().get();
-		FLAT_ASSERT(w != nullptr);
-		w->mouseMove(w, eventHandled);
-		widget = w->getParent();
-	}
+	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseMove);
 }
 
 void RootWidget::handleMouseEnter()
@@ -285,6 +281,17 @@ void RootWidget::handleMouseWheel(float dt)
 		{
 			scrollableWidgetY->scrollY(wheelMove.y, dt);
 		}
+	}
+}
+
+void RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot)
+{
+	// propagate click until the event is handled
+	bool eventHandled = false;
+	while (widget != nullptr && !eventHandled)
+	{
+		(widget->*slot)(widget, eventHandled);
+		widget = widget->getParent().lock().get();
 	}
 }
 

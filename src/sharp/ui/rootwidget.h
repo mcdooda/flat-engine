@@ -52,15 +52,19 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void updateInput(bool updateMouseOver, float dt);
 
 	private:
-		void handleClick();
+		void handleMouseDown();
+		void handleMouseUp();
 		void handleMouseMove();
 		void handleMouseEnter();
 		void handleMouseLeave();
 		void handleMouseWheel(float dt);
+
+		static void propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot);
 		
 	private:
 		Flat& m_flat;
 		std::weak_ptr<Widget> m_mouseOverWidget;
+		std::weak_ptr<Widget> m_mouseDownWidget;
 		std::weak_ptr<Widget> m_focusWidget;
 		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;

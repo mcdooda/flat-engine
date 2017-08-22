@@ -210,6 +210,8 @@ class Widget : public util::Convertible<Widget>
 
 	public:
 		Slot<Widget*, bool&> click;
+		Slot<Widget*, bool&> mouseDown;
+		Slot<Widget*, bool&> mouseUp;
 		Slot<Widget*, bool&> mouseMove;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
