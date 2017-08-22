@@ -75,6 +75,8 @@ int l_Widget_setRestrictScroll(lua_State* L);
 int l_Widget_getRestrictScroll(lua_State* L);
 
 int l_Widget_click(lua_State* L);
+int l_Widget_mouseDown(lua_State* L);
+int l_Widget_mouseUp(lua_State* L);
 int l_Widget_mouseMove(lua_State* L);
 int l_Widget_mouseEnter(lua_State* L);
 int l_Widget_mouseLeave(lua_State* L);
@@ -107,6 +109,8 @@ template <class T>
 T& getWidgetOfType(lua_State* L, int index);
 template <class T>
 int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot);
+template <class T>
+int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
 
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);

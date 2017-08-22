@@ -82,6 +82,8 @@ int open(lua_State* L)
 		{"getRestrictScroll",     l_Widget_getRestrictScroll},
 		
 		{"click",                 l_Widget_click},
+		{"mouseDown",             l_Widget_mouseDown},
+		{"mouseUp",               l_Widget_mouseUp},
 		{"mouseMove",             l_Widget_mouseMove},
 		{"mouseEnter",            l_Widget_mouseEnter},
 		{"mouseLeave",            l_Widget_mouseLeave},
@@ -562,54 +564,22 @@ int l_Widget_getRestrictScroll(lua_State* L)
 
 int l_Widget_click(lua_State* L)
 {
-	Widget& widget = getWidget(L, 1);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	const auto& mouse = flat::lua::getGame(L).input->mouse;
-	widget.click.on(
-		[L, ref, &mouse](Widget* w, bool& eventHandled)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_pushnumber(L, relativePosition.x);
-			lua_pushnumber(L, relativePosition.y);
-			lua_call(L, 3, 1);
-			eventHandled = eventHandled || lua_toboolean(L, -1);
-			lua_pop(L, 1);
-			return true;
-		}
-	);
-	return 0;
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::click);
+}
+
+int l_Widget_mouseDown(lua_State * L)
+{
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseDown);
+}
+
+int l_Widget_mouseUp(lua_State * L)
+{
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseUp);
 }
 
 int l_Widget_mouseMove(lua_State* L)
 {
-	Widget& widget = getWidget(L, 1);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	const auto& mouse = flat::lua::getGame(L).input->mouse;
-	widget.mouseMove.on(
-		[L, ref, &mouse](Widget* w, bool& eventHandled)
-		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_pushnumber(L, relativePosition.x);
-			lua_pushnumber(L, relativePosition.y);
-			lua_call(L, 3, 1);
-			eventHandled = eventHandled || lua_toboolean(L, -1);
-			lua_pop(L, 1);
-			return true;
-		}
-	);
-	return 0;
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseMove);
 }
 
 int l_Widget_mouseEnter(lua_State* L)
@@ -797,6 +767,33 @@ int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot)
 			luaL_checktype(L, -1, LUA_TFUNCTION);
 			pushWidget(L, w->getSharedPtr());
 			lua_call(L, 1, 0);
+			return true;
+		}
+	);
+	return 0;
+}
+
+template<class T>
+int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot)
+{
+	T& widget = getWidgetOfType<T>(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	const auto& mouse = flat::lua::getGame(L).input->mouse;
+	(widget.*slot).on(
+		[L, ref, &mouse](Widget* w, bool& eventHandled)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
+			ref.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w->getSharedPtr());
+			lua_pushnumber(L, relativePosition.x);
+			lua_pushnumber(L, relativePosition.y);
+			lua_call(L, 3, 1);
+			eventHandled = eventHandled || lua_toboolean(L, -1);
+			lua_pop(L, 1);
 			return true;
 		}
 	);
