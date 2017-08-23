@@ -89,6 +89,17 @@ void Widget::setPosition(const Position& position)
 	setAncestorDirty();
 }
 
+void Widget::setAbsolutePosition(const Vector2& absolutePosition)
+{
+	m_position += absolutePosition - getAbsolutePosition();
+	setAncestorDirty();
+}
+
+Vector2 Widget::getAbsolutePosition() const
+{
+	return Vector2(m_transform[3][0], m_transform[3][1]);
+}
+
 void Widget::scrollX(float scrollValueX, float dt)
 {
 	m_scrollPosition.x += scrollValueX * dt * SCROLL_SPEED;
@@ -113,6 +124,20 @@ void Widget::scrollY(float scrollValueY, float dt)
 	}
 
 	setAncestorDirty();
+}
+
+void Widget::drag()
+{
+	RootWidget* root = getRootIfAncestor();
+	FLAT_ASSERT(root != nullptr);
+	root->drag(this);
+}
+
+void Widget::drop()
+{
+	RootWidget* root = getRootIfAncestor();
+	FLAT_ASSERT(root != nullptr);
+	root->drop(this);
 }
 
 void Widget::addChild(const std::shared_ptr<Widget>& widget)

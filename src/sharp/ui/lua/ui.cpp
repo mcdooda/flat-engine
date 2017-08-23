@@ -87,6 +87,9 @@ int open(lua_State* L)
 		{"mouseMove",             l_Widget_mouseMove},
 		{"mouseEnter",            l_Widget_mouseEnter},
 		{"mouseLeave",            l_Widget_mouseLeave},
+
+		{"drag",                  l_Widget_drag},
+		{"drop",                  l_Widget_drop},
 		
 		{"setText",               l_TextWidget_setText},
 		{"getText",               l_TextWidget_getText},
@@ -590,6 +593,20 @@ int l_Widget_mouseEnter(lua_State* L)
 int l_Widget_mouseLeave(lua_State* L)
 {
 	return addWidgetCallback<Widget>(L, &Widget::mouseLeave);
+}
+
+int l_Widget_drag(lua_State * L)
+{
+	Widget& widget = getWidget(L, 1);
+	widget.drag();
+	return 0;
+}
+
+int l_Widget_drop(lua_State * L)
+{
+	Widget& widget = getWidget(L, 1);
+	widget.drop();
+	return 0;
 }
 
 int l_TextWidget_setText(lua_State* L)

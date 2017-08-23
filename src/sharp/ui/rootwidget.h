@@ -47,8 +47,12 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		bool isRoot() const override { return true; }
 
+		void drag(Widget* widget);
+		void drop(Widget* widget);
+
 	private:
 		bool updateDirtyWidgets();
+		void updateDraggedWidget();
 		void updateInput(bool updateMouseOver, float dt);
 
 	private:
@@ -66,6 +70,10 @@ class RootWidget : public WidgetImpl<RootLayout>
 		std::weak_ptr<Widget> m_mouseOverWidget;
 		std::weak_ptr<Widget> m_mouseDownWidget;
 		std::weak_ptr<Widget> m_focusWidget;
+
+		std::weak_ptr<Widget> m_draggedWidget;
+		Vector2 m_draggedWidgetRelativePosition;
+
 		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;
 };

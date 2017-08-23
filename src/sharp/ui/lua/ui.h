@@ -81,6 +81,9 @@ int l_Widget_mouseMove(lua_State* L);
 int l_Widget_mouseEnter(lua_State* L);
 int l_Widget_mouseLeave(lua_State* L);
 
+int l_Widget_drag(lua_State* L);
+int l_Widget_drop(lua_State* L);
+
 // TextWidget only!
 int l_TextWidget_setText(lua_State* L);
 int l_TextWidget_getText(lua_State* L);

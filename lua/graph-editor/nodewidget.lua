@@ -23,6 +23,12 @@ function NodeWidget:build()
         local nodeNameContainer = Widget.makeExpand()
         nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
         nodeNameContainer:setBackgroundColor(0x2C3E50FF)
+        nodeNameContainer:mouseDown(function()
+            nodeWidget:drag()
+        end)
+        nodeNameContainer:mouseUp(function()
+            nodeWidget:drop()
+        end)
 
         do
             local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))

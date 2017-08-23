@@ -148,6 +148,9 @@ class Widget : public util::Convertible<Widget>
 		void setPosition(const Position& position);
 		inline const Position& getPosition() const { return m_position; }
 
+		void setAbsolutePosition(const Vector2& absolutePosition);
+		Vector2 getAbsolutePosition() const;
+
 		inline void setRotation(const Rotation& rotation) { m_rotation = rotation; }
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; }
 		inline const Rotation& getRotation() const { return m_rotation; }
@@ -182,6 +185,9 @@ class Widget : public util::Convertible<Widget>
 		void scrollY(float scrollValueY, float dt);
 
 		inline const ScrollPosition& getScrollPosition() const { return m_scrollPosition; }
+
+		void drag();
+		void drop();
 		
 		void addChild(const std::shared_ptr<Widget>& widget);
 		void removeChild(const std::shared_ptr<Widget>& widget);

@@ -123,10 +123,24 @@ void RootWidget::clearDirty()
 void RootWidget::update(float dt)
 {
 	if (m_flat.input->window->isResized())
+	{
 		fullLayout();
+	}
+
+	updateDraggedWidget();
 
 	bool updateMouseOver = updateDirtyWidgets();
 	updateInput(updateMouseOver, dt);
+}
+
+void RootWidget::updateDraggedWidget()
+{
+	Widget* draggedWidget = m_draggedWidget.lock().get();
+	if (draggedWidget != nullptr)
+	{
+		auto& mouse = m_flat.input->mouse;
+		draggedWidget->setAbsolutePosition(mouse->getPosition() - m_draggedWidgetRelativePosition);
+	}
 }
 
 void RootWidget::updateInput(bool updateMouseOver, float dt)
@@ -173,12 +187,26 @@ void RootWidget::updateInput(bool updateMouseOver, float dt)
 	}
 }
 
+void RootWidget::drag(Widget* widget)
+{
+	FLAT_ASSERT(widget != nullptr && m_draggedWidget.expired());
+	m_draggedWidget = widget->getWeakPtr();
+	auto& mouse = m_flat.input->mouse;
+	m_draggedWidgetRelativePosition = widget->getRelativePosition(mouse->getPosition());
+}
+
+void RootWidget::drop(Widget* widget)
+{
+	FLAT_ASSERT(widget != nullptr && m_draggedWidget.lock().get() == widget);
+	m_draggedWidget.reset();
+}
+
 void RootWidget::handleMouseDown()
 {
 	m_mouseDownWidget = m_mouseOverWidget;
 
 	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::click);
-	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseDown);
+	propagateEvent(m_mouseDownWidget.lock().get(), &Widget::mouseDown);
 
 	// find a focusable widget if possible
 	{
@@ -224,7 +252,7 @@ void RootWidget::handleMouseDown()
 
 void RootWidget::handleMouseUp()
 {
-	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseUp);
+	propagateEvent(m_mouseDownWidget.lock().get(), &Widget::mouseUp);
 }
 
 void RootWidget::handleMouseMove()
