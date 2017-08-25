@@ -13,21 +13,57 @@ function MainWindow:open(editorContainer)
     return o
 end
 
+function MainWindow:close()
+    self.window:removeFromParent()
+end
+
 function MainWindow:build()
     local window = Widget.makeColumnFlow()
     window:setMargin(25)
     window:setSizePolicy(Widget.SizePolicy.EXPAND)
     window:setBackgroundColor(0x2C3E50FF)
-    local titleText = Widget.makeText('Node Graph Editor', table.unpack(flat.ui.settings.defaultFont))
-    titleText:setTextColor(0xECF0F1FF)
-    titleText:setMargin(3, 0, 0, 3)
-    window:addChild(titleText)
+
+    local titleText
+    do
+        local titleContainer = Widget.makeLineFlow()
+        titleContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+
+        do
+            titleText = Widget.makeText('Node Graph Editor', table.unpack(flat.ui.settings.defaultFont))
+            titleText:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.FIXED_Y)
+            titleText:setTextColor(0xECF0F1FF)
+            titleText:setMargin(3, 0, 0, 3)
+            titleText:mouseDown(function()
+                window:drag()
+            end)
+            titleText:mouseUp(function()
+                window:drop()
+            end)
+
+            titleContainer:addChild(titleText)
+        end
+
+        do
+            local closeWindowButton = Widget.makeText('X', table.unpack(flat.ui.settings.defaultFont))
+            closeWindowButton:setTextColor(0xFFFFFFFF)
+            closeWindowButton:setMargin(3, 3, 0, 0)
+            titleContainer:addChild(closeWindowButton)
+            closeWindowButton:click(function()
+                self:close()
+            end)
+        end
+
+        window:addChild(titleContainer)
+    end
+
     local content = Widget.makeExpand()
     content:setMargin(3)
     content:setBackgroundColor(0xECF0F1FF)
     content:setAllowScroll(true, true)
     content:setRestrictScroll(false, false)
     window:addChild(content)
+
+    self.window = window
     self.editorContainer:addChild(window)
     self.titleText = titleText
     self.content = content
