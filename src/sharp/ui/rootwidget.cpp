@@ -32,7 +32,10 @@ void RootWidget::clearAll()
 {
 	m_children.clear();
 	m_mouseOverWidget.reset();
+	m_mouseDownWidget.reset();
 	m_focusWidget.reset();
+	m_draggedWidget.reset();
+	m_mouseOver = false;
 	setDirty();
 }
 
@@ -92,9 +95,8 @@ bool RootWidget::updateDirtyWidgets()
 		m_dirty = false;
 		return true;
 	}
-	else
+	else if (!m_dirtyWidgets.empty())
 	{
-		bool widgetsLayout = !m_dirtyWidgets.empty();
 		for (std::weak_ptr<Widget>& widget : m_dirtyWidgets)
 		{
 			if (!widget.expired())
@@ -103,8 +105,9 @@ bool RootWidget::updateDirtyWidgets()
 			}
 		}
 		m_dirtyWidgets.clear();
-		return widgetsLayout;
+		return true;
 	}
+	return false;
 }
 
 void RootWidget::setDirty()
@@ -314,7 +317,7 @@ void RootWidget::handleMouseWheel(float dt)
 
 void RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot)
 {
-	// propagate click until the event is handled
+	// propagate the event upwards until it is handled
 	bool eventHandled = false;
 	while (widget != nullptr && !eventHandled)
 	{

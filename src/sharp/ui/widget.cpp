@@ -156,9 +156,9 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 	std::vector<std::shared_ptr<Widget>>::iterator it = std::find(m_children.begin(), m_children.end(), widget);
 	FLAT_ASSERT(it != m_children.end());
 	m_children.erase(it);
-	widget->m_parent.reset();
-
+	// set the ancestor dirty before resetting the parent!
 	setAncestorDirty();
+	widget->m_parent.reset();
 }
 
 void Widget::removeFromParent()
@@ -432,19 +432,19 @@ RootWidget* Widget::getRootIfAncestor()
 
 Widget* Widget::getFixedLayoutAncestor()
 {
+	if (isRoot())
+		return this;
+	
 	if (m_parent.expired())
 		return nullptr;
 
 	Widget* parent = m_parent.lock().get();
 
-	if (hasFixedSize())
-		return parent->getFixedLayoutAncestor();
-
 	if (parent->hasFixedSize())
 		return parent;
 
-	if (parent->isRoot() || isRoot())
-		return this;
+	if (hasFixedSize())
+		return parent->getFixedLayoutAncestor();
 
 	return parent->getFixedLayoutAncestor();
 }
