@@ -40,6 +40,7 @@ int l_Widget_setPositionPolicy(lua_State* L);
 int l_Widget_getPositionPolicy(lua_State* L);
 int l_Widget_setPosition(lua_State* L);
 int l_Widget_getPosition(lua_State* L);
+int l_Widget_getRelativePosition(lua_State* L);
 
 int l_Widget_setRotation(lua_State* L);
 int l_Widget_setRotationZ(lua_State* L);
@@ -96,6 +97,7 @@ int l_FocusableWidget_blur(lua_State* L);
 
 // CanvasWidget only
 int l_CanvasWidget_draw(lua_State* L);
+int l_CanvasWidget_redraw(lua_State* L);
 int l_CanvasWidget_clear(lua_State* L);
 int l_CanvasWidget_drawLine(lua_State* L);
 

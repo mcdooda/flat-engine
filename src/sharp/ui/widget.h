@@ -209,6 +209,7 @@ class Widget : public util::Convertible<Widget>
 
 		bool isInside(const Vector2& point) const;
 		Vector2 getRelativePosition(const Vector2& absolutePosition) const;
+		Vector2 getRelativePosition(const Widget& other) const;
 
 		virtual void setDirty();
 		virtual void clearDirty();

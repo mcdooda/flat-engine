@@ -47,6 +47,7 @@ int open(lua_State* L)
 		{"getPositionPolicy",     l_Widget_getPositionPolicy},
 		{"setPosition",           l_Widget_setPosition},
 		{"getPosition",           l_Widget_getPosition},
+		{"getRelativePosition",   l_Widget_getRelativePosition},
 		
 		{"setRotation",           l_Widget_setRotation},
 		{"setRotationZ",          l_Widget_setRotationZ},
@@ -100,6 +101,7 @@ int open(lua_State* L)
 		{"blur",                  l_FocusableWidget_blur},
 
 		{"draw",                  l_CanvasWidget_draw},
+		{"redraw",                l_CanvasWidget_redraw},
 		{"clear",                 l_CanvasWidget_clear},
 		{"drawLine",              l_CanvasWidget_drawLine},
 		
@@ -314,6 +316,16 @@ int l_Widget_getPosition(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	const Widget::Position& position = widget.getPosition();
+	lua_pushnumber(L, position.x);
+	lua_pushnumber(L, position.y);
+	return 2;
+}
+
+int l_Widget_getRelativePosition(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	Widget& other = getWidget(L, 2);
+	Vector2 position = widget.getRelativePosition(other);
 	lua_pushnumber(L, position.x);
 	lua_pushnumber(L, position.y);
 	return 2;
@@ -652,6 +664,13 @@ int l_FocusableWidget_blur(lua_State* L)
 int l_CanvasWidget_draw(lua_State * L)
 {
 	return addWidgetCallback<CanvasWidget>(L, &Widget::layoutFinished);
+}
+
+int l_CanvasWidget_redraw(lua_State * L)
+{
+	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	canvasWidget.layoutFinished(&canvasWidget);
+	return 0;
 }
 
 int l_CanvasWidget_clear(lua_State * L)

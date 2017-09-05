@@ -7,7 +7,8 @@ MainWindow.__index = MainWindow
 function MainWindow:open(editorContainer)
     assert(editorContainer)
     local o = setmetatable({
-        editorContainer = editorContainer
+        editorContainer = editorContainer,
+        nodeWidgets = {}
     }, self)
     o:build()
     return o
@@ -61,16 +62,9 @@ function MainWindow:build()
     content:setMargin(3)
     content:setAllowScroll(true, true)
     content:setRestrictScroll(false, false)
-    local lx, ly
     content:draw(function()
         content:clear(0xECF0F1FF)
-        lx, ly = nil, nil
-    end)
-    content:mouseMove(function(w, x, y)
-        if lx then
-            w:drawLine(0x000000FF, 1, flat.Vector2(lx, ly), flat.Vector2(x, y))
-        end
-        lx, ly = x, y
+        self:drawLinks()
     end)
     window:addChild(content)
 
@@ -90,13 +84,19 @@ function MainWindow:openGraph(graphPath)
     local graph = self:loadGraph(graphPath)
     local graphLayout = self:loadGraphLayout(graphPath)
     assert(#graph.nodeInstances == #graphLayout)
+    local content = self.content
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]
         local nodePosition = graphLayout[i]
         local nodeWidget = self:makeNodeWidget(node)
         nodeWidget:setPosition(table.unpack(nodePosition))
-        self.content:addChild(nodeWidget)
+        content:addChild(nodeWidget)
     end
+
+    self.graph = graph
+    self.graphLayout = graphLayout
+
+    content:redraw()
 end
 
 function MainWindow:loadGraph(graphPath)
@@ -112,7 +112,52 @@ end
 
 function MainWindow:makeNodeWidget(node)
     local nodeWidget = NodeWidget:new(node)
+    self.nodeWidgets[node] = nodeWidget
     return nodeWidget.container
+end
+
+function MainWindow:drawLinks()
+    local content = self.content
+    local graph = self.graph
+
+    for i = 1, #graph.nodeInstances do
+        local inputNode = graph.nodeInstances[i]
+        for j = 1, #inputNode.inputPins do
+            local inputPin = inputNode.inputPins[j]
+            if inputPin.pluggedOutputPin then
+                local outputNode = inputPin.pluggedOutputPin.node
+                local outputPin = inputPin.pluggedOutputPin.outputPin
+
+                local ix, iy = self:getInputPinPosition(inputNode, inputPin)
+                local ox, oy = self:getOutputPinPosition(outputNode, outputPin)
+                local linkColor = self:getPinColor(inputNode, inputPin)
+
+                content:drawLine(linkColor, 2, flat.Vector2(ix, iy), flat.Vector2(ox, oy))
+                print(ix, iy, ox, oy)
+            end
+        end
+    end
+end
+
+function MainWindow:getPinColor(inputNode, inputPin)
+    local nodeWidget = self.nodeWidgets[inputNode]
+    return nodeWidget:getPinColorByType(inputPin.pinType)
+end
+
+function MainWindow:getInputPinPosition(inputNode, inputPin)
+    local nodeWidget = self.nodeWidgets[inputNode]
+    local inputPinPlugWidget = nodeWidget:getInputPinPlugWidget(inputPin)
+    local x, y = self.content:getRelativePosition(inputPinPlugWidget)
+    local sx, sy = inputPinPlugWidget:getSize()
+    return x, y + sy / 2
+end
+
+function MainWindow:getOutputPinPosition(outputNode, outputPin)
+    local nodeWidget = self.nodeWidgets[outputNode]
+    local outputPinPlugWidget = nodeWidget:getOutputPinPlugWidget(outputPin)
+    local x, y = self.content:getRelativePosition(outputPinPlugWidget)
+    local sx, sy = outputPinPlugWidget:getSize()
+    return x + sx, y + sy / 2
 end
 
 return MainWindow

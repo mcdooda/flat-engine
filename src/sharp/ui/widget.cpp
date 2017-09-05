@@ -309,6 +309,11 @@ Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 	return Vector2(invTransform * Vector4(absolutePosition, 0.f, 1.f));
 }
 
+Vector2 Widget::getRelativePosition(const Widget& other) const
+{
+	return Vector2(other.m_transform[3][0] - m_transform[3][0], other.m_transform[3][1] - m_transform[3][1]);
+}
+
 bool Widget::intersect(const ScissorRectangle& a, const ScissorRectangle& b)
 {
 	return a.x < b.x + b.width

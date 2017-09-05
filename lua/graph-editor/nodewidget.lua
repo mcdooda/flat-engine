@@ -6,7 +6,9 @@ NodeWidget.__index = NodeWidget
 function NodeWidget:new(node)
     assert(node)
     local o = setmetatable({
-        node = node
+        node = node,
+        inputPinPlugWidgets = {},
+        outputPinPlugWidgets = {}
     }, self)
     o:build()
     return o
@@ -86,6 +88,7 @@ function NodeWidget:makeInputPinWidget(pin)
         inputPinPlugWidget:setMargin(0, 3, 0, 0)
         inputPinPlugWidget:setBackgroundColor(self:getPinColorByType(pin.pinType))
         inputPinWidget:addChild(inputPinPlugWidget)
+        self.inputPinPlugWidgets[pin] = inputPinPlugWidget
     end
 
     do
@@ -115,6 +118,7 @@ function NodeWidget:makeOutputPinWidget(pin)
         outputPinPlugWidget:setMargin(0, 0, 0, 3)
         outputPinPlugWidget:setBackgroundColor(self:getPinColorByType(pin.pinType))
         outputPinWidget:addChild(outputPinPlugWidget)
+        self.outputPinPlugWidgets[pin] = outputPinPlugWidget
     end
 
     return outputPinWidget
@@ -130,6 +134,14 @@ local pinColors = {
 
 function NodeWidget:getPinColorByType(pinType)
     return pinColors[pinType]
+end
+
+function NodeWidget:getInputPinPlugWidget(pin)
+    return self.inputPinPlugWidgets[pin]
+end
+
+function NodeWidget:getOutputPinPlugWidget(pin)
+    return self.outputPinPlugWidgets[pin]
 end
 
 return NodeWidget
