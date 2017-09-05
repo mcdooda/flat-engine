@@ -200,6 +200,7 @@ class Widget : public util::Convertible<Widget>
 		virtual void layout(bool computePosition) = 0;
 		virtual void postLayout() = 0;
 		virtual void fullLayout() = 0;
+		virtual void layoutDone();
 
 		virtual void draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const;
 
@@ -221,6 +222,7 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*, bool&> mouseMove;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
+		Slot<Widget*> layoutFinished;
 		
 	protected:
 		static bool intersect(const ScissorRectangle& a, const ScissorRectangle& b);
@@ -303,6 +305,7 @@ public:
 	void postLayout() override final
 	{
 		LayoutType::postLayout(*this);
+		layoutDone();
 	}
 
 	void fullLayout() override final

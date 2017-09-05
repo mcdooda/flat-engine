@@ -4,10 +4,11 @@
 #include "../../../lua/sharedluareference.h"
 #include "../../../lua/sharedcppreference.h"
 #include "../../../lua/table.h"
-#include "../widget.h"
-#include "../textwidget.h"
+#include "../canvaswidget.h"
 #include "../focusablewidget.h"
 #include "../textinputwidget.h"
+#include "../textwidget.h"
+#include "../widget.h"
 #include "../widgetfactory.h"
 
 namespace flat
@@ -97,6 +98,10 @@ int open(lua_State* L)
 
 		{"focus",                 l_FocusableWidget_focus},
 		{"blur",                  l_FocusableWidget_blur},
+
+		{"draw",                  l_CanvasWidget_draw},
+		{"clear",                 l_CanvasWidget_clear},
+		{"drawLine",              l_CanvasWidget_drawLine},
 		
 		{nullptr, nullptr}
 	};
@@ -114,6 +119,7 @@ int open(lua_State* L)
 		{"makeColumnFlow", l_Widget_makeColumnFlow},
 		{"makeText",       l_Widget_makeText},
 		{"makeTextInput",  l_Widget_makeTextInput},
+		{"makeCanvas",     l_Widget_makeCanvas},
 		
 		{nullptr, nullptr}
 	};
@@ -643,6 +649,32 @@ int l_FocusableWidget_blur(lua_State* L)
 	return addWidgetCallback<FocusableWidget>(L, &FocusableWidget::leaveFocus);
 }
 
+int l_CanvasWidget_draw(lua_State * L)
+{
+	return addWidgetCallback<CanvasWidget>(L, &Widget::layoutFinished);
+}
+
+int l_CanvasWidget_clear(lua_State * L)
+{
+	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+	flat::video::Color clearColor(color);
+	canvasWidget.clear(clearColor);
+	return 0;
+}
+
+int l_CanvasWidget_drawLine(lua_State* L)
+{
+	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+	float width = static_cast<float>(luaL_checknumber(L, 3));
+	flat::Vector2 from = flat::lua::getVector2(L, 4);
+	flat::Vector2 to = flat::lua::getVector2(L, 5);
+	flat::video::Color lineColor(color);
+	canvasWidget.drawLine(lineColor, width, from, to);
+	return 0;
+}
+
 // static Widget functions
 
 int l_Widget_getRoot(lua_State* L)
@@ -718,6 +750,17 @@ int l_Widget_makeTextInput(lua_State* L)
 	return 1;
 }
 
+int l_Widget_makeCanvas(lua_State* L)
+{
+	int width = static_cast<int>(luaL_checkinteger(L, 1));
+	int height = static_cast<int>(luaL_checkinteger(L, 2));
+	flat::Vector2 size(width, height);
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeCanvas(size);
+	pushWidget(L, widget);
+	return 1;
+}
+
 // private
 
 Widget& getWidget(lua_State* L, int index)
@@ -751,6 +794,18 @@ FocusableWidget& getFocusableWidget(lua_State* L, int index)
 	return *focusableWidget;
 }
 
+CanvasWidget& getCanvasWidget(lua_State * L, int index)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	Widget& widget = getWidget(L, index);
+	CanvasWidget* canvasWidget = dynamic_cast<CanvasWidget*>(&widget);
+	if (!canvasWidget)
+	{
+		luaL_error(L, "CanvasWidget required, Widget given");
+	}
+	return *canvasWidget;
+}
+
 template <>
 Widget& getWidgetOfType(lua_State* L, int index)
 {
@@ -767,6 +822,12 @@ template <>
 FocusableWidget& getWidgetOfType(lua_State* L, int index)
 {
 	return getFocusableWidget(L, index);
+}
+
+template <>
+CanvasWidget& getWidgetOfType(lua_State* L, int index)
+{
+	return getCanvasWidget(L, index);
 }
 
 template <class T>

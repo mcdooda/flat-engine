@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "../../misc/vector.h"
+#include "../../render/programsettings.h"
 
 namespace flat
 {
@@ -21,10 +22,11 @@ namespace sharp
 {
 namespace ui
 {
+class CanvasWidget;
 class RootWidget;
-class Widget;
-class TextWidget;
 class TextInputWidget;
+class TextWidget;
+class Widget;
 
 class WidgetFactory
 {
@@ -39,9 +41,14 @@ class WidgetFactory
 		std::shared_ptr<Widget> makeColumnFlow() const;
 		std::shared_ptr<TextWidget> makeText(const std::string& text, const std::string& fileName, int fontSize) const;
 		std::shared_ptr<TextInputWidget> makeTextInput(const std::string& fileName, int fontSize) const;
+		std::shared_ptr<CanvasWidget> makeCanvas(const Vector2& size) const;
 		
 	private:
+		std::shared_ptr<const render::ProgramSettings> getCanvasRender() const;
+
+	private:
 		Flat& m_flat;
+		mutable std::shared_ptr<const render::ProgramSettings> m_canvasRender;
 };
 
 } // ui

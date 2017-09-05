@@ -12,10 +12,13 @@ namespace video
 
 class Texture
 {
+	friend class Pass;
 	public:
 		Texture();
 		Texture(GLuint textureId, const Vector2& size, const std::string& name);
 		virtual ~Texture();
+
+		void clear();
 		
 		static void open()
 		{
@@ -33,7 +36,6 @@ class Texture
 
 		inline std::uint32_t getHash() const { return static_cast<std::uint32_t>(m_textureId); }
 		
-		friend class Pass;
 		
 	protected:
 		GLuint m_textureId;

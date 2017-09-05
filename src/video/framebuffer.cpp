@@ -13,14 +13,9 @@ FrameBuffer::FrameBuffer()
 FrameBuffer::~FrameBuffer()
 {
 	glDeleteFramebuffers(1, &m_fboId);
-	for (std::vector<Texture>::iterator it = m_textures.begin(); it != m_textures.end(); it++)
-	{
-		GLuint textureId = it->getTextureId();
-		glDeleteTextures(1, &textureId);
-	}
 }
 
-const Texture& FrameBuffer::addTexture(const std::string& name)
+std::shared_ptr<const Texture> FrameBuffer::addTexture(const std::string& name)
 {
 	GLuint textureId;
 	glGenTextures(1, &textureId);
@@ -40,8 +35,9 @@ const Texture& FrameBuffer::addTexture(const std::string& name)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	m_textures.emplace_back(textureId, m_size, name);
-	return m_textures.back();
+	std::shared_ptr<const Texture> texture = std::make_shared<const Texture>(textureId, m_size, name);
+	m_textures.push_back(texture);
+	return texture;
 }
 
 void FrameBuffer::use()

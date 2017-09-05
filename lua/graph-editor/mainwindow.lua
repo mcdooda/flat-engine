@@ -56,11 +56,22 @@ function MainWindow:build()
         window:addChild(titleContainer)
     end
 
-    local content = Widget.makeExpand()
+    local content = Widget.makeCanvas(1, 1)
+    content:setSizePolicy(Widget.SizePolicy.EXPAND)
     content:setMargin(3)
-    content:setBackgroundColor(0xECF0F1FF)
     content:setAllowScroll(true, true)
     content:setRestrictScroll(false, false)
+    local lx, ly
+    content:draw(function()
+        content:clear(0xECF0F1FF)
+        lx, ly = nil, nil
+    end)
+    content:mouseMove(function(w, x, y)
+        if lx then
+            w:drawLine(0x000000FF, 1, flat.Vector2(lx, ly), flat.Vector2(x, y))
+        end
+        lx, ly = x, y
+    end)
     window:addChild(content)
 
     self.window = window

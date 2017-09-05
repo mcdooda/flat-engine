@@ -28,7 +28,8 @@ class Program
 		
 		inline bool isValid() const { return m_valid; }
 		
-		void use(Window* window) const;
+		void use(const Window& window) const;
+		void use(const Vector2& size) const;
 		
 		Attribute getAttribute(const std::string& attributeName) const;
 
@@ -49,6 +50,8 @@ class Program
 		}
 		
 		void addInputTexture(const Texture& inputTexture);
+
+		inline GLuint getProgramId() const { return m_programId; }
 
 		inline std::uint32_t getHash() const { return static_cast<std::uint32_t>(m_programId); }
 		

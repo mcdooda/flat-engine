@@ -2,6 +2,7 @@
 #define FLAT_VIDEO_FRAMEBUFFER_H
 
 #include <vector>
+#include <memory>
 #include "texture.h"
 
 namespace flat
@@ -17,13 +18,13 @@ class FrameBuffer
 		
 		inline void setSize(const Vector2& size) { m_size = size; }
 		
-		const Texture& addTexture(const std::string& name);
+		std::shared_ptr<const Texture> addTexture(const std::string& name);
 		
 		void use();
 		
 	protected:
 		Vector2 m_size;
-		std::vector<Texture> m_textures;
+		std::vector<std::shared_ptr<const Texture>> m_textures;
 		GLuint m_fboId;
 };
 

@@ -47,15 +47,18 @@ void Program::load(const std::string& fragmentShader, const std::string& vertexS
 	assertValid();
 }
 
-void Program::use(Window* window) const
+void Program::use(const Window& window) const
 {
-	FLAT_ASSERT(window != nullptr);
+	use(window.getSize());
+}
+
+void Program::use(const Vector2& size) const
+{
 	assertValid();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(m_programId);
-	const Vector2& windowSize = window->getSize();
-	glViewport(0, 0, static_cast<GLsizei>(windowSize.x), static_cast<GLsizei>(windowSize.y));
-	
+	glViewport(0, 0, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
+
 	int i = 0;
 	for (const Texture& texture : m_inputTextures)
 	{

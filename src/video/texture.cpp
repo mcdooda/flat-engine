@@ -24,6 +24,13 @@ Texture::~Texture()
 	
 }
 
+void Texture::clear()
+{
+	m_textureId = 0;
+	m_size = {0, 0};
+	m_name.clear();
+}
+
 } // video
 } // flat
 

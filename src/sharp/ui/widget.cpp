@@ -182,6 +182,11 @@ void Widget::removeAllChildren()
 	setAncestorDirty();
 }
 
+void Widget::layoutDone()
+{
+	layoutFinished(this);
+}
+
 void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
 {
 	if (!m_visible)

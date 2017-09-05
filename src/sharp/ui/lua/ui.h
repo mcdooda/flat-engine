@@ -12,9 +12,10 @@ namespace sharp
 {
 namespace ui
 {
-class Widget;
-class TextWidget;
+class CanvasWidget;
 class FocusableWidget;
+class TextWidget;
+class Widget;
 class WidgetFactory;
 namespace lua
 {
@@ -84,14 +85,19 @@ int l_Widget_mouseLeave(lua_State* L);
 int l_Widget_drag(lua_State* L);
 int l_Widget_drop(lua_State* L);
 
-// TextWidget only!
+// TextWidget only
 int l_TextWidget_setText(lua_State* L);
 int l_TextWidget_getText(lua_State* L);
 int l_TextWidget_setTextColor(lua_State* L);
 
-// FocusableWidget only!
+// FocusableWidget only
 int l_FocusableWidget_focus(lua_State* L);
 int l_FocusableWidget_blur(lua_State* L);
+
+// CanvasWidget only
+int l_CanvasWidget_draw(lua_State* L);
+int l_CanvasWidget_clear(lua_State* L);
+int l_CanvasWidget_drawLine(lua_State* L);
 
 // static Widget functions
 int l_Widget_getRoot(lua_State* L);
@@ -103,11 +109,14 @@ int l_Widget_makeLineFlow(lua_State* L);
 int l_Widget_makeColumnFlow(lua_State* L);
 int l_Widget_makeText(lua_State* L);
 int l_Widget_makeTextInput(lua_State* L);
+int l_Widget_makeCanvas(lua_State* L);
 
 // private
 Widget& getWidget(lua_State* L, int index);
 TextWidget& getTextWidget(lua_State* L, int index);
 FocusableWidget& getFocusableWidget(lua_State* L, int index);
+CanvasWidget& getCanvasWidget(lua_State* L, int index);
+
 template <class T>
 T& getWidgetOfType(lua_State* L, int index);
 template <class T>
