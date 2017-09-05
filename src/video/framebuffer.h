@@ -17,6 +17,7 @@ class FrameBuffer
 		~FrameBuffer();
 		
 		inline void setSize(const Vector2& size) { m_size = size; }
+		inline const Vector2& getSize() const { return m_size; }
 		
 		std::shared_ptr<const Texture> addTexture(const std::string& name);
 		

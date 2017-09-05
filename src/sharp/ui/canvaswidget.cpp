@@ -74,11 +74,14 @@ void CanvasWidget::drawLine(const video::Color& color, float width, const Vector
 
 void CanvasWidget::updateCanvasSize()
 {
-	m_frameBuffer.reset(new video::FrameBuffer());
-	m_frameBuffer->setSize(m_computedSize);
-	m_backgroundTexture = m_frameBuffer->addTexture("Background");
-	setBackground(m_backgroundTexture);
-	m_viewMatrix = ortho(0.f, m_computedSize.x, m_computedSize.y, 0.f);
+	if (m_frameBuffer == nullptr || m_frameBuffer->getSize() != m_computedSize)
+	{
+		m_frameBuffer.reset(new video::FrameBuffer());
+		m_frameBuffer->setSize(m_computedSize);
+		m_backgroundTexture = m_frameBuffer->addTexture("Background");
+		setBackground(m_backgroundTexture);
+		m_viewMatrix = ortho(0.f, m_computedSize.x, m_computedSize.y, 0.f);
+	}
 }
 
 } // ui

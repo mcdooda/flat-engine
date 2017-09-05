@@ -133,7 +133,6 @@ function MainWindow:drawLinks()
                 local linkColor = self:getPinColor(inputNode, inputPin)
 
                 content:drawLine(linkColor, 2, flat.Vector2(ix, iy), flat.Vector2(ox, oy))
-                print(ix, iy, ox, oy)
             end
         end
     end
