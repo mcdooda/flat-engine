@@ -121,10 +121,9 @@ function MainWindow:makeNodeWidget(node)
 end
 
 function MainWindow:drawLinks()
-    local content = self.content
     local graph = self.graph
 
-    content:clear(0xECF0F1FF)
+    self.content:clear(0xECF0F1FF)
 
     for i = 1, #graph.nodeInstances do
         local inputNode = graph.nodeInstances[i]
@@ -134,24 +133,28 @@ function MainWindow:drawLinks()
                 local outputNode = inputPin.pluggedOutputPin.node
                 local outputPin = inputPin.pluggedOutputPin.outputPin
 
-                local ix, iy = self:getInputPinPosition(inputNode, inputPin)
-                local ox, oy = self:getOutputPinPosition(outputNode, outputPin)
+                local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
+                local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
                 local linkColor = self:getPinColor(inputNode, inputPin)
 
-                local dx = math.min(50, math.abs(ix - ox) / 2)
-                local dy = math.min(50, (iy - oy) / 2)
-                local bezier = {
-                    flat.Vector2(ox, oy),
-                    flat.Vector2(ox + dx, oy),
-                    flat.Vector2(ox + dx, oy + dy),
-                    flat.Vector2(ix - dx, iy - dy),
-                    flat.Vector2(ix - dx, iy),
-                    flat.Vector2(ix, iy)
-                }
-                content:drawBezier(linkColor, 2, bezier)
+                self:drawLink(linkColor, inputPinX, inputPinY, outputPinX, outputPinY)
             end
         end
     end
+end
+
+function MainWindow:drawLink(linkColor, inputPinX, inputPinY, outputPinX, outputPinY)
+    local dx = math.min(50, math.abs(inputPinX - outputPinX) / 2)
+    local dy = math.min(50, (inputPinY - outputPinY) / 2)
+    local bezier = {
+        flat.Vector2(outputPinX, outputPinY),
+        flat.Vector2(outputPinX + dx, outputPinY),
+        flat.Vector2(outputPinX + dx, outputPinY + dy),
+        flat.Vector2(inputPinX - dx, inputPinY - dy),
+        flat.Vector2(inputPinX - dx, inputPinY),
+        flat.Vector2(inputPinX, inputPinY)
+    }
+    self.content:drawBezier(linkColor, 2, bezier)
 end
 
 function MainWindow:getPinColor(inputNode, inputPin)
