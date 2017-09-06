@@ -62,10 +62,11 @@ function MainWindow:build()
     content:setMargin(3)
     content:setAllowScroll(true, true)
     content:setRestrictScroll(false, false)
-    content:draw(function()
-        content:clear(0xECF0F1FF)
+    local function draw()
         self:drawLinks()
-    end)
+    end
+    content:scroll(draw)
+    content:draw(draw)
     window:addChild(content)
 
     self.window = window
@@ -90,6 +91,9 @@ function MainWindow:openGraph(graphPath)
         local nodePosition = graphLayout[i]
         local nodeWidget = self:makeNodeWidget(node)
         nodeWidget:setPosition(table.unpack(nodePosition))
+        nodeWidget:dragged(function()
+            self:drawLinks()
+        end)
         content:addChild(nodeWidget)
     end
 
@@ -119,6 +123,8 @@ end
 function MainWindow:drawLinks()
     local content = self.content
     local graph = self.graph
+
+    content:clear(0xECF0F1FF)
 
     for i = 1, #graph.nodeInstances do
         local inputNode = graph.nodeInstances[i]

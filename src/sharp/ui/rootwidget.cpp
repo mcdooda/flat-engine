@@ -143,6 +143,7 @@ void RootWidget::updateDraggedWidget()
 	{
 		auto& mouse = m_flat.input->mouse;
 		draggedWidget->setAbsolutePosition(mouse->getPosition() - m_draggedWidgetRelativePosition);
+		draggedWidget->m_dragged = true;
 	}
 }
 

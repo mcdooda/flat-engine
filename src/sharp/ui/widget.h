@@ -221,6 +221,8 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*, bool&> mouseDown;
 		Slot<Widget*, bool&> mouseUp;
 		Slot<Widget*, bool&> mouseMove;
+		Slot<Widget*> scroll;
+		Slot<Widget*> dragged;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
 		Slot<Widget*> layoutFinished;
@@ -267,14 +269,16 @@ class Widget : public util::Convertible<Widget>
 		PositionPolicy m_positionPolicy;
 
 		bool m_visible : 1;
-
-		// computed
-		bool m_mouseOver : 1;
-		bool m_hasFocus : 1;
 		bool m_allowScrollX : 1;
 		bool m_allowScrollY : 1;
 		bool m_restrictScrollX : 1;
 		bool m_restrictScrollY : 1;
+
+		// computed
+		bool m_mouseOver : 1;
+		bool m_hasFocus : 1;
+		bool m_scrolled : 1;
+		bool m_dragged : 1;
 
 		Matrix4 m_transform;
 		Size m_computedSize;
@@ -307,13 +311,23 @@ public:
 	{
 		LayoutType::postLayout(*this);
 		layoutDone();
+		if (m_scrolled)
+		{
+			scroll(this);
+			m_scrolled = false;
+		}
+		if (m_dragged)
+		{
+			dragged(this);
+			m_dragged = false;
+		}
 	}
 
 	void fullLayout() override final
 	{
-		LayoutType::preLayout(*this);
-		LayoutType::layout(*this, true);
-		LayoutType::postLayout(*this);
+		preLayout();
+		layout(true);
+		postLayout();
 	}
 };
 

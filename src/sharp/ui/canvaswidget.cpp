@@ -24,8 +24,10 @@ CanvasWidget::~CanvasWidget()
 
 void CanvasWidget::layoutDone()
 {
-	updateCanvasSize();
-	Super::layoutDone();
+	if (updateCanvasSize())
+	{
+		Super::layoutDone();
+	}
 }
 
 void CanvasWidget::clear(const video::Color& clearColor)
@@ -91,7 +93,7 @@ void CanvasWidget::drawLines(const video::Color& color, float width, const Vecto
 	glEnable(GL_DEPTH_BUFFER);
 }
 
-void CanvasWidget::updateCanvasSize()
+bool CanvasWidget::updateCanvasSize()
 {
 	if (m_frameBuffer == nullptr || m_frameBuffer->getSize() != m_computedSize)
 	{
@@ -100,7 +102,9 @@ void CanvasWidget::updateCanvasSize()
 		m_backgroundTexture = m_frameBuffer->addTexture("Background");
 		setBackground(m_backgroundTexture);
 		m_viewMatrix = ortho(0.f, m_computedSize.x, m_computedSize.y, 0.f);
+		return true;
 	}
+	return false;
 }
 
 } // ui

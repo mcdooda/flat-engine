@@ -30,7 +30,7 @@ class CanvasWidget : public WidgetImpl<FixedLayout>
 	private:
 		void drawLines(const video::Color& color, float width, const Vector2* vertices, GLsizei count);
 
-		void updateCanvasSize();
+		bool updateCanvasSize();
 
 	private:
 		std::unique_ptr<video::FrameBuffer> m_frameBuffer;

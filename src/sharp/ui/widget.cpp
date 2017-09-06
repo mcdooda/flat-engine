@@ -28,12 +28,14 @@ Widget::Widget() :
 	m_sizePolicy(SizePolicy::FIXED),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_visible(true),
-	m_mouseOver(false),
-	m_hasFocus(false),
 	m_allowScrollX(false),
 	m_allowScrollY(false),
 	m_restrictScrollX(true),
-	m_restrictScrollY(true)
+	m_restrictScrollY(true),
+	m_mouseOver(false),
+	m_hasFocus(false),
+	m_scrolled(false),
+	m_dragged(false)
 {
 
 }
@@ -110,6 +112,8 @@ void Widget::scrollX(float scrollValueX, float dt)
 		m_scrollPosition.x = std::max(m_scrollPosition.x, m_minScrollPosition.x);
 	}
 
+	m_scrolled = true;
+
 	setAncestorDirty();
 }
 
@@ -122,6 +126,8 @@ void Widget::scrollY(float scrollValueY, float dt)
 		m_scrollPosition.y = std::max(m_scrollPosition.y, m_minScrollPosition.y);
 		m_scrollPosition.y = std::min(m_scrollPosition.y, 0.f);
 	}
+
+	m_scrolled = true;
 
 	setAncestorDirty();
 }
