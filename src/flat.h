@@ -29,6 +29,7 @@
 #include "geometry/circle.h"
 #include "geometry/rectangle.h"
 #include "geometry/grid.h"
+#include "geometry/bezier.h"
 
 // video
 #include "video/pass.h"

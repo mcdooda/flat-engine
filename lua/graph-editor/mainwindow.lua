@@ -132,7 +132,17 @@ function MainWindow:drawLinks()
                 local ox, oy = self:getOutputPinPosition(outputNode, outputPin)
                 local linkColor = self:getPinColor(inputNode, inputPin)
 
-                content:drawLine(linkColor, 2, flat.Vector2(ix, iy), flat.Vector2(ox, oy))
+                local dx = math.min(50, math.abs(ix - ox) / 2)
+                local dy = math.min(50, (iy - oy) / 2)
+                local bezier = {
+                    flat.Vector2(ox, oy),
+                    flat.Vector2(ox + dx, oy),
+                    flat.Vector2(ox + dx, oy + dy),
+                    flat.Vector2(ix - dx, iy - dy),
+                    flat.Vector2(ix - dx, iy),
+                    flat.Vector2(ix, iy)
+                }
+                content:drawBezier(linkColor, 2, bezier)
             end
         end
     end

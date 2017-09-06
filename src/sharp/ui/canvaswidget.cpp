@@ -1,5 +1,6 @@
 #include "canvaswidget.h"
 #include "../../render/rendersettings.h"
+#include "../../geometry/bezier.h"
 
 namespace flat
 {
@@ -39,6 +40,28 @@ void CanvasWidget::clear(const video::Color& clearColor)
 
 void CanvasWidget::drawLine(const video::Color& color, float width, const Vector2& from, const Vector2& to)
 {
+	Vector2 vertices[2];
+	vertices[0] = from;
+	vertices[1] = to;
+	drawLines(color, width, vertices, 2);
+}
+
+void CanvasWidget::drawBezier(const video::Color& color, float width, const std::vector<Vector2>& controlPoints)
+{
+	FLAT_ASSERT(controlPoints.size() > 1);
+	std::vector<Vector2> bezierCurve;
+	float length = 0.f;
+	for (int i = 0; i < controlPoints.size() - 1; ++i)
+	{
+		length += flat::length(controlPoints[i] - controlPoints[i + 1]);
+	}
+	int numSteps = static_cast<int>(length / 10.f);
+	geometry::bezier::computeBezier(controlPoints, numSteps, bezierCurve);
+	drawLines(color, width, bezierCurve.data(), static_cast<GLsizei>(bezierCurve.size()));
+}
+
+void CanvasWidget::drawLines(const video::Color& color, float width, const Vector2* vertices, GLsizei count)
+{
 	glDisable(GL_DEPTH_BUFFER);
 
 	const render::ProgramSettings* render = m_render.get();
@@ -51,19 +74,15 @@ void CanvasWidget::drawLine(const video::Color& color, float width, const Vector
 
 	const video::Uniform<video::Color>& colorUniform = render->settings.colorUniform;
 	colorUniform.set(color);
-	
+
 	const video::Attribute positionAttribute = render->settings.positionAttribute;
 
 	glLineWidth(width);
 
-	Vector2 vertices[2];
-	vertices[0] = from;
-	vertices[1] = to;
-
 	glEnableVertexAttribArray(positionAttribute);
 	glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2), &vertices[0]);
 
-	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(std::size(vertices)));
+	glDrawArrays(GL_LINE_STRIP, 0, count);
 
 	glDisableVertexAttribArray(positionAttribute);
 
