@@ -3,12 +3,15 @@ local PinTypes = flat.require 'graph/pintypes'
 local NodeWidget = {}
 NodeWidget.__index = NodeWidget
 
-function NodeWidget:new(node)
-    assert(node)
+function NodeWidget:new(node, mainWindow)
+    assert(node, 'no node given')
     local o = setmetatable({
         node = node,
+        mainWindow = mainWindow,
         inputPinPlugWidgets = {},
-        outputPinPlugWidgets = {}
+        inputPinSocketWidgets = {},
+        outputPinPlugWidgets = {},
+        outputPinSocketWidgets = {}
     }, self)
     o:build()
     return o
@@ -51,7 +54,8 @@ function NodeWidget:build()
             inputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
             for i = 1, #node.inputPins do
                 local pin = node.inputPins[i]
-                local inputPinWidget = self:makeInputPinWidget(pin)
+                local inputPinWidget = self:makeInputPinWidget(node, pin)
+                self:setInputPinPlugged(pin, pin.pluggedOutputPin ~= nil)
                 inputPinsWidget:addChild(inputPinWidget)
             end
             pinsWidget:addChild(inputPinsWidget)
@@ -67,7 +71,8 @@ function NodeWidget:build()
             outputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
             for i = 1, #node.outputPins do
                 local pin = node.outputPins[i]
-                local outputPinWidget = self:makeOutputPinWidget(pin)
+                local outputPinWidget = self:makeOutputPinWidget(node, pin)
+                self:setOutputPinPlugged(pin, #pin.pluggedInputPins > 0)
                 outputPinsWidget:addChild(outputPinWidget)
             end
             pinsWidget:addChild(outputPinsWidget)
@@ -79,7 +84,7 @@ function NodeWidget:build()
     self.container = nodeWidget
 end
 
-function NodeWidget:makeInputPinWidget(pin)
+function NodeWidget:makeInputPinWidget(node, pin)
     local inputPinWidget = Widget.makeLineFlow()
 
     do
@@ -87,6 +92,30 @@ function NodeWidget:makeInputPinWidget(pin)
         inputPinPlugWidget:setPositionPolicy(Widget.PositionPolicy.CENTER)
         inputPinPlugWidget:setMargin(0, 3, 0, 0)
         inputPinPlugWidget:setBackgroundColor(self:getPinColorByType(pin.pinType))
+
+        local inputPinSocketWidget = Widget.makeFixedSize(6, 4)
+        inputPinSocketWidget:setBackgroundColor(0xECF0F1FF)
+        inputPinSocketWidget:setMargin(2, 2, 2, 0)
+        inputPinPlugWidget:addChild(inputPinSocketWidget)
+        self.inputPinSocketWidgets[pin] = inputPinSocketWidget
+
+        inputPinPlugWidget:mouseDown(function()
+            if pin.pluggedOutputPin then
+                local outputPin = pin.pluggedOutputPin.outputPin
+                local outputNode = pin.pluggedOutputPin.node
+                node:unplugInputPin(pin)
+                self:setInputPinPlugged(pin, false)
+                self.mainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
+            else
+                self.mainWindow:beginDragWireFromInputPin(node, pin)
+            end
+            return true
+        end)
+
+        inputPinPlugWidget:mouseUp(function()
+            return self.mainWindow:linkReleasedOnInputPin(node, pin)
+        end)
+
         inputPinWidget:addChild(inputPinPlugWidget)
         self.inputPinPlugWidgets[pin] = inputPinPlugWidget
     end
@@ -101,7 +130,7 @@ function NodeWidget:makeInputPinWidget(pin)
     return inputPinWidget
 end
 
-function NodeWidget:makeOutputPinWidget(pin)
+function NodeWidget:makeOutputPinWidget(node, pin)
     local outputPinWidget = Widget.makeLineFlow()
     outputPinWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
 
@@ -117,6 +146,24 @@ function NodeWidget:makeOutputPinWidget(pin)
         outputPinPlugWidget:setPositionPolicy(Widget.PositionPolicy.CENTER)
         outputPinPlugWidget:setMargin(0, 0, 0, 3)
         outputPinPlugWidget:setBackgroundColor(self:getPinColorByType(pin.pinType))
+
+        do
+            local outputPinSocketWidget = Widget.makeFixedSize(6, 4)
+            outputPinSocketWidget:setBackgroundColor(0xECF0F1FF)
+            outputPinSocketWidget:setMargin(2, 0, 2, 2)
+            outputPinPlugWidget:addChild(outputPinSocketWidget)
+            self.outputPinSocketWidgets[pin] = outputPinSocketWidget
+        end
+
+        outputPinPlugWidget:mouseDown(function()
+            self.mainWindow:beginDragWireFromOutputPin(node, pin)
+            return true
+        end)
+
+        outputPinPlugWidget:mouseUp(function()
+            return self.mainWindow:linkReleasedOnOutputPin(node, pin)
+        end)
+
         outputPinWidget:addChild(outputPinPlugWidget)
         self.outputPinPlugWidgets[pin] = outputPinPlugWidget
     end
@@ -142,6 +189,16 @@ end
 
 function NodeWidget:getOutputPinPlugWidget(pin)
     return self.outputPinPlugWidgets[pin]
+end
+
+function NodeWidget:setInputPinPlugged(pin, plugged)
+    local inputPinSocketWidget = self.inputPinSocketWidgets[pin]
+    inputPinSocketWidget:setVisible(not plugged)
+end
+
+function NodeWidget:setOutputPinPlugged(pin, plugged)
+    local outputPinSocketWidget = self.outputPinSocketWidgets[pin]
+    outputPinSocketWidget:setVisible(not plugged)
 end
 
 return NodeWidget

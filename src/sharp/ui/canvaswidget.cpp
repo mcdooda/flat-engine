@@ -57,7 +57,7 @@ void CanvasWidget::drawBezier(const video::Color& color, float width, const std:
 	{
 		length += flat::length(controlPoints[i] - controlPoints[i + 1]);
 	}
-	int numSteps = static_cast<int>(length / 10.f);
+	int numSteps = std::max(2, static_cast<int>(length / 10.f));
 	geometry::bezier::computeBezier(controlPoints, numSteps, bezierCurve);
 	drawLines(color, width, bezierCurve.data(), static_cast<GLsizei>(bezierCurve.size()));
 }

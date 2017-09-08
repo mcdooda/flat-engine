@@ -29,8 +29,8 @@ function Node:init(...)
 end
 
 function Node:addInputPin(pinType, pinName)
-    assert(pinType)
-    assert(pinName)
+    assert(pinType, 'no pin type')
+    assert(pinName, 'no pin name')
     local inputPin = {
         pinType = pinType,
         pinName = pinName,
@@ -74,6 +74,7 @@ end
 
 function Node:plugPins(outputPin, node, inputPin)
     assert(outputPin.pinType == inputPin.pinType, 'pin types mismatch')
+    assert(not inputPin.pluggedOutputPin, 'the input pin is already plugged')
     outputPin.pluggedInputPins[#outputPin.pluggedInputPins + 1] = {
         inputPin = inputPin,
         node = node
@@ -82,6 +83,23 @@ function Node:plugPins(outputPin, node, inputPin)
         outputPin = outputPin,
         node = self
     }
+end
+
+function Node:unplugInputPin(inputPin)
+    assert(inputPin.pluggedOutputPin, 'the input pin is not plugged')
+    local outputPin = inputPin.pluggedOutputPin.outputPin
+    local numPluggedInputPins = #outputPin.pluggedInputPins
+    for i = 1, numPluggedInputPins do
+        local pluggedInputPin = outputPin.pluggedInputPins[i]
+        if pluggedInputPin.inputPin == inputPin then
+            if i < numPluggedInputPins then
+                outputPin.pluggedInputPins[i] = outputPin.pluggedInputPins[numPluggedInputPins]
+            end
+            outputPin.pluggedInputPins[numPluggedInputPins] = nil
+            break
+        end
+    end
+    inputPin.pluggedOutputPin = nil
 end
 
 return Node

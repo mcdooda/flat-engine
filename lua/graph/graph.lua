@@ -83,7 +83,7 @@ function Graph:load(savedGraph, nodeRegistry)
         if not inputNode then
             error('No node #' .. tostring(inputNodeIndex) .. ' in graph')
         end
-        local inputPin = assert(inputNode:getInputPin(inputPinIndex))
+        local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'no input pin for index ' .. inputPinIndex)
         if not inputPin then
             error('No input pin #' .. tostring(intputPinIndex) .. ' in node #' .. inputNodeIndex)
         end

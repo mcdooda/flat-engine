@@ -63,7 +63,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseLeave();
 		void handleMouseWheel(float dt);
 
-		static void propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot);
+		static bool propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot);
 		
 	private:
 		Flat& m_flat;

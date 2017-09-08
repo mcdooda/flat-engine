@@ -5,10 +5,11 @@ local MainWindow = {}
 MainWindow.__index = MainWindow
 
 function MainWindow:open(editorContainer)
-    assert(editorContainer)
+    assert(editorContainer, 'no editor container')
     local o = setmetatable({
         editorContainer = editorContainer,
-        nodeWidgets = {}
+        nodeWidgets = {},
+        currentLink = nil
     }, self)
     o:build()
     return o
@@ -65,8 +66,20 @@ function MainWindow:build()
     local function draw()
         self:drawLinks()
     end
+    local function mouseMove(content, x, y)
+        if self.currentLink then
+            self:updateCurrentLink(x, y)
+        end
+    end
+    local function mouseUp(content, x, y)
+        if self.currentLink then
+            self:clearCurrentLink()
+        end
+    end
     content:scroll(draw)
     content:draw(draw)
+    content:mouseMove(mouseMove)
+    content:mouseUp(mouseUp)
     window:addChild(content)
 
     self.window = window
@@ -84,7 +97,7 @@ function MainWindow:openGraph(graphPath)
 
     local graph = self:loadGraph(graphPath)
     local graphLayout = self:loadGraphLayout(graphPath)
-    assert(#graph.nodeInstances == #graphLayout)
+    assert(#graph.nodeInstances == #graphLayout, 'graph and layout do not match')
     local content = self.content
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]
@@ -115,7 +128,7 @@ function MainWindow:loadGraphLayout(graphPath)
 end
 
 function MainWindow:makeNodeWidget(node)
-    local nodeWidget = NodeWidget:new(node)
+    local nodeWidget = NodeWidget:new(node, self)
     self.nodeWidgets[node] = nodeWidget
     return nodeWidget.container
 end
@@ -137,10 +150,52 @@ function MainWindow:drawLinks()
                 local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
                 local linkColor = self:getPinColor(inputNode, inputPin)
 
-                self:drawLink(linkColor, inputPinX, inputPinY, outputPinX, outputPinY)
+                self:drawLink(
+                    linkColor,
+                    inputPinX, inputPinY,
+                    outputPinX, outputPinY
+                )
             end
         end
     end
+
+    local currentLink = self.currentLink
+    if currentLink then
+        self:drawLink(
+            currentLink.color,
+            currentLink.inputPinX, currentLink.inputPinY,
+            currentLink.outputPinX, currentLink.outputPinY
+        )
+    end
+end
+
+function MainWindow:updateCurrentLink(x, y)
+    local currentLink = self.currentLink
+    assert(currentLink, 'no current link')
+    if currentLink.inputNode then
+        currentLink.outputPinX = x
+        currentLink.outputPinY = y
+    else
+        assert(currentLink.outputNode)
+        currentLink.inputPinX = x
+        currentLink.inputPinY = y
+    end
+    self:drawLinks()
+end
+
+function MainWindow:clearCurrentLink()
+    local currentLink = self.currentLink
+    assert(currentLink, 'no current link')
+    if currentLink.inputNode then
+        local nodeWidget = self.nodeWidgets[currentLink.inputNode]
+        nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
+    else
+        assert(currentLink.outputNode)
+        local nodeWidget = self.nodeWidgets[currentLink.outputNode]
+        nodeWidget:setOutputPinPlugged(currentLink.outputPin, #currentLink.outputPin.pluggedInputPins > 0)
+    end
+    self.currentLink = nil
+    self:drawLinks()
 end
 
 function MainWindow:drawLink(linkColor, inputPinX, inputPinY, outputPinX, outputPinY)
@@ -176,6 +231,86 @@ function MainWindow:getOutputPinPosition(outputNode, outputPin)
     local x, y = self.content:getRelativePosition(outputPinPlugWidget)
     local sx, sy = outputPinPlugWidget:getSize()
     return x + sx, y + sy / 2
+end
+
+function MainWindow:beginDragWireFromInputPin(inputNode, inputPin)
+    assert(inputNode, 'no input node')
+    assert(inputPin, 'no input pin')
+    local color = self:getPinColor(inputNode, inputPin)
+    local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
+    local outputPinX, outputPinY = self:getMousePositionOnContent()
+    self.currentLink = {
+        inputNode = inputNode,
+        inputPin = inputPin,
+        color = color,
+        inputPinX = inputPinX, inputPinY = inputPinY,
+        outputPinX = outputPinX, outputPinY = outputPinY
+    }
+    local nodeWidget = self.nodeWidgets[inputNode]
+    nodeWidget:setInputPinPlugged(inputPin, true)
+    self:drawLinks()
+end
+
+function MainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
+    assert(outputNode, 'no output node')
+    assert(outputPin, 'no input pin')
+    local color = self:getPinColor(outputNode, outputPin)
+    local inputPinX, inputPinY = self:getMousePositionOnContent()
+    local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
+    self.currentLink = {
+        outputNode = outputNode,
+        outputPin = outputPin,
+        color = color,
+        inputPinX = inputPinX, inputPinY = inputPinY,
+        outputPinX = outputPinX, outputPinY = outputPinY
+    }
+    local nodeWidget = self.nodeWidgets[outputNode]
+    nodeWidget:setOutputPinPlugged(outputPin, true)
+    self:drawLinks()
+end
+
+function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
+    local currentLink = self.currentLink
+    if currentLink and currentLink.outputNode then
+        if inputPin.pinType == currentLink.outputPin.pinType and currentLink.outputNode ~= inputNode then
+            if inputPin.pluggedOutputPin then
+                local outputPin = inputPin.pluggedOutputPin.outputPin
+                local previousOutputNode = inputPin.pluggedOutputPin.node
+                inputNode:unplugInputPin(inputPin)
+                local nodeWidget = self.nodeWidgets[previousOutputNode]
+                nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+            end
+            currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin)
+            local nodeWidget = self.nodeWidgets[inputNode]
+            nodeWidget:setInputPinPlugged(inputPin, true)
+        else
+            local nodeWidget = self.nodeWidgets[currentLink.outputNode]
+            local outputPin = currentLink.outputPin
+            nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+        end
+        self.currentLink = nil
+        self:drawLinks()
+    end
+end
+
+function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
+    local currentLink = self.currentLink
+    if currentLink and currentLink.inputNode then
+        if outputPin.pinType == currentLink.inputPin.pinType and currentLink.inputNode ~= outputNode then
+            outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
+            local nodeWidget = self.nodeWidgets[outputNode]
+            nodeWidget:setOutputPinPlugged(outputPin, true)
+        else
+            local nodeWidget = self.nodeWidgets[currentLink.inputNode]
+            nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
+        end
+        self.currentLink = nil
+        self:drawLinks()
+    end
+end
+
+function MainWindow:getMousePositionOnContent()
+    return self.content:getRelativePosition(Mouse.getPosition())
 end
 
 return MainWindow

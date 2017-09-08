@@ -327,10 +327,21 @@ int l_Widget_getPosition(lua_State* L)
 int l_Widget_getRelativePosition(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	Widget& other = getWidget(L, 2);
-	Vector2 position = widget.getRelativePosition(other);
-	lua_pushnumber(L, position.x);
-	lua_pushnumber(L, position.y);
+	Vector2 relativePosition;
+	if (lua_type(L, 2) == LUA_TNUMBER)
+	{
+		Vector2 absolutePosition;
+		absolutePosition.x = static_cast<float>(luaL_checknumber(L, 2));
+		absolutePosition.y = static_cast<float>(luaL_checknumber(L, 3));
+		relativePosition = widget.getRelativePosition(absolutePosition);
+	}
+	else
+	{
+		Widget& other = getWidget(L, 2);
+		relativePosition = widget.getRelativePosition(other);
+	}
+	lua_pushnumber(L, relativePosition.x);
+	lua_pushnumber(L, relativePosition.y);
 	return 2;
 }
 
@@ -591,12 +602,12 @@ int l_Widget_click(lua_State* L)
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::click);
 }
 
-int l_Widget_mouseDown(lua_State * L)
+int l_Widget_mouseDown(lua_State* L)
 {
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseDown);
 }
 
-int l_Widget_mouseUp(lua_State * L)
+int l_Widget_mouseUp(lua_State* L)
 {
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseUp);
 }

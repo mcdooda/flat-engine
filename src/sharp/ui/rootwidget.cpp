@@ -256,7 +256,17 @@ void RootWidget::handleMouseDown()
 
 void RootWidget::handleMouseUp()
 {
-	propagateEvent(m_mouseDownWidget.lock().get(), &Widget::mouseUp);
+	Widget* mouseDownWidget = m_mouseDownWidget.lock().get();
+	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
+	bool eventHandled = false;
+	if (mouseDownWidget != mouseOverWidget)
+	{
+		eventHandled = propagateEvent(mouseOverWidget, &Widget::mouseUp);
+	}
+	if (!eventHandled)
+	{
+		propagateEvent(mouseDownWidget, &Widget::mouseUp);
+	}
 }
 
 void RootWidget::handleMouseMove()
@@ -316,7 +326,7 @@ void RootWidget::handleMouseWheel(float dt)
 	}
 }
 
-void RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot)
+bool RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot)
 {
 	// propagate the event upwards until it is handled
 	bool eventHandled = false;
@@ -325,6 +335,7 @@ void RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* s
 		(widget->*slot)(widget, eventHandled);
 		widget = widget->getParent().lock().get();
 	}
+	return eventHandled;
 }
 
 } // ui
