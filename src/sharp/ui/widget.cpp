@@ -223,7 +223,7 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 		renderSettings.colorUniform.set(m_backgroundColor);
 
 		video::Color color = video::Color::WHITE;
-		if (!m_mouseOver || !click.on())
+		if (!m_mouseOver || !leftClick.on())
 		{
 			color = video::Color::BLACK;
 		}

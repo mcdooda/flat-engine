@@ -77,6 +77,7 @@ int l_Widget_setRestrictScroll(lua_State* L);
 int l_Widget_getRestrictScroll(lua_State* L);
 
 int l_Widget_click(lua_State* L);
+int l_Widget_rightClick(lua_State* L);
 int l_Widget_mouseDown(lua_State* L);
 int l_Widget_mouseUp(lua_State* L);
 int l_Widget_mouseMove(lua_State* L);

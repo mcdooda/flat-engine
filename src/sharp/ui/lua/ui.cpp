@@ -84,6 +84,7 @@ int open(lua_State* L)
 		{"getRestrictScroll",     l_Widget_getRestrictScroll},
 		
 		{"click",                 l_Widget_click},
+		{"rightClick",            l_Widget_rightClick},
 		{"mouseDown",             l_Widget_mouseDown},
 		{"mouseUp",               l_Widget_mouseUp},
 		{"mouseMove",             l_Widget_mouseMove},
@@ -599,7 +600,12 @@ int l_Widget_getRestrictScroll(lua_State* L)
 
 int l_Widget_click(lua_State* L)
 {
-	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::click);
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::leftClick);
+}
+
+int l_Widget_rightClick(lua_State* L)
+{
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::rightClick);
 }
 
 int l_Widget_mouseDown(lua_State* L)

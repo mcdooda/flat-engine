@@ -178,11 +178,20 @@ void RootWidget::updateInput(bool updateMouseOver, float dt)
 
 	if (mouse->isJustPressed(M(LEFT)))
 	{
-		handleMouseDown();
+		handleLeftMouseButtonDown();
 	}
 	else if (mouse->isJustReleased(M(LEFT)))
 	{
-		handleMouseUp();
+		handleLeftMouseButtonUp();
+	}
+
+	if (mouse->isJustPressed(M(RIGHT)))
+	{
+		handleRightMouseButtonDown();
+	}
+	else if (mouse->isJustReleased(M(RIGHT)))
+	{
+		handleRightMouseButtonUp();
 	}
 
 	if (mouse->wheelJustMoved())
@@ -205,11 +214,11 @@ void RootWidget::drop(Widget* widget)
 	m_draggedWidget.reset();
 }
 
-void RootWidget::handleMouseDown()
+void RootWidget::handleLeftMouseButtonDown()
 {
 	m_mouseDownWidget = m_mouseOverWidget;
 
-	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::click);
+	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::leftClick);
 	propagateEvent(m_mouseDownWidget.lock().get(), &Widget::mouseDown);
 
 	// find a focusable widget if possible
@@ -254,7 +263,7 @@ void RootWidget::handleMouseDown()
 	}
 }
 
-void RootWidget::handleMouseUp()
+void RootWidget::handleLeftMouseButtonUp()
 {
 	Widget* mouseDownWidget = m_mouseDownWidget.lock().get();
 	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
@@ -267,6 +276,16 @@ void RootWidget::handleMouseUp()
 	{
 		propagateEvent(mouseDownWidget, &Widget::mouseUp);
 	}
+}
+
+void RootWidget::handleRightMouseButtonDown()
+{
+	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::rightClick);
+}
+
+void RootWidget::handleRightMouseButtonUp()
+{
+
 }
 
 void RootWidget::handleMouseMove()

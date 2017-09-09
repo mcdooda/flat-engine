@@ -165,6 +165,10 @@ void Layout::computeCompressWidth(Widget& widget)
 			computeCompressWidth(*child);
 			compressWidth = std::max(compressWidth, child->m_computedSize.x + child->m_margin.left + child->m_margin.right);
 		}
+		else
+		{
+			FLAT_ASSERT(false);
+		}
 	}
 	widget.m_computedSize.x = compressWidth;
 }
@@ -184,6 +188,10 @@ void Layout::computeCompressHeight(Widget& widget)
 		{
 			computeCompressHeight(*child);
 			compressHeight = std::max(compressHeight, child->m_computedSize.y + child->m_margin.bottom + child->m_margin.top);
+		}
+		else
+		{
+			FLAT_ASSERT(false);
 		}
 	}
 	widget.m_computedSize.y = compressHeight;

@@ -217,7 +217,8 @@ class Widget : public util::Convertible<Widget>
 		virtual bool canBeFocused() const;
 
 	public:
-		Slot<Widget*, bool&> click;
+		Slot<Widget*, bool&> leftClick;
+		Slot<Widget*, bool&> rightClick;
 		Slot<Widget*, bool&> mouseDown;
 		Slot<Widget*, bool&> mouseUp;
 		Slot<Widget*, bool&> mouseMove;

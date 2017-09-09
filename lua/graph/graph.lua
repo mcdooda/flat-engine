@@ -1,3 +1,5 @@
+local NodeRepository = flat.require 'graph/noderepository'
+
 local Graph = {}
 Graph.__index = Graph
 
@@ -25,18 +27,10 @@ function Graph:loadGraph(graphPath)
     local PinTypes = flat.require 'graph/pintypes'
 
     local env = { PinTypes = PinTypes }
-    function env.__index(env, key)
-        -- load a graph of type 'key'
-        local nodeRegistry
-        local ok, errorMessage = pcall(function()
-            local nodeRegistryPath = 'graph/' .. key .. '/' .. key .. 'noderegistry'
-            nodeRegistry = flat.require(nodeRegistryPath)
-        end)
-        if not ok then
-            error('Could not load graph of type \'' .. tostring(key) .. '\': ' .. errorMessage)
-        end
+    function env.__index(env, nodeType)
+        local nodeRegistry = NodeRepository:getNodesForType(nodeType)
         return function(savedGraph)
-            self:load(savedGraph, nodeRegistry)
+            self:load(nodeType, savedGraph, nodeRegistry)
         end
     end
 
@@ -45,7 +39,9 @@ function Graph:loadGraph(graphPath)
     loadfile(graphPath, 'bt', env)()
 end
 
-function Graph:load(savedGraph, nodeRegistry)
+function Graph:load(nodeType, savedGraph, nodeRegistry)
+    self.nodeType = nodeType
+
     -- build nodes
     local nodes = savedGraph.nodes
     for i = 1, #nodes do

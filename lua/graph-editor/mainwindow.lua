@@ -1,4 +1,5 @@
 local Graph = flat.require 'graph/graph'
+local NodeRepository = flat.require 'graph/noderepository'
 local NodeWidget = flat.require 'graph-editor/nodewidget'
 
 local MainWindow = {}
@@ -63,23 +64,32 @@ function MainWindow:build()
     content:setMargin(3)
     content:setAllowScroll(true, true)
     content:setRestrictScroll(false, false)
+
     local function draw()
         self:drawLinks()
     end
+
     local function mouseMove(content, x, y)
         if self.currentLink then
             self:updateCurrentLink(x, y)
         end
     end
+
     local function mouseUp(content, x, y)
         if self.currentLink then
             self:clearCurrentLink()
         end
     end
+
+    local function rightClick()
+        self:openNodeListMenu()
+    end
+
     content:scroll(draw)
     content:draw(draw)
     content:mouseMove(mouseMove)
     content:mouseUp(mouseUp)
+    content:rightClick(rightClick)
     window:addChild(content)
 
     self.window = window
@@ -307,6 +317,30 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
         self.currentLink = nil
         self:drawLinks()
     end
+end
+
+function MainWindow:openNodeListMenu()
+    local borderWidget = Widget.makeFixedSize(1, 1)
+    borderWidget:setSizePolicy(Widget.SizePolicy.COMPRESS)
+    borderWidget:setBackgroundColor(0x34495EFF)
+    borderWidget:setPositionPolicy(Widget.PositionPolicy.BOTTOM_LEFT)
+    borderWidget:setPosition(Mouse.getPosition())
+
+    local menuWidget = Widget.makeColumnFlow()
+    menuWidget:setBackgroundColor(0xBDC3C7FF)
+    menuWidget:setMargin(1)
+
+    local nodeRegistry = NodeRepository:getNodesForType(self.graph.nodeType)
+    for nodeName, nodeClass in pairs(nodeRegistry) do
+        local nodeLabel = Widget.makeText(nodeName, table.unpack(flat.ui.settings.defaultFont))
+        print(nodeName)
+        nodeLabel:setTextColor(0x000000FF)
+        menuWidget:addChild(nodeLabel)
+    end
+
+    borderWidget:addChild(menuWidget)
+
+    --Widget.getRoot():addChild(borderWidget)
 end
 
 function MainWindow:getMousePositionOnContent()

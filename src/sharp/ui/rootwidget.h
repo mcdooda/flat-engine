@@ -56,8 +56,10 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void updateInput(bool updateMouseOver, float dt);
 
 	private:
-		void handleMouseDown();
-		void handleMouseUp();
+		void handleLeftMouseButtonDown();
+		void handleLeftMouseButtonUp();
+		void handleRightMouseButtonDown();
+		void handleRightMouseButtonUp();
 		void handleMouseMove();
 		void handleMouseEnter();
 		void handleMouseLeave();
