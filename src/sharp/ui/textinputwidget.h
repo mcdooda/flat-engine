@@ -27,6 +27,10 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		~TextInputWidget();
 		TextInputWidget& operator=(const TextInputWidget&) = delete;
 
+	public:
+		Slot<Widget*> valueChanged;
+		Slot<Widget*> submit;
+
 	private:
 		bool enteredFocus(Widget* widget);
 		bool leftFocus(Widget* widget);

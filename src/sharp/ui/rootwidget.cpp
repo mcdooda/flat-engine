@@ -214,6 +214,41 @@ void RootWidget::drop(Widget* widget)
 	m_draggedWidget.reset();
 }
 
+void RootWidget::focus(Widget* widget)
+{
+	Widget* previousFocusWidget = m_focusWidget.lock().get();
+	Widget* newFocusWidget = widget != nullptr && widget->canBeFocused() ? widget : nullptr;
+
+	FLAT_ASSERT(previousFocusWidget == nullptr || previousFocusWidget->canBeFocused());
+	FLAT_ASSERT(newFocusWidget == nullptr || newFocusWidget->canBeFocused());
+
+	if (previousFocusWidget != newFocusWidget)
+	{
+		if (previousFocusWidget != nullptr)
+		{
+			FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(previousFocusWidget);
+			FLAT_ASSERT(focusableWidget != nullptr);
+			focusableWidget->m_hasFocus = false;
+			focusableWidget->leaveFocus(previousFocusWidget);
+		}
+
+		if (newFocusWidget != nullptr)
+		{
+			FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(newFocusWidget);
+			FLAT_ASSERT(focusableWidget != nullptr);
+			focusableWidget->m_hasFocus = true;
+			focusableWidget->enterFocus(newFocusWidget);
+
+			m_focusWidget = newFocusWidget->getWeakPtr();
+		}
+		else
+		{
+			m_focusWidget.reset();
+		}
+
+	}
+}
+
 void RootWidget::handleLeftMouseButtonDown()
 {
 	m_mouseDownWidget = m_mouseOverWidget;
@@ -228,38 +263,8 @@ void RootWidget::handleLeftMouseButtonDown()
 		{
 			widget = widget->getParent().lock().get();
 		}
-		
-		Widget* previousFocusWidget = m_focusWidget.lock().get();
-		Widget* newFocusWidget = widget != nullptr && widget->canBeFocused() ? widget : nullptr;
 
-		FLAT_ASSERT(previousFocusWidget == nullptr || previousFocusWidget->canBeFocused());
-		FLAT_ASSERT(newFocusWidget == nullptr || newFocusWidget->canBeFocused());
-
-		if (previousFocusWidget != newFocusWidget)
-		{
-			if (previousFocusWidget != nullptr)
-			{
-				FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(previousFocusWidget);
-				FLAT_ASSERT(focusableWidget != nullptr);
-				focusableWidget->m_hasFocus = false;
-				focusableWidget->leaveFocus(previousFocusWidget);
-			}
-
-			if (newFocusWidget != nullptr)
-			{
-				FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(newFocusWidget);
-				FLAT_ASSERT(focusableWidget != nullptr);
-				focusableWidget->m_hasFocus = true;
-				focusableWidget->enterFocus(newFocusWidget);
-
-				m_focusWidget = newFocusWidget->getWeakPtr();
-			}
-			else
-			{
-				m_focusWidget.reset();
-			}
-
-		}
+		focus(widget);
 	}
 }
 

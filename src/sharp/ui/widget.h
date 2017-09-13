@@ -142,6 +142,7 @@ class Widget : public util::Convertible<Widget>
 		SizePolicy getSizePolicy() const { return m_sizePolicy; }
 		void setSize(const Size& size);
 		inline const Size& getSize() const { return m_size; }
+		inline const Size& getComputedSize() const { return m_computedSize; }
 		
 		void setPositionPolicy(PositionPolicy positionPolicy);
 		inline PositionPolicy getPositionPolicy() const { return m_positionPolicy; }

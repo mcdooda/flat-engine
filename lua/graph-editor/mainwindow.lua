@@ -81,8 +81,8 @@ function MainWindow:build()
         end
     end
 
-    local function rightClick()
-        self:openNodeListMenu()
+    local function rightClick(content, x, y)
+        self:openNodeListMenu(x, y)
     end
 
     content:scroll(draw)
@@ -114,9 +114,6 @@ function MainWindow:openGraph(graphPath)
         local nodePosition = graphLayout[i]
         local nodeWidget = self:makeNodeWidget(node)
         nodeWidget:setPosition(table.unpack(nodePosition))
-        nodeWidget:dragged(function()
-            self:drawLinks()
-        end)
         content:addChild(nodeWidget)
     end
 
@@ -139,6 +136,9 @@ end
 
 function MainWindow:makeNodeWidget(node)
     local nodeWidget = NodeWidget:new(node, self)
+    nodeWidget.container:dragged(function()
+        self:drawLinks()
+    end)
     self.nodeWidgets[node] = nodeWidget
     return nodeWidget.container
 end
@@ -319,28 +319,119 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
     end
 end
 
-function MainWindow:openNodeListMenu()
-    local borderWidget = Widget.makeFixedSize(1, 1)
-    borderWidget:setSizePolicy(Widget.SizePolicy.COMPRESS)
-    borderWidget:setBackgroundColor(0x34495EFF)
-    borderWidget:setPositionPolicy(Widget.PositionPolicy.BOTTOM_LEFT)
-    borderWidget:setPosition(Mouse.getPosition())
+function MainWindow:openNodeListMenu(x, y)
+    self:closeNodeListMenu()
 
-    local menuWidget = Widget.makeColumnFlow()
-    menuWidget:setBackgroundColor(0xBDC3C7FF)
-    menuWidget:setMargin(1)
+    local root = Widget.getRoot()
+
+    local nodeListMenu = Widget.makeColumnFlow()
+    nodeListMenu:setBackgroundColor(0xBDC3C7FF)
+    nodeListMenu:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
+    local mouseX, mouseY = Mouse.getPosition()
+    local _, windowHeight = root:getSize()
+    local nodeListMenuY = mouseY - windowHeight
+    nodeListMenu:setPosition(mouseX, nodeListMenuY)
+
+    local line = Widget.makeLineFlow()
+    line:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
 
     local nodeRegistry = NodeRepository:getNodesForType(self.graph.nodeType)
-    for nodeName, nodeClass in pairs(nodeRegistry) do
-        local nodeLabel = Widget.makeText(nodeName, table.unpack(flat.ui.settings.defaultFont))
-        print(nodeName)
-        nodeLabel:setTextColor(0x000000FF)
-        menuWidget:addChild(nodeLabel)
+    local nodesContainer
+    local textInputWidget
+
+    local searchNodes = {}
+    local function updateNodeSearch()
+        searchNodes = {}
+        local search = textInputWidget:getText():lower()
+        for nodeName, nodeClass in pairs(nodeRegistry) do
+            local nodeVisualName = nodeClass:getName()
+            if #search == 0 or nodeVisualName:lower():match(search) then
+                searchNodes[#searchNodes + 1] = {
+                    visualName = nodeVisualName,
+                    name = nodeName
+                }
+            end
+        end
+        table.sort(searchNodes, function(a, b) return a.visualName < b.visualName end)
     end
 
-    borderWidget:addChild(menuWidget)
+    local function insertNode(nodeName)
+        local node = self.graph:addNode(nodeRegistry[nodeName])
+        local nodeWidget = self:makeNodeWidget(node)
+        local contentSizeX, contentSizeY = self.content:getComputedSize()
+        local nodeWidgetY = y - contentSizeY -- move the relative position from bottom left to top left
+        nodeWidget:setPosition(x, nodeWidgetY)
+        print(x, y, nodeWidgetY)
+        self.content:addChild(nodeWidget)
+        self:closeNodeListMenu()
+    end
 
-    --Widget.getRoot():addChild(borderWidget)
+    local function submitInsertNode()
+        if #searchNodes > 0 then
+            local nodeName = searchNodes[1].name
+            insertNode(nodeName)
+        end
+    end
+
+    local function updateNodes()
+        updateNodeSearch()
+        nodesContainer:removeAllChildren()
+        for i = 1, #searchNodes do
+            local node = searchNodes[i]
+            local nodeLabel = Widget.makeText(node.visualName, table.unpack(flat.ui.settings.defaultFont))
+            nodeLabel:setTextColor(0x000000FF)
+            nodeLabel:setMargin(2)
+            nodeLabel:click(function()
+                insertNode(node.name)
+            end)
+            nodesContainer:addChild(nodeLabel)
+        end
+    end
+
+    local searchWidget = Widget.makeExpand()
+    searchWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+    searchWidget:setMargin(2)
+    searchWidget:setBackgroundColor(0xFFFFFFFF)
+
+    textInputWidget = Widget.makeTextInput(table.unpack(flat.ui.settings.defaultFont))
+    textInputWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.FIXED_Y)
+    textInputWidget:setTextColor(0x000000FF)
+    textInputWidget:setMargin(1)
+    textInputWidget:valueChanged(updateNodes)
+    textInputWidget:submit(submitInsertNode)
+    searchWidget:addChild(textInputWidget)
+
+    line:addChild(searchWidget)
+
+    local closeMenuButton = Widget.makeText('X', table.unpack(flat.ui.settings.defaultFont))
+    closeMenuButton:setMargin(2)
+    closeMenuButton:setTextColor(0x000000FF)
+    closeMenuButton:click(function()
+        self:closeNodeListMenu()
+    end)
+    line:addChild(closeMenuButton)
+
+    nodeListMenu:addChild(line)
+
+    local spacer = Widget.makeFixedSize(100, 1)
+    nodeListMenu:addChild(spacer)
+
+    nodesContainer = Widget.makeColumnFlow()
+    updateNodes()
+    nodeListMenu:addChild(nodesContainer)
+
+    root:addChild(nodeListMenu)
+
+    Widget.focus(textInputWidget)
+
+    self.nodeListMenu = nodeListMenu
+end
+
+function MainWindow:closeNodeListMenu()
+    if self.nodeListMenu then
+        self.nodeListMenu:removeFromParent()
+        self.nodeListMenu = nil
+    end
 end
 
 function MainWindow:getMousePositionOnContent()

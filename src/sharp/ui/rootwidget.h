@@ -50,6 +50,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void drag(Widget* widget);
 		void drop(Widget* widget);
 
+		void focus(Widget* widget);
+
 	private:
 		bool updateDirtyWidgets();
 		void updateDraggedWidget();

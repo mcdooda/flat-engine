@@ -10,7 +10,7 @@ namespace ui
 
 TextWidget::TextWidget(const std::shared_ptr<const video::font::Font>& font) : video::font::String(font)
 {
-	
+	setText("");
 }
 
 void TextWidget::setText(const std::string& text)

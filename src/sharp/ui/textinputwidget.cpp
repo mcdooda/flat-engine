@@ -69,7 +69,15 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		}
 	}
 
-	setText(text);
+	if (text != getText())
+	{
+		setText(text);
+		valueChanged(this);
+	}
+	else if (key == K(RETURN))
+	{
+		submit(this);
+	}
 	return true;
 }
 

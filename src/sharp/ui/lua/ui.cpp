@@ -42,6 +42,7 @@ int open(lua_State* L)
 		{"getSizePolicy",         l_Widget_getSizePolicy},
 		{"setSize",               l_Widget_setSize},
 		{"getSize",               l_Widget_getSize},
+		{"getComputedSize",       l_Widget_getComputedSize},
 		
 		{"setPositionPolicy",     l_Widget_setPositionPolicy},
 		{"getPositionPolicy",     l_Widget_getPositionPolicy},
@@ -100,6 +101,9 @@ int open(lua_State* L)
 		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
 
+		{"valueChanged",          l_TextInputWidget_valueChanged},
+		{"submit",                l_TextInputWidget_submit},
+
 		{"focus",                 l_FocusableWidget_focus},
 		{"blur",                  l_FocusableWidget_blur},
 
@@ -117,6 +121,7 @@ int open(lua_State* L)
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
 		{"getRoot",        l_Widget_getRoot},
+		{"focus",          l_Widget_focus},
 		
 		{"makeImage",      l_Widget_makeImage},
 		{"makeFixedSize",  l_Widget_makeFixedSize},
@@ -287,6 +292,15 @@ int l_Widget_getSize(lua_State* L)
 	const Widget::Size& size = widget.getSize();
 	lua_pushnumber(L, size.x);
 	lua_pushnumber(L, size.y);
+	return 2;
+}
+
+int l_Widget_getComputedSize(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	const Widget::Size& computedSize = widget.getComputedSize();
+	lua_pushnumber(L, computedSize.x);
+	lua_pushnumber(L, computedSize.y);
 	return 2;
 }
 
@@ -681,6 +695,16 @@ int l_TextWidget_setTextColor(lua_State* L)
 	return 0;
 }
 
+int l_TextInputWidget_valueChanged(lua_State* L)
+{
+	return addWidgetCallback<TextInputWidget>(L, &TextInputWidget::valueChanged);
+}
+
+int l_TextInputWidget_submit(lua_State* L)
+{
+	return addWidgetCallback<TextInputWidget>(L, &TextInputWidget::submit);
+}
+
 int l_FocusableWidget_focus(lua_State* L)
 {
 	return addWidgetCallback<FocusableWidget>(L, &FocusableWidget::enterFocus);
@@ -749,10 +773,21 @@ int l_CanvasWidget_drawBezier(lua_State * L)
 
 int l_Widget_getRoot(lua_State* L)
 {
-	RootWidget* root = flat::lua::getGame(L).ui->root.get();
-	FLAT_ASSERT(root != nullptr);
-	pushWidget(L, root->getSharedPtr());
+	RootWidget& root = getRootWidget(L);
+	pushWidget(L, root.getSharedPtr());
 	return 1;
+}
+
+int l_Widget_focus(lua_State * L)
+{
+	FocusableWidget* focusableWidget = nullptr;
+	if (!lua_isnil(L, 1))
+	{
+		focusableWidget = &getFocusableWidget(L, 1);
+	}
+	RootWidget& root = getRootWidget(L);
+	root.focus(focusableWidget);
+	return 0;
 }
 
 int l_Widget_makeImage(lua_State* L)
@@ -851,6 +886,18 @@ TextWidget& getTextWidget(lua_State* L, int index)
 	return *textWidget;
 }
 
+TextInputWidget& getTextInputWidget(lua_State* L, int index)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	Widget& widget = getWidget(L, index);
+	TextInputWidget* textInputWidget = dynamic_cast<TextInputWidget*>(&widget);
+	if (!textInputWidget)
+	{
+		luaL_error(L, "TextInputWidget required, Widget given");
+	}
+	return *textInputWidget;
+}
+
 FocusableWidget& getFocusableWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -886,6 +933,12 @@ template <>
 TextWidget& getWidgetOfType(lua_State* L, int index)
 {
 	return getTextWidget(L, index);
+}
+
+template <>
+TextInputWidget& getWidgetOfType(lua_State* L, int index)
+{
+	return getTextInputWidget(L, index);
 }
 
 template <>
@@ -964,6 +1017,13 @@ void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)
 WidgetFactory& getWidgetFactory(lua_State* L)
 {
 	return flat::lua::getGame(L).ui->factory;
+}
+
+RootWidget& getRootWidget(lua_State* L)
+{
+	RootWidget* root = flat::lua::getGame(L).ui->root.get();
+	FLAT_ASSERT(root != nullptr);
+	return *root;
 }
 
 } // lua
