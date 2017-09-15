@@ -102,4 +102,30 @@ function Node:unplugInputPin(inputPin)
     inputPin.pluggedOutputPin = nil
 end
 
+function Node:unplugAllPins()
+    self:unplugAllInputPins()
+    self:unplugAllOutputPins()
+end
+
+function Node:unplugAllInputPins()
+    for i = 1, #self.inputPins do
+        local inputPin = self.inputPins[i]
+        if inputPin.pluggedOutputPin then
+            self:unplugInputPin(inputPin)
+        end
+    end
+end
+
+function Node:unplugAllOutputPins()
+    for i = 1, #self.outputPins do
+        local outputPin = self.outputPins[i]
+        for j = 1, #outputPin.pluggedInputPins do
+            local pluggedInputPin = outputPin.pluggedInputPins[j]
+            local node = pluggedInputPin.node
+            local inputPin = pluggedInputPin.inputPin
+            node:unplugInputPin(inputPin)
+        end
+    end
+end
+
 return Node

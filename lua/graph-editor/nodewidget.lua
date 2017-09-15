@@ -108,6 +108,11 @@ function NodeWidget:build()
         nodeWidget:addChild(pinsWidget)
     end
 
+    nodeWidget:rightClick(function()
+        self.mainWindow:openNodeContextualMenu()
+        return true
+    end)
+
     self.container = nodeWidget
 end
 
@@ -234,6 +239,29 @@ end
 function NodeWidget:setOutputPinPlugged(pin, plugged)
     local outputPinSocketWidget = self.outputPinSocketWidgets[pin]
     outputPinSocketWidget:setVisible(not plugged)
+end
+
+function NodeWidget:updatePinSocketWidgets()
+    self:updateInputPinSocketWidgets()
+    self:updateOutputPinSocketWidgets()
+end
+
+function NodeWidget:updateInputPinSocketWidgets()
+    local inputPins = self.node.inputPins
+    for i = 1, #inputPins do
+        local inputPin = inputPins[i]
+        local plugged = inputPin.pluggedOutputPin ~= nil
+        self:setInputPinPlugged(inputPin, plugged)
+    end
+end
+
+function NodeWidget:updateOutputPinSocketWidgets()
+    local outputPins = self.node.outputPins
+    for i = 1, #outputPins do
+        local outputPin = outputPins[i]
+        local plugged = #outputPin.pluggedInputPins > 0
+        self:setOutputPinPlugged(outputPin, plugged)
+    end
 end
 
 return NodeWidget

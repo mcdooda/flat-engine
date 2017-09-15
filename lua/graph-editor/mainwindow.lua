@@ -11,7 +11,9 @@ function MainWindow:open(editorContainer)
         editorContainer = editorContainer,
         nodeWidgets = {},
         selectedNodeWidgets = {},
-        currentLink = nil
+        currentLink = nil,
+        nodeListMenu = nil,
+        nodeContextualMenu = nil
     }, self)
     o:build()
     return o
@@ -326,18 +328,24 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
     end
 end
 
-function MainWindow:openNodeListMenu(x, y)
-    self:closeNodeListMenu()
-
+function MainWindow:openRightClickMenu()
     local root = Widget.getRoot()
-
-    local nodeListMenu = Widget.makeColumnFlow()
-    nodeListMenu:setBackgroundColor(0xBDC3C7FF)
-    nodeListMenu:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
+    local rightClickMenu = Widget.makeColumnFlow()
+    rightClickMenu:setBackgroundColor(0xBDC3C7FF)
+    rightClickMenu:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
     local mouseX, mouseY = Mouse.getPosition()
     local _, windowHeight = root:getSize()
-    local nodeListMenuY = mouseY - windowHeight
-    nodeListMenu:setPosition(mouseX, nodeListMenuY)
+    local rightClickMenuY = mouseY - windowHeight
+    rightClickMenu:setPosition(mouseX, rightClickMenuY)
+    root:addChild(rightClickMenu)
+    return rightClickMenu
+end
+
+function MainWindow:openNodeListMenu(x, y)
+    self:closeNodeListMenu()
+    self:closeNodeContextualMenu()
+
+    local nodeListMenu = self:openRightClickMenu()
 
     local line = Widget.makeLineFlow()
     line:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
@@ -368,7 +376,6 @@ function MainWindow:openNodeListMenu(x, y)
         local contentSizeX, contentSizeY = self.content:getComputedSize()
         local nodeWidgetY = y - contentSizeY -- move the relative position from bottom left to top left
         nodeWidget:setPosition(x, nodeWidgetY)
-        print(x, y, nodeWidgetY)
         self.content:addChild(nodeWidget)
         self:closeNodeListMenu()
     end
@@ -427,8 +434,6 @@ function MainWindow:openNodeListMenu(x, y)
     updateNodes()
     nodeListMenu:addChild(nodesContainer)
 
-    root:addChild(nodeListMenu)
-
     Widget.focus(textInputWidget)
 
     self.nodeListMenu = nodeListMenu
@@ -438,6 +443,31 @@ function MainWindow:closeNodeListMenu()
     if self.nodeListMenu then
         self.nodeListMenu:removeFromParent()
         self.nodeListMenu = nil
+    end
+end
+
+function MainWindow:openNodeContextualMenu()
+    self:closeNodeListMenu()
+    self:closeNodeContextualMenu()
+
+    local nodeContextualMenu = self:openRightClickMenu()
+
+    local deleteSelectedNodesLabel = Widget.makeText('Delete selected nodes', table.unpack(flat.ui.settings.defaultFont))
+    deleteSelectedNodesLabel:setTextColor(0x000000FF)
+    deleteSelectedNodesLabel:setMargin(2)
+    deleteSelectedNodesLabel:click(function()
+        self:deleteSelectedNodes()
+        self:closeNodeContextualMenu()
+    end)
+    nodeContextualMenu:addChild(deleteSelectedNodesLabel)
+
+    self.nodeContextualMenu = nodeContextualMenu
+end
+
+function MainWindow:closeNodeContextualMenu()
+    if self.nodeContextualMenu then
+        self.nodeContextualMenu:removeFromParent()
+        self.nodeContextualMenu = nil
     end
 end
 
@@ -483,6 +513,22 @@ end
 function MainWindow:dropSelectedNodeWidgets()
     for selectedNodeWidget in pairs(self.selectedNodeWidgets) do
         selectedNodeWidget.container:drop()
+    end
+end
+
+function MainWindow:deleteSelectedNodes()
+    for selectedNodeWidget in pairs(self.selectedNodeWidgets) do
+        selectedNodeWidget.container:removeFromParent()
+        self.graph:removeNode(selectedNodeWidget.node)
+    end
+    self.selectedNodeWidgets = {}
+    self:updateAllNodesPinSocketWidgets()
+    self:drawLinks()
+end
+
+function MainWindow:updateAllNodesPinSocketWidgets()
+    for node, nodeWidget in pairs(self.nodeWidgets) do
+        nodeWidget:updatePinSocketWidgets()
     end
 end
 

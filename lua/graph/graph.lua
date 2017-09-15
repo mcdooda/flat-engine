@@ -19,6 +19,22 @@ function Graph:addNode(nodeType)
     return node
 end
 
+function Graph:removeNode(node)
+    node:unplugAllPins()
+    local nodeIndex = assert(self:findNodeIndex(node))
+    local numNodes = #self.nodeInstances
+    self.nodeInstances[nodeIndex] = self.nodeInstances[numNodes]
+    self.nodeInstances[numNodes] = nil
+end
+
+function Graph:findNodeIndex(node)
+    for i = 1, #self.nodeInstances do
+        if self.nodeInstances[i] == node then
+            return i
+        end
+    end
+end
+
 function Graph:addEntryNode(node)
     self.entryNodes[#self.entryNodes + 1] = node
 end
