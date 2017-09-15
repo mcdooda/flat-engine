@@ -54,7 +54,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 	private:
 		bool updateDirtyWidgets();
-		void updateDraggedWidget();
+		void updateDraggedWidgets();
 		void updateInput(bool updateMouseOver, float dt);
 
 	private:
@@ -75,8 +75,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		std::weak_ptr<Widget> m_mouseDownWidget;
 		std::weak_ptr<Widget> m_focusWidget;
 
-		std::weak_ptr<Widget> m_draggedWidget;
-		Vector2 m_draggedWidgetRelativePosition;
+		std::vector<std::tuple<std::weak_ptr<Widget>, Vector2>> m_draggedWidgets;
 
 		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;

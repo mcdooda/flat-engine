@@ -34,7 +34,7 @@ void RootWidget::clearAll()
 	m_mouseOverWidget.reset();
 	m_mouseDownWidget.reset();
 	m_focusWidget.reset();
-	m_draggedWidget.reset();
+	m_draggedWidgets.clear();
 	m_mouseOver = false;
 	setDirty();
 }
@@ -130,20 +130,21 @@ void RootWidget::update(float dt)
 		fullLayout();
 	}
 
-	updateDraggedWidget();
+	updateDraggedWidgets();
 
 	bool updateMouseOver = updateDirtyWidgets();
 	updateInput(updateMouseOver, dt);
 }
 
-void RootWidget::updateDraggedWidget()
+void RootWidget::updateDraggedWidgets()
 {
-	Widget* draggedWidget = m_draggedWidget.lock().get();
-	if (draggedWidget != nullptr)
+	auto& mouse = m_flat.input->mouse;
+	for (const std::tuple<std::weak_ptr<Widget>, Vector2>& draggedWidget : m_draggedWidgets)
 	{
-		auto& mouse = m_flat.input->mouse;
-		draggedWidget->setAbsolutePosition(mouse->getPosition() - m_draggedWidgetRelativePosition);
-		draggedWidget->m_dragged = true;
+		Widget* widget = std::get<0>(draggedWidget).lock().get();
+		const Vector2& relativePosition = std::get<1>(draggedWidget);
+		widget->setAbsolutePosition(mouse->getPosition() - relativePosition);
+		widget->m_dragged = true;
 	}
 }
 
@@ -202,16 +203,25 @@ void RootWidget::updateInput(bool updateMouseOver, float dt)
 
 void RootWidget::drag(Widget* widget)
 {
-	FLAT_ASSERT(widget != nullptr && m_draggedWidget.expired());
-	m_draggedWidget = widget->getWeakPtr();
+	FLAT_ASSERT(widget != nullptr);
 	auto& mouse = m_flat.input->mouse;
-	m_draggedWidgetRelativePosition = widget->getRelativePosition(mouse->getPosition());
+	Vector2 relativePosition = widget->getRelativePosition(mouse->getPosition());
+	m_draggedWidgets.emplace_back(widget->getWeakPtr(), relativePosition);
 }
 
 void RootWidget::drop(Widget* widget)
 {
-	FLAT_ASSERT(widget != nullptr && m_draggedWidget.lock().get() == widget);
-	m_draggedWidget.reset();
+	FLAT_ASSERT(widget != nullptr);
+	std::vector<std::tuple<std::weak_ptr<Widget>, Vector2>>::iterator it = std::find_if(
+		m_draggedWidgets.begin(),
+		m_draggedWidgets.end(),
+		[widget](const std::tuple<std::weak_ptr<Widget>, Vector2>& draggedWidget)
+		{
+			return std::get<0>(draggedWidget).lock().get() == widget;
+		}
+	);
+	FLAT_ASSERT(it != m_draggedWidgets.end());
+	m_draggedWidgets.erase(it);
 }
 
 void RootWidget::focus(Widget* widget)

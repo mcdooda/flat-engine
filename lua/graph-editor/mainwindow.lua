@@ -10,6 +10,7 @@ function MainWindow:open(editorContainer)
     local o = setmetatable({
         editorContainer = editorContainer,
         nodeWidgets = {},
+        selectedNodeWidgets = {},
         currentLink = nil
     }, self)
     o:build()
@@ -81,6 +82,10 @@ function MainWindow:build()
         end
     end
 
+    local function leftClick(content, x, y)
+        self:clearSelection()
+    end
+
     local function rightClick(content, x, y)
         self:openNodeListMenu(x, y)
     end
@@ -89,6 +94,7 @@ function MainWindow:build()
     content:draw(draw)
     content:mouseMove(mouseMove)
     content:mouseUp(mouseUp)
+    content:mouseDown(leftClick)
     content:rightClick(rightClick)
     window:addChild(content)
 
@@ -436,6 +442,43 @@ end
 
 function MainWindow:getMousePositionOnContent()
     return self.content:getRelativePosition(Mouse.getPosition())
+end
+
+function MainWindow:selectNode(nodeWidget)
+    if not self.selectedNodeWidgets[nodeWidget] then
+        self.selectedNodeWidgets[nodeWidget] = true
+        nodeWidget:select()
+        return true
+    end
+    return false
+end
+
+function MainWindow:deselectNode(nodeWidget)
+    if self.selectedNodeWidgets[nodeWidget] then
+        self.selectedNodeWidgets[nodeWidget] = nil
+        nodeWidget:deselect()
+        return true
+    end
+    return false
+end
+
+function MainWindow:clearSelection()
+    for selectedNodeWidget in pairs(self.selectedNodeWidgets) do
+        selectedNodeWidget:deselect()
+    end
+    self.selectedNodeWidgets = {}
+end
+
+function MainWindow:dragSelectedNodeWidgets()
+    for selectedNodeWidget in pairs(self.selectedNodeWidgets) do
+        selectedNodeWidget.container:drag()
+    end
+end
+
+function MainWindow:dropSelectedNodeWidgets()
+    for selectedNodeWidget in pairs(self.selectedNodeWidgets) do
+        selectedNodeWidget.container:drop()
+    end
 end
 
 return MainWindow

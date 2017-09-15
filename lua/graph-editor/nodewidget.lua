@@ -28,11 +28,35 @@ function NodeWidget:build()
         local nodeNameContainer = Widget.makeExpand()
         nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
         nodeNameContainer:setBackgroundColor(0x2C3E50FF)
+        local mouseMoved = false
+        local mouseDown = false
+        local selectedNode = false
         nodeNameContainer:mouseDown(function()
-            nodeWidget:drag()
+            mouseMoved = false
+            mouseDown = true
+            selectedNode = false
+            return true
+        end)
+        nodeNameContainer:mouseMove(function()
+            if mouseDown and not mouseMoved then
+                mouseMoved = true
+                selectedNode = self.mainWindow:selectNode(self)
+                self.mainWindow:dragSelectedNodeWidgets()
+            end
         end)
         nodeNameContainer:mouseUp(function()
-            nodeWidget:drop()
+            if mouseDown then
+                mouseDown = false
+                if mouseMoved then
+                    self.mainWindow:dropSelectedNodeWidgets()
+                    if selectedNode then
+                        self.mainWindow:deselectNode(self)
+                    end
+                else
+                    self.mainWindow:selectNode(self)
+                end
+            end
+            return true
         end)
 
         do
@@ -169,6 +193,14 @@ function NodeWidget:makeOutputPinWidget(node, pin)
     end
 
     return outputPinWidget
+end
+
+function NodeWidget:select()
+    self.container:setBackgroundColor(0x9BA1A5FF)
+end
+
+function NodeWidget:deselect()
+    self.container:setBackgroundColor(0xBDC3C7FF)
 end
 
 local pinColors = {
