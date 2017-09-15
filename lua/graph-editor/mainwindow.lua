@@ -84,6 +84,7 @@ function MainWindow:build()
 
     local function leftClick(content, x, y)
         self:clearSelection()
+        self:closeNodeListMenu()
     end
 
     local function rightClick(content, x, y)
@@ -442,6 +443,10 @@ end
 
 function MainWindow:getMousePositionOnContent()
     return self.content:getRelativePosition(Mouse.getPosition())
+end
+
+function MainWindow:isNodeSelected(nodeWidget)
+    return self.selectedNodeWidgets[nodeWidget]
 end
 
 function MainWindow:selectNode(nodeWidget)
