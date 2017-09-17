@@ -11,11 +11,15 @@ function Node:new()
 end
 
 function Node:getName()
-    error('pure virtual function')
+    assert(self.name, 'the node has no name')
+    return self.name
 end
 
-function Node:inherit()
-    local nodeType = {}
+function Node:inherit(name)
+    -- name is optional (for virtual classes)
+    local nodeType = {
+        name = name
+    }
     nodeType.__index = nodeType
     return setmetatable(nodeType, { __index = self })
 end
@@ -26,6 +30,10 @@ end
 
 function Node:init(...)
     -- overidden when needed, called after deserialization
+end
+
+function Node:getInitArguments()
+    -- overriden when needed, should return the arguments to pass to init(...) as a single string
 end
 
 function Node:addInputPin(pinType, pinName)
@@ -42,6 +50,14 @@ end
 
 function Node:getInputPin(inputPinIndex)
     return self.inputPins[inputPinIndex]
+end
+
+function Node:findInputPinIndex(inputPin)
+    for i = 1, #self.inputPins do
+        if self.inputPins[i] == inputPin then
+            return i
+        end
+    end
 end
 
 function Node:addOutputPin(pinType, pinName)

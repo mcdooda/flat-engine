@@ -8,6 +8,8 @@ MainWindow.__index = MainWindow
 function MainWindow:open(editorContainer)
     assert(editorContainer, 'no editor container')
     local o = setmetatable({
+        graph = nil,
+        graphPath = nil,
         editorContainer = editorContainer,
         nodeWidgets = {},
         selectedNodeWidgets = {},
@@ -45,18 +47,27 @@ function MainWindow:build()
             titleText:mouseUp(function()
                 window:drop()
             end)
-
             titleContainer:addChild(titleText)
+        end
+
+        do
+            local saveButton = Widget.makeText('Save Graph', table.unpack(flat.ui.settings.defaultFont))
+            saveButton:setMargin(3, 20, 0, 20)
+            saveButton:click(function()
+                self:saveGraph()
+                self:saveGraphLayout()
+            end)
+            titleContainer:addChild(saveButton)
         end
 
         do
             local closeWindowButton = Widget.makeText('X', table.unpack(flat.ui.settings.defaultFont))
             closeWindowButton:setTextColor(0xFFFFFFFF)
             closeWindowButton:setMargin(3, 3, 0, 0)
-            titleContainer:addChild(closeWindowButton)
             closeWindowButton:click(function()
                 self:close()
             end)
+            titleContainer:addChild(closeWindowButton)
         end
 
         window:addChild(titleContainer)
@@ -87,6 +98,7 @@ function MainWindow:build()
     local function leftClick(content, x, y)
         self:clearSelection()
         self:closeNodeListMenu()
+        self:closeNodeContextualMenu()
     end
 
     local function rightClick(content, x, y)
@@ -112,10 +124,12 @@ function MainWindow:setTitle(title)
 end
 
 function MainWindow:openGraph(graphPath)
+    self.graphPath = graphPath
+
     self:setTitle(graphPath)
 
-    local graph = self:loadGraph(graphPath)
-    local graphLayout = self:loadGraphLayout(graphPath)
+    local graph = self:loadGraph()
+    local graphLayout = self:loadGraphLayout()
     assert(#graph.nodeInstances == #graphLayout, 'graph and layout do not match')
     local content = self.content
     for i = 1, #graph.nodeInstances do
@@ -127,20 +141,38 @@ function MainWindow:openGraph(graphPath)
     end
 
     self.graph = graph
-    self.graphLayout = graphLayout
 
     content:redraw()
 end
 
-function MainWindow:loadGraph(graphPath)
+function MainWindow:loadGraph()
     local graph = Graph:new()
-    graph:loadGraph(graphPath .. '.graph.lua')
+    graph:loadGraph(self.graphPath .. '.graph.lua')
     return graph
 end
 
-function MainWindow:loadGraphLayout(graphPath)
-    local graphLayout = dofile(graphPath .. '.layout.lua')
+function MainWindow:saveGraph()
+    self.graph:saveGraph(self.graphPath .. '.graph.lua')
+end
+
+function MainWindow:loadGraphLayout()
+    local graphLayout = dofile(self.graphPath .. '.layout.lua')
     return graphLayout
+end
+
+function MainWindow:saveGraphLayout()
+    local graphLayout = {}
+    local nodeInstances = self.graph.nodeInstances
+    for i = 1, #nodeInstances do
+        local nodeWidget = self.nodeWidgets[nodeInstances[i]]
+        local nodePosition = { nodeWidget.container:getPosition() }
+        graphLayout[i] = nodePosition
+    end
+
+    local f = io.open(self.graphPath .. '.layout.lua', 'w')
+    f:write 'return '
+    flat.dumpToOutput(f, graphLayout)
+    f:close()
 end
 
 function MainWindow:makeNodeWidget(node)

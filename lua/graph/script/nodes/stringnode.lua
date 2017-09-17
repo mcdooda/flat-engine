@@ -1,10 +1,10 @@
 local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
 local PinTypes = flat.require 'graph/pintypes'
 
-local StringNode = FunctionalScriptNode:inherit()
+local StringNode = FunctionalScriptNode:inherit 'String'
 
-function StringNode:getName()
-    return 'String'
+function StringNode:getInitArguments()
+    return { self.value }
 end
 
 function StringNode:buildPins()

@@ -1,11 +1,7 @@
 local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
 local PinTypes = flat.require 'graph/pintypes'
 
-local BoolNode = FunctionalScriptNode:inherit()
-
-function BoolNode:getName()
-    return 'Bool'
-end
+local BoolNode = FunctionalScriptNode:inherit 'Bool'
 
 function BoolNode:buildPins()
     self.boolOutPin = self:addOutputPin(PinTypes.BOOL, 'Bool')

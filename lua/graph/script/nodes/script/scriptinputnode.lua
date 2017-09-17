@@ -1,10 +1,18 @@
 local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
 local PinTypes = flat.require 'graph/pintypes'
 
-local ScriptInputNode = FunctionalScriptNode:inherit()
+local ScriptInputNode = FunctionalScriptNode:inherit 'Script Input'
 
-function ScriptInputNode:getName()
-    return 'Script Input'
+function ScriptInputNode:getInitArguments()
+    local initArguments = {}
+    for i = 1, #self.outputPins do
+        local outputPin = self.outputPins[i]
+        initArguments[i] = {
+            outputPin.pinType,
+            outputPin.pinName
+        }
+    end
+    return initArguments
 end
 
 function ScriptInputNode:addedToGraph(graph)

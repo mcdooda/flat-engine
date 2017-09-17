@@ -1,11 +1,7 @@
 local ScriptNode = flat.require 'graph/script/scriptnode'
 local PinTypes = flat.require 'graph/pintypes'
 
-local TestNode = ScriptNode:inherit()
-
-function TestNode:getName()
-    return 'Test'
-end
+local TestNode = ScriptNode:inherit 'Node'
 
 function TestNode:buildPins()
     self.boolInPin = self:addInputPin(PinTypes.BOOL, 'Bool')

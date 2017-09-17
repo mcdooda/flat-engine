@@ -1,4 +1,5 @@
 local NodeRepository = flat.require 'graph/noderepository'
+local PinTypes = flat.require 'graph/pintypes'
 
 local Graph = {}
 Graph.__index = Graph
@@ -40,8 +41,6 @@ function Graph:addEntryNode(node)
 end
 
 function Graph:loadGraph(graphPath)
-    local PinTypes = flat.require 'graph/pintypes'
-
     local env = { PinTypes = PinTypes }
     function env.__index(env, nodeType)
         local nodeRegistry = NodeRepository:getNodesForType(nodeType)
@@ -62,13 +61,12 @@ function Graph:load(nodeType, savedGraph, nodeRegistry)
     local nodes = savedGraph.nodes
     for i = 1, #nodes do
         local node = nodes[i]
-        if type(node) == 'table' then
-            local nodeName = node[1]
-            local nodeInstance = self:addNode(nodeRegistry[nodeName])
-            nodeInstance:init(select(2, table.unpack(node)))
+        local nodeName = node.name
+        local nodeInstance = self:addNode(nodeRegistry[nodeName])
+        local initArguments = node.initArguments
+        if initArguments then
+            nodeInstance:init(table.unpack(initArguments))
         else
-            local nodeName = node
-            local nodeInstance = self:addNode(nodeRegistry[nodeName])
             nodeInstance:init()
         end
     end
@@ -102,6 +100,47 @@ function Graph:load(nodeType, savedGraph, nodeRegistry)
 
         outputNode:plugPins(outputPin, inputNode, inputPin)
     end
+end
+
+function Graph:saveGraph(graphPath)
+    local graphDescription = {
+        nodes = {},
+        links = {}
+    }
+    local nodes = self.nodeInstances
+    for outputNodeIndex = 1, #nodes do
+        local node = nodes[outputNodeIndex]
+
+        -- nodes
+        local nodeDescription = {
+            name = node.path
+        }
+        local initArguments = node:getInitArguments()
+        if initArguments then
+            nodeDescription.initArguments = initArguments
+        end
+        graphDescription.nodes[outputNodeIndex] = nodeDescription
+
+        -- links
+        for outputPinIndex = 1, #node.outputPins do
+            local outputPin = node.outputPins[outputPinIndex]
+            for i = 1, #outputPin.pluggedInputPins do
+                local pluggedInputPin = outputPin.pluggedInputPins[i]
+                local inputPin = pluggedInputPin.inputPin
+                local inputNode = pluggedInputPin.node
+                local inputNodeIndex = self:findNodeIndex(inputNode)
+                local inputPinIndex = inputNode:findInputPinIndex(inputPin)
+                local linkDescription = {outputNodeIndex, outputPinIndex, inputNodeIndex, inputPinIndex}
+                graphDescription.links[#graphDescription.links + 1] = linkDescription
+            end
+        end
+    end
+
+    local f = assert(io.open(graphPath, 'w'))
+    f:write(self.nodeType)
+    f:write ' '
+    flat.dumpToOutput(f, graphDescription)
+    f:close()
 end
 
 return Graph

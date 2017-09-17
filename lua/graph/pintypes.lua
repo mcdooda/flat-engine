@@ -3,5 +3,6 @@ return flat.enum(
     'USERDATA',
     'BOOL',
     'NUMBER',
-    'STRING'
+    'STRING',
+    'TABLE'
 )
