@@ -9,7 +9,7 @@ namespace bezier
 
 namespace
 {
-static void computePointPosition(Vector2* result, int count, float coefficient)
+static void computePointPosition(Vector2* result, size_t count, float coefficient)
 {
 	if (count == 1)
 	{

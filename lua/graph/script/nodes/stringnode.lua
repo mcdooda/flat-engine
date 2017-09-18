@@ -3,6 +3,12 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local StringNode = FunctionalScriptNode:inherit 'String'
 
+function StringNode:new()
+    local o = FunctionalScriptNode.new(self)
+    o.value = ''
+    return o
+end
+
 function StringNode:getInitArguments()
     return { self.value }
 end
