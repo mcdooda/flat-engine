@@ -83,6 +83,8 @@ int open(lua_State* L)
 		{"getRestrictScrollY",    l_Widget_getRestrictScrollY},
 		{"setRestrictScroll",     l_Widget_setRestrictScroll},
 		{"getRestrictScroll",     l_Widget_getRestrictScroll},
+
+		{"getScrollPosition",     l_Widget_getScrollPosition},
 		
 		{"click",                 l_Widget_click},
 		{"rightClick",            l_Widget_rightClick},
@@ -609,6 +611,15 @@ int l_Widget_getRestrictScroll(lua_State* L)
 	Widget& widget = getWidget(L, 1);
 	lua_pushboolean(L, widget.getRestrictScrollX());
 	lua_pushboolean(L, widget.getRestrictScrollY());
+	return 2;
+}
+
+int l_Widget_getScrollPosition(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	const Widget::ScrollPosition& scrollPosition = widget.getScrollPosition();
+	lua_pushnumber(L, scrollPosition.x);
+	lua_pushnumber(L, scrollPosition.y);
 	return 2;
 }
 

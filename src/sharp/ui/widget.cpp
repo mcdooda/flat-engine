@@ -311,10 +311,7 @@ bool Widget::isInside(const Vector2& point) const
 
 Vector2 Widget::getRelativePosition(const Vector2& absolutePosition) const
 {
-	Matrix4 invTransform = inverse(m_transform);
-	Vector2 relativePosition(invTransform * Vector4(absolutePosition, 0.f, 1.f));
-	relativePosition += m_scrollPosition;
-	return relativePosition;
+	return Vector2(inverse(m_transform) * Vector4(absolutePosition, 0.f, 1.f));
 }
 
 Vector2 Widget::getRelativePosition(const Widget& other) const

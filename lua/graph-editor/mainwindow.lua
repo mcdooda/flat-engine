@@ -406,8 +406,10 @@ function MainWindow:openNodeListMenu(x, y)
         local node = self.graph:addNode(nodeRegistry[nodeName])
         local nodeWidget = self:makeNodeWidget(node)
         local contentSizeX, contentSizeY = self.content:getComputedSize()
-        local nodeWidgetY = y - contentSizeY -- move the relative position from bottom left to top left
-        nodeWidget:setPosition(x, nodeWidgetY)
+        local scrollX, scrollY = self.content:getScrollPosition()
+        local nodeWidgetX = x + scrollX
+        local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
+        nodeWidget:setPosition(nodeWidgetX, nodeWidgetY)
         self.content:addChild(nodeWidget)
         self:closeNodeListMenu()
     end
