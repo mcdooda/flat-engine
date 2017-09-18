@@ -14,7 +14,7 @@ function StringNode:getInitArguments()
 end
 
 function StringNode:buildPins()
-    self.stringOutPin = self:addOutputPin(PinTypes.STRING, 'String')
+    self.stringOutPin = self:addOutputPin(PinTypes.STRING, '')
 end
 
 function StringNode:execute(runtime)
@@ -24,6 +24,11 @@ end
 function StringNode:setValue(value)
     assert(type(value) == 'string', 'Wrong type for setValue: string expected, got ' .. type(value))
     self.value = value
+end
+
+function StringNode:getValue()
+    assert(type(self.value) == 'string', 'Wrong type for self.value: string expected, got ' .. type(self.value))
+    return self.value
 end
 
 StringNode.init = StringNode.setValue

@@ -12,8 +12,8 @@ function Graph:new()
     return setmetatable(o, self)
 end
 
-function Graph:addNode(nodeType)
-    local node = nodeType:new()
+function Graph:addNode(nodeClass)
+    local node = nodeClass:new()
     local nodeIndex = #self.nodeInstances + 1
     self.nodeInstances[nodeIndex] = node
     node:addedToGraph(self)

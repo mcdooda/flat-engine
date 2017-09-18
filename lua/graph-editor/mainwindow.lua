@@ -129,6 +129,8 @@ function MainWindow:openGraph(graphPath)
     self:setTitle(graphPath)
 
     local graph = self:loadGraph()
+    self.graph = graph
+
     local graphLayout = self:loadGraphLayout()
     assert(#graph.nodeInstances == #graphLayout, 'graph and layout do not match')
     local content = self.content
@@ -139,8 +141,6 @@ function MainWindow:openGraph(graphPath)
         nodeWidget:setPosition(table.unpack(nodePosition))
         content:addChild(nodeWidget)
     end
-
-    self.graph = graph
 
     content:redraw()
 end

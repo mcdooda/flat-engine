@@ -5,13 +5,20 @@ NodeWidget.__index = NodeWidget
 
 function NodeWidget:new(node, mainWindow)
     assert(node, 'no node given')
+    local nodeType = mainWindow.graph.nodeType
+    local nodePath = node.path
+    local customNodeEditor
+    pcall(function()
+        customNodeEditor = flat.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+    end)
     local o = setmetatable({
         node = node,
         mainWindow = mainWindow,
         inputPinPlugWidgets = {},
         inputPinSocketWidgets = {},
         outputPinPlugWidgets = {},
-        outputPinSocketWidgets = {}
+        outputPinSocketWidgets = {},
+        customNodeEditor = customNodeEditor
     }, self)
     o:build()
     return o
@@ -89,8 +96,15 @@ function NodeWidget:build()
         end
 
         do
-            local centerMargin = Widget.makeFixedSize(20, 1)
-            pinsWidget:addChild(centerMargin)
+            local customEditor = false
+            if self.customNodeEditor then
+                customEditor = self.customNodeEditor.build(node, self, pinsWidget)
+            end
+
+            if not customEditor then
+                local centerMargin = Widget.makeFixedSize(20, 1)
+                pinsWidget:addChild(centerMargin)
+            end
         end
 
         do

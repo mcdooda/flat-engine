@@ -14,7 +14,7 @@ function NumberNode:getInitArguments()
 end
 
 function NumberNode:buildPins()
-    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, 'Number')
+    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, '')
 end
 
 function NumberNode:execute(runtime)
@@ -22,8 +22,13 @@ function NumberNode:execute(runtime)
 end
 
 function NumberNode:setValue(value)
-    assert(type(value) == 'number')
+    assert(type(value) == 'number', 'Wrong type for setValue: number expected, got ' .. type(value))
     self.value = value
+end
+
+function NumberNode:getValue()
+    assert(type(self.value) == 'number', 'Wrong type for self.value: number expected, got ' .. type(self.value))
+    return self.value
 end
 
 NumberNode.init = NumberNode.setValue
