@@ -123,31 +123,46 @@ function MainWindow:setTitle(title)
     self.titleText:setText('Node Graph Editor - ' .. title)
 end
 
-function MainWindow:openGraph(graphPath)
+function MainWindow:openGraph(graphPath, nodeType)
     self.graphPath = graphPath
 
     self:setTitle(graphPath)
 
     local graph = self:loadGraph()
     self.graph = graph
+    if graph.nodeType then
+        -- the graph has been loaded
+        assert(
+            not nodeType or graph.nodeType == nodeType,
+            'unexpected graph type: ' .. tostring(nodeType) .. ' expected, got ' .. tostring(graph.nodeType)
+        )
 
-    local graphLayout = self:loadGraphLayout()
-    assert(#graph.nodeInstances == #graphLayout, 'graph and layout do not match')
-    local content = self.content
-    for i = 1, #graph.nodeInstances do
-        local node = graph.nodeInstances[i]
-        local nodePosition = graphLayout[i]
-        local nodeWidget = self:makeNodeWidget(node)
-        nodeWidget:setPosition(table.unpack(nodePosition))
-        content:addChild(nodeWidget)
+        local graphLayout = self:loadGraphLayout()
+        assert(#graph.nodeInstances == #graphLayout, 'graph and layout do not match')
+        local content = self.content
+        for i = 1, #graph.nodeInstances do
+            local node = graph.nodeInstances[i]
+            local nodePosition = graphLayout[i]
+            local nodeWidget = self:makeNodeWidget(node)
+            nodeWidget:setPosition(table.unpack(nodePosition))
+            content:addChild(nodeWidget)
+        end
+
+        content:redraw()
+        return true
+    else
+        -- the graph has not been loaded
+        graph.nodeType = nodeType
+        return false
     end
-
-    content:redraw()
 end
 
 function MainWindow:loadGraph()
     local graph = Graph:new()
-    graph:loadGraph(self.graphPath .. '.graph.lua')
+    pcall(function()
+        -- if the file does not exist, we want to create a new graph
+        graph:loadGraph(self.graphPath .. '.graph.lua')
+    end)
     return graph
 end
 
@@ -156,7 +171,12 @@ function MainWindow:saveGraph()
 end
 
 function MainWindow:loadGraphLayout()
-    local graphLayout = dofile(self.graphPath .. '.layout.lua')
+    local graphLayout
+    if not pcall(function()
+        graphLayout = dofile(self.graphPath .. '.layout.lua')
+    end) then
+        graphLayout = {}
+    end
     return graphLayout
 end
 
