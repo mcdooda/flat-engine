@@ -138,7 +138,10 @@ function MainWindow:openGraph(graphPath, nodeType)
         )
 
         local graphLayout = self:loadGraphLayout()
-        assert(#graph.nodeInstances == #graphLayout, 'graph and layout do not match')
+        assert(
+            #graph.nodeInstances == #graphLayout,
+            'graph and layout do not match (' .. #graph.nodeInstances .. ' and ' .. #graphLayout .. ' nodes)'
+        )
         local content = self.content
         for i = 1, #graph.nodeInstances do
             local node = graph.nodeInstances[i]
