@@ -77,6 +77,8 @@ local function dump(write, value, tabs, isIntKeyValue)
 		dumpString(write, value)
 	elseif t == 'number' then
 		write(tabs, value)
+	elseif t == 'boolean' then
+		write(tabs, tostring(value))
 	else
 		error('cannot serialize value ' .. tostring(value) .. ' of type ' .. t)
 	end

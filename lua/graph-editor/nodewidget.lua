@@ -7,10 +7,12 @@ function NodeWidget:new(node, mainWindow)
     assert(node, 'no node given')
     local nodeType = mainWindow.graph.nodeType
     local nodePath = node.path
+    print(nodePath)
     local customNodeEditor
-    pcall(function()
+    print(pcall(function()
         customNodeEditor = flat.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
-    end)
+        print('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+    end))
     local o = setmetatable({
         node = node,
         mainWindow = mainWindow,
