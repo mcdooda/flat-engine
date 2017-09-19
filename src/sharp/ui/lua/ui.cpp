@@ -64,6 +64,7 @@ int open(lua_State* L)
 		{"setBackgroundRepeat",   l_Widget_setBackgroundRepeat},
 		{"setBackgroundColor",    l_Widget_setBackgroundColor},
 		{"setBackgroundPosition", l_Widget_setBackgroundPosition},
+		{"setBackgroundSize",     l_Widget_setBackgroundSize},
 		
 		{"setVisible",            l_Widget_setVisible},
 		{"getVisible",            l_Widget_getVisible},
@@ -485,6 +486,15 @@ int l_Widget_setBackgroundPosition(lua_State* L)
 	float x = static_cast<float>(luaL_checknumber(L, 2));
 	float y = static_cast<float>(luaL_checknumber(L, 3));
 	widget.setBackgroundPosition(Vector2(x, y));
+	return 0;
+}
+
+int l_Widget_setBackgroundSize(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	float width = static_cast<float>(luaL_checknumber(L, 2));
+	float height = static_cast<float>(luaL_checknumber(L, 3));
+	widget.setBackgroundSize(Vector2(width, height));
 	return 0;
 }
 

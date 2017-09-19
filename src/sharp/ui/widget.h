@@ -106,6 +106,8 @@ class Widget : public util::Convertible<Widget>
 
 		using BackgroundPosition = Vector2;
 
+		using BackgroundSize = Vector2;
+
 		using ScrollPosition = Vector2;
 
 		static constexpr float SCROLL_SPEED = 50000.f;
@@ -156,13 +158,16 @@ class Widget : public util::Convertible<Widget>
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; }
 		inline const Rotation& getRotation() const { return m_rotation; }
 		
-		inline void setBackground(const std::shared_ptr<const video::Texture>& background) { m_background = background; setBackgroundColor(flat::video::Color::WHITE); }
+		void setBackground(const std::shared_ptr<const video::Texture>& background);
 
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
 		inline const video::Texture* getBackground() const { return m_background.get(); }
 
 		inline void setBackgroundPosition(const BackgroundPosition& backgroundPosition) { m_backgroundPosition = backgroundPosition; }
 		inline const BackgroundPosition& getBackgroundPosition() const { return m_backgroundPosition; }
+
+		inline void setBackgroundSize(const BackgroundSize& backgroundSize) { m_backgroundSize = backgroundSize; }
+		inline const BackgroundSize& getBackgroundSize(const BackgroundSize& backgroundSize) const { return m_backgroundSize; }
 
 		inline void setBackgroundColor(const flat::video::Color& backgroundColor) { m_backgroundColor = backgroundColor; }
 		inline const flat::video::Color& getBackgroundColor() const { return m_backgroundColor; }
@@ -264,6 +269,7 @@ class Widget : public util::Convertible<Widget>
 
 		std::shared_ptr<const video::Texture> m_background;
 		BackgroundPosition m_backgroundPosition;
+		BackgroundSize m_backgroundSize;
 		BackgroundRepeat m_backgroundRepeat;
 		flat::video::Color m_backgroundColor;
 		

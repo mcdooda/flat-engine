@@ -59,6 +59,7 @@ int l_Widget_setBackground(lua_State* L);
 int l_Widget_setBackgroundRepeat(lua_State* L);
 int l_Widget_setBackgroundColor(lua_State* L);
 int l_Widget_setBackgroundPosition(lua_State* L);
+int l_Widget_setBackgroundSize(lua_State* L);
 
 int l_Widget_setVisible(lua_State* L);
 int l_Widget_getVisible(lua_State* L);

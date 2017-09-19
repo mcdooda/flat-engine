@@ -23,6 +23,7 @@ Widget::Widget() :
 	m_position(0.f, 0.f),
 	m_rotation(0.f, 0.f, 0.f),
 	m_backgroundPosition(0.f, 0.f),
+	m_backgroundSize(0.f, 0.f),
 	m_backgroundRepeat(BackgroundRepeat::SCALED),
 	m_backgroundColor(0.f, 0.f, 0.f, 0.f),
 	m_sizePolicy(SizePolicy::FIXED),
@@ -100,6 +101,13 @@ void Widget::setAbsolutePosition(const Vector2& absolutePosition)
 Vector2 Widget::getAbsolutePosition() const
 {
 	return Vector2(m_transform[3][0], m_transform[3][1]);
+}
+
+void Widget::setBackground(const std::shared_ptr<const video::Texture>& background)
+{
+	m_background = background;
+	m_backgroundSize = background->getSize();
+	setBackgroundColor(flat::video::Color::WHITE);
 }
 
 void Widget::scrollX(float scrollValueX, float dt)
@@ -247,34 +255,33 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 		if (background != nullptr)
 		{
 			// uv
-			const float* uv = nullptr;
+			float uv[8];
 
 			if (m_backgroundRepeat == BackgroundRepeat::REPEAT)
 			{
+				FLAT_ASSERT(m_backgroundSize.x > 0.f && m_backgroundSize.y > 0.f);
 				// TODO compute during layout...
-				const Vector2& backgroundSize = background->getSize();
 				const float uvx0 = m_backgroundPosition.x;
-				const float uvx1 = m_backgroundPosition.x + m_computedSize.x / backgroundSize.x;
+				const float uvx1 = m_backgroundPosition.x + m_computedSize.x / m_backgroundSize.x;
 				const float uvy0 = m_backgroundPosition.y;
-				const float uvy1 = m_backgroundPosition.y + m_computedSize.y / backgroundSize.y;
-				const float repeatUv[] = {
-					uvx0, uvy1,
-					uvx1, uvy1,
-					uvx1, uvy0,
-					uvx0, uvy0
-				};
+				const float uvy1 = m_backgroundPosition.y + m_computedSize.y / m_backgroundSize.y;
 
-				uv = repeatUv;
+				uv[0] = uvx0; uv[1] = uvy1;
+				uv[2] = uvx1; uv[3] = uvy1;
+				uv[4] = uvx1; uv[5] = uvy0;
+				uv[6] = uvx0; uv[7] = uvy0;
 			}
 			else if (m_backgroundRepeat == BackgroundRepeat::SCALED)
 			{
-				static const float scaledUv[] = {
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 0.0f
-				};
-				uv = scaledUv;
+				constexpr float uvx0 = 0.f;
+				constexpr float uvx1 = 1.f;
+				constexpr float uvy0 = 0.f;
+				constexpr float uvy1 = 1.f;
+
+				uv[0] = uvx0; uv[1] = uvy1;
+				uv[2] = uvx1; uv[3] = uvy1;
+				uv[4] = uvx1; uv[5] = uvy0;
+				uv[6] = uvx0; uv[7] = uvy0;
 			}
 			else
 			{
