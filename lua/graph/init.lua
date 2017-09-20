@@ -1,7 +1,6 @@
 local NodeRepository = flat.require 'graph/noderepository'
 
 flat.graph = {}
-flat.graph.repositories = {}
 
 local repositories = {}
 local function getNodeRepository(nodeType)
@@ -18,7 +17,7 @@ function flat.graph.getNodeClasses(nodeType)
     return repository:getNodeClasses()
 end
 
-function flat.graph.addNodeClasses(nodeType, root)
+function flat.graph.loadNodeClasses(nodeType, root)
     local repository = getNodeRepository(nodeType)
     repository:load(nodeType, function(path)
         return require(root .. '/' .. path)

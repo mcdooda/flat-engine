@@ -231,7 +231,12 @@ local pinColors = {
     [PinTypes.BOOL]     = 0x27AE60FF,
     [PinTypes.NUMBER]   = 0xF39C12FF,
     [PinTypes.STRING]   = 0x3498DBFF,
+    [PinTypes.TABLE]    = 0x8E44ADFF
 }
+assert(
+    #pinColors == #PinTypes,
+    'Pin colors and pin types do not match (' .. #pinColors .. ' and ' .. #PinTypes .. ')'
+)
 
 function NodeWidget:getPinColorByType(pinType)
     return pinColors[pinType]

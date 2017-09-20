@@ -10,9 +10,14 @@ function Enum:toString(value)
     error('no value ' .. value .. ' in this enum')
 end
 
+function Enum:__len()
+    return self.length
+end
+
 function flat.enum(...)
-    local newEnum = {}
-    for i = 1, select('#', ...) do
+    local length = select('#', ...)
+    local newEnum = { length = length }
+    for i = 1, length do
         newEnum[select(i, ...)] = i
     end
     return setmetatable(newEnum, Enum)
