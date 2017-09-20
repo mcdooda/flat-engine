@@ -1,4 +1,3 @@
-local NodeRepository = flat.require 'graph/noderepository'
 local PinTypes = flat.require 'graph/pintypes'
 
 local Graph = {}
@@ -43,9 +42,9 @@ end
 function Graph:loadGraph(graphPath)
     local env = { PinTypes = PinTypes }
     function env.__index(env, nodeType)
-        local nodeRegistry = NodeRepository:getNodesForType(nodeType)
+        local nodeClasses = flat.graph.getNodeClasses(nodeType)
         return function(savedGraph)
-            self:load(nodeType, savedGraph, nodeRegistry)
+            self:load(nodeType, savedGraph, nodeClasses)
         end
     end
 

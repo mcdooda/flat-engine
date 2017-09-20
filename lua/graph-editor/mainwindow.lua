@@ -1,5 +1,4 @@
 local Graph = flat.require 'graph/graph'
-local NodeRepository = flat.require 'graph/noderepository'
 local NodeWidget = flat.require 'graph-editor/nodewidget'
 
 local MainWindow = {}
@@ -162,10 +161,10 @@ end
 
 function MainWindow:loadGraph()
     local graph = Graph:new()
-    pcall(function()
+    print(pcall(function()
         -- if the file does not exist, we want to create a new graph
         graph:loadGraph(self.graphPath .. '.graph.lua')
-    end)
+    end))
     return graph
 end
 
@@ -405,7 +404,7 @@ function MainWindow:openNodeListMenu(x, y)
     local line = Widget.makeLineFlow()
     line:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
 
-    local nodeRegistry = NodeRepository:getNodesForType(self.graph.nodeType)
+    local nodeClasses = flat.graph.getNodeClasses(self.graph.nodeType)
     local nodesContainer
     local textInputWidget
 
@@ -413,7 +412,7 @@ function MainWindow:openNodeListMenu(x, y)
     local function updateNodeSearch()
         searchNodes = {}
         local search = textInputWidget:getText():lower()
-        for nodeName, nodeClass in pairs(nodeRegistry) do
+        for nodeName, nodeClass in pairs(nodeClasses) do
             local nodeVisualName = nodeClass:getName()
             if #search == 0 or nodeVisualName:lower():match(search) then
                 searchNodes[#searchNodes + 1] = {
@@ -426,7 +425,7 @@ function MainWindow:openNodeListMenu(x, y)
     end
 
     local function insertNode(nodeName)
-        local node = self.graph:addNode(nodeRegistry[nodeName])
+        local node = self.graph:addNode(nodeClasses[nodeName])
         local nodeWidget = self:makeNodeWidget(node)
         local contentSizeX, contentSizeY = self.content:getComputedSize()
         local scrollX, scrollY = self.content:getScrollPosition()

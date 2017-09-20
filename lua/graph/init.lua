@@ -1,16 +1,26 @@
-local Graph = flat.require 'graph/graph'
-local ScriptRuntime = flat.require 'graph/script/scriptruntime'
+local NodeRepository = flat.require 'graph/noderepository'
 
-flat.node = flat.node or {}
-flat.node.editor = {}
+flat.graph = {}
+flat.graph.repositories = {}
 
-function flat.node.runScript(scriptPath, ...)
-    local script = Graph:new()
-
-    script:loadGraph(scriptPath .. '.graph.lua')
-
-    local scriptRuntime = ScriptRuntime:new(script)
-    local runner = scriptRuntime:getRunner(...)
-    runner()
+local repositories = {}
+local function getNodeRepository(nodeType)
+    local repository = repositories[nodeType]
+    if not repository then
+        repository = NodeRepository:new(nodeType)
+        repositories[nodeType] = repository
+    end
+    return repository
 end
 
+function flat.graph.getNodeClasses(nodeType)
+    local repository = getNodeRepository(nodeType)
+    return repository:getNodeClasses()
+end
+
+function flat.graph.addNodeClasses(nodeType, root)
+    local repository = getNodeRepository(nodeType)
+    repository:load(nodeType, function(path)
+        return require(root .. '/' .. path)
+    end)
+end

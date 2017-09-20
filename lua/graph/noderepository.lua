@@ -1,24 +1,28 @@
 local NodeRepository = {}
+NodeRepository.__index = NodeRepository
 
-function NodeRepository:load(nodeType)
-    local nodePaths = flat.require('graph/' .. nodeType .. '/' .. nodeType .. 'noderegistry')
-    local registry = {}
+function NodeRepository:new(nodeType)
+    local o = setmetatable({
+        nodeType = nodeType,
+        nodeClasses = {}
+    }, self)
+    o:load(nodeType, flat.require)
+    return o
+end
+
+function NodeRepository:load(nodeType, require)
+    local nodePaths = require('graph/' .. nodeType .. '/' .. nodeType .. 'noderegistry')
     for i = 1, #nodePaths do
         local nodePath = nodePaths[i]
-        local nodeClass = flat.require('graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+        local nodeClass = require('graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
         nodeClass.path = nodePath
-        registry[nodePath] = nodeClass
+        self.nodeClasses[nodePath] = nodeClass
     end
     return registry
 end
 
-function NodeRepository:getNodesForType(nodeType)
-    local registry = self[nodeType]
-    if not registry then
-        registry = self:load(nodeType)
-        self[nodeType] = registry
-    end
-    return registry
+function NodeRepository:getNodeClasses()
+    return self.nodeClasses
 end
 
 return NodeRepository
