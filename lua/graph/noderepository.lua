@@ -11,14 +11,13 @@ function NodeRepository:new(nodeType)
 end
 
 function NodeRepository:load(nodeType, require)
-    local nodePaths = require('graph/' .. nodeType .. '/' .. nodeType .. 'noderegistry')
+    local nodePaths = require('graph/' .. nodeType .. '/' .. nodeType .. 'noderepository')
     for i = 1, #nodePaths do
         local nodePath = nodePaths[i]
         local nodeClass = require('graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
         nodeClass.path = nodePath
         self.nodeClasses[nodePath] = nodeClass
     end
-    return registry
 end
 
 function NodeRepository:getNodeClasses()

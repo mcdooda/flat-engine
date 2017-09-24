@@ -2,7 +2,7 @@ return flat.enum(
     'ANY',
     'IMPULSE',
     'USERDATA',
-    'BOOL',
+    'BOOLEAN',
     'NUMBER',
     'STRING',
     'TABLE'

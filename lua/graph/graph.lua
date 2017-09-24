@@ -56,7 +56,7 @@ function Graph:loadGraph(graphPath)
     loadfile(graphPath, 'bt', env)()
 end
 
-function Graph:load(nodeType, savedGraph, nodeRegistry)
+function Graph:load(nodeType, savedGraph, nodeRepository)
     self.nodeType = nodeType
 
     -- build nodes
@@ -64,7 +64,7 @@ function Graph:load(nodeType, savedGraph, nodeRegistry)
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
-        local nodeInstance = self:addNode(nodeRegistry[nodeName], false)
+        local nodeInstance = self:addNode(nodeRepository[nodeName], false)
         local loadArguments = node.loadArguments
         if loadArguments then
             nodeInstance:load(table.unpack(loadArguments))

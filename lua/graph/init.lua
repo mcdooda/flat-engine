@@ -23,3 +23,5 @@ function flat.graph.loadNodeClasses(nodeType, root)
         return require(root .. '/' .. path)
     end)
 end
+
+flat.dofile 'graph/script/init.lua'

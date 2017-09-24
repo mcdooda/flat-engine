@@ -34,15 +34,15 @@ function ScriptInputNode:execute(runtime)
 end
 
 function ScriptInputNode:getLoadArguments()
-    local initArguments = {}
+    local loadArguments = {}
     for i = 1, #self.outputPins - 1 do
         local outputPin = self.outputPins[i]
-        initArguments[i] = {
+        loadArguments[i] = {
             outputPin.pinType,
             outputPin.pinName
         }
     end
-    return table.unpack(initArguments)
+    return table.unpack(loadArguments)
 end
 
 function ScriptInputNode:load(...)

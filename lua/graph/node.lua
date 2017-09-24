@@ -135,7 +135,7 @@ function Node:plugPins(outputPin, node, inputPin)
     }
 
     if onInputPinPlugged then
-        return onInputPinPlugged(self, inputPin)
+        return onInputPinPlugged(node, inputPin)
     elseif onOutputPinPlugged then
         return onOutputPinPlugged(self, outputPin)
     end

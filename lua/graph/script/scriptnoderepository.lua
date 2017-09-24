@@ -1,6 +1,7 @@
 return {
-    'init',
+    'script/init',
     'script/scriptinput',
+    'script/scriptoutput',
     'bool',
     'number',
     'string',

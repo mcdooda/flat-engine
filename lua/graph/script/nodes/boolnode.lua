@@ -4,7 +4,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local BoolNode = FunctionalScriptNode:inherit 'Bool'
 
 function BoolNode:buildPins()
-    self.boolOutPin = self:addOutputPin(PinTypes.BOOL, '')
+    self.boolOutPin = self:addOutputPin(PinTypes.BOOLEAN, '')
 end
 
 function BoolNode:execute(runtime)

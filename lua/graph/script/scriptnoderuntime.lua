@@ -34,7 +34,10 @@ end
 function ScriptNodeRuntime:writePin(outputPin, value)
     local pinValue = self.outputPinValues[outputPin]
     assert(pinValue, 'invalid output pin')
-    assert(PinTypes[string.upper(type(value))] == outputPin.pinType, 'wrong value type ' .. tostring(value))
+    assert(
+        PinTypes[string.upper(type(value))] == outputPin.pinType,
+        'wrong value ' .. tostring(value) .. ' of type ' .. type(value) .. ', expected ' .. PinTypes:toString(outputPin.pinType)
+    )
     pinValue.value = value
 end
 

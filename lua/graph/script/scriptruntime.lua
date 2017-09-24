@@ -22,9 +22,11 @@ function ScriptRuntime:new(graph)
         for i, inputPin in pairs(node.inputPins) do
             if inputPin.pinType ~= PinTypes.IMPULSE then
                 local pluggedOutputPin = inputPin.pluggedOutputPin
-                local outputPin = pluggedOutputPin.outputPin
-                local outputNode = pluggedOutputPin.node
-                inputPinValues[node][inputPin] = outputPinValues[outputNode][outputPin]
+                if pluggedOutputPin then
+                    local outputPin = pluggedOutputPin.outputPin
+                    local outputNode = pluggedOutputPin.node
+                    inputPinValues[node][inputPin] = outputPinValues[outputNode][outputPin]
+                end
             end
         end
     end
@@ -60,9 +62,28 @@ function ScriptRuntime:writeInputPins(...)
     local inputNodeRuntime = self.nodeRuntimes[inputNode]
     for i = 1, numInputs do
         local outputPin = inputNode.outputPins[i]
-        local value = select(i, ...)
-        inputNodeRuntime:writePin(outputPin, value)
+        if outputPin then
+            local value = select(i, ...)
+            inputNodeRuntime:writePin(outputPin, value)
+        end
     end
+end
+
+function ScriptRuntime:readOutputPins()
+    local outputNode = self.graph.outputNode
+    if not outputNode then
+        return
+    end
+
+    local outputNodeRuntime = self.nodeRuntimes[outputNode]
+    local outputValues = {}
+    local numOutputs = #outputNode.inputPins - 1 -- do not read the last pin
+    for i = 1, numOutputs do
+        local inputPin = outputNode.inputPins[i]
+        assert(inputPin)
+        outputValues[i] = outputNodeRuntime:readPin(inputPin)
+    end
+    return table.unpack(outputValues)
 end
 
 function ScriptRuntime:getRunner(...)
@@ -76,6 +97,7 @@ function ScriptRuntime:getRunner(...)
             local entryNodeRuntime = nodeRuntimes[entryNode]
             entryNode:execute(entryNodeRuntime)
         end
+        return self:readOutputPins()
     end
 end
 
