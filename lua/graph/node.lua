@@ -1,3 +1,5 @@
+local PinTypes = flat.require 'graph/pintypes'
+
 local Node = {}
 Node.__index = Node
 
@@ -6,7 +8,7 @@ function Node:new()
         inputPins = {},
         outputPins = {}
     }, self)
-    o:buildPins()
+    o:init()
     return o
 end
 
@@ -28,12 +30,16 @@ function Node:addedToGraph(graph)
     -- overidden when needed, called after the node is added to a graph
 end
 
-function Node:init(...)
+function Node:init()
+    -- overriden when needed, called after a new node is instanced
+end
+
+function Node:load(...)
     -- overidden when needed, called after deserialization
 end
 
-function Node:getInitArguments()
-    -- overriden when needed, should return the arguments to pass to init(...) as a single string
+function Node:getLoadArguments()
+    -- overriden when needed, should return the arguments to pass to load(...)
 end
 
 function Node:addInputPin(pinType, pinName)
@@ -45,6 +51,13 @@ function Node:addInputPin(pinType, pinName)
         pluggedOutputPin = nil
     }
     self.inputPins[#self.inputPins + 1] = inputPin
+    return inputPin
+end
+
+function Node:addInputPinAny(pinName, onPlugged)
+    assert(onPlugged, 'no plugged callback')
+    local inputPin = self:addInputPin(PinTypes.ANY, pinName)
+    inputPin.onPlugged = onPlugged
     return inputPin
 end
 
@@ -70,6 +83,13 @@ function Node:addOutputPin(pinType, pinName)
     return outputPin
 end
 
+function Node:addOutputPinAny(pinName, onPlugged)
+    assert(onPlugged, 'no plugged callback')
+    local outputPin = self:addOutputPin(PinTypes.ANY, pinName)
+    outputPin.onPlugged = onPlugged
+    return outputPin
+end
+
 function Node:getOutputPin(outputPinIndex)
     return self.outputPins[outputPinIndex]
 end
@@ -89,8 +109,22 @@ function Node:rebuildPins()
 end
 
 function Node:plugPins(outputPin, node, inputPin)
-    assert(outputPin.pinType == inputPin.pinType, 'pin types mismatch')
     assert(not inputPin.pluggedOutputPin, 'the input pin is already plugged')
+
+    local onOutputPinPlugged
+    local onInputPinPlugged
+    if outputPin.pinType == PinTypes.ANY then
+        assert(inputPin.pinType ~= PinTypes.ANY)
+        outputPin.pinType = inputPin.pinType
+        onOutputPinPlugged = outputPin.onPlugged
+        outputPin.onPlugged = nil
+    elseif inputPin.pinType == PinTypes.ANY then
+        inputPin.pinType = outputPin.pinType
+        onInputPinPlugged = inputPin.onPlugged
+        inputPin.onPlugged = nil
+    end
+
+    assert(outputPin.pinType == inputPin.pinType, 'pin types mismatch')
     outputPin.pluggedInputPins[#outputPin.pluggedInputPins + 1] = {
         inputPin = inputPin,
         node = node
@@ -99,6 +133,12 @@ function Node:plugPins(outputPin, node, inputPin)
         outputPin = outputPin,
         node = self
     }
+
+    if onInputPinPlugged then
+        return onInputPinPlugged(self, inputPin)
+    elseif onOutputPinPlugged then
+        return onOutputPinPlugged(self, outputPin)
+    end
 end
 
 function Node:unplugInputPin(inputPin)

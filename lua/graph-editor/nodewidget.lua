@@ -20,16 +20,22 @@ function NodeWidget:new(node, mainWindow)
         outputPinSocketWidgets = {},
         customNodeEditor = customNodeEditor
     }, self)
+
+    local nodeWidget = Widget.makeColumnFlow()
+    nodeWidget:setBackgroundColor(0xBDC3C7FF)
+    nodeWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
+    nodeWidget:rightClick(function()
+        mainWindow:openNodeContextualMenu()
+        return true
+    end)
+    o.container = nodeWidget
     o:build()
     return o
 end
 
 function NodeWidget:build()
-    local nodeWidget = Widget.makeColumnFlow()
+    local nodeWidget = self.container
     local node = self.node
-
-    nodeWidget:setBackgroundColor(0xBDC3C7FF)
-    nodeWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
 
     do
         local nodeNameContainer = Widget.makeExpand()
@@ -121,13 +127,11 @@ function NodeWidget:build()
 
         nodeWidget:addChild(pinsWidget)
     end
+end
 
-    nodeWidget:rightClick(function()
-        self.mainWindow:openNodeContextualMenu()
-        return true
-    end)
-
-    self.container = nodeWidget
+function NodeWidget:rebuild()
+    self.container:removeAllChildren()
+    self:build()
 end
 
 function NodeWidget:makeInputPinWidget(node, pin)
@@ -226,6 +230,7 @@ function NodeWidget:deselect()
 end
 
 local pinColors = {
+    [PinTypes.ANY]      = 0x888888FF,
     [PinTypes.IMPULSE]  = 0xE74C3CFF,
     [PinTypes.USERDATA] = 0x2ECC71FF,
     [PinTypes.BOOL]     = 0x27AE60FF,

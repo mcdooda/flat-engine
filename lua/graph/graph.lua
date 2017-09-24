@@ -11,8 +11,11 @@ function Graph:new()
     return setmetatable(o, self)
 end
 
-function Graph:addNode(nodeClass)
+function Graph:addNode(nodeClass, buildPins)
     local node = nodeClass:new()
+    if buildPins == nil then
+        node:buildPins()
+    end
     local nodeIndex = #self.nodeInstances + 1
     self.nodeInstances[nodeIndex] = node
     node:addedToGraph(self)
@@ -61,13 +64,14 @@ function Graph:load(nodeType, savedGraph, nodeRegistry)
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
-        local nodeInstance = self:addNode(nodeRegistry[nodeName])
-        local initArguments = node.initArguments
-        if initArguments then
-            nodeInstance:init(table.unpack(initArguments))
+        local nodeInstance = self:addNode(nodeRegistry[nodeName], false)
+        local loadArguments = node.loadArguments
+        if loadArguments then
+            nodeInstance:load(table.unpack(loadArguments))
         else
-            nodeInstance:init()
+            nodeInstance:load()
         end
+        nodeInstance:buildPins()
     end
 
     -- connect nodes together
@@ -114,9 +118,9 @@ function Graph:saveGraph(graphPath)
         local nodeDescription = {
             name = node.path
         }
-        local initArguments = node:getInitArguments()
-        if initArguments then
-            nodeDescription.initArguments = initArguments
+        local loadArguments = { node:getLoadArguments() }
+        if #loadArguments > 0 then
+            nodeDescription.loadArguments = loadArguments
         end
         graphDescription.nodes[outputNodeIndex] = nodeDescription
 

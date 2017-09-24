@@ -1,5 +1,6 @@
 local Graph = flat.require 'graph/graph'
 local NodeWidget = flat.require 'graph-editor/nodewidget'
+local PinTypes = flat.require 'graph/pintypes'
 
 local MainWindow = {}
 MainWindow.__index = MainWindow
@@ -161,10 +162,10 @@ end
 
 function MainWindow:loadGraph()
     local graph = Graph:new()
-    print(pcall(function()
+    pcall(function()
         -- if the file does not exist, we want to create a new graph
         graph:loadGraph(self.graphPath .. '.graph.lua')
-    end))
+    end)
     return graph
 end
 
@@ -186,7 +187,8 @@ function MainWindow:saveGraphLayout()
     local graphLayout = {}
     local nodeInstances = self.graph.nodeInstances
     for i = 1, #nodeInstances do
-        local nodeWidget = self.nodeWidgets[nodeInstances[i]]
+        local nodeInstance = nodeInstances[i]
+        local nodeWidget = self.nodeWidgets[nodeInstance]
         local nodePosition = { nodeWidget.container:getPosition() }
         graphLayout[i] = nodePosition
     end
@@ -342,10 +344,16 @@ function MainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
     self:drawLinks()
 end
 
+function MainWindow:canPlugPins(outputNode, outputPin, inputNode, inputPin)
+    return (inputPin.pinType == outputPin.pinType
+        or ((inputPin.pinType == PinTypes.ANY) ~= (outputPin.pinType == PinTypes.ANY)))
+        and outputNode ~= inputNode
+end
+
 function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.outputNode then
-        if inputPin.pinType == currentLink.outputPin.pinType and currentLink.outputNode ~= inputNode then
+        if self:canPlugPins(currentLink.outputNode, currentLink.outputPin, inputNode, inputPin) then
             if inputPin.pluggedOutputPin then
                 local outputPin = inputPin.pluggedOutputPin.outputPin
                 local previousOutputNode = inputPin.pluggedOutputPin.node
@@ -353,32 +361,52 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                 local nodeWidget = self.nodeWidgets[previousOutputNode]
                 nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
             end
-            currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin)
+            local inputPinIsAny = inputPin.pinType == PinTypes.ANY
+            local outputPinIsAny = currentLink.outputPin.pinType == PinTypes.ANY
+            local updateWidget = currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin)
+            self.currentLink = nil
+            self:drawLinks()
+            if updateWidget then
+                local nodeWidget
+                if inputPinIsAny then
+                    nodeWidget = self.nodeWidgets[inputNode]
+                elseif outputPinIsAny then
+                    nodeWidget = self.nodeWidgets[currentLink.outputNode]
+                end
+                assert(nodeWidget)
+                nodeWidget:rebuild()
+            end
             local nodeWidget = self.nodeWidgets[inputNode]
             nodeWidget:setInputPinPlugged(inputPin, true)
         else
             local nodeWidget = self.nodeWidgets[currentLink.outputNode]
             local outputPin = currentLink.outputPin
             nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+            self.currentLink = nil
+            self:drawLinks()
         end
-        self.currentLink = nil
-        self:drawLinks()
     end
 end
 
 function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.inputNode then
-        if outputPin.pinType == currentLink.inputPin.pinType and currentLink.inputNode ~= outputNode then
-            outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
+        if self:canPlugPins(outputNode, outputPin, currentLink.inputNode, currentLink.inputPin) then
+            local updateWidget = outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
+            self.currentLink = nil
+            self:drawLinks()
             local nodeWidget = self.nodeWidgets[outputNode]
-            nodeWidget:setOutputPinPlugged(outputPin, true)
+            if updateWidget then
+                nodeWidget:rebuild()
+            else
+                nodeWidget:setOutputPinPlugged(outputPin, true)
+            end
         else
             local nodeWidget = self.nodeWidgets[currentLink.inputNode]
             nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
+            self.currentLink = nil
+            self:drawLinks()
         end
-        self.currentLink = nil
-        self:drawLinks()
     end
 end
 

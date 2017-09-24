@@ -7,7 +7,7 @@ function Enum:toString(value)
             return k
         end
     end
-    error('no value ' .. value .. ' in this enum')
+    error('no value ' .. tostring(value) .. ' in this enum')
 end
 
 function Enum:__len()

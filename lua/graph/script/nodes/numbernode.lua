@@ -3,16 +3,6 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local NumberNode = FunctionalScriptNode:inherit 'Number'
 
-function NumberNode:new()
-    local o = FunctionalScriptNode.new(self)
-    o.value = 0
-    return o
-end
-
-function NumberNode:getInitArguments()
-    return { self.value }
-end
-
 function NumberNode:buildPins()
     self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, '')
 end
@@ -31,6 +21,14 @@ function NumberNode:getValue()
     return self.value
 end
 
-NumberNode.init = NumberNode.setValue
+function NumberNode:init()
+    self:setValue(0)
+end
+
+function NumberNode:getLoadArguments()
+    return self.value
+end
+
+NumberNode.load = NumberNode.setValue
 
 return NumberNode

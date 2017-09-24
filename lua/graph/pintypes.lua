@@ -1,4 +1,5 @@
 return flat.enum(
+    'ANY',
     'IMPULSE',
     'USERDATA',
     'BOOL',

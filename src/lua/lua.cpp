@@ -378,6 +378,9 @@ int panic(lua_State* L)
 	printStack(L);
 	std::cout << "~~~~ PANIC! ~~~~" << std::endl;
 	FLAT_BREAK();
+	lua_getglobal(L, "debug");
+	lua_getfield(L, -1, "debug");
+	lua_call(L, 0, 0);
 	exit(1);
 	return 0;
 }
