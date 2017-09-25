@@ -236,7 +236,8 @@ local pinColors = {
     [PinTypes.BOOLEAN]  = 0x27AE60FF,
     [PinTypes.NUMBER]   = 0xF39C12FF,
     [PinTypes.STRING]   = 0x3498DBFF,
-    [PinTypes.TABLE]    = 0x8E44ADFF
+    [PinTypes.TABLE]    = 0x8E44ADFF,
+    [PinTypes.FUNCTION] = 0x34495EFF
 }
 assert(
     #pinColors == #PinTypes,

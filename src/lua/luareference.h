@@ -33,7 +33,11 @@ class LuaReference
 		inline void set(lua_State* L, int index)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			luaL_argcheck(L, lua_type(L, index) == LuaType, index, "Wrong type for LuaReference");
+			if (lua_type(L, index) != LuaType)
+			{
+				std::string error = std::string("Wrong type for LuaReference: ") + lua_typename(L, LuaType) + " expected, got " + luaL_typename(L, index);
+				luaL_argerror(L, index, error.c_str());
+			}
 			lua_pushvalue(L, index);
 			m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
 			

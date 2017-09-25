@@ -5,5 +5,6 @@ return flat.enum(
     'BOOLEAN',
     'NUMBER',
     'STRING',
-    'TABLE'
+    'TABLE',
+    'FUNCTION'
 )
