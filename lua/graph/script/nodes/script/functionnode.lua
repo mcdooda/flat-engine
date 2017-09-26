@@ -35,7 +35,7 @@ function FunctionNode:execute(runtime)
             local outputPin = self.outputPins[i + 2]
             if outputPin and outputPin.pinType ~= PinTypes.ANY then
                 local argument = select(i, ...)
-                runtime:writePin(outputPin, argument)
+                runtime:writeOptionalPin(outputPin, argument)
             end
         end
         runtime:impulse(self.impulseOutPin)
