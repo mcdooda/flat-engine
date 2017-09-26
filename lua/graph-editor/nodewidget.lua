@@ -232,8 +232,8 @@ end
 local pinColors = {
     [PinTypes.ANY]      = 0x888888FF,
     [PinTypes.IMPULSE]  = 0xE74C3CFF,
-    [PinTypes.USERDATA] = 0x2ECC71FF,
-    [PinTypes.BOOLEAN]  = 0x27AE60FF,
+    [PinTypes.USERDATA] = 0x058C40FF,
+    [PinTypes.BOOLEAN]  = 0x2ECC71FF,
     [PinTypes.NUMBER]   = 0xF39C12FF,
     [PinTypes.STRING]   = 0x3498DBFF,
     [PinTypes.TABLE]    = 0x8E44ADFF,

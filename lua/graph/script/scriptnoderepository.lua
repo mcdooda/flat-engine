@@ -1,8 +1,9 @@
 return {
+    'script/condition',
     'script/init',
+    'script/function',
     'script/scriptinput',
     'script/scriptoutput',
-    'script/function',
     'bool',
     'number',
     'string',

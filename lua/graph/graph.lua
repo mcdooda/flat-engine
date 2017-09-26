@@ -53,7 +53,7 @@ function Graph:loadGraph(graphPath)
 
     setmetatable(env, env)
 
-    loadfile(graphPath, 'bt', env)()
+    assert(loadfile(graphPath, 'bt', env))()
 end
 
 function Graph:load(nodeType, savedGraph, nodeRepository)
