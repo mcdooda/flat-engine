@@ -56,7 +56,7 @@ function MainWindow:build()
             saveButton:click(function()
                 self:saveGraph()
                 self:saveGraphLayout()
-                self:saveComponentFile()
+                self:saveLuaRunnerFile()
             end)
             titleContainer:addChild(saveButton)
         end
@@ -200,13 +200,10 @@ function MainWindow:saveGraphLayout()
     f:close()
 end
 
-function MainWindow:saveComponentFile()
+function MainWindow:saveLuaRunnerFile()
     local componentFilePath = self.graphPath .. '.lua'
-    print('MainWindow:saveComponentFile', componentFilePath)
     if not io.open(componentFilePath, 'r') then
-        print 'File does not exist!'
         local f = io.open(componentFilePath, 'w')
-        print(f)
         f:write(([[return flat.graph.script.run '%s']]):format(self.graphPath))
         f:close()
     end
