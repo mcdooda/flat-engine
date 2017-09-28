@@ -56,6 +56,7 @@ function MainWindow:build()
             saveButton:click(function()
                 self:saveGraph()
                 self:saveGraphLayout()
+                self:saveComponentFile()
             end)
             titleContainer:addChild(saveButton)
         end
@@ -197,6 +198,18 @@ function MainWindow:saveGraphLayout()
     f:write 'return '
     flat.dumpToOutput(f, graphLayout)
     f:close()
+end
+
+function MainWindow:saveComponentFile()
+    local componentFilePath = self.graphPath .. '.lua'
+    print('MainWindow:saveComponentFile', componentFilePath)
+    if not io.open(componentFilePath, 'r') then
+        print 'File does not exist!'
+        local f = io.open(componentFilePath, 'w')
+        print(f)
+        f:write(([[return flat.graph.script.run '%s']]):format(self.graphPath))
+        f:close()
+    end
 end
 
 function MainWindow:makeNodeWidget(node)
