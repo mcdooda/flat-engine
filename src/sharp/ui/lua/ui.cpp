@@ -25,8 +25,9 @@ using LuaWidgetFactory = flat::lua::SharedCppReference<WidgetFactory>;
 
 static char widgetFactoryRegistryIndex = 'W';
 
-int open(lua_State* L)
+int open(flat::Flat& flat, flat::lua::Lua& lua)
 {
+	lua_State* L = lua.state;
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	
 	// Widget metatable
@@ -118,8 +119,7 @@ int open(lua_State* L)
 		
 		{nullptr, nullptr}
 	};
-	
-	LuaWidget::registerClass("flat.Widget", L, Widget_lib_m);
+	lua.registerClass<LuaWidget>("flat.Widget", Widget_lib_m);
 	
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
@@ -196,10 +196,8 @@ int open(lua_State* L)
 	
 	lua_setglobal(L, "Widget");
 	
-
-	LuaWidgetFactory::registerClass("flat.WidgetFactory", L);
-	Game& game = flat::lua::getGame(L);
-	LuaWidgetFactory::pushNew(L, new WidgetFactory(game));
+	lua.registerClass<LuaWidgetFactory>("flat.WidgetFactory");
+	LuaWidgetFactory::pushNew(L, new WidgetFactory(flat));
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &widgetFactoryRegistryIndex);
 	
 	return 0;
@@ -457,8 +455,8 @@ int l_Widget_setBackground(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
 	const char* backgroundFileName = luaL_checkstring(L, 2);
-	Game& game = flat::lua::getGame(L);
-	std::shared_ptr<const flat::video::FileTexture> background = game.video->getTexture(backgroundFileName);
+	Flat& flat = flat::lua::getFlat(L);
+	std::shared_ptr<const flat::video::FileTexture> background = flat.video->getTexture(backgroundFileName);
 	widget.setBackground(background);
 	return 0;
 }
@@ -1002,7 +1000,7 @@ int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slo
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
-	const auto& mouse = flat::lua::getGame(L).input->mouse;
+	const auto& mouse = flat::lua::getFlat(L).input->mouse;
 	(widget.*slot).on(
 		[L, ref, &mouse](Widget* w, bool& eventHandled)
 		{
@@ -1037,12 +1035,12 @@ void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget)
 
 WidgetFactory& getWidgetFactory(lua_State* L)
 {
-	return flat::lua::getGame(L).ui->factory;
+	return flat::lua::getFlat(L).ui->factory;
 }
 
 RootWidget& getRootWidget(lua_State* L)
 {
-	RootWidget* root = flat::lua::getGame(L).ui->root.get();
+	RootWidget* root = flat::lua::getFlat(L).ui->root.get();
 	FLAT_ASSERT(root != nullptr);
 	return *root;
 }

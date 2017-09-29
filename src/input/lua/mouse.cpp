@@ -28,7 +28,7 @@ int open(lua_State* L)
 
 int l_Mouse_getPosition(lua_State* L)
 {
-	const Vector2& position = flat::lua::getGame(L).input->mouse->getPosition();
+	const Vector2& position = flat::lua::getFlat(L).input->mouse->getPosition();
 	lua_pushnumber(L, position.x);
 	lua_pushnumber(L, position.y);
 	return 2;

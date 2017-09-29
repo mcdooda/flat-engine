@@ -9,8 +9,9 @@ namespace lua
 
 using LuaVector3 = flat::lua::SharedCppValue<Vector3>;
 
-int openVector3(lua_State* L)
+int openVector3(Lua& lua)
 {
+	lua_State* L = lua.state;
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg Vector3_lib_m[] = {
@@ -34,7 +35,7 @@ int openVector3(lua_State* L)
 
 		{nullptr, nullptr}
 	};
-	LuaVector3::registerClass("flat.Vector3", L, Vector3_lib_m);
+	lua.registerClass<LuaVector3>("flat.Vector3", Vector3_lib_m);
 
 	// constructor: flat.Vector3(x, y, z)
 	lua_getglobal(L, "flat");

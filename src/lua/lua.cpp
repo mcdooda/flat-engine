@@ -4,6 +4,7 @@
 #include "../flat.h"
 #include "../flat/game.h"
 #include "lua.h"
+#include "lua/types.h"
 #include "../time/lua/time.h"
 #include "../input/lua/mouse.h"
 #include "../video/lua/image.h"
@@ -17,7 +18,8 @@ namespace lua
 {
 static char gameRegistryIndex = 'F';
 
-Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath)
+Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) :
+	m_nextTypeIndex(FIRST_CLASS_TYPE_INDEX)
 {
 	m_luaPath = luaPath;
 	if (m_luaPath[m_luaPath.size() - 1] != '/')
@@ -48,7 +50,7 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath)
 		time::lua::open(L);
 		input::lua::mouse::open(L);
 		video::lua::image::open(L);
-		sharp::ui::lua::open(L);
+		sharp::ui::lua::open(flat, *this);
 
 		// flat. libraries
 		lua_newtable(L);
@@ -60,8 +62,10 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath)
 		lua_setfield(L, -2, "debug");
 		lua_setglobal(L, "flat");
 
-		lua::openVector2(L);
-		lua::openVector3(L);
+		types::open(L);
+
+		lua::openVector2(*this);
+		lua::openVector3(*this);
 
 		openRequire(L);
 		openDofile(L);
@@ -108,6 +112,11 @@ void Lua::loadLib(const std::string& fileName, const std::string& globalName)
 void Lua::clearLoadedPackages()
 {
 	lua::clearLoadedPackages(state);
+}
+
+const char* Lua::getTypeName(int type) const
+{
+	return m_typeIndexToName[type - FIRST_CLASS_TYPE_INDEX].c_str();
 }
 
 int Lua::l_flat_require(lua_State* L)
@@ -385,14 +394,14 @@ int panic(lua_State* L)
 	return 0;
 }
 
-Game& getGame(lua_State* L)
+Flat& getFlat(lua_State* L)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_rawgetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
-	Game* game = static_cast<Game*>(lua_touserdata(L, -1));
-	FLAT_ASSERT(game != nullptr);
+	Flat* flat = static_cast<Flat*>(lua_touserdata(L, -1));
+	FLAT_ASSERT(flat != nullptr);
 	lua_pop(L, 1);
-	return *game;
+	return *flat;
 }
 
 } // lua

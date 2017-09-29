@@ -8,6 +8,11 @@ struct lua_State;
 
 namespace flat
 {
+class Flat;
+namespace lua
+{
+class Lua;
+}
 namespace sharp
 {
 namespace ui
@@ -22,7 +27,7 @@ class WidgetFactory;
 namespace lua
 {
 
-int open(lua_State* L);
+int open(flat::Flat& flat, flat::lua::Lua& lua);
 int close(lua_State* L);
 
 // Widget methods

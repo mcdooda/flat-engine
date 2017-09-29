@@ -31,8 +31,8 @@ int open(lua_State* L)
 int l_Image_getSize(lua_State* L)
 {
 	const char* texturePath = luaL_checkstring(L, 1);
-	Game& game = flat::lua::getGame(L);
-	std::shared_ptr<const FileTexture> texture = game.video->getTexture(texturePath);
+	Flat& flat = flat::lua::getFlat(L);
+	std::shared_ptr<const FileTexture> texture = flat.video->getTexture(texturePath);
 	lua_pushinteger(L, static_cast<lua_Integer>(texture->getSize().x));
 	lua_pushinteger(L, static_cast<lua_Integer>(texture->getSize().y));
 	return 2;

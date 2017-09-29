@@ -28,7 +28,7 @@ int open(lua_State* L)
 
 int l_Time_getFrameRate(lua_State* L)
 {
-	const auto& time = flat::lua::getGame(L).time;
+	const auto& time = flat::lua::getFlat(L).time;
 	lua_pushnumber(L, time->getActualFrameRate());
 	return 1;
 }

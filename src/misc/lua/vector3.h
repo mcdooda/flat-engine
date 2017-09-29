@@ -9,8 +9,9 @@ namespace flat
 {
 namespace lua
 {
+class Lua;
 
-int openVector3(lua_State* L);
+int openVector3(Lua& lua);
 
 int l_Vector3(lua_State* L);
 

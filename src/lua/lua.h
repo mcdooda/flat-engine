@@ -2,13 +2,12 @@
 #define FLAT_LUA_LUA_H
 
 #include <string>
-
-struct lua_State;
+#include <vector>
+#include <lua5.3/lua.hpp>
 
 namespace flat
 {
 class Flat;
-class Game;
 namespace time
 {
 class Time;
@@ -23,6 +22,9 @@ namespace lua
 class Lua
 {
 	public:
+		static constexpr int FIRST_CLASS_TYPE_INDEX = LUA_NUMTAGS;
+
+	public:
 		Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath);
 		~Lua();
 
@@ -31,6 +33,11 @@ class Lua
 		void loadLib(const std::string& fileName, const std::string& globalName);
 
 		void clearLoadedPackages();
+
+		template <class T>
+		void registerClass(const char* metatableName, const luaL_Reg* methods = nullptr);
+
+		const char* getTypeName(int type) const;
 
 	private:
 		static int l_flat_require(lua_State* L);
@@ -51,6 +58,9 @@ class Lua
 	private:
 		std::string m_luaPath;
 		std::string m_assetsPath;
+
+		int m_nextTypeIndex;
+		std::vector<std::string> m_typeIndexToName;
 };
 
 void close(lua_State* L);
@@ -68,7 +78,23 @@ const char* codeToString(int code);
 
 int panic(lua_State* L);
 
-Game& getGame(lua_State* L);
+Flat& getFlat(lua_State* L);
+
+template <class T>
+T& getFlatAs(lua_State* L)
+{
+	Flat* flat = &getFlat(L);
+	FLAT_ASSERT(dynamic_cast<T*>(flat) != nullptr);
+	return static_cast<T&>(*flat);
+}
+
+template<class T>
+inline void Lua::registerClass(const char* metatableName, const luaL_Reg * methods)
+{
+	int newTypeIndex = m_nextTypeIndex++;
+	m_typeIndexToName.push_back(metatableName);
+	T::registerClass(state, newTypeIndex, metatableName, methods);
+}
 
 } // lua
 } // flat

@@ -5,6 +5,7 @@
 #include <string>
 #include <lua5.3/lua.hpp>
 #include "debug.h"
+#include "flat.h"
 #include "../memory/memory.h"
 
 namespace flat
@@ -47,7 +48,7 @@ class SharedCppValue
 			return 0;
 		}
 
-		static void registerClass(const char* metatableName, lua_State* L, const luaL_Reg* methods = nullptr)
+		static void registerClass(lua_State* L, int newTypeIndex, const char* metatableName, const luaL_Reg* methods)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
@@ -63,6 +64,10 @@ class SharedCppValue
 			// __gc
 			lua_pushcfunction(L, &SharedCppValue<T>::l_destroyObject);
 			lua_setfield(L, -2, "__gc");
+
+			// type for flat.type
+			lua_pushinteger(L, newTypeIndex);
+			lua_setfield(L, -2, "type");
 
 			// others methods
 			if (methods != nullptr)
