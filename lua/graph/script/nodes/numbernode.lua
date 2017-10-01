@@ -4,7 +4,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local NumberNode = FunctionalScriptNode:inherit 'Number'
 
 function NumberNode:buildPins()
-    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, '')
+    self.numberOutPin = self:addOutputPin(flat.types.NUMBER, '')
 end
 
 function NumberNode:execute(runtime)
@@ -12,12 +12,12 @@ function NumberNode:execute(runtime)
 end
 
 function NumberNode:setValue(value)
-    assert(type(value) == 'number', 'Wrong type for setValue: number expected, got ' .. type(value))
+    assert(flat.type(value) == flat.types.NUMBER, 'Wrong type for setValue: number expected, got ' .. flat.typetostring(flat.type(value)))
     self.value = value
 end
 
 function NumberNode:getValue()
-    assert(type(self.value) == 'number', 'Wrong type for self.value: number expected, got ' .. type(self.value))
+    assert(flat.type(self.value) == flat.types.NUMBER, 'Wrong type for self.value: number expected, got ' .. flat.typetostring(flat.type(self.value)))
     return self.value
 end
 

@@ -124,7 +124,13 @@ function Node:plugPins(outputPin, node, inputPin)
         inputPin.onPlugged = nil
     end
 
-    assert(outputPin.pinType == inputPin.pinType, 'pin types mismatch')
+    assert(
+        outputPin.pinType == inputPin.pinType,
+        'type mismatch between pins '
+        .. self:getName() .. ' -> ' .. outputPin.pinName .. ' (' .. self:pinTypeToString(outputPin.pinType) .. ') '
+        .. 'and '
+        .. node:getName() .. ' -> ' .. inputPin.pinName .. ' (' .. self:pinTypeToString(inputPin.pinType) .. ')'
+    )
     outputPin.pluggedInputPins[#outputPin.pluggedInputPins + 1] = {
         inputPin = inputPin,
         node = node
@@ -182,6 +188,24 @@ function Node:unplugAllOutputPins()
             node:unplugInputPin(inputPin)
         end
     end
+end
+
+function Node:pinTypeToString(pinType)
+    if pinType == PinTypes.ANY then
+        return 'ANY'
+    elseif pinType == PinTypes.IMPULSE then
+        return 'IMPULSE'
+    else
+        assert(type(pinType) == 'number', 'pinType ' .. tostring(pinType) .. ' should be an integer')
+        return flat.typetostring(pinType)
+    end
+end
+
+function Node:makePinNameFromType(pinType)
+    -- remove the prefix and make the first letter uppercase
+    local pinName = self:pinTypeToString(pinType)
+    pinName = pinName:gsub('^(.+)%.(.+)$', '%2')
+    return pinName:sub(1, 1):upper() .. pinName:sub(2):lower()
 end
 
 return Node

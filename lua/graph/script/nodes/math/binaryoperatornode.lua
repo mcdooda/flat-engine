@@ -4,10 +4,10 @@ local PinTypes = flat.require 'graph/pintypes'
 local BinaryOperatorNode = FunctionalScriptNode:inherit()
 
 function BinaryOperatorNode:buildPins()
-    self.operand1InPin = self:addInputPin(PinTypes.NUMBER, 'Operand 1')
-    self.operand2InPin = self:addInputPin(PinTypes.NUMBER, 'Operand 2')
+    self.operand1InPin = self:addInputPin(flat.types.NUMBER, 'Operand 1')
+    self.operand2InPin = self:addInputPin(flat.types.NUMBER, 'Operand 2')
 
-    self.resultOutPin = self:addOutputPin(PinTypes.NUMBER, 'Result')
+    self.resultOutPin = self:addOutputPin(flat.types.NUMBER, 'Result')
 end
 
 function BinaryOperatorNode:execute(runtime)

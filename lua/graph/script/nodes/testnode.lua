@@ -4,14 +4,14 @@ local PinTypes = flat.require 'graph/pintypes'
 local TestNode = ScriptNode:inherit 'Test'
 
 function TestNode:buildPins()
-    self.boolInPin = self:addInputPin(PinTypes.BOOLEAN, 'Boolean')
-    self.numberInPin = self:addInputPin(PinTypes.NUMBER, 'Number')
-    self.stringInPin = self:addInputPin(PinTypes.STRING, 'String')
+    self.boolInPin = self:addInputPin(flat.types.BOOLEAN, 'Boolean')
+    self.numberInPin = self:addInputPin(flat.types.NUMBER, 'Number')
+    self.stringInPin = self:addInputPin(flat.types.STRING, 'String')
     self.impulseInPin = self:addInputPin(PinTypes.IMPULSE, 'In')
 
-    self.boolOutPin = self:addOutputPin(PinTypes.BOOLEAN, 'Boolean')
-    self.numberOutPin = self:addOutputPin(PinTypes.NUMBER, 'Number')
-    self.stringOutPin = self:addOutputPin(PinTypes.STRING, 'String')
+    self.boolOutPin = self:addOutputPin(flat.types.BOOLEAN, 'Boolean')
+    self.numberOutPin = self:addOutputPin(flat.types.NUMBER, 'Number')
+    self.stringOutPin = self:addOutputPin(flat.types.STRING, 'String')
     self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'Out')
 end
 

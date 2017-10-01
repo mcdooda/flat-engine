@@ -21,7 +21,10 @@ end
 
 function ScriptNodeRuntime:readPin(inputPin)
     local value = self:readOptionalPin(inputPin)
-    assert(value ~= nil, 'Cannot read nil from pin ' .. inputPin.pinName .. ' of type ' .. PinTypes:toString(inputPin.pinType))
+    assert(
+        value ~= nil,
+        'Cannot read nil from pin ' .. self.node:getName() .. ' -> ' .. inputPin.pinName .. ' of type ' .. self.node:pinTypeToString(inputPin.pinType)
+    )
     return value
 end
 
@@ -43,7 +46,10 @@ function ScriptNodeRuntime:readOptionalPin(inputPin, defaultValue)
 end
 
 function ScriptNodeRuntime:writePin(outputPin, value)
-    assert(value ~= nil, 'Cannot write nil to pin ' .. outputPin.pinName .. ' of type ' .. PinTypes:toString(outputPin.pinType))
+    assert(
+        value ~= nil,
+        'Cannot write nil to pin ' .. self.node:getName() .. ' -> ' .. outputPin.pinName .. ' of type ' .. self.node:pinTypeToString(outputPin.pinType)
+    )
     self:writeOptionalPin(outputPin, value)
 end
 
@@ -51,8 +57,8 @@ function ScriptNodeRuntime:writeOptionalPin(outputPin, value)
     local pinValue = self.outputPinValues[outputPin]
     assert(pinValue, 'invalid output pin')
     assert(
-        value == nil or PinTypes[string.upper(type(value))] == outputPin.pinType,
-        'wrong value for pin ' .. outputPin.pinName .. ': ' .. tostring(value) .. ' of type ' .. type(value) .. ', expected ' .. PinTypes:toString(outputPin.pinType)
+        value == nil or flat.type(value) == outputPin.pinType,
+        'wrong value for pin ' .. outputPin.pinName .. ': ' .. tostring(value) .. ' of type ' .. flat.typetostring(flat.type(value)) .. ', expected ' .. flat.typetostring(outputPin.pinType)
     )
     pinValue.value = value
 end

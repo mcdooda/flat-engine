@@ -5,7 +5,7 @@ local ConditionNode = ScriptNode:inherit 'Condition'
 
 function ConditionNode:buildPins()
     self.impulseInPin = self:addInputPin(PinTypes.IMPULSE, 'In')
-    self.conditionInPin = self:addInputPin(PinTypes.BOOLEAN, 'Condition')
+    self.conditionInPin = self:addInputPin(flat.types.BOOLEAN, 'Condition')
 
     self.trueImpulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'True')
     self.falseImpulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'False')

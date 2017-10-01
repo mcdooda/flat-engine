@@ -47,11 +47,6 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 		lua_pushlightuserdata(L, &flat);
 		lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 
-		time::lua::open(L);
-		input::lua::mouse::open(L);
-		video::lua::image::open(L);
-		sharp::ui::lua::open(flat, *this);
-
 		// flat. libraries
 		lua_newtable(L);
 #ifdef FLAT_DEBUG
@@ -63,6 +58,11 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 		lua_setglobal(L, "flat");
 
 		types::open(L);
+
+		time::lua::open(L);
+		input::lua::mouse::open(L);
+		video::lua::image::open(L);
+		sharp::ui::lua::open(flat, *this);
 
 		lua::openVector2(*this);
 		lua::openVector3(*this);

@@ -4,7 +4,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local BoolNode = FunctionalScriptNode:inherit 'Bool'
 
 function BoolNode:buildPins()
-    self.boolOutPin = self:addOutputPin(PinTypes.BOOLEAN, '')
+    self.boolOutPin = self:addOutputPin(flat.types.BOOLEAN, '')
 end
 
 function BoolNode:execute(runtime)
@@ -12,12 +12,12 @@ function BoolNode:execute(runtime)
 end
 
 function BoolNode:setValue(value)
-    assert(type(value) == 'boolean', 'Wrong type for setValue: boolean expected, got ' .. type(value))
+    assert(flat.type(value) == flat.types.BOOLEAN, 'Wrong type for setValue: boolean expected, got ' .. flat.typename(value))
     self.value = value
 end
 
 function BoolNode:getValue()
-    assert(type(self.value) == 'boolean', 'Wrong type for self.value: boolean expected, got ' .. type(self.value))
+    assert(flat.type(self.value) == flat.types.BOOLEAN, 'Wrong type for self.value: boolean expected, got ' .. flat.typename(self.value))
     return self.value
 end
 

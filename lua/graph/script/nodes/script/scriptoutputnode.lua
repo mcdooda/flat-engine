@@ -21,10 +21,7 @@ function ScriptOutputNode:buildPins()
 end
 
 function ScriptOutputNode:addCustomPin(pin)
-    local function capitalize(name)
-        return name:sub(1, 1):upper() .. name:sub(2):lower()
-    end
-    pin.pinName = capitalize(PinTypes:toString(pin.pinType))
+    pin.pinName = self:makePinNameFromType(pin.pinType)
     self:addInputPinAny('New Pin', self.addCustomPin)
     return true
 end

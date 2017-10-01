@@ -1,7 +1,7 @@
 local BoolNodeEditor = {}
 
 local function boolToStringAndColor(bool)
-    assert(type(bool) == 'boolean')
+    assert(flat.type(bool) == flat.types.BOOLEAN)
     if bool then
         return 'True', 0x058C40FF
     else

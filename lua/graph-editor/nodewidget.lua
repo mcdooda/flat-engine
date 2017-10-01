@@ -230,22 +230,25 @@ function NodeWidget:deselect()
 end
 
 local pinColors = {
-    [PinTypes.ANY]      = 0x888888FF,
-    [PinTypes.IMPULSE]  = 0xE74C3CFF,
-    [PinTypes.USERDATA] = 0x058C40FF,
-    [PinTypes.BOOLEAN]  = 0x2ECC71FF,
-    [PinTypes.NUMBER]   = 0xF39C12FF,
-    [PinTypes.STRING]   = 0x3498DBFF,
-    [PinTypes.TABLE]    = 0x8E44ADFF,
-    [PinTypes.FUNCTION] = 0x34495EFF
+    [PinTypes.ANY]        = 0x888888FF,
+    [PinTypes.IMPULSE]    = 0xE74C3CFF,
+    [flat.types.BOOLEAN]  = 0x2ECC71FF,
+    [flat.types.NUMBER]   = 0xF39C12FF,
+    [flat.types.STRING]   = 0x3498DBFF,
+    [flat.types.TABLE]    = 0x8E44ADFF,
+    [flat.types.FUNCTION] = 0x34495EFF,
+
+    [flat.types['flat.Vector3']] = 0xF17A00FF,
+    [flat.types['CG.Entity']]    = 0x006600FF, -- TODO: get this out of flat
 }
-assert(
-    #pinColors == #PinTypes,
-    'Pin colors and pin types do not match (' .. #pinColors .. ' and ' .. #PinTypes .. ')'
-)
 
 function NodeWidget:getPinColorByType(pinType)
-    return pinColors[pinType]
+    local color = pinColors[pinType]
+    assert(
+        color,
+        'no color for pin type ' .. self.node:pinTypeToString(pinType)
+    )
+    return color
 end
 
 function NodeWidget:getInputPinPlugWidget(pin)

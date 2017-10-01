@@ -4,7 +4,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local FunctionNode = FunctionalScriptNode:inherit 'Function'
 
 function FunctionNode:buildPins()
-    self.functionOutPin = self:addOutputPin(PinTypes.FUNCTION, 'Function')
+    self.functionOutPin = self:addOutputPin(flat.types.FUNCTION, 'Function')
     self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'Out')
 
     if self.pinsData then
@@ -20,10 +20,7 @@ function FunctionNode:buildPins()
 end
 
 function FunctionNode:addCustomPin(pin)
-    local function capitalize(name)
-        return name:sub(1, 1):upper() .. name:sub(2):lower()
-    end
-    pin.pinName = capitalize(PinTypes:toString(pin.pinType))
+    pin.pinName = self:makePinNameFromType(pin.pinType)
     self:addOutputPinAny('New Pin', self.addCustomPin)
     return true
 end

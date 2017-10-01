@@ -12,8 +12,11 @@ namespace types
 
 int open(lua_State* L);
 
+void registerNativeType(lua_State* L, int type, const char* typeName);
+void registerType(lua_State* L, int type, const char* typeName);
+
 int l_flat_type(lua_State* L);
-int l_flat_typename(lua_State* L);
+int l_flat_typetostring(lua_State* L);
 
 } // types
 } // lua

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <lua5.3/lua.hpp>
+#include "types.h"
 
 namespace flat
 {
@@ -89,11 +90,12 @@ T& getFlatAs(lua_State* L)
 }
 
 template<class T>
-inline void Lua::registerClass(const char* metatableName, const luaL_Reg * methods)
+inline void Lua::registerClass(const char* metatableName, const luaL_Reg* methods)
 {
 	int newTypeIndex = m_nextTypeIndex++;
 	m_typeIndexToName.push_back(metatableName);
 	T::registerClass(state, newTypeIndex, metatableName, methods);
+	types::registerType(state, newTypeIndex, metatableName);
 }
 
 } // lua
