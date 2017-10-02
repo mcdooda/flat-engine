@@ -238,6 +238,7 @@ local pinColors = {
     [flat.types.TABLE]    = 0x8E44ADFF,
     [flat.types.FUNCTION] = 0x34495EFF,
 
+    [flat.types['flat.Vector2']] = 0xF17A88FF,
     [flat.types['flat.Vector3']] = 0xF17A00FF,
     [flat.types['CG.Entity']]    = 0x006600FF, -- TODO: get this out of flat
 }

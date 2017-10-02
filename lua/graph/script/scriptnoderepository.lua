@@ -4,9 +4,13 @@ return {
     'script/function',
     'script/scriptinput',
     'script/scriptoutput',
+
+    'math/multiply',
+
     'bool',
     'number',
     'string',
     'test',
-    'math/multiply'
+    'vector2',
+    'vector3',
 }

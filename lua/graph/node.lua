@@ -43,7 +43,7 @@ function Node:getLoadArguments()
 end
 
 function Node:addInputPin(pinType, pinName)
-    assert(pinType, 'no pin type')
+    assert(pinType, 'no pin type for pin ' .. tostring(pinName))
     assert(pinName, 'no pin name')
     local inputPin = {
         pinType = pinType,
@@ -55,7 +55,7 @@ function Node:addInputPin(pinType, pinName)
 end
 
 function Node:addInputPinAny(pinName, onPlugged)
-    assert(onPlugged, 'no plugged callback')
+    assert(onPlugged, 'no plugged callback for pin ' .. tostring(pinName))
     local inputPin = self:addInputPin(PinTypes.ANY, pinName)
     inputPin.onPlugged = onPlugged
     return inputPin
@@ -74,6 +74,8 @@ function Node:findInputPinIndex(inputPin)
 end
 
 function Node:addOutputPin(pinType, pinName)
+    assert(pinType, 'no pin type for pin ' .. tostring(pinName))
+    assert(pinName, 'no pin name')
     local outputPin = {
         pinType = pinType,
         pinName = pinName,
@@ -84,7 +86,7 @@ function Node:addOutputPin(pinType, pinName)
 end
 
 function Node:addOutputPinAny(pinName, onPlugged)
-    assert(onPlugged, 'no plugged callback')
+    assert(onPlugged, 'no plugged callback for pin ' .. tostring(pinName))
     local outputPin = self:addOutputPin(PinTypes.ANY, pinName)
     outputPin.onPlugged = onPlugged
     return outputPin
