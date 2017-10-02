@@ -30,18 +30,20 @@ end
 
 function ScriptNodeRuntime:readOptionalPin(inputPin, defaultValue)
     local pinValue = self.inputPinValues[inputPin]
-    assert(pinValue, 'invalid input pin')
+    if pinValue then
+        local pluggedOutputPin = inputPin.pluggedOutputPin
+        if pluggedOutputPin then
+            local node = pluggedOutputPin.node
+            local nodeRuntime = self.scriptRuntime:getNodeRuntime(node)
+            node:prepareReadPin(nodeRuntime, inputPin)
 
-    local pluggedOutputPin = inputPin.pluggedOutputPin
-    local node = pluggedOutputPin.node
-    local nodeRuntime = self.scriptRuntime:getNodeRuntime(node)
-    node:prepareReadPin(nodeRuntime, inputPin)
-
-    local value = pinValue.value
-    if value == nil then
-        return defaultValue
-    else
-        return value
+            local value = pinValue.value
+            if value == nil then
+                return defaultValue
+            else
+                return value
+            end
+        end
     end
 end
 
@@ -55,7 +57,6 @@ end
 
 function ScriptNodeRuntime:writeOptionalPin(outputPin, value)
     local pinValue = self.outputPinValues[outputPin]
-    assert(pinValue, 'invalid output pin')
     assert(
         value == nil or flat.type(value) == outputPin.pinType,
         'wrong value for pin ' .. outputPin.pinName .. ': ' .. tostring(value) .. ' of type ' .. flat.typetostring(flat.type(value)) .. ', expected ' .. flat.typetostring(outputPin.pinType)
