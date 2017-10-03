@@ -1,4 +1,5 @@
 return {
+    'script/array',
     'script/condition',
     'script/init',
     'script/function',
