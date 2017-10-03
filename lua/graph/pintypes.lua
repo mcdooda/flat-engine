@@ -1,4 +1,4 @@
 return {
-    ANY = {},
-    IMPULSE = {}
+    ANY = 'ANY',
+    IMPULSE = 'IMPULSE'
 }
