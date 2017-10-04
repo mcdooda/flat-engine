@@ -38,7 +38,7 @@ local function dumpKeyString(write, str)
 	end
 end
 
-local function dump(write, value, tabs, isIntKeyValue)
+local function dump(write, value, tabs, allowAllTypes, isIntKeyValue)
 	tabs = tabs or ''
 	local t = type(value)
 	if t == 'table' then
@@ -48,7 +48,7 @@ local function dump(write, value, tabs, isIntKeyValue)
 		write('{\n')
 		local length = #value
 		for i = 1, length do
-			dump(write, value[i], tabs .. '  ', true)
+			dump(write, value[i], tabs .. '  ', allowAllTypes, true)
 			write ',\n'
 		end
 		for k, v in pairs(value) do
@@ -58,15 +58,15 @@ local function dump(write, value, tabs, isIntKeyValue)
 					dumpKeyString(write, k)
 				else
 					write '['
-					dump(write, k)
+					dump(write, k, '', allowAllTypes)
 					write ']'
 				end
 				write ' = '
 				local t1 = type(v)
 				if t1 == 'string' or t1 == 'number' then
-					dump(write, v)
+					dump(write, v, '', allowAllTypes)
 				else
-					dump(write, v, tabs .. '  ')
+					dump(write, v, tabs .. '  ', allowAllTypes)
 				end
 				write ',\n'
 			end
@@ -81,6 +81,8 @@ local function dump(write, value, tabs, isIntKeyValue)
 		write(tabs, tostring(value))
 	elseif t == 'nil' then
 		write(tabs, 'nil')
+	elseif allowAllTypes then
+		write(tabs, tostring(value))
 	else
 		error('cannot serialize value ' .. tostring(value) .. ' of type ' .. t)
 	end
@@ -99,13 +101,17 @@ local function dumpToString(value)
 	return table.concat(buffer)
 end
 
-local function dumpToOutput(output, value)
+local function dumpToOutput(output, value, allowAllTypes)
 	local function writeToOutput(...)
 		output:write(...)
 	end
-	dump(writeToOutput, value)
+	dump(writeToOutput, value, '', allowAllTypes)
 end
 
-flat.dump = dump
+local function easyDump(value)
+	dumpToOutput(io.output(), value, true)
+end
+
+flat.dump = easyDump
 flat.dumpToString = dumpToString
 flat.dumpToOutput = dumpToOutput
