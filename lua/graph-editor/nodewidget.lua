@@ -298,7 +298,7 @@ end
 
 function NodeWidget:updateCustomNodeEditor()
     if self.customNodeEditor and self.customNodeEditor.update then
-        self.customNodeEditor.update(self.node, self, self.pinsWidget)
+        return self.customNodeEditor.update(self.node, self, self.pinsWidget)
     end
 end
 

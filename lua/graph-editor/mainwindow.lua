@@ -221,39 +221,47 @@ function MainWindow:makeNodeWidget(node)
     return nodeWidget.container
 end
 
-function MainWindow:drawLinks()
-    local graph = self.graph
+function MainWindow:drawLinks(delayToNextFrame)
+    local function draw()
+        local graph = self.graph
 
-    self.content:clear(0xECF0F1FF)
+        self.content:clear(0xECF0F1FF)
 
-    for i = 1, #graph.nodeInstances do
-        local inputNode = graph.nodeInstances[i]
-        for j = 1, #inputNode.inputPins do
-            local inputPin = inputNode.inputPins[j]
-            if inputPin.pluggedOutputPin then
-                local outputNode = inputPin.pluggedOutputPin.node
-                local outputPin = inputPin.pluggedOutputPin.outputPin
+        for i = 1, #graph.nodeInstances do
+            local inputNode = graph.nodeInstances[i]
+            for j = 1, #inputNode.inputPins do
+                local inputPin = inputNode.inputPins[j]
+                if inputPin.pluggedOutputPin then
+                    local outputNode = inputPin.pluggedOutputPin.node
+                    local outputPin = inputPin.pluggedOutputPin.outputPin
 
-                local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
-                local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
-                local linkColor = self:getPinColor(inputNode, inputPin)
+                    local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
+                    local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
+                    local linkColor = self:getPinColor(inputNode, inputPin)
 
-                self:drawLink(
-                    linkColor,
-                    inputPinX, inputPinY,
-                    outputPinX, outputPinY
-                )
+                    self:drawLink(
+                        linkColor,
+                        inputPinX, inputPinY,
+                        outputPinX, outputPinY
+                    )
+                end
             end
+        end
+
+        local currentLink = self.currentLink
+        if currentLink then
+            self:drawLink(
+                currentLink.color,
+                currentLink.inputPinX, currentLink.inputPinY,
+                currentLink.outputPinX, currentLink.outputPinY
+            )
         end
     end
 
-    local currentLink = self.currentLink
-    if currentLink then
-        self:drawLink(
-            currentLink.color,
-            currentLink.inputPinX, currentLink.inputPinY,
-            currentLink.outputPinX, currentLink.outputPinY
-        )
+    if delayToNextFrame then
+        Timer.start(0.05, nil, draw) -- TODO: Timer comes from CG!
+    else
+        draw()
     end
 end
 
@@ -391,7 +399,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
             end
             local nodeWidget = self.nodeWidgets[inputNode]
             nodeWidget:setInputPinPlugged(inputPin, true)
-            nodeWidget:updateCustomEditor()
+            nodeWidget:updateCustomNodeEditor()
         else
             local nodeWidget = self.nodeWidgets[currentLink.outputNode]
             local outputPin = currentLink.outputPin
@@ -632,8 +640,15 @@ function MainWindow:updateAllNodesPinSocketWidgets()
 end
 
 function MainWindow:updateCustomNodeEditors()
+    local redrawLinks = false
+
     for node, nodeWidget in pairs(self.nodeWidgets) do
-        nodeWidget:updateCustomNodeEditor()
+        local updated = nodeWidget:updateCustomNodeEditor()
+        redrawLinks = redrawLinks or updated
+    end
+
+    if redrawLinks then
+        self:drawLinks(true)
     end
 end
 
