@@ -35,7 +35,7 @@ function ScriptNodeRuntime:readOptionalPin(inputPin, defaultValue)
         if pluggedOutputPin then
             local node = pluggedOutputPin.node
             local nodeRuntime = self.scriptRuntime:getNodeRuntime(node)
-            node:prepareReadPin(nodeRuntime, inputPin)
+            node:prepareReadPin(nodeRuntime, pluggedOutputPin)
 
             local value = pinValue.value
             if value == nil then
@@ -44,6 +44,15 @@ function ScriptNodeRuntime:readOptionalPin(inputPin, defaultValue)
                 return value
             end
         end
+    end
+end
+
+-- should only be used in editor!
+function ScriptNodeRuntime:tryReadFromOutputPin(outputPin)
+    local pinValue = self.outputPinValues[outputPin]
+    if pinValue then
+        self.node:prepareReadPin(self, outputPin)
+        return pinValue.value
     end
 end
 

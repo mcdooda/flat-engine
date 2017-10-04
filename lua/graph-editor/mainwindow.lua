@@ -5,7 +5,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local MainWindow = {}
 MainWindow.__index = MainWindow
 
-function MainWindow:open(editorContainer)
+function MainWindow:open(editorContainer, metadata)
     assert(editorContainer, 'no editor container')
     local o = setmetatable({
         graph = nil,
@@ -15,7 +15,8 @@ function MainWindow:open(editorContainer)
         selectedNodeWidgets = {},
         currentLink = nil,
         nodeListMenu = nil,
-        nodeContextualMenu = nil
+        nodeContextualMenu = nil,
+        metadata = metadata
     }, self)
     o:build()
     return o
@@ -57,6 +58,7 @@ function MainWindow:build()
                 self:saveGraph()
                 self:saveGraphLayout()
                 self:saveLuaRunnerFile()
+                self:updateCustomNodeEditors()
             end)
             titleContainer:addChild(saveButton)
         end
@@ -152,6 +154,7 @@ function MainWindow:openGraph(graphPath, nodeType)
             content:addChild(nodeWidget)
         end
 
+        self:updateCustomNodeEditors()
         content:redraw()
         return true
     else
@@ -388,6 +391,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
             end
             local nodeWidget = self.nodeWidgets[inputNode]
             nodeWidget:setInputPinPlugged(inputPin, true)
+            nodeWidget:updateCustomEditor()
         else
             local nodeWidget = self.nodeWidgets[currentLink.outputNode]
             local outputPin = currentLink.outputPin
@@ -411,6 +415,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             else
                 nodeWidget:setOutputPinPlugged(outputPin, true)
             end
+            nodeWidget:updateCustomEditor()
         else
             local nodeWidget = self.nodeWidgets[currentLink.inputNode]
             nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
@@ -623,6 +628,12 @@ end
 function MainWindow:updateAllNodesPinSocketWidgets()
     for node, nodeWidget in pairs(self.nodeWidgets) do
         nodeWidget:updatePinSocketWidgets()
+    end
+end
+
+function MainWindow:updateCustomNodeEditors()
+    for node, nodeWidget in pairs(self.nodeWidgets) do
+        nodeWidget:updateCustomNodeEditor()
     end
 end
 

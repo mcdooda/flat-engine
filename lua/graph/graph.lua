@@ -30,6 +30,10 @@ function Graph:removeNode(node)
     self.nodeInstances[numNodes] = nil
 end
 
+function Graph:getNodes()
+    return self.nodeInstances
+end
+
 function Graph:findNodeIndex(node)
     for i = 1, #self.nodeInstances do
         if self.nodeInstances[i] == node then

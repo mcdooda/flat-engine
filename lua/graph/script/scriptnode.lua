@@ -11,7 +11,7 @@ function ScriptNode:execute(runtime)
     error('pure virtual function')
 end
 
-function ScriptNode:prepareReadPin(runtime, inputPin)
+function ScriptNode:prepareReadPin(runtime, outputPin)
     -- nothing to do by default
 end
 

@@ -9,7 +9,7 @@ function NodeWidget:new(node, mainWindow)
     local nodePath = node.path
     local customNodeEditor
     pcall(function()
-        customNodeEditor = flat.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+        customNodeEditor = node.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
     end)
     local o = setmetatable({
         node = node,
@@ -18,6 +18,7 @@ function NodeWidget:new(node, mainWindow)
         inputPinSocketWidgets = {},
         outputPinPlugWidgets = {},
         outputPinSocketWidgets = {},
+        pinsWidget = nil,
         customNodeEditor = customNodeEditor
     }, self)
 
@@ -126,6 +127,8 @@ function NodeWidget:build()
         end
 
         nodeWidget:addChild(pinsWidget)
+
+        self.pinsWidget = pinsWidget
     end
 end
 
@@ -290,6 +293,12 @@ function NodeWidget:updateOutputPinSocketWidgets()
         local outputPin = outputPins[i]
         local plugged = #outputPin.pluggedInputPins > 0
         self:setOutputPinPlugged(outputPin, plugged)
+    end
+end
+
+function NodeWidget:updateCustomNodeEditor()
+    if self.customNodeEditor and self.customNodeEditor.update then
+        self.customNodeEditor.update(self.node, self, self.pinsWidget)
     end
 end
 

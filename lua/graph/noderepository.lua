@@ -16,6 +16,7 @@ function NodeRepository:load(nodeType, require)
         local nodePath = nodePaths[i]
         local nodeClass = require('graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
         nodeClass.path = nodePath
+        nodeClass.require = require
         self.nodeClasses[nodePath] = nodeClass
     end
 end
