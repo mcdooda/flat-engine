@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include "../debug/assert.h"
+#include "../memory/memory.h"
 
 namespace flat
 {
