@@ -68,7 +68,8 @@ function Graph:load(nodeType, savedGraph, nodeRepository)
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
-        local nodeInstance = self:addNode(nodeRepository[nodeName], false)
+        local nodeClass = assert(nodeRepository[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
+        local nodeInstance = self:addNode(nodeClass, false)
         local loadArguments = node.loadArguments
         if loadArguments then
             nodeInstance:load(table.unpack(loadArguments))
