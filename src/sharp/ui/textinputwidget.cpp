@@ -30,6 +30,8 @@ bool TextInputWidget::enteredFocus(Widget* widget)
 	m_inputContext->getKeyboardInputContext().setEnableKeyRepeat(true);
 	m_flat.input->pushContext(m_inputContext);
 	m_inputContext->getKeyboardInputContext().keyJustPressed.on(this, &TextInputWidget::keyJustPressed);
+	m_inputContext->getKeyboardInputContext().textEdited.on(this, &TextInputWidget::textEdited);
+	m_inputContext->getKeyboardInputContext().setEnableTextInput(true);
 	return true;
 }
 
@@ -37,6 +39,7 @@ bool TextInputWidget::leftFocus(Widget* widget)
 {
 	m_inputContext->getKeyboardInputContext().keyJustPressed.off(this);
 	m_flat.input->popContext(m_inputContext);
+	m_inputContext->getKeyboardInputContext().setEnableTextInput(false);
 	m_inputContext.reset();
 	return true;
 }
@@ -44,7 +47,6 @@ bool TextInputWidget::leftFocus(Widget* widget)
 bool TextInputWidget::keyJustPressed(input::Key key)
 {
 	std::string text = getText();
-
 	if (key == K(BACKSPACE))
 	{
 		if (!text.empty())
@@ -52,23 +54,6 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 			text = text.substr(0, text.size() - 1);
 		}
 	}
-	else
-	{
-		char c = SDL_GetKeyFromScancode(key);
-		const video::font::Font* font = getFont().get();
-		FLAT_ASSERT(font != nullptr);
-		if (font->isValidChar(c))
-		{
-			const input::context::KeyboardInputContext& keyboardInputContext = m_inputContext->getKeyboardInputContext();
-			bool shiftPressed = keyboardInputContext.isPressed(K(LSHIFT)) || keyboardInputContext.isPressed(K(RSHIFT));
-			if (std::islower(c) && shiftPressed)
-			{
-				c = std::toupper(c);
-			}
-			text += c;
-		}
-	}
-
 	if (text != getText())
 	{
 		setText(text);
@@ -77,6 +62,18 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	else if (key == K(RETURN))
 	{
 		submit(this);
+	}
+	return true;
+}
+
+bool TextInputWidget::textEdited(const std::string& text)
+{
+	std::string currentText = getText();
+	currentText += text;
+	if (currentText != getText())
+	{
+		setText(currentText);
+		valueChanged(this);
 	}
 	return true;
 }

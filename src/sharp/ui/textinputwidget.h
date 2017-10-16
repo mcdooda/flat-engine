@@ -35,6 +35,7 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		bool enteredFocus(Widget* widget);
 		bool leftFocus(Widget* widget);
 		bool keyJustPressed(input::Key key);
+		bool textEdited(const std::string& text);
 
 	private:
 		Flat& m_flat;

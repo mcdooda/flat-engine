@@ -37,10 +37,12 @@ class KeyboardInputContext
 		void getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const;
 
 		inline void setEnableKeyRepeat(bool enableKeyRepeat) { m_enableKeyRepeat = enableKeyRepeat; }
+		void setEnableTextInput(bool enable);
 
 	public:
 		Slot<Key> keyJustPressed;
 		Slot<Key> keyJustReleased;
+		Slot<const std::string&> textEdited;
 
 	private:
 		containers::Array<bool> m_pressedKeys;
