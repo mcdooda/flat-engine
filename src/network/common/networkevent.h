@@ -23,6 +23,8 @@ class NetworkEvent
 
 		virtual bool process(NetworkProcessor& processor) = 0;
 
+		virtual bool isValid() const;
+
 	private:
 		static Delimiter delimiter;
 };

@@ -22,6 +22,11 @@ NetworkEvent::Delimiter NetworkEvent::getDelimiter()
 	return delimiter;
 }
 
+bool NetworkEvent::isValid() const
+{
+	return false;
+}
+
 } // common
 } // network
 } // flat

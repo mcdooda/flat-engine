@@ -15,7 +15,7 @@ namespace common
 
 class NetworkProcessor
 {
-	private:
+	protected:
 		enum class Delimiter : std::uint8_t
 		{
 			UNDEFINED,
@@ -52,74 +52,69 @@ class NetworkProcessor
 		virtual bool isWriting() const { return false; }
 
 		template <class T>
-		bool processWithDelimiter(T& value) const;
+		inline bool process(T& value) const;
 
+		template <class T>
+		inline bool process(std::vector<T>& value) const;
+
+		template <class K, class V>
+		inline bool process(std::unordered_map<K, V>& value) const;
+
+	protected:
 		virtual bool processDelimiter(Delimiter delimiter) const = 0;
 
-		virtual bool process(bool& value) const = 0;
-		virtual bool process(std::uint8_t& value) const = 0;
-		virtual bool process(std::uint16_t& value) const = 0;
-		virtual bool process(std::uint32_t& value) const = 0;
-		virtual bool process(std::int8_t& value) const = 0;
-		virtual bool process(std::int16_t& value) const = 0;
-		virtual bool process(std::int32_t& value) const = 0;
-		virtual bool process(Vector2& value) const = 0;
-		virtual bool process(Vector3& value) const = 0;
-		virtual bool process(Vector4& value) const = 0;
+		virtual bool processValue(bool& value) const = 0;
+		virtual bool processValue(std::uint8_t& value) const = 0;
+		virtual bool processValue(std::uint16_t& value) const = 0;
+		virtual bool processValue(std::uint32_t& value) const = 0;
+		virtual bool processValue(std::int8_t& value) const = 0;
+		virtual bool processValue(std::int16_t& value) const = 0;
+		virtual bool processValue(std::int32_t& value) const = 0;
+		virtual bool processValue(Vector2& value) const = 0;
+		virtual bool processValue(Vector3& value) const = 0;
+		virtual bool processValue(Vector4& value) const = 0;
 
-};
-
-class NetworkReader : public NetworkProcessor
-{
-	public:
-		bool isReading() const override { return true; }
-};
-
-class NetworkWriter : public NetworkProcessor
-{
-	public:
-		bool isWriting() const override { return true; }
 };
 
 template<class T>
-inline bool NetworkProcessor::processWithDelimiter(T& value) const
+inline bool NetworkProcessor::process(T& value) const
 {
 	processDelimiter(delimiterForType<T>);
-	process(value);
+	processValue(value);
 	return true;
 }
 
 template <class T>
-inline bool NetworkProcessor::processWithDelimiter(std::vector<T>& value) const
+inline bool NetworkProcessor::process(std::vector<T>& value) const
 {
 	processDelimiter(Delimiter::VECTOR);
 	processDelimiter(delimiterForType<T>);
 	if (isReading())
 	{
 		std::uint16_t size;
-		process(size);
+		processValue(size);
 		value.reserve(size);
 		for (std::uint16_t i = 0; i < size; ++i)
 		{
 			T& item = value.emplace_back();
-			process(item);
+			processValue(item);
 		}
 	}
 	else
 	{
 		MC_ASSERT(isWriting());
 		std::uint16_t size = static_cast<std::uint16_t>(value.size());
-		process(size);
+		processValue(size);
 		for (T& item : value)
 		{
-			process(item);
+			processValue(item);
 		}
 	}
 	return true;
 }
 
 template <class K, class V>
-inline bool NetworkProcessor::processWithDelimiter(std::unordered_map<K, V>& value) const
+inline bool NetworkProcessor::process(std::unordered_map<K, V>& value) const
 {
 	processDelimiter(Delimiter::MAP);
 	processDelimiter(delimiterForType<K>);
@@ -127,14 +122,14 @@ inline bool NetworkProcessor::processWithDelimiter(std::unordered_map<K, V>& val
 	if (isReading())
 	{
 		std::uint16_t size;
-		process(size);
+		processValue(size);
 		value.reserve(size);
 		for (std::uint16_t i = 0; i < size; ++i)
 		{
 			K key;
-			process(key);
+			processValue(key);
 			V value;
-			process(value);
+			processValue(value);
 			value[key] = value;
 		}
 	}
@@ -142,20 +137,83 @@ inline bool NetworkProcessor::processWithDelimiter(std::unordered_map<K, V>& val
 	{
 		MC_ASSERT(isWriting());
 		std::uint16_t size = static_cast<std::uint16_t>(value.size());
-		process(size);
+		processValue(size);
 		for (std::pair<K, V>& item : value)
 		{
-			process(item.first);
-			process(item.second);
+			processValue(item.first);
+			processValue(item.second);
 		}
 	}
+	return true;
+}
+
+
+class NetworkReader : public NetworkProcessor
+{
+public:
+	bool isReading() const override { return true; }
+
+protected:
+	bool processDelimiter(Delimiter delimiter) const override;
+
+	bool processValue(bool& value) const override;
+	bool processValue(std::uint8_t& value) const override;
+	bool processValue(std::uint16_t& value) const override;
+	bool processValue(std::uint32_t& value) const override;
+	bool processValue(std::int8_t& value) const override;
+	bool processValue(std::int16_t& value) const override;
+	bool processValue(std::int32_t& value) const override;
+	bool processValue(Vector2& value) const override;
+	bool processValue(Vector3& value) const override;
+	bool processValue(Vector4& value) const override;
+
+private:
+	template <class T>
+	bool read(T& value) const;
+};
+
+template <class T>
+inline bool NetworkReader::read(T& value) const
+{
+
+	return true;
+}
+
+
+class NetworkWriter : public NetworkProcessor
+{
+public:
+	bool isWriting() const override { return true; }
+
+protected:
+	bool processDelimiter(Delimiter delimiter) const override;
+
+	bool processValue(bool& value) const override;
+	bool processValue(std::uint8_t& value) const override;
+	bool processValue(std::uint16_t& value) const override;
+	bool processValue(std::uint32_t& value) const override;
+	bool processValue(std::int8_t& value) const override;
+	bool processValue(std::int16_t& value) const override;
+	bool processValue(std::int32_t& value) const override;
+	bool processValue(Vector2& value) const override;
+	bool processValue(Vector3& value) const override;
+	bool processValue(Vector4& value) const override;
+
+private:
+	template <class T>
+	bool write(const T& value) const;
+};
+
+template<class T>
+inline bool NetworkWriter::write(const T& value) const
+{
+
 	return true;
 }
 
 } // common
 } // network
 } // flat
-
 
 #endif // FLAT_NETWORK_COMMON_NETWORKPROCESSOR_H
 
