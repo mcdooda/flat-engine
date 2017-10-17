@@ -1,4 +1,5 @@
 #include "networkhub.h"
+#include "..\client\networkhub.h"
 
 namespace flat
 {
@@ -16,6 +17,11 @@ NetworkEvent& NetworkHub::newEventFromDelimiter(NetworkEvent::Delimiter delimite
 {
 	EventPool& eventPool = getEventPoolFromDelimiter(delimiter);
 	return *eventPool.instancer.makeObject(eventPool.pool);
+}
+
+void NetworkHub::send(const NetworkEvent& event, Peer& peer)
+{
+	
 }
 
 void NetworkHub::clearEvents()
