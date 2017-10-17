@@ -51,6 +51,9 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 			keyJustReleased(event.key.keysym.scancode);
 		}
 		break;
+	case SDL_TEXTINPUT:
+		textEdited(event.text.text);
+		break;
 	}
 }
 
@@ -138,6 +141,18 @@ void KeyboardInputContext::getJustReleasedKeys(std::vector<Key>& justReleasedKey
 		{
 			justReleasedKeys.push_back(static_cast<Key>(key));
 		}
+	}
+}
+
+void KeyboardInputContext::setEnableTextInput(bool enable)
+{
+	if (enable)
+	{
+		SDL_StartTextInput();
+	}
+	else
+	{
+		SDL_StopTextInput();
 	}
 }
 
