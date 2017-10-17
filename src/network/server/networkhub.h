@@ -2,6 +2,9 @@
 #define FLAT_NETWORK_SERVER_NETWORKHUB_H
 
 #include <unordered_map>
+
+#include "clientnetworkeventhandler.h"
+
 #include "../common/networkhub.h"
 
 namespace flat
@@ -17,18 +20,18 @@ class NetworkHub : public common::NetworkHub
 public:
 	NetworkHub();
 
-	template <class T>
-	inline void registerEventHandler(void (*handler)(const Client& client, const T& event));
+	template <class EventType, class ObjectType>
+	inline void registerEventHandler(ObjectType* object, void (ObjectType::*handler)(const Client& client, const EventType& event));
 
 private:
-	std::unordered_map<common::NetworkEvent::Delimiter, void*> m_handlers;
+	std::unordered_map<common::NetworkEvent::Delimiter, std::unique_ptr<ClientNetworkEventHandler>> m_handlers;
 };
 
-template<class T>
-inline void NetworkHub::registerEventHandler(void (*handler)(const Client& client, const T& event))
+template<class EventType, class ObjectType>
+inline void NetworkHub::registerEventHandler(ObjectType* object, void (ObjectType::* handler)(const Client& client, const EventType& event))
 {
-	common::NetworkEvent::Delimiter delimiter = T::getDelimiter();
-	m_handlers[delimiter] = handler;
+	NetworkEvent::Delimiter delimiter = EventType::getDelimiter();
+	m_handlers[delimiter] = std::make_unique<ClientNetworkEventHandlerImpl<EventType, ObjectType>>(object, handler);
 }
 
 } // server
