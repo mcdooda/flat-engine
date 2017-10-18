@@ -40,6 +40,8 @@ class Lua
 
 		const char* getTypeName(int type) const;
 
+		void collectGarbage() const;
+
 	private:
 		static int l_flat_require(lua_State* L);
 		void openRequire(lua_State* L);
