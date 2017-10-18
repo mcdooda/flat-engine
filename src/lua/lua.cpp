@@ -119,6 +119,11 @@ const char* Lua::getTypeName(int type) const
 	return m_typeIndexToName[type - FIRST_CLASS_TYPE_INDEX].c_str();
 }
 
+void Lua::collectGarbage() const
+{
+	lua_gc(state, LUA_GCCOLLECT, 0);
+}
+
 int Lua::l_flat_require(lua_State* L)
 {
 	const char* path = luaL_checkstring(L, 1);
