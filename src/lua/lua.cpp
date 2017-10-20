@@ -1,10 +1,12 @@
-#include <iostream>
 #include <cstdlib>
 #include <lua5.3/lua.hpp>
+
+#include "lua.h"
+#include "memorysnapshot.h"
+#include "types.h"
+
 #include "../flat.h"
 #include "../flat/game.h"
-#include "lua.h"
-#include "lua/types.h"
 #include "../time/lua/time.h"
 #include "../input/lua/mouse.h"
 #include "../video/lua/image.h"
@@ -54,8 +56,14 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 #else
 		lua_pushboolean(L, false);
 #endif
-		lua_setfield(L, -2, "debug");
+		lua_setfield(L, -2, "debug"); // flat.debug = true/false
+
+		lua_newtable(L);
+		lua_setfield(L, -2, "lua"); // flat.lua = {}
+
 		lua_setglobal(L, "flat");
+
+		snapshot::open(L);
 
 		types::open(L);
 
@@ -294,55 +302,60 @@ void printStack(lua_State* L)
 	for (int i = 1; i <= top; i++)
 	{
 		std::cout << "\t\t#" << i << " : ";
-		switch(lua_type(L, i))
-		{
-			case LUA_TLIGHTUSERDATA:
-			std::cout << "lightuserdata : " << lua_touserdata(L, i);
-			break;
-			
-			case LUA_TUSERDATA:
-			std::cout << "userdata ____ : " << lua_touserdata(L, i);
-			break;
-			
-			case LUA_TTABLE:
-			std::cout << "table _______ : " << lua_topointer(L, i) << (lua_topointer(L, i) == lua_topointer(L, LUA_REGISTRYINDEX)? " (REGISTRY)" : "");
-			break;
-			
-			case LUA_TNIL:
-			std::cout << "nil";
-			break;
-			
-			case LUA_TFUNCTION:
-			std::cout << "function ____ : " << lua_topointer(L, i);
-			break;
-			
-			case LUA_TNUMBER:
-			std::cout << "number ______ : " << lua_tonumber(L, i);
-			break;
-			
-			case LUA_TBOOLEAN:
-			std::cout << "boolean _____ : " << (lua_toboolean(L, i) ? "true" : "false");
-			break;
-			
-			case LUA_TSTRING:
-			std::cout << "string ______ : " << lua_tostring(L, i);
-			break;
-			
-			case LUA_TTHREAD:
-			std::cout << "thread ______ : " << lua_topointer(L, i);
-			break;
-			
-			case LUA_TNONE:
-			std::cout << "none ________ : " << lua_topointer(L, i);
-			break;
-			
-			default:
-			std::cout << "unknown type : " << lua_topointer(L, i) << " (" << lua_typename(L, i) << " ?)";
-			break;
-		}
+		printValue(L, i);
 		std::cout << std::endl;
 	}
 	std::cout << "--- Lua Debug ======" << std::endl;
+}
+
+void printValue(lua_State* L, int index, std::ostream& out)
+{
+	switch (lua_type(L, index))
+	{
+		case LUA_TLIGHTUSERDATA:
+			out << "lightuserdata : " << lua_touserdata(L, index);
+			break;
+
+		case LUA_TUSERDATA:
+			out << "userdata ____ : " << lua_touserdata(L, index);
+			break;
+
+		case LUA_TTABLE:
+			out << "table _______ : " << lua_topointer(L, index) << (lua_topointer(L, index) == lua_topointer(L, LUA_REGISTRYINDEX) ? " (REGISTRY)" : "");
+			break;
+
+		case LUA_TNIL:
+			out << "nil";
+			break;
+
+		case LUA_TFUNCTION:
+			out << "function ____ : " << lua_topointer(L, index);
+			break;
+
+		case LUA_TNUMBER:
+			out << "number ______ : " << lua_tonumber(L, index);
+			break;
+
+		case LUA_TBOOLEAN:
+			out << "boolean _____ : " << (lua_toboolean(L, index) ? "true" : "false");
+			break;
+
+		case LUA_TSTRING:
+			out << "string ______ : " << lua_tostring(L, index);
+			break;
+
+		case LUA_TTHREAD:
+			out << "thread ______ : " << lua_topointer(L, index);
+			break;
+
+		case LUA_TNONE:
+			out << "none ________ : " << lua_topointer(L, index);
+			break;
+
+		default:
+			out << "unknown type : " << lua_topointer(L, index) << " (" << lua_typename(L, index) << " ?)";
+			break;
+	}
 }
 
 const char* codeToString(int code)

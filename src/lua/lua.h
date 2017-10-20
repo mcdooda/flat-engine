@@ -1,6 +1,7 @@
 #ifndef FLAT_LUA_LUA_H
 #define FLAT_LUA_LUA_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <lua5.3/lua.hpp>
@@ -77,6 +78,7 @@ void clearLoadedPackages(lua_State* L);
 lua_State* getMainThread(lua_State* L);
 
 void printStack(lua_State* L);
+void printValue(lua_State* L, int index, std::ostream& out = std::cout);
 const char* codeToString(int code);
 
 int panic(lua_State* L);
