@@ -51,6 +51,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 			keyJustReleased(event.key.keysym.scancode);
 		}
 		break;
+
 	case SDL_TEXTINPUT:
 		textEdited(event.text.text);
 		break;
