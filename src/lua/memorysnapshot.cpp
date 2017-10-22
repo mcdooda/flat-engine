@@ -35,10 +35,12 @@ int open(lua_State* L)
 
 int l_flat_lua_snapshot_diff(lua_State* L)
 {
-	std::fstream f("snapshotdiff.txt", std::ios_base::out);
-
 	luaL_checktype(L, 1, LUA_TTABLE);
 	luaL_checktype(L, 2, LUA_TTABLE);
+	const char* diffFile = luaL_checkstring(L, 3);
+
+	std::fstream f(diffFile, std::ios_base::out);
+
 	lua_settop(L, 2);
 
 	lua_pushnil(L);

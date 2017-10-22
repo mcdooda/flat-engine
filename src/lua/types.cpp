@@ -73,7 +73,6 @@ int l_flat_type(lua_State* L)
 	return 1;
 }
 
-#pragma optimize("", off)
 int l_flat_typetostring(lua_State* L)
 {
 	int type = static_cast<int>(luaL_checkinteger(L, 1));
@@ -89,7 +88,6 @@ int l_flat_typetostring(lua_State* L)
 	lua_pushstring(L, typeName);
 	return 1;
 }
-#pragma optimize("", on)
 
 } // types
 } // lua
