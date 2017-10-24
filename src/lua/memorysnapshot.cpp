@@ -62,6 +62,130 @@ int l_flat_lua_snapshot_diff(lua_State* L)
 	return 0;
 }
 
+namespace capture
+{
+
+void markObject(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	switch (lua_type(L, index))
+	{
+	case LUA_TSTRING:
+		markString(L, index, markedMap, markSource);
+		break;
+	case LUA_TFUNCTION:
+		markFunction(L, index, markedMap, markSource);
+		break;
+	case LUA_TTHREAD:
+		markThread(L, index, markedMap, markSource);
+		break;
+	case LUA_TTABLE:
+		markTable(L, index, markedMap, markSource);
+		break;
+	case LUA_TLIGHTUSERDATA:
+		markLightUserData(L, index, markedMap, markSource);
+		break;
+	case LUA_TUSERDATA:
+		markUserData(L, index, markedMap, markSource);
+		break;
+	}
+}
+
+void markPointer(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	const void* pointer = lua_topointer(L, index);
+	markedMap[pointer].push_back(markSource);
+}
+
+bool isMarked(lua_State* L, int index, const MarkedMap& markedMap)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	const void* pointer = lua_topointer(L, index);
+	return markedMap.find(pointer) != markedMap.end();
+}
+
+void markString(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	markPointer(L, index, markedMap, markSource);
+}
+
+void markFunction(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	const bool alreadyMarked = isMarked(L, index, markedMap);
+	markPointer(L, index, markedMap, markSource);
+	if (!alreadyMarked)
+	{
+
+	}
+}
+
+void markThread(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	const bool alreadyMarked = isMarked(L, index, markedMap);
+	markPointer(L, index, markedMap, markSource);
+	if (!alreadyMarked)
+	{
+
+	}
+}
+
+void markTable(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	const bool alreadyMarked = isMarked(L, index, markedMap);
+	markPointer(L, index, markedMap, markSource);
+	if (!alreadyMarked)
+	{
+
+	}
+}
+
+void markLightUserData(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	markPointer(L, index, markedMap, markSource);
+}
+
+void markUserData(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	const bool alreadyMarked = isMarked(L, index, markedMap);
+	markPointer(L, index, markedMap, markSource);
+	if (!alreadyMarked)
+	{
+		lua_getmetatable(L, index);
+		if (!lua_isnil(L, -1))
+		{
+			MarkSource metatableMarkSource;
+			metatableMarkSource.type = MarkSourceType::METATABLE;
+			metatableMarkSource.description = markSource.description + " > [metatable]";
+			markTable(L, -1, markedMap, metatableMarkSource);
+		}
+		else
+		{
+			lua_pop(L, 1);
+		}
+
+		lua_getuservalue(L, index);
+		if (!lua_isnil(L, -1))
+		{
+			MarkSource uservalueMarkSource;
+			uservalueMarkSource.type = MarkSourceType::USERVALUE;
+			uservalueMarkSource.description = markSource.description + " > [uservalue]";
+			markObject(L, -1, markedMap, uservalueMarkSource);
+		}
+		else
+		{
+			lua_pop(L, 1);
+		}
+	}
+}
+
+} // capture
+
 } // snapshot
 } // lua
 } // flat
@@ -426,4 +550,3 @@ l_snapshot(lua_State *L) {
 	lua_close(dL);
 	return 1;
 }
-
