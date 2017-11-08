@@ -59,6 +59,9 @@
 #include "containers/pool.h"
 #include "containers/dynamicpool.h"
 
+// resource
+#include "resource/resourcemanagertimer.h"
+
 // sharp
 // ui
 #include "sharp/ui/ui.h"

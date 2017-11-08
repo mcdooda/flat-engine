@@ -38,8 +38,9 @@ bool TextInputWidget::enteredFocus(Widget* widget)
 bool TextInputWidget::leftFocus(Widget* widget)
 {
 	m_inputContext->getKeyboardInputContext().keyJustPressed.off(this);
-	m_flat.input->popContext(m_inputContext);
+	m_inputContext->getKeyboardInputContext().textEdited.off(this);
 	m_inputContext->getKeyboardInputContext().setEnableTextInput(false);
+	m_flat.input->popContext(m_inputContext);
 	m_inputContext.reset();
 	return true;
 }
