@@ -1,6 +1,7 @@
 #ifndef FLAT_LUA_MEMORYSNAPSHOT_H
 #define FLAT_LUA_MEMORYSNAPSHOT_H
 
+#include <string>
 #include <unordered_map>
 #include <lua5.3/lua.hpp>
 
@@ -12,44 +13,86 @@ namespace lua
 namespace snapshot
 {
 
-int open(lua_State* L);
+int open(Lua& lua);
 
+int l_flat_lua_snapshot_snapshot(lua_State* L);
 int l_flat_lua_snapshot_diff(lua_State* L);
 
-namespace capture
+class MemorySnapshot
 {
+	public:
+		enum class MarkSourceType : std::uint8_t
+		{
+			TABLEKEY,
+			TABLEVALUE,
+			UPVALUE,
+			METATABLE,
+			REGISTRY,
+			USERVALUE
+		};
 
-enum class MarkSourceType : std::uint8_t
-{
-	TABLEKEY,
-	TABLEVALUE,
-	UPVALUE,
-	METATABLE,
-	REGISTRY,
-	USERVALUE
+		struct MarkSource
+		{
+			const void* object;
+			const void* parentObject;
+			std::string description;
+			int objectType;
+			MarkSourceType sourceType;
+
+			MarkSource(const std::string& description, MarkSourceType sourceType) :
+				object(nullptr),
+				parentObject(nullptr),
+				description(description),
+				sourceType(sourceType)
+			{}
+
+			MarkSource(const MarkSource& parentSource, const std::string& description, MarkSourceType sourceType) :
+				parentObject(parentSource.object),
+				description(parentSource.description + " > " + description),
+				sourceType(sourceType)
+			{}
+		};
+
+		struct ObjectDescription
+		{
+			std::string value;
+			std::vector<MarkSource> sources;
+		};
+
+		using MarkedMap = std::unordered_map<const void*, ObjectDescription>;
+
+	public:
+		MemorySnapshot() = delete;
+		MemorySnapshot(const MemorySnapshot&) = delete;
+		MemorySnapshot(MemorySnapshot&&) = delete;
+		void operator=(const MemorySnapshot&) = delete;
+		void operator=(MemorySnapshot&&) = delete;
+		~MemorySnapshot() = default;
+
+		MemorySnapshot(lua_State* L);
+
+		MemorySnapshot(const MemorySnapshot& first, const MemorySnapshot& second);
+
+		void writeToFile(const std::string& fileName) const;
+
+	protected:
+		bool isMarked(int index) const;
+
+		bool markPointer(int index, MarkSource markSource);
+		void markObject(int index, MarkSource markSource);
+
+		void markFunction(int index, MarkSource markSource);
+		void markThread(int index, MarkSource markSource);
+		void markTable(int index, MarkSource markSource);
+		void markLightUserData(int index, MarkSource markSource);
+		void markUserData(int index, MarkSource markSource);
+
+		void hasWeakKeysAndValues(int index, bool& weakKeys, bool& weakValues) const;
+
+	protected:
+		lua_State* m_state;
+		MarkedMap m_markedMap;
 };
-
-struct MarkSource
-{
-	MarkSourceType type;
-	std::string description;
-};
-
-using MarkedMap = std::unordered_map<const void*, std::vector<MarkSource>>;
-
-void markObject(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-
-void markPointer(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-bool isMarked(lua_State* L, int index, const MarkedMap& markedMap);
-
-void markString(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-void markFunction(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-void markThread(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-void markTable(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-void markLightUserData(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-void markUserData(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource);
-
-} // capture
 
 } // snapshot
 } // lua

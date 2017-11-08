@@ -4,6 +4,7 @@
 #include "memorysnapshot.h"
 #include "lua.h"
 #include "debug.h"
+#include "sharedcppreference.h"
 
 namespace flat
 {
@@ -12,13 +13,16 @@ namespace lua
 namespace snapshot
 {
 
-int open(lua_State* L)
+using LuaMemorySnapshot = flat::lua::SharedCppReference<MemorySnapshot>;
+
+int open(Lua& lua)
 {
+	lua_State* L = lua.state;
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg flat_lua_snapshot_lib_s[] = {
-		{"snapshot", l_snapshot},
-		{"diff", l_flat_lua_snapshot_diff},
+		{"snapshot", l_flat_lua_snapshot_snapshot},
+		{"diff",     l_flat_lua_snapshot_diff},
 
 		{nullptr, nullptr}
 	};
@@ -28,163 +32,254 @@ int open(lua_State* L)
 	luaL_newlib(L, flat_lua_snapshot_lib_s);
 	lua_setfield(L, -2, "snapshot");
 
+	lua.registerClass<LuaMemorySnapshot>("flat.MemorySnapshot");
+
 	lua_pop(L, 2);
 
 	return 0;
 }
 
+int l_flat_lua_snapshot_snapshot(lua_State * L)
+{
+	std::shared_ptr<MemorySnapshot> snapshot = std::make_shared<MemorySnapshot>(L);
+	LuaMemorySnapshot::pushNew(L, snapshot);
+	return 1;
+}
+
 int l_flat_lua_snapshot_diff(lua_State* L)
 {
-	luaL_checktype(L, 1, LUA_TTABLE);
-	luaL_checktype(L, 2, LUA_TTABLE);
+	MemorySnapshot& snapshot1 = LuaMemorySnapshot::get(L, 1);
+	MemorySnapshot& snapshot2 = LuaMemorySnapshot::get(L, 2);
 	const char* diffFile = luaL_checkstring(L, 3);
-
-	std::fstream f(diffFile, std::ios_base::out);
-
-	lua_settop(L, 2);
-
-	lua_pushnil(L);
-	while (lua_next(L, 2) != 0) {
-		lua_pushvalue(L, -2); // push the key again
-		lua_rawget(L, 1); // param1[key]
-		if (lua_isnil(L, -1))
-		{
-			f << "[";
-			printValue(L, -3, f);
-			f << "]\n";
-			f << lua_tostring(L, -2);
-			f << "\n";
-		}
-
-		lua_pop(L, 2);
-	}
-
+	MemorySnapshot diff(snapshot1, snapshot2);
+	diff.writeToFile(diffFile);
 	return 0;
 }
 
-namespace capture
+MemorySnapshot::MemorySnapshot(lua_State* L)
 {
+	m_state = L;
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_pushvalue(L, LUA_REGISTRYINDEX);
+	MarkSource registryMarkSource("[registry]", MarkSourceType::REGISTRY);
+	markObject(-1, registryMarkSource);
+	lua_pop(L, 1);
+	m_state = nullptr;
+}
 
-void markObject(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+MemorySnapshot::MemorySnapshot(const MemorySnapshot& first, const MemorySnapshot& second) :
+	m_state(nullptr)
 {
-	switch (lua_type(L, index))
+	for (const std::pair<const void*, ObjectDescription>& markedObject : second.m_markedMap)
 	{
-	case LUA_TSTRING:
-		markString(L, index, markedMap, markSource);
-		break;
+		MarkedMap::const_iterator it = first.m_markedMap.find(markedObject.first);
+		if (it == first.m_markedMap.end())
+		{
+			m_markedMap[markedObject.first] = markedObject.second;
+		}
+	}
+}
+
+void MemorySnapshot::writeToFile(const std::string& fileName) const
+{
+	std::fstream f(fileName, std::ios_base::out);
+
+	for (const std::pair<const void*, ObjectDescription>& markedObject : m_markedMap)
+	{
+		f << "=========" << std::endl;
+		f << markedObject.second.value << std::endl;
+		for (const MarkSource& markSource : markedObject.second.sources)
+		{
+			f << '\t' << markSource.description << std::endl;
+		}
+	}
+}
+
+bool MemorySnapshot::isMarked(int index) const
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	const void* pointer = lua_topointer(m_state, index);
+	return m_markedMap.find(pointer) != m_markedMap.end();
+}
+
+bool MemorySnapshot::markPointer(int index, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	const void* pointer = lua_topointer(m_state, index);
+	markSource.object = pointer;
+	markSource.objectType = lua_type(m_state, index);
+	MarkedMap::iterator it = m_markedMap.find(pointer);
+	if (it != m_markedMap.end())
+	{
+		it->second.sources.push_back(markSource);
+		return true;
+	}
+	else
+	{
+		ObjectDescription& description = m_markedMap[pointer];
+		description.value = luaL_tolstring(m_state, index, nullptr);
+		lua_pop(m_state, 1);
+		if (luaL_getmetafield(m_state, index, "__name") == LUA_TSTRING)
+		{
+			description.value = std::string(lua_tostring(m_state, -1)) + ": " + description.value;
+			lua_pop(m_state, 1);
+		}
+		description.sources.push_back(markSource);
+		return false;
+	}
+}
+
+void MemorySnapshot::markObject(int index, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	switch (lua_type(m_state, index))
+	{
 	case LUA_TFUNCTION:
-		markFunction(L, index, markedMap, markSource);
+		markFunction(index, markSource);
 		break;
 	case LUA_TTHREAD:
-		markThread(L, index, markedMap, markSource);
+		markThread(index, markSource);
 		break;
 	case LUA_TTABLE:
-		markTable(L, index, markedMap, markSource);
+		markTable(index, markSource);
 		break;
 	case LUA_TLIGHTUSERDATA:
-		markLightUserData(L, index, markedMap, markSource);
+		markLightUserData(index, markSource);
 		break;
 	case LUA_TUSERDATA:
-		markUserData(L, index, markedMap, markSource);
+		markUserData(index, markSource);
 		break;
 	}
 }
 
-void markPointer(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+void MemorySnapshot::markFunction(int index, MarkSource markSource)
 {
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	const void* pointer = lua_topointer(L, index);
-	markedMap[pointer].push_back(markSource);
-}
-
-bool isMarked(lua_State* L, int index, const MarkedMap& markedMap)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	const void* pointer = lua_topointer(L, index);
-	return markedMap.find(pointer) != markedMap.end();
-}
-
-void markString(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	markPointer(L, index, markedMap, markSource);
-}
-
-void markFunction(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	const bool alreadyMarked = isMarked(L, index, markedMap);
-	markPointer(L, index, markedMap, markSource);
-	if (!alreadyMarked)
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	if (!markPointer(index, markSource))
 	{
-
+		//std::cout << "FUNCTION" << std::endl;
 	}
 }
 
-void markThread(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+void MemorySnapshot::markThread(int index, MarkSource markSource)
 {
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	const bool alreadyMarked = isMarked(L, index, markedMap);
-	markPointer(L, index, markedMap, markSource);
-	if (!alreadyMarked)
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	if (!markPointer(index, markSource))
 	{
-
+		//std::cout << "THREAD" << std::endl;
 	}
 }
 
-void markTable(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
+void MemorySnapshot::markTable(int index, MarkSource markSource)
 {
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	const bool alreadyMarked = isMarked(L, index, markedMap);
-	markPointer(L, index, markedMap, markSource);
-	if (!alreadyMarked)
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	if (!markPointer(index, markSource))
 	{
-
-	}
-}
-
-void markLightUserData(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	markPointer(L, index, markedMap, markSource);
-}
-
-void markUserData(lua_State* L, int index, MarkedMap& markedMap, MarkSource markSource)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	const bool alreadyMarked = isMarked(L, index, markedMap);
-	markPointer(L, index, markedMap, markSource);
-	if (!alreadyMarked)
-	{
-		lua_getmetatable(L, index);
-		if (!lua_isnil(L, -1))
+		bool weakKeys = false;
+		bool weakValues = false;
 		{
-			MarkSource metatableMarkSource;
-			metatableMarkSource.type = MarkSourceType::METATABLE;
-			metatableMarkSource.description = markSource.description + " > [metatable]";
-			markTable(L, -1, markedMap, metatableMarkSource);
-		}
-		else
-		{
-			lua_pop(L, 1);
+			FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+			if (lua_getmetatable(m_state, index))
+			{
+				MarkSource metatableMarkSource(markSource, "[metatable]", MarkSourceType::METATABLE);
+				markTable(-1, metatableMarkSource);
+
+				hasWeakKeysAndValues(-1, weakKeys, weakValues);
+
+				lua_pop(m_state, 1);
+			}
 		}
 
-		lua_getuservalue(L, index);
-		if (!lua_isnil(L, -1))
 		{
-			MarkSource uservalueMarkSource;
-			uservalueMarkSource.type = MarkSourceType::USERVALUE;
-			uservalueMarkSource.description = markSource.description + " > [uservalue]";
-			markObject(L, -1, markedMap, uservalueMarkSource);
-		}
-		else
-		{
-			lua_pop(L, 1);
+			FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+			const int tableIndex = lua_absindex(m_state, index);
+			lua_pushnil(m_state);
+			while (lua_next(m_state, tableIndex) != 0)
+			{
+				FLAT_LUA_EXPECT_STACK_GROWTH(m_state, -1);
+
+				if (!weakKeys)
+				{
+					FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+					MarkSource tableKeyMarkSource(markSource, "[key]", MarkSourceType::TABLEKEY);
+					markObject(-2, tableKeyMarkSource);
+				}
+
+				if (!weakValues)
+				{
+					FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+					size_t length = 0;
+					std::string key = luaL_tolstring(m_state, -2, nullptr);
+					lua_pop(m_state, 1);
+					MarkSource tableValueMarkSource(markSource, key, MarkSourceType::TABLEVALUE);
+					markObject(-1, tableValueMarkSource);
+				}
+
+				lua_pop(m_state, 1);
+			}
 		}
 	}
 }
 
-} // capture
+void MemorySnapshot::markLightUserData(int index, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	markPointer(index, markSource);
+}
+
+void MemorySnapshot::markUserData(int index, MarkSource markSource)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	if (!markPointer(index, markSource))
+	{
+		if (lua_getmetatable(m_state, index))
+		{
+			lua_getfield(m_state, -1, "__name");
+			std::string description = "[userdata metatable";
+			if (!lua_isnil(m_state, -1))
+			{
+				description += " ";
+				description += lua_tostring(m_state, -1);
+			}
+			description += "]";
+			lua_pop(m_state, 1);
+			MarkSource metatableMarkSource(markSource, description, MarkSourceType::METATABLE);
+			markTable(-1, metatableMarkSource);
+			lua_pop(m_state, 1);
+		}
+
+		lua_getuservalue(m_state, index);
+		if (!lua_isnil(m_state, -1))
+		{
+			MarkSource uservalueMarkSource(markSource, "[uservalue]", MarkSourceType::USERVALUE);
+			markObject(-1, uservalueMarkSource);
+		}
+		lua_pop(m_state, 1);
+	}
+}
+
+void MemorySnapshot::hasWeakKeysAndValues(int index, bool& weakKeys, bool& weakValues) const
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
+	int metatableIndex = lua_absindex(m_state, index);
+	lua_pushliteral(m_state, "__mode");
+	lua_rawget(m_state, metatableIndex);
+	weakKeys = false;
+	weakValues = false;
+	if (lua_isstring(m_state, -1))
+	{
+		const char *mode = lua_tostring(m_state, -1);
+		if (strchr(mode, 'k'))
+		{
+			weakKeys = true;
+		}
+		if (strchr(mode, 'v'))
+		{
+			weakValues = true;
+		}
+	}
+	lua_pop(m_state, 1);
+}
 
 } // snapshot
 } // lua

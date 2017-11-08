@@ -63,8 +63,6 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 
 		lua_setglobal(L, "flat");
 
-		snapshot::open(L);
-
 		types::open(L);
 
 		time::lua::open(L);
@@ -72,6 +70,7 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 		video::lua::image::open(L);
 		sharp::ui::lua::open(flat, *this);
 
+		snapshot::open(*this);
 		lua::openVector2(*this);
 		lua::openVector3(*this);
 
