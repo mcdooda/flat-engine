@@ -23,6 +23,7 @@ int open(Lua& lua)
 	static const luaL_Reg flat_lua_snapshot_lib_s[] = {
 		{"snapshot", l_flat_lua_snapshot_snapshot},
 		{"diff",     l_flat_lua_snapshot_diff},
+		{"monitor",  l_flat_lua_monitor},
 
 		{nullptr, nullptr}
 	};
@@ -39,7 +40,7 @@ int open(Lua& lua)
 	return 0;
 }
 
-int l_flat_lua_snapshot_snapshot(lua_State * L)
+int l_flat_lua_snapshot_snapshot(lua_State* L)
 {
 	std::shared_ptr<MemorySnapshot> snapshot = std::make_shared<MemorySnapshot>(L);
 	LuaMemorySnapshot::pushNew(L, snapshot);
@@ -53,6 +54,53 @@ int l_flat_lua_snapshot_diff(lua_State* L)
 	const char* diffFile = luaL_checkstring(L, 3);
 	MemorySnapshot diff(snapshot1, snapshot2);
 	diff.writeToFile(diffFile);
+	diff.writeDigestToFile(diffFile);
+	return 0;
+}
+
+static int l_newindex(lua_State* L)
+{
+	std::cerr << "New index: [" << lua_tostring(L, 2) << "] = " << lua_tostring(L, 3) << std::endl;
+	printStack(L);
+	FLAT_BREAK();
+
+	// call the original __index metamethod
+	lua_pushvalue(L, lua_upvalueindex(1));
+	switch (lua_type(L, -1))
+	{
+	case LUA_TTABLE:
+		lua_pushvalue(L, 2);
+		lua_pushvalue(L, 3);
+		lua_rawset(L, -3);
+		break;
+
+	case LUA_TFUNCTION:
+		lua_pushvalue(L, 1);
+		lua_pushvalue(L, 2);
+		lua_pushvalue(L, 3);
+		lua_call(L, 3, 0);
+		break;
+	}
+	return 0;
+}
+
+int l_flat_lua_monitor(lua_State* L)
+{
+	luaL_argcheck(L, lua_type(L, 1) == LUA_TTABLE || lua_type(L, 1) == LUA_TUSERDATA, 1, "Cannot monitor values that are not a table or a userdata");
+	if (lua_getmetatable(L, 1))
+	{
+		lua_getfield(L, -1, "__newindex");
+		lua_pushcclosure(L, l_newindex, 1);
+		lua_setfield(L, -2, "__newindex");
+	}
+	else
+	{
+		lua_newtable(L);
+		lua_pushnil(L);
+		lua_pushcclosure(L, l_newindex, 1);
+		lua_setfield(L, -2, "__newindex");
+		lua_setmetatable(L, 1);
+	}
 	return 0;
 }
 
@@ -82,16 +130,51 @@ MemorySnapshot::MemorySnapshot(const MemorySnapshot& first, const MemorySnapshot
 
 void MemorySnapshot::writeToFile(const std::string& fileName) const
 {
-	std::fstream f(fileName, std::ios_base::out);
+	std::fstream f(fileName + ".lualeak", std::ios_base::out);
 
 	for (const std::pair<const void*, ObjectDescription>& markedObject : m_markedMap)
 	{
-		f << "=========" << std::endl;
-		f << markedObject.second.value << std::endl;
 		for (const MarkSource& markSource : markedObject.second.sources)
 		{
-			f << '\t' << markSource.description << std::endl;
+			f << '\t' << markSource.description;
 		}
+		f << " = " << markedObject.second.value << " (" << markedObject.second.definition << ")\n";
+	}
+}
+
+void MemorySnapshot::writeDigestToFile(const std::string& fileName) const
+{
+	std::unordered_map<std::string, std::pair<const void*, int>> digest;
+
+	for (const std::pair<const void*, ObjectDescription>& markedObject : m_markedMap)
+	{
+		const std::string& definition = markedObject.second.definition;
+		auto it = digest.find(definition);
+		if (it == digest.end())
+		{
+			digest[definition] = std::make_pair(markedObject.first, 1);
+		}
+		else
+		{
+			it->second.second++;
+		}
+	}
+
+	std::vector<std::pair<std::string, std::pair<const void*, int>>> sortedDigest(digest.begin(), digest.end());
+	std::sort(
+		sortedDigest.begin(),
+		sortedDigest.end(),
+		[](const std::pair<std::string, std::pair<const void*, int>>& a, const std::pair<std::string, std::pair<const void*, int>>& b)
+		{
+			return b.second.second < a.second.second;
+		}
+	);
+
+	std::fstream f(fileName + ".lualeak.digest", std::ios_base::out);
+
+	for (const std::pair<std::string, std::pair<const void*, int>>& digestLine : sortedDigest)
+	{
+		f << digestLine.second.second << ": " << digestLine.first << '\n';
 	}
 }
 
@@ -157,7 +240,12 @@ void MemorySnapshot::markFunction(int index, MarkSource markSource)
 	FLAT_LUA_EXPECT_STACK_GROWTH(m_state, 0);
 	if (!markPointer(index, markSource))
 	{
+		lua_pushvalue(m_state, -1);
 		//std::cout << "FUNCTION" << std::endl;
+		lua_Debug ar;
+		lua_getinfo(m_state, ">nS", &ar);
+		ObjectDescription& description = m_markedMap[lua_topointer(m_state, index)];
+		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
 	}
 }
 

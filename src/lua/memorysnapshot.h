@@ -17,6 +17,7 @@ int open(Lua& lua);
 
 int l_flat_lua_snapshot_snapshot(lua_State* L);
 int l_flat_lua_snapshot_diff(lua_State* L);
+int l_flat_lua_monitor(lua_State* L);
 
 class MemorySnapshot
 {
@@ -56,6 +57,7 @@ class MemorySnapshot
 		struct ObjectDescription
 		{
 			std::string value;
+			std::string definition;
 			std::vector<MarkSource> sources;
 		};
 
@@ -74,6 +76,7 @@ class MemorySnapshot
 		MemorySnapshot(const MemorySnapshot& first, const MemorySnapshot& second);
 
 		void writeToFile(const std::string& fileName) const;
+		void writeDigestToFile(const std::string& fileName) const;
 
 	protected:
 		bool isMarked(int index) const;

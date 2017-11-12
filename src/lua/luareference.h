@@ -3,11 +3,14 @@
 
 #include <lua5.3/lua.hpp>
 #include "debug.h"
+#include "../debug/helpers.h"
 
 namespace flat
 {
 namespace lua
 {
+
+FLAT_OPTIMIZE_OFF()
 
 template <int LuaType>
 class LuaReference
@@ -78,6 +81,8 @@ class LuaReference
 		lua_State* m_luaState;
 		int m_luaReference;
 };
+
+FLAT_OPTIMIZE_ON()
 
 } // lua
 } // flat
