@@ -79,21 +79,20 @@ class MemorySnapshot
 		void writeDigestToFile(const std::string& fileName) const;
 
 	protected:
-		bool isMarked(int index) const;
+		bool isMarked(lua_State* L, int index) const;
 
-		bool markPointer(int index, MarkSource markSource);
-		void markObject(int index, MarkSource markSource);
+		bool markPointer(lua_State* L, int index, MarkSource markSource);
+		void markObject(lua_State* L, int index, MarkSource markSource);
 
-		void markFunction(int index, MarkSource markSource);
-		void markThread(int index, MarkSource markSource);
-		void markTable(int index, MarkSource markSource);
-		void markLightUserData(int index, MarkSource markSource);
-		void markUserData(int index, MarkSource markSource);
+		void markFunction(lua_State* L, int index, MarkSource markSource);
+		void markThread(lua_State* L, int index, MarkSource markSource);
+		void markTable(lua_State* L, int index, MarkSource markSource);
+		void markLightUserData(lua_State* L, int index, MarkSource markSource);
+		void markUserData(lua_State* L, int index, MarkSource markSource);
 
-		void hasWeakKeysAndValues(int index, bool& weakKeys, bool& weakValues) const;
+		void hasWeakKeysAndValues(lua_State* L, int index, bool& weakKeys, bool& weakValues) const;
 
 	protected:
-		lua_State* m_state;
 		MarkedMap m_markedMap;
 };
 
