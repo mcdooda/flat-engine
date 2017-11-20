@@ -40,7 +40,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void setDirty() override;
 		FLAT_DEBUG_ONLY(void clearDirty() override;)
 
-		void update(float dt);
+		void update();
 
 		inline bool isMouseOver() const { return !m_mouseOverWidget.expired(); }
 		inline const std::weak_ptr<Widget>& getCurrentMouseOverWidget() const { return m_mouseOverWidget; }
@@ -55,7 +55,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 	private:
 		bool updateDirtyWidgets();
 		void updateDraggedWidgets();
-		void updateInput(bool updateMouseOver, float dt);
+		void updateInput(bool updateMouseOver);
 
 	private:
 		void handleLeftMouseButtonDown();
@@ -65,9 +65,10 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseMove();
 		void handleMouseEnter();
 		void handleMouseLeave();
-		void handleMouseWheel(float dt);
+		void handleMouseWheel();
 
-		static bool propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot);
+		template <class... Args>
+		static bool propagateEvent(Widget* widget, Slot<Widget*, bool&, Args...> Widget::* slot, Args... args);
 		
 	private:
 		Flat& m_flat;
@@ -81,6 +82,18 @@ class RootWidget : public WidgetImpl<RootLayout>
 		bool m_dirty : 1;
 };
 
+template <class... Args>
+bool RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&, Args...> Widget::* slot, Args... args)
+{
+	// propagate the event upwards until it is handled
+	bool eventHandled = false;
+	while (widget != nullptr && !eventHandled)
+	{
+		(widget->*slot)(widget, eventHandled, args...);
+		widget = widget->getParent().lock().get();
+	}
+	return eventHandled;
+}
 } // ui
 } // sharp
 } // flat

@@ -24,18 +24,18 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		TextInputWidget(const TextInputWidget&) = delete;
 		TextInputWidget(TextInputWidget&&) = delete;
 		TextInputWidget(Flat& flat, const std::shared_ptr<const video::font::Font>& font);
-		~TextInputWidget();
+		virtual ~TextInputWidget();
 		TextInputWidget& operator=(const TextInputWidget&) = delete;
 
 	public:
 		Slot<Widget*> valueChanged;
 		Slot<Widget*> submit;
-
+	
 	private:
 		bool enteredFocus(Widget* widget);
 		bool leftFocus(Widget* widget);
-		bool keyJustPressed(input::Key key);
-		bool textEdited(const std::string& text);
+		virtual bool keyJustPressed(input::Key key);
+		virtual bool textEdited(const std::string& text);
 
 	private:
 		Flat& m_flat;

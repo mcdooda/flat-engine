@@ -177,9 +177,9 @@ class Widget : public util::Convertible<Widget>
 		inline void hide() { setVisible(false); }
 		inline void show() { setVisible(true); }
 
-		inline void setAllowScrollX(bool allowScrollX) { m_allowScrollX = allowScrollX; }
+		void setAllowScrollX(bool allowScrollX);
 		inline bool getAllowScrollX() const { return m_allowScrollX; }
-		inline void setAllowScrollY(bool allowScrollY) { m_allowScrollY = allowScrollY; }
+		void setAllowScrollY(bool allowScrollY);
 		inline bool getAllowScrollY() const { return m_allowScrollY; }
 
 		inline void setRestrictScrollX(bool restrictScrollX) { m_restrictScrollX = restrictScrollX; }
@@ -187,8 +187,9 @@ class Widget : public util::Convertible<Widget>
 		inline void setRestrictScrollY(bool restrictScrollY) { m_restrictScrollY = restrictScrollY; }
 		inline bool getRestrictScrollY() const { return m_restrictScrollY; }
 
-		void scrollX(float scrollValueX, float dt);
-		void scrollY(float scrollValueY, float dt);
+		bool mouseWheelMoved(Widget* widget, bool& handled, const Vector2& offset);
+		void scrollX(float scrollValueX);
+		void scrollY(float scrollValueY);
 
 		inline const ScrollPosition& getScrollPosition() const { return m_scrollPosition; }
 
@@ -228,6 +229,7 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*, bool&> mouseDown;
 		Slot<Widget*, bool&> mouseUp;
 		Slot<Widget*, bool&> mouseMove;
+		Slot<Widget*, bool&, const Vector2&> mouseWheelMove; 
 		Slot<Widget*> scroll;
 		Slot<Widget*> dragged;
 		Slot<Widget*> mouseEnter;

@@ -123,7 +123,7 @@ void RootWidget::clearDirty()
 }
 #endif
 
-void RootWidget::update(float dt)
+void RootWidget::update()
 {
 	if (m_flat.input->window->isResized())
 	{
@@ -133,7 +133,7 @@ void RootWidget::update(float dt)
 	updateDraggedWidgets();
 
 	bool updateMouseOver = updateDirtyWidgets();
-	updateInput(updateMouseOver, dt);
+	updateInput(updateMouseOver);
 }
 
 void RootWidget::updateDraggedWidgets()
@@ -148,7 +148,7 @@ void RootWidget::updateDraggedWidgets()
 	}
 }
 
-void RootWidget::updateInput(bool updateMouseOver, float dt)
+void RootWidget::updateInput(bool updateMouseOver)
 {
 	auto& mouse = m_flat.input->mouse;
 
@@ -197,7 +197,7 @@ void RootWidget::updateInput(bool updateMouseOver, float dt)
 
 	if (mouse->wheelJustMoved())
 	{
-		handleMouseWheel(dt);
+		handleMouseWheel();
 	}
 }
 
@@ -326,50 +326,15 @@ void RootWidget::handleMouseLeave()
 	}
 }
 
-void RootWidget::handleMouseWheel(float dt)
+void RootWidget::handleMouseWheel()
 {
 	auto& mouse = m_flat.input->mouse;
 	const Vector2& wheelMove = mouse->getWheelMove();
 
-	if (wheelMove.x != 0.f)
+	if (wheelMove.x != 0.f || wheelMove.y != 0.f)
 	{
-		Widget* scrollableWidgetX = m_mouseOverWidget.lock().get();
-		while (scrollableWidgetX != nullptr && !scrollableWidgetX->getAllowScrollX())
-		{
-			scrollableWidgetX = scrollableWidgetX->getParent().lock().get();
-		}
-
-		if (scrollableWidgetX != nullptr)
-		{
-			scrollableWidgetX->scrollX(wheelMove.x, dt);
-		}
+		propagateEvent<const Vector2&>(m_mouseOverWidget.lock().get(), &Widget::mouseWheelMove, wheelMove);
 	}
-
-	if (wheelMove.y != 0.f)
-	{
-		Widget* scrollableWidgetY = m_mouseOverWidget.lock().get();
-		while (scrollableWidgetY != nullptr && !scrollableWidgetY->getAllowScrollY())
-		{
-			scrollableWidgetY = scrollableWidgetY->getParent().lock().get();
-		}
-
-		if (scrollableWidgetY != nullptr)
-		{
-			scrollableWidgetY->scrollY(wheelMove.y, dt);
-		}
-	}
-}
-
-bool RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&> Widget::* slot)
-{
-	// propagate the event upwards until it is handled
-	bool eventHandled = false;
-	while (widget != nullptr && !eventHandled)
-	{
-		(widget->*slot)(widget, eventHandled);
-		widget = widget->getParent().lock().get();
-	}
-	return eventHandled;
 }
 
 } // ui

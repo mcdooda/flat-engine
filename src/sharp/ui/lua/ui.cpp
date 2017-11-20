@@ -7,6 +7,7 @@
 #include "../canvaswidget.h"
 #include "../focusablewidget.h"
 #include "../textinputwidget.h"
+#include "../numberinputwidget.h"
 #include "../textwidget.h"
 #include "../widget.h"
 #include "../widgetfactory.h"
@@ -93,6 +94,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"mouseDown",             l_Widget_mouseDown},
 		{"mouseUp",               l_Widget_mouseUp},
 		{"mouseMove",             l_Widget_mouseMove},
+		{"mouseWheel",            l_Widget_mouseWheel},
 		{"mouseEnter",            l_Widget_mouseEnter},
 		{"mouseLeave",            l_Widget_mouseLeave},
 		{"scroll",                l_Widget_scroll},
@@ -104,6 +106,13 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"setText",               l_TextWidget_setText},
 		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
+
+		{"setValue",			  l_NumberInputWidget_setValue},
+		{"getValue",			  l_NumberInputWidget_getValue},
+		{"setStep",	         	  l_NumberInputWidget_setStep},
+		{"setMin",		          l_NumberInputWidget_setMin},
+		{"setMax",		          l_NumberInputWidget_setMax},
+		{"setRange",	          l_NumberInputWidget_setRange},
 
 		{"valueChanged",          l_TextInputWidget_valueChanged},
 		{"submit",                l_TextInputWidget_submit},
@@ -123,17 +132,18 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 	
 	// Widget static methods
 	static const luaL_Reg Widget_lib_s[] = {
-		{"getRoot",        l_Widget_getRoot},
-		{"focus",          l_Widget_focus},
+		{"getRoot",         l_Widget_getRoot},
+		{"focus",           l_Widget_focus},
 		
-		{"makeImage",      l_Widget_makeImage},
-		{"makeFixedSize",  l_Widget_makeFixedSize},
-		{"makeExpand",     l_Widget_makeExpand},
-		{"makeLineFlow",   l_Widget_makeLineFlow},
-		{"makeColumnFlow", l_Widget_makeColumnFlow},
-		{"makeText",       l_Widget_makeText},
-		{"makeTextInput",  l_Widget_makeTextInput},
-		{"makeCanvas",     l_Widget_makeCanvas},
+		{"makeImage",       l_Widget_makeImage},
+		{"makeFixedSize",   l_Widget_makeFixedSize},
+		{"makeExpand",      l_Widget_makeExpand},
+		{"makeLineFlow",    l_Widget_makeLineFlow},
+		{"makeColumnFlow",  l_Widget_makeColumnFlow},
+		{"makeText",        l_Widget_makeText},
+		{"makeTextInput",   l_Widget_makeTextInput},
+		{"makeNumberInput", l_Widget_makeNumberInput },
+		{"makeCanvas",      l_Widget_makeCanvas},
 		
 		{nullptr, nullptr}
 	};
@@ -656,6 +666,11 @@ int l_Widget_mouseMove(lua_State* L)
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseMove);
 }
 
+int l_Widget_mouseWheel(lua_State* L)
+{
+	return addPropagatedMouseWheelWidgetCallback(L, &Widget::mouseWheelMove);
+}
+
 int l_Widget_mouseEnter(lua_State* L)
 {
 	return addWidgetCallback<Widget>(L, &Widget::mouseEnter);
@@ -722,6 +737,59 @@ int l_TextInputWidget_valueChanged(lua_State* L)
 int l_TextInputWidget_submit(lua_State* L)
 {
 	return addWidgetCallback<TextInputWidget>(L, &TextInputWidget::submit);
+}
+
+int l_NumberInputWidget_setValue(lua_State* L)
+{
+	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	float value = static_cast<float>(luaL_checknumber(L, 2));
+	numberInputWidget.setValue(value);
+	return 0;
+}
+
+int l_NumberInputWidget_getValue(lua_State* L)
+{
+	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	lua_pushnumber(L, numberInputWidget.getValue());
+	return 1;
+}
+
+int l_NumberInputWidget_setStep(lua_State* L)
+{
+	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	float step = static_cast<float>(luaL_checknumber(L, 2));
+	numberInputWidget.setStep(step);
+	return 0;
+}
+
+int l_NumberInputWidget_setMin(lua_State* L)
+{
+	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	float min = static_cast<float>(luaL_checknumber(L, 2));
+	numberInputWidget.setMin(min);
+	return 0;
+}
+
+int l_NumberInputWidget_setMax(lua_State* L)
+{
+	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	float max = static_cast<float>(luaL_checknumber(L, 2));
+	numberInputWidget.setMax(max);
+	return 0;
+}
+
+int l_NumberInputWidget_setRange(lua_State* L)
+{
+	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	float min = static_cast<float>(luaL_checknumber(L, 2));
+	float max = static_cast<float>(luaL_checknumber(L, 3));
+	if(min > max)
+	{
+		luaL_error(L, "min %f must be lower than max %f", min, max);
+	}
+	numberInputWidget.setMin(min);
+	numberInputWidget.setMax(max);
+	return 0;
 }
 
 int l_FocusableWidget_focus(lua_State* L)
@@ -874,6 +942,16 @@ int l_Widget_makeTextInput(lua_State* L)
 	return 1;
 }
 
+int l_Widget_makeNumberInput(lua_State* L)
+{
+	const char* fileName = luaL_checkstring(L, 1);
+	int fontSize = static_cast<int>(luaL_checkinteger(L, 2));
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeNumberInput(fileName, fontSize);
+	pushWidget(L, widget);
+	return 1;
+}
+
 int l_Widget_makeCanvas(lua_State* L)
 {
 	int width = static_cast<int>(luaL_checkinteger(L, 1));
@@ -915,6 +993,18 @@ TextInputWidget& getTextInputWidget(lua_State* L, int index)
 		luaL_error(L, "TextInputWidget required, Widget given");
 	}
 	return *textInputWidget;
+}
+
+NumberInputWidget& getNumberInputWidget(lua_State* L, int index)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	Widget& widget = getWidget(L, index);
+	NumberInputWidget* numberInputWidget = dynamic_cast<NumberInputWidget*>(&widget);
+	if (!numberInputWidget)
+	{
+		luaL_error(L, "NumberInputWidget required, Widget given");
+	}
+	return *numberInputWidget;
 }
 
 FocusableWidget& getFocusableWidget(lua_State* L, int index)
@@ -972,6 +1062,12 @@ CanvasWidget& getWidgetOfType(lua_State* L, int index)
 	return getCanvasWidget(L, index);
 }
 
+template <>
+NumberInputWidget& getWidgetOfType(lua_State* L, int index)
+{
+	return getNumberInputWidget(L, index);
+}
+
 template <class T>
 int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot)
 {
@@ -1011,6 +1107,30 @@ int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slo
 			pushWidget(L, w->getSharedPtr());
 			lua_pushnumber(L, relativePosition.x);
 			lua_pushnumber(L, relativePosition.y);
+			lua_call(L, 3, 1);
+			eventHandled = eventHandled || lua_toboolean(L, -1);
+			lua_pop(L, 1);
+			return true;
+		}
+	);
+	return 0;
+}
+
+int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot)
+{
+	Widget& widget = getWidget(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	(widget.*slot).on(
+		[L, ref](Widget* w, bool& eventHandled, const Vector2& offset)
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			ref.push(L);
+			luaL_checktype(L, -1, LUA_TFUNCTION);
+			pushWidget(L, w->getSharedPtr());
+			lua_pushnumber(L, offset.x);
+			lua_pushnumber(L, offset.y);
 			lua_call(L, 3, 1);
 			eventHandled = eventHandled || lua_toboolean(L, -1);
 			lua_pop(L, 1);

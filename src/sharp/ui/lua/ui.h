@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "../../../misc/slot.h"
+#include "../../../misc/lua/vector2.h"
 
 struct lua_State;
 
@@ -20,6 +21,7 @@ namespace ui
 class CanvasWidget;
 class FocusableWidget;
 class TextInputWidget;
+class NumberInputWidget;
 class TextWidget;
 class RootWidget;
 class Widget;
@@ -92,6 +94,7 @@ int l_Widget_rightClick(lua_State* L);
 int l_Widget_mouseDown(lua_State* L);
 int l_Widget_mouseUp(lua_State* L);
 int l_Widget_mouseMove(lua_State* L);
+int l_Widget_mouseWheel(lua_State* L);
 int l_Widget_mouseEnter(lua_State* L);
 int l_Widget_mouseLeave(lua_State* L);
 int l_Widget_scroll(lua_State* L);
@@ -108,6 +111,14 @@ int l_TextWidget_setTextColor(lua_State* L);
 // TextInputWidget only
 int l_TextInputWidget_valueChanged(lua_State* L);
 int l_TextInputWidget_submit(lua_State* L);
+
+// NumberInputWidget only
+int l_NumberInputWidget_setValue(lua_State* L);
+int l_NumberInputWidget_getValue(lua_State* L);
+int l_NumberInputWidget_setStep(lua_State* L);
+int l_NumberInputWidget_setMin(lua_State* L);
+int l_NumberInputWidget_setMax(lua_State* L);
+int l_NumberInputWidget_setRange(lua_State* L);
 
 // FocusableWidget only
 int l_FocusableWidget_focus(lua_State* L);
@@ -131,12 +142,14 @@ int l_Widget_makeLineFlow(lua_State* L);
 int l_Widget_makeColumnFlow(lua_State* L);
 int l_Widget_makeText(lua_State* L);
 int l_Widget_makeTextInput(lua_State* L);
+int l_Widget_makeNumberInput(lua_State* L);
 int l_Widget_makeCanvas(lua_State* L);
 
 // private
 Widget& getWidget(lua_State* L, int index);
 TextWidget& getTextWidget(lua_State* L, int index);
 TextInputWidget& getTextInputWidget(lua_State* L, int index);
+NumberInputWidget& getNumberInputWidget(lua_State* L, int index);
 FocusableWidget& getFocusableWidget(lua_State* L, int index);
 CanvasWidget& getCanvasWidget(lua_State* L, int index);
 
@@ -146,6 +159,7 @@ template <class T>
 int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot);
 template <class T>
 int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
+int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot);
 
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);

@@ -110,34 +110,86 @@ void Widget::setBackground(const std::shared_ptr<const video::Texture>& backgrou
 	setBackgroundColor(flat::video::Color::WHITE);
 }
 
-void Widget::scrollX(float scrollValueX, float dt)
+void Widget::setAllowScrollX(bool allowScrollX)
 {
-	m_scrollPosition.x += scrollValueX * dt * SCROLL_SPEED;
-
-	if (m_restrictScrollX)
+	if(!m_allowScrollY)
 	{
-		m_scrollPosition.x = std::min(m_scrollPosition.x, 0.f);
-		m_scrollPosition.x = std::max(m_scrollPosition.x, m_minScrollPosition.x);
+		if (allowScrollX && !m_allowScrollX)
+		{
+			mouseWheelMove.on(this, &Widget::mouseWheelMoved);
+		}
+		else
+		{
+			mouseWheelMove.off(this);
+		}
 	}
-
-	m_scrolled = true;
-
-	setAncestorDirty();
+	m_allowScrollX = allowScrollX; 
 }
 
-void Widget::scrollY(float scrollValueY, float dt)
+void Widget::setAllowScrollY(bool allowScrollY)
 {
-	m_scrollPosition.y += scrollValueY * dt * SCROLL_SPEED;
-
-	if (m_restrictScrollY)
+	if(!m_allowScrollX)
 	{
-		m_scrollPosition.y = std::max(m_scrollPosition.y, m_minScrollPosition.y);
-		m_scrollPosition.y = std::min(m_scrollPosition.y, 0.f);
+		if (allowScrollY && !m_allowScrollY)
+		{
+			mouseWheelMove.on(this, &Widget::mouseWheelMoved);
+		}
+		else
+		{
+			mouseWheelMove.off(this);
+		}
+	}	
+	m_allowScrollY = allowScrollY;
+}
+
+bool Widget::mouseWheelMoved(Widget* widget, bool& handled, const Vector2& offset)
+{
+	handled = true;
+	if (offset.x != 0)
+	{
+		scrollX(offset.x);
 	}
+	if (offset.y != 0)
+	{
+		scrollY(offset.y);
+	}
+	return true;
+}
 
-	m_scrolled = true;
+void Widget::scrollX(float scrollValueX)
+{
+	if(m_allowScrollX)
+	{
+		m_scrollPosition.x += scrollValueX;
 
-	setAncestorDirty();
+		if (m_restrictScrollX)
+		{
+			m_scrollPosition.x = std::min(m_scrollPosition.x, 0.f);
+			m_scrollPosition.x = std::max(m_scrollPosition.x, m_minScrollPosition.x);
+		}
+
+		m_scrolled = true;
+
+		setAncestorDirty();
+	}
+}
+
+void Widget::scrollY(float scrollValueY)
+{
+	if(m_allowScrollY)
+	{
+		m_scrollPosition.y += scrollValueY;
+
+		if (m_restrictScrollY)
+		{
+			m_scrollPosition.y = std::max(m_scrollPosition.y, m_minScrollPosition.y);
+			m_scrollPosition.y = std::min(m_scrollPosition.y, 0.f);
+		}
+
+		m_scrolled = true;
+
+		setAncestorDirty();
+	}
 }
 
 void Widget::drag()

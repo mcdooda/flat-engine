@@ -1,6 +1,7 @@
 #include "canvaswidget.h"
 #include "rootwidget.h"
 #include "textinputwidget.h"
+#include "numberinputwidget.h"
 #include "textwidget.h"
 #include "widgetfactory.h"
 #include "../../flat/game.h"
@@ -83,6 +84,14 @@ std::shared_ptr<TextInputWidget> WidgetFactory::makeTextInput(const std::string&
 {
 	std::shared_ptr<const video::font::Font> font = m_flat.video->getFont(fileName, fontSize);
 	std::shared_ptr<TextInputWidget> widget = std::make_shared<TextInputWidget>(m_flat, font);
+	widget->setWeakPtr(widget);
+	return widget;
+}
+
+std::shared_ptr<TextInputWidget> WidgetFactory::makeNumberInput(const std::string& fileName, int fontSize) const
+{
+	std::shared_ptr<const video::font::Font> font = m_flat.video->getFont(fileName, fontSize);
+	std::shared_ptr<NumberInputWidget> widget = std::make_shared<NumberInputWidget>(m_flat, font);
 	widget->setWeakPtr(widget);
 	return widget;
 }
