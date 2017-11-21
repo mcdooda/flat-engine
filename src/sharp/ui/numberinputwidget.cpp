@@ -125,7 +125,7 @@ bool NumberInputWidget::keyJustPressed(input::Key key)
 		setText(text);
 		valueChanged(this);
 	}
-	if (key == K(RETURN))
+	if (key == K(RETURN) || key == K(KP_ENTER))
 	{
 		float value;
 		if (text.empty())

@@ -60,7 +60,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		setText(text);
 		valueChanged(this);
 	}
-	else if (key == K(RETURN))
+	else if (key == K(RETURN) || key == K(KP_ENTER))
 	{
 		submit(this);
 	}
