@@ -147,11 +147,7 @@ int l_Widget_makeCanvas(lua_State* L);
 
 // private
 Widget& getWidget(lua_State* L, int index);
-TextWidget& getTextWidget(lua_State* L, int index);
-TextInputWidget& getTextInputWidget(lua_State* L, int index);
-NumberInputWidget& getNumberInputWidget(lua_State* L, int index);
 FocusableWidget& getFocusableWidget(lua_State* L, int index);
-CanvasWidget& getCanvasWidget(lua_State* L, int index);
 
 template <class T>
 T& getWidgetOfType(lua_State* L, int index);

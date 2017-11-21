@@ -707,7 +707,7 @@ int l_Widget_drop(lua_State * L)
 
 int l_TextWidget_setText(lua_State* L)
 {
-	TextWidget& textWidget = getTextWidget(L, 1);
+	TextWidget& textWidget = getWidgetOfType<TextWidget>(L, 1);
 	const char* text = luaL_checkstring(L, 2);
 	textWidget.setText(text);
 	return 0;
@@ -715,14 +715,14 @@ int l_TextWidget_setText(lua_State* L)
 
 int l_TextWidget_getText(lua_State* L)
 {
-	TextWidget& textWidget = getTextWidget(L, 1);
+	TextWidget& textWidget = getWidgetOfType<TextWidget>(L, 1);
 	lua_pushstring(L, textWidget.getText().c_str());
 	return 1;
 }
 
 int l_TextWidget_setTextColor(lua_State* L)
 {
-	TextWidget& textWidget = getTextWidget(L, 1);
+	TextWidget& textWidget = getWidgetOfType<TextWidget>(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	flat::video::Color textColor(color);
 	textWidget.setTextColor(textColor);
@@ -741,7 +741,7 @@ int l_TextInputWidget_submit(lua_State* L)
 
 int l_NumberInputWidget_setValue(lua_State* L)
 {
-	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
 	float value = static_cast<float>(luaL_checknumber(L, 2));
 	numberInputWidget.setValue(value);
 	return 0;
@@ -749,14 +749,14 @@ int l_NumberInputWidget_setValue(lua_State* L)
 
 int l_NumberInputWidget_getValue(lua_State* L)
 {
-	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
 	lua_pushnumber(L, numberInputWidget.getValue());
 	return 1;
 }
 
 int l_NumberInputWidget_setStep(lua_State* L)
 {
-	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
 	float step = static_cast<float>(luaL_checknumber(L, 2));
 	numberInputWidget.setStep(step);
 	return 0;
@@ -764,7 +764,7 @@ int l_NumberInputWidget_setStep(lua_State* L)
 
 int l_NumberInputWidget_setMin(lua_State* L)
 {
-	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
 	float min = static_cast<float>(luaL_checknumber(L, 2));
 	numberInputWidget.setMin(min);
 	return 0;
@@ -772,7 +772,7 @@ int l_NumberInputWidget_setMin(lua_State* L)
 
 int l_NumberInputWidget_setMax(lua_State* L)
 {
-	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
 	float max = static_cast<float>(luaL_checknumber(L, 2));
 	numberInputWidget.setMax(max);
 	return 0;
@@ -780,7 +780,7 @@ int l_NumberInputWidget_setMax(lua_State* L)
 
 int l_NumberInputWidget_setRange(lua_State* L)
 {
-	NumberInputWidget& numberInputWidget = getNumberInputWidget(L, 1);
+	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
 	float min = static_cast<float>(luaL_checknumber(L, 2));
 	float max = static_cast<float>(luaL_checknumber(L, 3));
 	if(min > max)
@@ -809,14 +809,14 @@ int l_CanvasWidget_draw(lua_State * L)
 
 int l_CanvasWidget_redraw(lua_State * L)
 {
-	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	canvasWidget.layoutFinished(&canvasWidget);
 	return 0;
 }
 
 int l_CanvasWidget_clear(lua_State * L)
 {
-	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	flat::video::Color clearColor(color);
 	canvasWidget.clear(clearColor);
@@ -825,7 +825,7 @@ int l_CanvasWidget_clear(lua_State * L)
 
 int l_CanvasWidget_drawLine(lua_State* L)
 {
-	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	float width = static_cast<float>(luaL_checknumber(L, 3));
 	flat::Vector2 from = flat::lua::getVector2(L, 4);
@@ -837,7 +837,7 @@ int l_CanvasWidget_drawLine(lua_State* L)
 
 int l_CanvasWidget_drawBezier(lua_State * L)
 {
-	CanvasWidget& canvasWidget = getCanvasWidget(L, 1);
+	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	float width = static_cast<float>(luaL_checknumber(L, 3));
 	luaL_checktype(L, 4, LUA_TTABLE);
@@ -971,42 +971,6 @@ Widget& getWidget(lua_State* L, int index)
 	return LuaWidget::get(L, index);
 }
 
-TextWidget& getTextWidget(lua_State* L, int index)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	Widget& widget = getWidget(L, index);
-	TextWidget* textWidget = dynamic_cast<TextWidget*>(&widget);
-	if (!textWidget)
-	{
-		luaL_error(L, "TextWidget required, Widget given");
-	}
-	return *textWidget;
-}
-
-TextInputWidget& getTextInputWidget(lua_State* L, int index)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	Widget& widget = getWidget(L, index);
-	TextInputWidget* textInputWidget = dynamic_cast<TextInputWidget*>(&widget);
-	if (!textInputWidget)
-	{
-		luaL_error(L, "TextInputWidget required, Widget given");
-	}
-	return *textInputWidget;
-}
-
-NumberInputWidget& getNumberInputWidget(lua_State* L, int index)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	Widget& widget = getWidget(L, index);
-	NumberInputWidget* numberInputWidget = dynamic_cast<NumberInputWidget*>(&widget);
-	if (!numberInputWidget)
-	{
-		luaL_error(L, "NumberInputWidget required, Widget given");
-	}
-	return *numberInputWidget;
-}
-
 FocusableWidget& getFocusableWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -1020,52 +984,29 @@ FocusableWidget& getFocusableWidget(lua_State* L, int index)
 	return *focusableWidget;
 }
 
-CanvasWidget& getCanvasWidget(lua_State * L, int index)
-{
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	Widget& widget = getWidget(L, index);
-	CanvasWidget* canvasWidget = dynamic_cast<CanvasWidget*>(&widget);
-	if (!canvasWidget)
-	{
-		luaL_error(L, "CanvasWidget required, Widget given");
-	}
-	return *canvasWidget;
-}
-
 template <>
 Widget& getWidgetOfType(lua_State* L, int index)
 {
 	return getWidget(L, index);
 }
 
-template <>
-TextWidget& getWidgetOfType(lua_State* L, int index)
-{
-	return getTextWidget(L, index);
-}
-
-template <>
-TextInputWidget& getWidgetOfType(lua_State* L, int index)
-{
-	return getTextInputWidget(L, index);
-}
-
-template <>
+template<>
 FocusableWidget& getWidgetOfType(lua_State* L, int index)
 {
 	return getFocusableWidget(L, index);
 }
 
-template <>
-CanvasWidget& getWidgetOfType(lua_State* L, int index)
+template <class T>
+T& getWidgetOfType(lua_State* L, int index)
 {
-	return getCanvasWidget(L, index);
-}
-
-template <>
-NumberInputWidget& getWidgetOfType(lua_State* L, int index)
-{
-	return getNumberInputWidget(L, index);
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	Widget& widget = getWidget(L, index);
+	T* widgetOfType = dynamic_cast<T*>(&widget);
+	if (!widgetOfType)
+	{
+		luaL_error(L, "Widget expected");
+	}
+	return *widgetOfType;
 }
 
 template <class T>
