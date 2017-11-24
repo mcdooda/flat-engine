@@ -37,7 +37,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"removeChild",           l_Widget_removeChild},
 		{"removeFromParent",      l_Widget_removeFromParent},
 		{"removeAllChildren",     l_Widget_removeAllChildren},
-		
+
 		{"setSizePolicy",         l_Widget_setSizePolicy},
 		{"setSizePolicyX",        l_Widget_setSizePolicyX},
 		{"setSizePolicyY",        l_Widget_setSizePolicyY},
@@ -45,13 +45,13 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"setSize",               l_Widget_setSize},
 		{"getSize",               l_Widget_getSize},
 		{"getComputedSize",       l_Widget_getComputedSize},
-		
+
 		{"setPositionPolicy",     l_Widget_setPositionPolicy},
 		{"getPositionPolicy",     l_Widget_getPositionPolicy},
 		{"setPosition",           l_Widget_setPosition},
 		{"getPosition",           l_Widget_getPosition},
 		{"getRelativePosition",   l_Widget_getRelativePosition},
-		
+
 		{"setRotation",           l_Widget_setRotation},
 		{"setRotationZ",          l_Widget_setRotationZ},
 		{"getRotation",           l_Widget_getRotation},
@@ -61,13 +61,13 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 
 		{"setPadding",            l_Widget_setPadding},
 		{"getPadding",            l_Widget_getPadding},
-		
+
 		{"setBackground",         l_Widget_setBackground},
 		{"setBackgroundRepeat",   l_Widget_setBackgroundRepeat},
 		{"setBackgroundColor",    l_Widget_setBackgroundColor},
 		{"setBackgroundPosition", l_Widget_setBackgroundPosition},
 		{"setBackgroundSize",     l_Widget_setBackgroundSize},
-		
+
 		{"setVisible",            l_Widget_setVisible},
 		{"getVisible",            l_Widget_getVisible},
 		{"hide",                  l_Widget_hide},
@@ -79,6 +79,9 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"getAllowScrollY",       l_Widget_getAllowScrollY},
 		{"setAllowScroll",        l_Widget_setAllowScroll},
 		{"getAllowScroll",        l_Widget_getAllowScroll},
+
+		{"setAllowDragScrolling", l_Widget_setAllowDragScrolling},
+		{"getAllowDragScrolling", l_Widget_getAllowDragScrolling},
 
 		{"setRestrictScrollX",    l_Widget_setRestrictScrollX},
 		{"getRestrictScrollX",    l_Widget_getRestrictScrollX},
@@ -582,6 +585,21 @@ int l_Widget_getAllowScroll(lua_State* L)
 	lua_pushboolean(L, widget.getAllowScrollX());
 	lua_pushboolean(L, widget.getAllowScrollY());
 	return 2;
+}
+
+int l_Widget_setAllowDragScrolling(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool allowDragScrolling = lua_toboolean(L, 2) == 1;
+	widget.setAllowDragScrolling(allowDragScrolling);
+	return 0;
+}
+
+int l_Widget_getAllowDragScrolling(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushboolean(L, widget.getAllowDragScrolling());
+	return 1;
 }
 
 int l_Widget_setRestrictScrollX(lua_State* L)

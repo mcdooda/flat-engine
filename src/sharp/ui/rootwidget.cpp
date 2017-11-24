@@ -12,7 +12,8 @@ namespace ui
 
 RootWidget::RootWidget(Flat& flat) : Super(),
 	m_flat(flat),
-	m_dirty(true)
+	m_dirty(true),
+	m_dragScrolled(false)
 {
 	setSizePolicy(Widget::SizePolicy::FIXED);
 }
@@ -131,6 +132,7 @@ void RootWidget::update()
 	}
 
 	updateDraggedWidgets();
+	updateDragScrollingWidget();
 
 	bool updateMouseOver = updateDirtyWidgets();
 	updateInput(updateMouseOver);
@@ -145,6 +147,23 @@ void RootWidget::updateDraggedWidgets()
 		const Vector2& relativePosition = std::get<1>(draggedWidget);
 		widget->setAbsolutePosition(mouse->getPosition() - relativePosition);
 		widget->m_dragged = true;
+	}
+}
+
+void RootWidget::updateDragScrollingWidget()
+{
+	if (!m_dragScrollingWidget.expired())
+	{
+		Widget* widget = m_dragScrollingWidget.lock().get();
+		FLAT_ASSERT(widget != nullptr);
+
+		auto& mouse = m_flat.input->mouse;
+		ScrollPosition newScrollPosition = -m_dragScrollingOffset - mouse->getPosition();
+		if (newScrollPosition != widget->getScrollPosition())
+		{
+			widget->setScrollPosition(newScrollPosition);
+			m_dragScrolled = true;
+		}
 	}
 }
 
@@ -295,12 +314,42 @@ void RootWidget::handleLeftMouseButtonUp()
 
 void RootWidget::handleRightMouseButtonDown()
 {
-	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::rightClick);
+	m_dragScrolled = false;
+
+	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
+
+	Widget* widget = mouseOverWidget;
+	while (widget != nullptr && !widget->getAllowDragScrolling())
+	{
+		widget = widget->getParent().lock().get();
+	}
+
+	if (widget != nullptr)
+	{
+		auto& mouse = m_flat.input->mouse;
+
+		m_dragScrollingWidget = widget->getWeakPtr();
+		m_dragScrollingOffset = -widget->getScrollPosition() - mouse->getPosition();
+	}
+	else if (mouseOverWidget != nullptr)
+	{
+		propagateEvent(mouseOverWidget, &Widget::rightClick);
+	}
 }
 
 void RootWidget::handleRightMouseButtonUp()
 {
-
+	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
+	if (mouseOverWidget != nullptr)
+	{
+		m_dragScrollingWidget.reset();
+	}
+	
+	if (!m_dragScrolled)
+	{
+		propagateEvent(mouseOverWidget, &Widget::rightClick);
+	}
+	m_dragScrolled = false;
 }
 
 void RootWidget::handleMouseMove()
