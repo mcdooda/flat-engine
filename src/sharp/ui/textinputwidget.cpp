@@ -58,13 +58,25 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	std::string text = getText();
 	if (key == K(BACKSPACE) && !text.empty())
 	{
-		FLAT_ASSERT(m_cursor <= text.size());
 		if (m_cursor > 0)
 		{
+			FLAT_ASSERT(m_cursor - 1 < text.size());
 			text = text.erase(m_cursor - 1, 1);
 			if (text != getText())
 			{
 				moveCursor(-1);
+				setText(text);
+				valueChanged(this);
+			}
+		}
+	}
+	else if (key == K(DELETE) && !text.empty())
+	{
+		if (m_cursor < text.size())
+		{
+			text = text.erase(m_cursor, 1);
+			if (text != getText())
+			{
 				setText(text);
 				valueChanged(this);
 			}
