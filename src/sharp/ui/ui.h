@@ -2,8 +2,8 @@
 #define FLAT_SHARP_UI_UI_H
 
 #include <memory>
-#include "rootwidget.h"
 #include "widgetfactory.h"
+#include "cursor.h"
 
 namespace flat
 {
@@ -12,15 +12,23 @@ namespace sharp
 {
 namespace ui
 {
+class RootWidget;
 
 class Ui
 {
 	public:
 		Ui(Flat& flat);
 
+		void setCursor(CursorType cursorType);
+		void setDefaultCursor();
+
 	public:
 		WidgetFactory factory;
 		std::shared_ptr<sharp::ui::RootWidget> root;
+
+	private:
+		std::shared_ptr<Cursor> m_cursor;
+		std::shared_ptr<Cursor> m_defaultCursor;
 };
 
 } // ui

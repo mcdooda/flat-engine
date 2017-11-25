@@ -33,6 +33,8 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 
 		void draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const override;
 
+		CursorType getCursorType() const override;
+
 	public:
 		Slot<Widget*> valueChanged;
 		Slot<Widget*> submit;

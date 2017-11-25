@@ -375,6 +375,11 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 	drawChildren(renderSettings, scissor);
 }
 
+CursorType Widget::getCursorType() const
+{
+	return CURSOR(ARROW);
+}
+
 bool Widget::isInside(const Vector2& point) const
 {
 	if (!m_visible)

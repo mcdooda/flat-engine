@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include "cursor.h"
 #include "../../misc/vector.h"
 #include "../../misc/matrix4.h"
 #include "../../video/attribute.h"
@@ -216,6 +217,8 @@ class Widget : public util::Convertible<Widget>
 		virtual void layoutDone();
 
 		virtual void draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const;
+
+		virtual CursorType getCursorType() const;
 
 		template <class CandidateLayoutType>
 		bool hasLayout() const;

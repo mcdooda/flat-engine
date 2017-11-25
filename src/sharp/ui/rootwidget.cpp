@@ -177,6 +177,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 		if (mouseOverWidget == this) // root
 		{
 			mouseOverWidget = nullptr;
+			m_flat.ui->setDefaultCursor();
 		}
 
 		if (mouseOverWidget != m_mouseOverWidget.lock().get())
@@ -184,6 +185,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 			handleMouseLeave();
 			if (mouseOverWidget != nullptr)
 			{
+				m_flat.ui->setCursor(mouseOverWidget->getCursorType());
 				m_mouseOverWidget = mouseOverWidget->getWeakPtr();
 			}
 			else

@@ -33,7 +33,11 @@ void TextInputWidget::draw(const render::RenderSettings& renderSettings, const S
 	drawCursor(renderSettings, m_cursorIndex);
 }
 
-FLAT_OPTIMIZE_OFF()
+CursorType TextInputWidget::getCursorType() const
+{
+	return CURSOR(IBEAM);
+}
+
 bool TextInputWidget::enteredFocus(Widget* widget)
 {
 	m_inputContext = std::make_unique<input::context::InputContext>(m_flat);
@@ -44,7 +48,6 @@ bool TextInputWidget::enteredFocus(Widget* widget)
 	m_inputContext->getKeyboardInputContext().setEnableTextInput(true);
 	return true;
 }
-FLAT_OPTIMIZE_ON()
 
 bool TextInputWidget::leftFocus(Widget* widget)
 {
