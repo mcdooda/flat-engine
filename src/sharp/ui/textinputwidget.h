@@ -36,10 +36,12 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		bool leftFocus(Widget* widget);
 		virtual bool keyJustPressed(input::Key key);
 		virtual bool textEdited(const std::string& text);
+		void moveCursor(int offset);
 
 	private:
 		Flat& m_flat;
 		std::shared_ptr<input::context::InputContext> m_inputContext;
+		size_t m_cursor;
 };
 
 } // ui
