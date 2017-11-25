@@ -24,6 +24,12 @@ TextInputWidget::~TextInputWidget()
 	leaveFocus.off(this);
 }
 
+void TextInputWidget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
+{
+	TextWidget::draw(renderSettings, parentScissor);
+	drawCursor(renderSettings, static_cast<CursorIndex>(getText().size()));
+}
+
 bool TextInputWidget::enteredFocus(Widget* widget)
 {
 	m_inputContext = std::make_unique<input::context::InputContext>(m_flat);
@@ -77,6 +83,53 @@ bool TextInputWidget::textEdited(const std::string& text)
 		valueChanged(this);
 	}
 	return true;
+}
+
+float TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
+{
+	const size_t textLength = getText().size();
+	FLAT_ASSERT_MSG(0 <= cursorIndex && cursorIndex <= textLength, "the cursor index is out of the string's range");
+	const std::vector<CharacterVertex>& vertices = getVertices();
+	if (cursorIndex == 0)
+	{
+		return 0.f;
+	}
+	else
+	{
+		return vertices[(cursorIndex - 1) * 6 + 1].x;
+	}
+}
+
+void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, CursorIndex cursorIndex) const
+{
+	if (!hasFocus())
+		return;
+
+	renderSettings.modelMatrixUniform.set(m_transform);
+
+	renderSettings.colorUniform.set(getTextColor());
+	renderSettings.secondaryColorUniform.set(video::Color::BLACK);
+	renderSettings.textureGivenUniform.set(false);
+
+	const video::font::Font* font = getFont().get();
+	FLAT_ASSERT(font != nullptr);
+
+	const float characterHeight = font->getAtlasSize().y;
+	const float cursorX = getCursorPositionFromIndex(cursorIndex);
+
+	std::array<String::CharacterVertex, 2> cursorVertices = {
+		String::CharacterVertex(cursorX, 0.f),
+		String::CharacterVertex(cursorX, characterHeight)
+	};
+
+	glLineWidth(1);
+
+	glEnableVertexAttribArray(renderSettings.positionAttribute);
+	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const float*>(&cursorVertices[0]));
+
+	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(cursorVertices.size()));
+
+	glDisableVertexAttribArray(renderSettings.positionAttribute);
 }
 
 } // ui

@@ -15,12 +15,13 @@ namespace font
 
 class String
 {
-	struct CharacterVertex
-	{
-		float x;
-		float y;
-		CharacterVertex(float x, float y) : x(x), y(y) {}
-	};
+	protected:
+		struct CharacterVertex
+		{
+			float x;
+			float y;
+			CharacterVertex(float x, float y) : x(x), y(y) {}
+		};
 	
 	public:
 		String() = delete;
