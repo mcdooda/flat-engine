@@ -53,6 +53,7 @@ bool NumberInputWidget::wheelJustMoved(ui::Widget* widget, bool& handled, const 
 	submit(this);
 	return true;
 }
+
 std::string NumberInputWidget::floatToString(float f)
 {
 	std::stringstream ss;
@@ -60,23 +61,23 @@ std::string NumberInputWidget::floatToString(float f)
 	return ss.str();
 }
 
-std::string NumberInputWidget::floatToString(float f, unsigned int precision)
+std::string NumberInputWidget::floatToString(float f, size_t precision)
 {
 	std::stringstream ss;
 	ss << std::fixed << std::setprecision(precision) << f;
 	return ss.str();
 }
 
-unsigned int NumberInputWidget::getPrecision(float f)
+size_t NumberInputWidget::getPrecision(float f)
 {
 	std::stringstream ss;
 	ss << f;
 	return getPrecision(ss.str());
 }
 
-unsigned int NumberInputWidget::getPrecision(const std::string& s)
+size_t NumberInputWidget::getPrecision(const std::string& s)
 {
-	unsigned int precision = 0;
+	size_t precision = 0;
 	try
 	{
 		size_t i;

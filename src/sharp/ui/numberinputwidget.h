@@ -31,9 +31,9 @@ class NumberInputWidget : public TextInputWidget
 		
 	private:
 		static std::string floatToString(float f);
-		static std::string floatToString(float f, unsigned int precision);
-		static unsigned int getPrecision(float f);
-		static unsigned int getPrecision(const std::string& s);
+		static std::string floatToString(float f, size_t precision);
+		static size_t getPrecision(float f);
+		static size_t getPrecision(const std::string& s);
 		void correctValue(float& value);
 		bool keyJustPressed(input::Key key) override;
 		bool textEdited(const std::string& text) override;
