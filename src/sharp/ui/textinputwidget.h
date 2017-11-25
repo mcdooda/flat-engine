@@ -40,17 +40,19 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 	private:
 		bool enteredFocus(Widget* widget);
 		bool leftFocus(Widget* widget);
+		bool onMouseDown(Widget* widget, bool&);
 		virtual bool keyJustPressed(input::Key key);
 		virtual bool textEdited(const std::string& text);
 		void moveCursor(int offset);
 
 		float getCursorPositionFromIndex(CursorIndex cursorIndex) const;
+		CursorIndex getCursorIndexFromPosition(float x) const;
 		void drawCursor(const render::RenderSettings& renderSettings, CursorIndex cursorIndex) const;
 
 	private:
 		Flat& m_flat;
 		std::shared_ptr<input::context::InputContext> m_inputContext;
-		size_t m_cursor;
+		CursorIndex m_cursorIndex;
 };
 
 } // ui
