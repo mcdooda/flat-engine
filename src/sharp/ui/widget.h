@@ -182,6 +182,9 @@ class Widget : public util::Convertible<Widget>
 		void setAllowScrollY(bool allowScrollY);
 		inline bool getAllowScrollY() const { return m_allowScrollY; }
 
+		inline void setAllowDragScrolling(bool allowDragScrolling) { m_allowDragScrolling = allowDragScrolling; }
+		inline bool getAllowDragScrolling() { return m_allowDragScrolling; }
+
 		inline void setRestrictScrollX(bool restrictScrollX) { m_restrictScrollX = restrictScrollX; }
 		inline bool getRestrictScrollX() const { return m_restrictScrollX; }
 		inline void setRestrictScrollY(bool restrictScrollY) { m_restrictScrollY = restrictScrollY; }
@@ -191,6 +194,9 @@ class Widget : public util::Convertible<Widget>
 		void scrollX(float scrollValueX);
 		void scrollY(float scrollValueY);
 
+		void setScrollX(float scrollX);
+		void setScrollY(float scrollY);
+		void setScrollPosition(const ScrollPosition& scrollPosition);
 		inline const ScrollPosition& getScrollPosition() const { return m_scrollPosition; }
 
 		void drag();
@@ -281,6 +287,7 @@ class Widget : public util::Convertible<Widget>
 		bool m_visible : 1;
 		bool m_allowScrollX : 1;
 		bool m_allowScrollY : 1;
+		bool m_allowDragScrolling : 1;
 		bool m_restrictScrollX : 1;
 		bool m_restrictScrollY : 1;
 

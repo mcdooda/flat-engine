@@ -55,6 +55,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 	private:
 		bool updateDirtyWidgets();
 		void updateDraggedWidgets();
+		void updateDragScrollingWidget();
 		void updateInput(bool updateMouseOver);
 
 	private:
@@ -78,8 +79,12 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		std::vector<std::tuple<std::weak_ptr<Widget>, Vector2>> m_draggedWidgets;
 
+		std::weak_ptr<Widget> m_dragScrollingWidget;
+		Vector2 m_dragScrollingOffset;
+
 		std::vector<std::weak_ptr<Widget>> m_dirtyWidgets;
 		bool m_dirty : 1;
+		bool m_dragScrolled : 1;
 };
 
 template <class... Args>

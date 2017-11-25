@@ -80,6 +80,9 @@ int l_Widget_getAllowScrollY(lua_State* L);
 int l_Widget_setAllowScroll(lua_State* L);
 int l_Widget_getAllowScroll(lua_State* L);
 
+int l_Widget_setAllowDragScrolling(lua_State* L);
+int l_Widget_getAllowDragScrolling(lua_State* L);
+
 int l_Widget_setRestrictScrollX(lua_State* L);
 int l_Widget_getRestrictScrollX(lua_State* L);
 int l_Widget_setRestrictScrollY(lua_State* L);

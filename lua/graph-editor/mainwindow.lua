@@ -80,6 +80,7 @@ function MainWindow:build()
     content:setSizePolicy(Widget.SizePolicy.EXPAND)
     content:setMargin(3)
     content:setAllowScroll(true, true)
+    content:setAllowDragScrolling(true)
     content:setRestrictScroll(false, false)
 
     local function draw()
@@ -423,7 +424,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             else
                 nodeWidget:setOutputPinPlugged(outputPin, true)
             end
-            nodeWidget:updateCustomEditor()
+            nodeWidget:updateCustomNodeEditor()
         else
             local nodeWidget = self.nodeWidgets[currentLink.inputNode]
             nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
@@ -451,6 +452,8 @@ function MainWindow:openNodeListMenu(x, y)
     self:closeNodeContextualMenu()
 
     local nodeListMenu = self:openRightClickMenu()
+    nodeListMenu:setSizePolicy(Widget.SizePolicy.FIXED)
+    nodeListMenu:setSize(150, 350)
 
     local line = Widget.makeLineFlow()
     line:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
@@ -537,9 +540,13 @@ function MainWindow:openNodeListMenu(x, y)
     local spacer = Widget.makeFixedSize(100, 1)
     nodeListMenu:addChild(spacer)
 
+    local nodesContainerScroller = Widget.makeColumnFlow()
+    nodesContainerScroller:setSizePolicy(Widget.SizePolicy.EXPAND)
+    nodesContainerScroller:setAllowScrollY(true)
     nodesContainer = Widget.makeColumnFlow()
     updateNodes()
-    nodeListMenu:addChild(nodesContainer)
+    nodesContainerScroller:addChild(nodesContainer)
+    nodeListMenu:addChild(nodesContainerScroller)
 
     Widget.focus(textInputWidget)
 

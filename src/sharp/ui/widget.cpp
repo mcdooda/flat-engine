@@ -31,6 +31,7 @@ Widget::Widget() :
 	m_visible(true),
 	m_allowScrollX(false),
 	m_allowScrollY(false),
+	m_allowDragScrolling(false),
 	m_restrictScrollX(true),
 	m_restrictScrollY(true),
 	m_mouseOver(false),
@@ -158,9 +159,19 @@ bool Widget::mouseWheelMoved(Widget* widget, bool& handled, const Vector2& offse
 
 void Widget::scrollX(float scrollValueX)
 {
-	if(m_allowScrollX)
+	setScrollX(m_scrollPosition.x + scrollValueX);
+}
+
+void Widget::scrollY(float scrollValueY)
+{
+	setScrollY(m_scrollPosition.y + scrollValueY);
+}
+
+void Widget::setScrollX(float scrollX)
+{
+	if (m_allowScrollX)
 	{
-		m_scrollPosition.x += scrollValueX;
+		m_scrollPosition.x = scrollX;
 
 		if (m_restrictScrollX)
 		{
@@ -174,11 +185,11 @@ void Widget::scrollX(float scrollValueX)
 	}
 }
 
-void Widget::scrollY(float scrollValueY)
+void Widget::setScrollY(float scrollY)
 {
-	if(m_allowScrollY)
+	if (m_allowScrollY)
 	{
-		m_scrollPosition.y += scrollValueY;
+		m_scrollPosition.y = scrollY;
 
 		if (m_restrictScrollY)
 		{
@@ -190,6 +201,12 @@ void Widget::scrollY(float scrollValueY)
 
 		setAncestorDirty();
 	}
+}
+
+void Widget::setScrollPosition(const ScrollPosition& scrollPosition)
+{
+	setScrollX(scrollPosition.x);
+	setScrollY(scrollPosition.y);
 }
 
 void Widget::drag()
