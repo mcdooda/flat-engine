@@ -36,12 +36,14 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 	public:
 		Slot<Widget*> valueChanged;
 		Slot<Widget*> submit;
+
+	protected:
+		virtual bool textEdited(const std::string& text);
+		virtual bool keyJustPressed(input::Key key);
 	
 	private:
 		bool enteredFocus(Widget* widget);
 		bool leftFocus(Widget* widget);
-		virtual bool keyJustPressed(input::Key key);
-		virtual bool textEdited(const std::string& text);
 		void moveCursor(int offset);
 
 		float getCursorPositionFromIndex(CursorIndex cursorIndex) const;
