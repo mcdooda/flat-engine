@@ -13,24 +13,27 @@ namespace ui
 
 TextInputWidget::TextInputWidget(Flat& flat, const std::shared_ptr<const video::font::Font>& font) : TextWidget(font),
 	m_flat(flat),
-	m_cursor(0)
+	m_cursorIndex(0)
 {
 	enterFocus.on(this, &TextInputWidget::enteredFocus);
 	leaveFocus.on(this, &TextInputWidget::leftFocus);
+	mouseDown.on(this, &TextInputWidget::onMouseDown);
 }
 
 TextInputWidget::~TextInputWidget()
 {
 	enterFocus.off(this);
 	leaveFocus.off(this);
+	mouseDown.off(this);
 }
 
 void TextInputWidget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
 {
 	TextWidget::draw(renderSettings, parentScissor);
-	drawCursor(renderSettings, m_cursor);
+	drawCursor(renderSettings, m_cursorIndex);
 }
 
+FLAT_OPTIMIZE_OFF()
 bool TextInputWidget::enteredFocus(Widget* widget)
 {
 	m_inputContext = std::make_unique<input::context::InputContext>(m_flat);
@@ -39,9 +42,9 @@ bool TextInputWidget::enteredFocus(Widget* widget)
 	m_inputContext->getKeyboardInputContext().keyJustPressed.on(this, &TextInputWidget::keyJustPressed);
 	m_inputContext->getKeyboardInputContext().textEdited.on(this, &TextInputWidget::textEdited);
 	m_inputContext->getKeyboardInputContext().setEnableTextInput(true);
-	m_cursor = getText().size();
 	return true;
 }
+FLAT_OPTIMIZE_ON()
 
 bool TextInputWidget::leftFocus(Widget* widget)
 {
@@ -53,15 +56,23 @@ bool TextInputWidget::leftFocus(Widget* widget)
 	return true;
 }
 
+bool TextInputWidget::onMouseDown(Widget* widget, bool&)
+{
+	auto& mouse = m_flat.input->mouse;
+	const float mouseX = getRelativePosition(mouse->getPosition()).x;
+	m_cursorIndex = getCursorIndexFromPosition(mouseX);
+	return true;
+}
+
 bool TextInputWidget::keyJustPressed(input::Key key)
 {
 	std::string text = getText();
 	if (key == K(BACKSPACE) && !text.empty())
 	{
-		if (m_cursor > 0)
+		if (m_cursorIndex > 0)
 		{
-			FLAT_ASSERT(m_cursor - 1 < text.size());
-			text = text.erase(m_cursor - 1, 1);
+			FLAT_ASSERT(m_cursorIndex - 1 < text.size());
+			text = text.erase(m_cursorIndex - 1, 1);
 			if (text != getText())
 			{
 				moveCursor(-1);
@@ -72,9 +83,9 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	}
 	else if (key == K(DELETE) && !text.empty())
 	{
-		if (m_cursor < text.size())
+		if (m_cursorIndex < text.size())
 		{
-			text = text.erase(m_cursor, 1);
+			text = text.erase(m_cursorIndex, 1);
 			if (text != getText())
 			{
 				setText(text);
@@ -100,7 +111,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 bool TextInputWidget::textEdited(const std::string& text)
 {
 	std::string currentText = getText();
-	currentText.insert(m_cursor, text);
+	currentText.insert(m_cursorIndex, text);
 	if (currentText != getText())
 	{
 		setText(currentText);
@@ -112,16 +123,16 @@ bool TextInputWidget::textEdited(const std::string& text)
 
 void TextInputWidget::moveCursor(int offset)
 {
-	if (offset > 0 || m_cursor >= static_cast<size_t>(std::abs(offset)))
+	if (offset > 0 || m_cursorIndex >= static_cast<CursorIndex>(std::abs(offset)))
 	{
-		m_cursor += offset;
-		if (m_cursor < 0)
+		m_cursorIndex += offset;
+		if (m_cursorIndex < 0)
 		{
-			m_cursor = 0;
+			m_cursorIndex = 0;
 		}
-		else if (m_cursor > getText().size())
+		else if (m_cursorIndex > getText().size())
 		{
-			m_cursor = getText().size();
+			m_cursorIndex = getText().size();
 		}
 	}
 }
@@ -138,6 +149,52 @@ float TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
 	else
 	{
 		return vertices[(cursorIndex - 1) * 6 + 1].x;
+	}
+}
+
+TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(float x) const
+{
+	const size_t textLength = getText().size();
+	if (textLength == 0)
+	{
+		return 0;
+	}
+
+	const std::vector<CharacterVertex>& vertices = getVertices();
+	if (x < vertices[0].x)
+	{
+		return 0;
+	}
+	else if (x > vertices[vertices.size() - 1].x)
+	{
+		return textLength;
+	}
+	else
+	{
+		CursorIndex minIndex = 0;
+		CursorIndex maxIndex = textLength;
+		while (minIndex + 1 < maxIndex)
+		{
+			CursorIndex centerIndex = (minIndex + maxIndex) / 2;
+			float centerCharacterPositionX = getCursorPositionFromIndex(centerIndex);
+			if (x < centerCharacterPositionX)
+			{
+				maxIndex = centerIndex;
+			}
+			else
+			{
+				minIndex = centerIndex;
+			}
+		}
+
+		if (x - getCursorPositionFromIndex(minIndex) < getCursorPositionFromIndex(maxIndex) - x)
+		{
+			return minIndex;
+		}
+		else
+		{
+			return maxIndex;
+		}
 	}
 }
 
