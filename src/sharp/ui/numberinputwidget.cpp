@@ -114,18 +114,6 @@ void NumberInputWidget::correctValue(float& f)
 bool NumberInputWidget::keyJustPressed(input::Key key)
 {
 	std::string text = getText();
-	if (key == K(BACKSPACE))
-	{
-		if (!text.empty())
-		{
-			text = text.substr(0, text.size() - 1);
-		}
-	}
-	if (text != getText())
-	{
-		setText(text);
-		valueChanged(this);
-	}
 	if (key == K(RETURN) || key == K(KP_ENTER))
 	{
 		float value;
@@ -148,6 +136,10 @@ bool NumberInputWidget::keyJustPressed(input::Key key)
 	{
 		stepDown();
 	}
+	else
+	{
+		return TextInputWidget::keyJustPressed(key);
+	}
 	return true;
 }
 
@@ -161,8 +153,7 @@ bool NumberInputWidget::textEdited(const std::string& text)
 		float value = std::stof(currentText, &i);
 		if (currentText != getText() && i == currentText.size() && getPrecision(value) <= getPrecision(m_step))
 		{
-			setText(currentText);
-			valueChanged(this);
+			TextInputWidget::textEdited(text);
 		}
 	}
 	catch (const std::invalid_argument&)
