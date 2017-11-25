@@ -22,6 +22,8 @@ class FocusableWidget : public virtual Widget
 
 		bool canBeFocused() const override;
 
+		inline bool hasFocus() const { return m_hasFocus; }
+
 	public:
 		Slot<Widget*> enterFocus;
 		Slot<Widget*> leaveFocus;

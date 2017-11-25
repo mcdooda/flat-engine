@@ -24,6 +24,7 @@ class TextWidget : public virtual WidgetImpl<FixedLayout>, public video::font::S
 		
 		void setText(const std::string& text);
 		inline void setTextColor(const video::Color& textColor) { m_textColor = textColor; }
+		inline const video::Color& getTextColor() const { return m_textColor; }
 		
 		void draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const override;
 
