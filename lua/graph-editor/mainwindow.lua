@@ -424,7 +424,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             else
                 nodeWidget:setOutputPinPlugged(outputPin, true)
             end
-            nodeWidget:updateCustomEditor()
+            nodeWidget:updateCustomNodeEditor()
         else
             local nodeWidget = self.nodeWidgets[currentLink.inputNode]
             nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
