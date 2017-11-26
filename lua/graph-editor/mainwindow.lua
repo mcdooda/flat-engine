@@ -5,7 +5,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local MainWindow = {}
 MainWindow.__index = MainWindow
 
-function MainWindow:open(editorContainer, metadata)
+function MainWindow:open(editorContainer, metadata, onSave)
     assert(editorContainer, 'no editor container')
     local o = setmetatable({
         graph = nil,
@@ -16,7 +16,8 @@ function MainWindow:open(editorContainer, metadata)
         currentLink = nil,
         nodeListMenu = nil,
         nodeContextualMenu = nil,
-        metadata = metadata
+        metadata = metadata,
+        onSave = onSave
     }, self)
     o:build()
     return o
@@ -59,6 +60,9 @@ function MainWindow:build()
                 self:saveGraphLayout()
                 self:saveLuaRunnerFile()
                 self:updateCustomNodeEditors()
+                if self.onSave then
+                    self:onSave()
+                end
             end)
             titleContainer:addChild(saveButton)
         end
@@ -418,13 +422,15 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             local updateWidget = outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
             self.currentLink = nil
             self:drawLinks()
-            local nodeWidget = self.nodeWidgets[outputNode]
+            local outputNodeWidget = self.nodeWidgets[outputNode]
             if updateWidget then
-                nodeWidget:rebuild()
+                outputNodeWidget:rebuild()
             else
-                nodeWidget:setOutputPinPlugged(outputPin, true)
+                outputNodeWidget:setOutputPinPlugged(outputPin, true)
             end
-            nodeWidget:updateCustomNodeEditor()
+            outputNodeWidget:updateCustomNodeEditor()
+            local inputNodeWidget = self.nodeWidgets[currentLink.inputNode]
+            inputNodeWidget:updateCustomNodeEditor()
         else
             local nodeWidget = self.nodeWidgets[currentLink.inputNode]
             nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
