@@ -388,6 +388,11 @@ void RootWidget::handleMouseWheel()
 	}
 }
 
+CursorType RootWidget::getCursorType() const
+{
+	return CURSOR(ARROW);
+}
+
 } // ui
 } // sharp
 } // flat

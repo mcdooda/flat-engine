@@ -52,6 +52,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void focus(Widget* widget);
 
+		CursorType getCursorType() const override;
+
 	private:
 		bool updateDirtyWidgets();
 		void updateDraggedWidgets();
