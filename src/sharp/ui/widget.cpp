@@ -299,13 +299,7 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 
 		renderSettings.colorUniform.set(m_backgroundColor);
 
-		video::Color color = video::Color::WHITE;
-		if (!m_mouseOver || !leftClick.on())
-		{
-			color = video::Color::BLACK;
-		}
-
-		renderSettings.secondaryColorUniform.set(color);
+		renderSettings.secondaryColorUniform.set(video::Color::BLACK);
 
 		// enable vertex attrib array
 		// position
@@ -377,7 +371,18 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 
 CursorType Widget::getCursorType() const
 {
-	return CURSOR(ARROW);
+	if (leftClick.on())
+	{
+		return CURSOR(HAND);
+	}
+
+	if (!m_parent.expired())
+	{
+		Widget* parent = m_parent.lock().get();
+		return parent->getCursorType();
+	}
+
+	return INVALID_CURSOR;
 }
 
 bool Widget::isInside(const Vector2& point) const
