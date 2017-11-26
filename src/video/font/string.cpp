@@ -2,6 +2,8 @@
 #include <algorithm>
 #include "string.h"
 
+#include <iostream>
+
 namespace flat
 {
 namespace video
@@ -16,7 +18,7 @@ String::String(const std::shared_ptr<const Font>& font) :
 	
 }
 
-void String::setText(const std::string& text)
+void String::setText(const std::string& text, const Color& color)
 {
 	size_t textLength = text.size();
 	m_text = text;
@@ -52,13 +54,13 @@ void String::setText(const std::string& text)
 				float fy0 = y + characterHeight;
 				float fy1 = y;
 		
-				m_vertices.emplace_back(fx0, fy0);
-				m_vertices.emplace_back(fx1, fy0);
-				m_vertices.emplace_back(fx0, fy1);
+				m_vertices.emplace_back(fx0, fy0, color);
+				m_vertices.emplace_back(fx1, fy0, color);
+				m_vertices.emplace_back(fx0, fy1, color);
 		
-				m_vertices.emplace_back(fx1, fy1);
-				m_vertices.emplace_back(fx0, fy1);
-				m_vertices.emplace_back(fx1, fy0);
+				m_vertices.emplace_back(fx1, fy1, color);
+				m_vertices.emplace_back(fx0, fy1, color);
+				m_vertices.emplace_back(fx1, fy0, color);
 			
 				std::copy(ci.uv.begin(), ci.uv.end(), std::back_inserter(m_uv));
 
@@ -68,6 +70,20 @@ void String::setText(const std::string& text)
 	}
 	m_size.x = x;
 	m_size.y = y + characterHeight;
+}
+
+void String::setColor(int from, int to, const Color& color)
+{
+	FLAT_ASSERT(from >= 0 && from <= m_text.size());
+	FLAT_ASSERT(to >= 0 && to <= m_text.size());
+	FLAT_ASSERT(from <= to);
+	for (int i = from; i < to; i++)
+	{
+		for (int j = 0; j < 6; j++)
+		{
+			m_vertices[i * 6 + j].color = color;
+		}
+	}
 }
 
 } // font

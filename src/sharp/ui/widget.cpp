@@ -296,7 +296,8 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 			renderSettings.textureGivenUniform.set(false);
 		}
 		renderSettings.modelMatrixUniform.set(m_transform);
-
+		renderSettings.vertexColorGivenUniform.set(false);
+		
 		renderSettings.colorUniform.set(m_backgroundColor);
 
 		renderSettings.secondaryColorUniform.set(video::Color::BLACK);

@@ -19,6 +19,7 @@ struct RenderSettings
 	video::Uniform<Matrix4>        modelMatrixUniform;
 	video::Uniform<Matrix4>        normalMatrixUniform;
 	video::Uniform<Matrix4>        viewProjectionMatrixUniform;
+	video::Uniform<bool>           vertexColorGivenUniform;
 
 	video::Attribute positionAttribute;
 	video::Attribute normalAttribute;

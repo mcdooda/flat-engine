@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "font.h"
+#include "video\color.h"
 
 namespace flat
 {
@@ -20,7 +21,9 @@ class String
 		{
 			float x;
 			float y;
-			CharacterVertex(float x, float y) : x(x), y(y) {}
+			Color color;
+			CharacterVertex(float x, float y) : x(x), y(y), color(Color::WHITE) {}
+			CharacterVertex(float x, float y, const Color& color) : x(x), y(y), color(color){}
 		};
 	
 	public:
@@ -34,8 +37,10 @@ class String
 		inline void setWrapLength(int wrapLength) { m_wrapLength = wrapLength; }
 		inline void setNoWrap() { setWrapLength(0); }
 		
-		void setText(const std::string& text);
+		void setText(const std::string& text, const Color& color = Color::WHITE);
 		inline const std::string& getText() const { return m_text; }
+
+		void setColor(int from, int to, const Color& style);
 		
 		inline const std::vector<CharacterVertex>& getVertices() const { return m_vertices; }
 		inline const std::vector<Font::CharInfoUv>& getUv() const { return m_uv; }
@@ -43,7 +48,7 @@ class String
 		inline const std::shared_ptr<const Font>& getFont() const { return m_font; }
 		
 		inline const Vector2& getComputedSize() const { return m_size; }
-		
+
 	private:
 		std::string m_text;
 		std::shared_ptr<const Font> m_font;

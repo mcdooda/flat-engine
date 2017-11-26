@@ -226,8 +226,7 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 	glLineWidth(1);
 
 	glEnableVertexAttribArray(renderSettings.positionAttribute);
-	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const float*>(&cursorVertices[0]));
-
+	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
 	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(cursorVertices.size()));
 
 	glDisableVertexAttribArray(renderSettings.positionAttribute);
