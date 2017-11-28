@@ -43,6 +43,11 @@ namespace lua
 			{
 				Super::reset();
 			}
+
+			inline operator bool() const
+			{
+				return m_luaReference != LUA_NOREF;
+			}
 	};
 
 } // lua
