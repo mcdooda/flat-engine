@@ -251,7 +251,7 @@ void MemorySnapshot::markFunction(lua_State* L, int index, MarkSource markSource
 		lua_Debug ar;
 		lua_getinfo(L, ">nS", &ar);
 		ObjectDescription& description = m_markedMap[lua_topointer(L, index)];
-		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
+		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous function>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
 
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -277,7 +277,7 @@ void MemorySnapshot::markThread(lua_State* L, int index, MarkSource markSource)
 		lua_Debug ar;
 		lua_getinfo(L, ">nS", &ar);
 		ObjectDescription& description = m_markedMap[lua_topointer(L, index)];
-		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
+		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous thread>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
 
 		lua_State* L2 = lua_tothread(L, index);
 		int top = lua_gettop(L2);
@@ -299,7 +299,7 @@ void MemorySnapshot::markTable(lua_State* L, int index, MarkSource markSource)
 		lua_Debug ar;
 		lua_getinfo(L, ">nS", &ar);
 		ObjectDescription& description = m_markedMap[lua_topointer(L, index)];
-		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
+		description.definition = std::string(ar.namewhat) + " " + (ar.name ? ar.name : "<anonymous table>") + " from " + ar.short_src + ":" + std::to_string(ar.linedefined);
 
 		bool weakKeys = false;
 		bool weakValues = false;
