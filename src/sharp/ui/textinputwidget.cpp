@@ -13,11 +13,13 @@ namespace ui
 
 TextInputWidget::TextInputWidget(Flat& flat, const std::shared_ptr<const video::font::Font>& font) : TextWidget(font),
 	m_flat(flat),
-	m_cursorIndex(0)
+	m_cursorIndex(0),
+	m_selectionIndex(0)
 {
 	enterFocus.on(this, &TextInputWidget::enteredFocus);
 	leaveFocus.on(this, &TextInputWidget::leftFocus);
 	mouseDown.on(this, &TextInputWidget::onMouseDown);
+	mouseMove.on(this, &TextInputWidget::onMouseMove);
 }
 
 TextInputWidget::~TextInputWidget()
@@ -29,6 +31,7 @@ TextInputWidget::~TextInputWidget()
 
 void TextInputWidget::draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const
 {
+	drawSelection(renderSettings, m_cursorIndex, m_selectionIndex);
 	TextWidget::draw(renderSettings, parentScissor);
 	drawCursor(renderSettings, m_cursorIndex);
 }
@@ -51,6 +54,10 @@ bool TextInputWidget::enteredFocus(Widget* widget)
 
 bool TextInputWidget::leftFocus(Widget* widget)
 {
+	if(hasSelectedText())
+	{
+		unselect();
+	}
 	m_inputContext->getKeyboardInputContext().keyJustPressed.off(this);
 	m_inputContext->getKeyboardInputContext().textEdited.off(this);
 	m_inputContext->getKeyboardInputContext().setEnableTextInput(false);
@@ -61,9 +68,26 @@ bool TextInputWidget::leftFocus(Widget* widget)
 
 bool TextInputWidget::onMouseDown(Widget* widget, bool&)
 {
+	if (hasSelectedText())
+	{
+		unselect();
+	}
 	auto& mouse = m_flat.input->mouse;
 	const float mouseX = getRelativePosition(mouse->getPosition()).x;
 	m_cursorIndex = getCursorIndexFromPosition(mouseX);
+	m_selectionIndex = m_cursorIndex;
+	return true;
+}
+
+bool TextInputWidget::onMouseMove(Widget* widget, bool&)
+{
+	auto& mouse = m_flat.input->mouse;
+	if (hasFocus() && mouse->isPressed(M(LEFT)))
+	{
+		const float mouseX = getRelativePosition(mouse->getPosition()).x;
+		m_cursorIndex = getCursorIndexFromPosition(mouseX);
+		selectTo(m_selectionIndex);
+	}
 	return true;
 }
 
@@ -72,7 +96,12 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	std::string text = getText();
 	if (key == K(BACKSPACE) && !text.empty())
 	{
-		if (m_cursorIndex > 0)
+		if (hasSelectedText())
+		{
+			replaceSelectedText("");
+			valueChanged(this);
+		}
+		else if(m_cursorIndex > 0)
 		{
 			FLAT_ASSERT(m_cursorIndex - 1 < text.size());
 			text = text.erase(m_cursorIndex - 1, 1);
@@ -86,7 +115,12 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	}
 	else if (key == K(DELETE) && !text.empty())
 	{
-		if (m_cursorIndex < text.size())
+		if (hasSelectedText())
+		{
+			replaceSelectedText("");
+			valueChanged(this);
+		}
+		else if (m_cursorIndex < text.size())
 		{
 			text = text.erase(m_cursorIndex, 1);
 			if (text != getText())
@@ -114,11 +148,9 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 bool TextInputWidget::textEdited(const std::string& text)
 {
 	std::string currentText = getText();
-	currentText.insert(m_cursorIndex, text);
-	if (currentText != getText())
+	if (!text.empty())
 	{
-		setText(currentText);
-		moveCursor(static_cast<int>(text.size()));
+		replaceSelectedText(text);
 		valueChanged(this);
 	}
 	return true;
@@ -126,7 +158,19 @@ bool TextInputWidget::textEdited(const std::string& text)
 
 void TextInputWidget::moveCursor(int offset)
 {
-	if (offset > 0 || m_cursorIndex >= static_cast<CursorIndex>(std::abs(offset)))
+	if (hasSelectedText())
+	{
+		if (offset < 0)
+		{
+			m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
+		}
+		else
+		{
+			m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
+		}
+		unselect();
+	}
+	else if (offset > 0 || m_cursorIndex >= static_cast<CursorIndex>(std::abs(offset)))
 	{
 		m_cursorIndex += offset;
 		if (m_cursorIndex < 0)
@@ -137,7 +181,42 @@ void TextInputWidget::moveCursor(int offset)
 		{
 			m_cursorIndex = getText().size();
 		}
+		m_selectionIndex = m_cursorIndex;
 	}
+}
+
+void TextInputWidget::selectTo(CursorIndex to)
+{
+	setColor(0u, static_cast<unsigned int>(getText().size()), getTextColor());
+	unsigned int first = static_cast<unsigned int>(std::min(m_selectionIndex, m_cursorIndex));
+	unsigned int last = static_cast<unsigned int>(std::max(m_selectionIndex, m_cursorIndex));
+	setColor(first, last, video::Color::WHITE);
+}
+
+void TextInputWidget::unselect()
+{
+	setColor(0u, static_cast<unsigned int>(getText().size()), getTextColor());
+	m_selectionIndex = m_cursorIndex;
+}
+
+void TextInputWidget::replaceSelectedText(const std::string& text)
+{
+	CursorIndex min = std::min(m_cursorIndex, m_selectionIndex);
+	CursorIndex max = std::max(m_cursorIndex, m_selectionIndex);
+	std::string currentText = getText();
+	currentText.erase(min, max - min);
+	currentText.insert(min, text);
+	if (currentText != getText())
+	{
+		setText(currentText);
+	}
+	m_cursorIndex = min + text.size();
+	unselect();
+}
+
+bool TextInputWidget::hasSelectedText()
+{
+	return m_cursorIndex != m_selectionIndex;
 }
 
 float TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
@@ -211,6 +290,7 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 	renderSettings.colorUniform.set(getTextColor());
 	renderSettings.secondaryColorUniform.set(video::Color::BLACK);
 	renderSettings.textureGivenUniform.set(false);
+	renderSettings.vertexColorGivenUniform.set(false);
 
 	const video::font::Font* font = getFont().get();
 	FLAT_ASSERT(font != nullptr);
@@ -228,6 +308,43 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 	glEnableVertexAttribArray(renderSettings.positionAttribute);
 	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
 	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(cursorVertices.size()));
+
+	glDisableVertexAttribArray(renderSettings.positionAttribute);
+}
+
+void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const
+{
+	if (!hasFocus() || first == last)
+		return;
+
+	renderSettings.modelMatrixUniform.set(m_transform);
+
+	renderSettings.colorUniform.set(video::Color(uint32_t(0x4286f4FF)));
+	renderSettings.secondaryColorUniform.set(video::Color::BLACK);
+	renderSettings.textureGivenUniform.set(false);
+	renderSettings.vertexColorGivenUniform.set(false);
+
+	const video::font::Font* font = getFont().get();
+	FLAT_ASSERT(font != nullptr);
+
+	const float characterHeight = font->getAtlasSize().y;
+	const float firstX = getCursorPositionFromIndex(first);
+	const float lastX = getCursorPositionFromIndex(last);
+
+	std::array<String::CharacterVertex, 6> cursorVertices = {
+		String::CharacterVertex(firstX, 0.f),
+		String::CharacterVertex(lastX, 0.f),
+		String::CharacterVertex(firstX, characterHeight),
+		String::CharacterVertex(firstX, characterHeight),
+		String::CharacterVertex(lastX, 0.f),
+		String::CharacterVertex(lastX, characterHeight)
+	};
+
+	glLineWidth(1);
+
+	glEnableVertexAttribArray(renderSettings.positionAttribute);
+	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
+	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cursorVertices.size()));
 
 	glDisableVertexAttribArray(renderSettings.positionAttribute);
 }

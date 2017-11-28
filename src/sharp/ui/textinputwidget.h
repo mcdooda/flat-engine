@@ -19,7 +19,6 @@ class Widget;
 class TextInputWidget : public FocusableWidget, public TextWidget
 {
 	using Widget = ui::Widget;
-
 	public:
 		using CursorIndex = size_t;
 
@@ -47,16 +46,23 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		bool enteredFocus(Widget* widget);
 		bool leftFocus(Widget* widget);
 		bool onMouseDown(Widget* widget, bool&);
+		bool onMouseMove(Widget* widget, bool&);
 		void moveCursor(int offset);
+		void selectTo(CursorIndex to);
+		void unselect();
+		void replaceSelectedText(const std::string& text);
+		bool hasSelectedText();
 
 		float getCursorPositionFromIndex(CursorIndex cursorIndex) const;
 		CursorIndex getCursorIndexFromPosition(float x) const;
 		void drawCursor(const render::RenderSettings& renderSettings, CursorIndex cursorIndex) const;
+		void drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const;
 
 	private:
 		Flat& m_flat;
 		std::shared_ptr<input::context::InputContext> m_inputContext;
 		CursorIndex m_cursorIndex;
+		CursorIndex m_selectionIndex;
 };
 
 } // ui

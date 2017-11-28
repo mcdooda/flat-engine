@@ -72,14 +72,14 @@ void String::setText(const std::string& text, const Color& color)
 	m_size.y = y + characterHeight;
 }
 
-void String::setColor(int from, int to, const Color& color)
+void String::setColor(unsigned int from, unsigned int to, const Color& color)
 {
 	FLAT_ASSERT(from >= 0 && from <= m_text.size());
 	FLAT_ASSERT(to >= 0 && to <= m_text.size());
 	FLAT_ASSERT(from <= to);
-	for (int i = from; i < to; i++)
+	for (unsigned int i = from; i < to; i++)
 	{
-		for (int j = 0; j < 6; j++)
+		for (unsigned int j = 0; j < 6; j++)
 		{
 			m_vertices[i * 6 + j].color = color;
 		}
