@@ -136,6 +136,8 @@ void RootWidget::update()
 
 	bool updateMouseOver = updateDirtyWidgets();
 	updateInput(updateMouseOver);
+
+	updateCursor();
 }
 
 void RootWidget::updateDraggedWidgets()
@@ -177,7 +179,6 @@ void RootWidget::updateInput(bool updateMouseOver)
 		if (mouseOverWidget == this) // root
 		{
 			mouseOverWidget = nullptr;
-			m_flat.ui->setDefaultCursor();
 		}
 
 		if (mouseOverWidget != m_mouseOverWidget.lock().get())
@@ -185,7 +186,6 @@ void RootWidget::updateInput(bool updateMouseOver)
 			handleMouseLeave();
 			if (mouseOverWidget != nullptr)
 			{
-				m_flat.ui->setCursor(mouseOverWidget->getCursorType());
 				m_mouseOverWidget = mouseOverWidget->getWeakPtr();
 			}
 			else
@@ -312,6 +312,8 @@ void RootWidget::handleLeftMouseButtonUp()
 	{
 		propagateEvent(mouseDownWidget, &Widget::mouseUp);
 	}
+
+	m_mouseDownWidget.reset();
 }
 
 void RootWidget::handleRightMouseButtonDown()
@@ -356,8 +358,15 @@ void RootWidget::handleRightMouseButtonUp()
 
 void RootWidget::handleMouseMove()
 {
-	propagateEvent(m_mouseDownWidget.lock().get(), &Widget::mouseMove);
-	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseMove);
+	Widget* mouseDownWidget = m_mouseDownWidget.lock().get();
+	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
+
+	propagateEvent(mouseDownWidget, &Widget::mouseMove);
+
+	if (mouseOverWidget != mouseDownWidget)
+	{
+		propagateEvent(mouseOverWidget, &Widget::mouseMove);
+	}
 }
 
 void RootWidget::handleMouseEnter()
@@ -392,6 +401,29 @@ void RootWidget::handleMouseWheel()
 CursorType RootWidget::getCursorType() const
 {
 	return CURSOR(ARROW);
+}
+
+void RootWidget::updateCursor() const
+{
+	Widget* cursorWidget = nullptr;
+
+	if (!m_mouseDownWidget.expired())
+	{
+		cursorWidget = m_mouseDownWidget.lock().get();
+	}
+	else
+	{
+		cursorWidget = m_mouseOverWidget.lock().get();
+	}
+
+	if (cursorWidget != nullptr)
+	{
+		m_flat.ui->setCursor(cursorWidget->getCursorType());
+	}
+	else
+	{
+		m_flat.ui->setDefaultCursor();
+	}
 }
 
 } // ui

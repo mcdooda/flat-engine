@@ -59,6 +59,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void updateDraggedWidgets();
 		void updateDragScrollingWidget();
 		void updateInput(bool updateMouseOver);
+		void updateCursor() const;
 
 	private:
 		void handleLeftMouseButtonDown();
