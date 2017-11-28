@@ -356,6 +356,7 @@ void RootWidget::handleRightMouseButtonUp()
 
 void RootWidget::handleMouseMove()
 {
+	propagateEvent(m_mouseDownWidget.lock().get(), &Widget::mouseMove);
 	propagateEvent(m_mouseOverWidget.lock().get(), &Widget::mouseMove);
 }
 
