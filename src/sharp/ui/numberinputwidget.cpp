@@ -156,7 +156,7 @@ bool NumberInputWidget::textEdited(const std::string& text)
 			TextInputWidget::textEdited(text);
 		}
 	}
-	catch (const std::invalid_argument&)
+	catch (...)
 	{
 	}
 	return true;

@@ -98,13 +98,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	{
 		if (hasSelectedText())
 		{
-			std::string text = replaceSelectedText("");
-			if (text != getText())
-			{
-				setText(text);
-			}
-			m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
-			unselect();
+			changeSelectedText("");
 			valueChanged(this);
 		}
 		else if(m_cursorIndex > 0)
@@ -123,13 +117,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	{
 		if (hasSelectedText())
 		{
-			std::string text = replaceSelectedText("");
-			if (text != getText())
-			{
-				setText(text);
-				m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
-			}
-			unselect();
+			changeSelectedText("");
 			valueChanged(this);
 		}
 		else if (m_cursorIndex < text.size())
@@ -161,13 +149,7 @@ bool TextInputWidget::textEdited(const std::string& text)
 {
 	if (!text.empty())
 	{
-		std::string replacedText = replaceSelectedText(text);
-		if (replacedText != getText())
-		{
-			setText(replacedText);
-		}
-		m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex) + text.size();
-		unselect();
+		changeSelectedText(text);
 		valueChanged(this);
 	}
 	return true;
@@ -226,6 +208,16 @@ std::string TextInputWidget::replaceSelectedText(const std::string& text)
 	return currentText;
 }
 
+void TextInputWidget::changeSelectedText(const std::string& text)
+{
+	std::string newText = replaceSelectedText(text);
+	if (newText != getText())
+	{
+		setText(newText);
+	}
+	m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex) + text.size();
+	unselect();
+}
 
 bool TextInputWidget::hasSelectedText()
 {
