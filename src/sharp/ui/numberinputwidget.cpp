@@ -146,12 +146,12 @@ bool NumberInputWidget::keyJustPressed(input::Key key)
 bool NumberInputWidget::textEdited(const std::string& text)
 {
 	std::string currentText = getText();
-	currentText += text;
+	std::string newText = replaceSelectedText(text);
 	try
 	{
 		size_t i = 0;
-		float value = std::stof(currentText, &i);
-		if (currentText != getText() && i == currentText.size() && getPrecision(value) <= getPrecision(m_step))
+		float value = std::stof(newText, &i);
+		if (i == newText.size() && getPrecision(value) <= getPrecision(m_step))
 		{
 			TextInputWidget::textEdited(text);
 		}

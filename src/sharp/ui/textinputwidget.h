@@ -41,6 +41,7 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 	protected:
 		virtual bool textEdited(const std::string& text);
 		virtual bool keyJustPressed(input::Key key);
+		std::string replaceSelectedText(const std::string& text);
 	
 	private:
 		bool enteredFocus(Widget* widget);
@@ -50,7 +51,6 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		void moveCursor(int offset);
 		void selectTo(CursorIndex to);
 		void unselect();
-		void replaceSelectedText(const std::string& text);
 		bool hasSelectedText();
 
 		float getCursorPositionFromIndex(CursorIndex cursorIndex) const;
