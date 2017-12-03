@@ -17,12 +17,12 @@ function ScriptOutputNode:buildPins()
         end
         self.pinsData = nil
     end
-    self:addInputPinAny('New Pin', self.addCustomPin)
+    self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
 end
 
 function ScriptOutputNode:addCustomPin(pin)
     pin.pinName = self:makePinNameFromType(pin.pinType)
-    self:addInputPinAny('New Pin', self.addCustomPin)
+    self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
     return true
 end
 
