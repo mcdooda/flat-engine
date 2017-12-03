@@ -416,7 +416,7 @@ void RootWidget::updateCursor() const
 		cursorWidget = m_mouseOverWidget.lock().get();
 	}
 
-	if (cursorWidget != nullptr)
+	if (cursorWidget != nullptr && cursorWidget->getRootIfAncestor() != nullptr)
 	{
 		m_flat.ui->setCursor(cursorWidget->getCursorType());
 	}
