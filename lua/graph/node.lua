@@ -42,22 +42,16 @@ function Node:getLoadArguments()
     -- overriden when needed, should return the arguments to pass to load(...)
 end
 
-function Node:addInputPin(pinType, pinName)
+function Node:addInputPin(pinType, pinName, onPlugged)
     assert(pinType, 'no pin type for pin ' .. tostring(pinName))
     assert(pinName, 'no pin name')
     local inputPin = {
         pinType = pinType,
         pinName = pinName,
-        pluggedOutputPin = nil
+        pluggedOutputPin = nil,
+        onPlugged = onPlugged
     }
     self.inputPins[#self.inputPins + 1] = inputPin
-    return inputPin
-end
-
-function Node:addInputPinAny(pinName, onPlugged)
-    assert(onPlugged, 'no plugged callback for pin ' .. tostring(pinName))
-    local inputPin = self:addInputPin(PinTypes.ANY, pinName)
-    inputPin.onPlugged = onPlugged
     return inputPin
 end
 
@@ -73,22 +67,16 @@ function Node:findInputPinIndex(inputPin)
     end
 end
 
-function Node:addOutputPin(pinType, pinName)
+function Node:addOutputPin(pinType, pinName, onPlugged)
     assert(pinType, 'no pin type for pin ' .. tostring(pinName))
     assert(pinName, 'no pin name')
     local outputPin = {
         pinType = pinType,
         pinName = pinName,
-        pluggedInputPins = {}
+        pluggedInputPins = {},
+        onPlugged = onPlugged
     }
     self.outputPins[#self.outputPins + 1] = outputPin
-    return outputPin
-end
-
-function Node:addOutputPinAny(pinName, onPlugged)
-    assert(onPlugged, 'no plugged callback for pin ' .. tostring(pinName))
-    local outputPin = self:addOutputPin(PinTypes.ANY, pinName)
-    outputPin.onPlugged = onPlugged
     return outputPin
 end
 

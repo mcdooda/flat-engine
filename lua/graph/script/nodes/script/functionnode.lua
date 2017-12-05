@@ -16,12 +16,12 @@ function FunctionNode:buildPins()
         end
         self.pinsData = nil
     end
-    self:addOutputPinAny('New Pin', self.addCustomPin)
+    self:addOutputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
 end
 
 function FunctionNode:addCustomPin(pin)
     pin.pinName = self:makePinNameFromType(pin.pinType)
-    self:addOutputPinAny('New Pin', self.addCustomPin)
+    self:addOutputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
     return true
 end
 

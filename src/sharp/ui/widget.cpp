@@ -159,12 +159,12 @@ bool Widget::mouseWheelMoved(Widget* widget, bool& handled, const Vector2& offse
 
 void Widget::scrollX(float scrollValueX)
 {
-	setScrollX(m_scrollPosition.x + scrollValueX);
+	setScrollX(m_scrollPosition.x + scrollValueX * SCROLL_SPEED);
 }
 
 void Widget::scrollY(float scrollValueY)
 {
-	setScrollY(m_scrollPosition.y + scrollValueY);
+	setScrollY(m_scrollPosition.y + scrollValueY * SCROLL_SPEED);
 }
 
 void Widget::setScrollX(float scrollX)
@@ -383,6 +383,7 @@ CursorType Widget::getCursorType() const
 		return parent->getCursorType();
 	}
 
+	FLAT_ASSERT_MSG(false, "Cannot get cursor of a node with no parent!");
 	return INVALID_CURSOR;
 }
 

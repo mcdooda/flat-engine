@@ -13,14 +13,14 @@ function ArrayNode:buildPins()
         end
         self.pinsData = nil
     end
-    self:addInputPinAny('New Pin', self.addCustomPin)
+    self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
 
     self.arrayOutPin = self:addOutputPin(flat.types.TABLE, 'Array')
 end
 
 function ArrayNode:addCustomPin(pin)
     pin.pinName = self:makePinNameFromType(pin.pinType)
-    self:addInputPinAny('New Pin', self.addCustomPin)
+    self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
     return true
 end
 
