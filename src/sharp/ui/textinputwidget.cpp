@@ -74,8 +74,7 @@ bool TextInputWidget::onMouseDown(Widget* widget, bool&)
 	}
 	auto& mouse = m_flat.input->mouse;
 	const float mouseX = getRelativePosition(mouse->getPosition()).x;
-	m_cursorIndex = getCursorIndexFromPosition(mouseX);
-	m_selectionIndex = m_cursorIndex;
+	moveCursorAt(getCursorIndexFromPosition(mouseX));
 	return true;
 }
 
@@ -94,6 +93,8 @@ bool TextInputWidget::onMouseMove(Widget* widget, bool&)
 bool TextInputWidget::keyJustPressed(input::Key key)
 {
 	std::string text = getText();
+	const bool ctrlPressed = m_inputContext->getKeyboardInputContext().isPressed(K(LCTRL)) || m_inputContext->getKeyboardInputContext().isPressed(K(RCTRL));
+	const bool shiftPressed = m_inputContext->getKeyboardInputContext().isPressed(K(LSHIFT)) || m_inputContext->getKeyboardInputContext().isPressed(K(RSHIFT));
 	if (key == K(BACKSPACE) && !text.empty())
 	{
 		if (hasSelectedText())
@@ -118,6 +119,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		if (hasSelectedText())
 		{
 			changeSelectedText("");
+			unselect();
 			valueChanged(this);
 		}
 		else if (m_cursorIndex < text.size())
@@ -136,11 +138,51 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	}
 	else if (key == K(LEFT))
 	{
-		moveCursor(-1);
+		const CursorIndex currentIndex = m_selectionIndex;
+		if(ctrlPressed)
+		{
+			moveCursorAt(previousWordFrom(m_cursorIndex));
+		}
+		else
+		{
+			if (hasSelectedText() && !shiftPressed)
+			{
+				m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
+				unselect();
+			}
+			else
+			{
+				moveCursor(-1);
+			}
+		}
+		if (shiftPressed)
+		{
+			selectTo(currentIndex);
+		}
 	}
 	else if (key == K(RIGHT))
 	{
-		moveCursor(1);
+		const CursorIndex currentIndex = m_selectionIndex;
+		if (ctrlPressed)
+		{
+			moveCursorAt(nextWordFrom(m_cursorIndex));
+		}
+		else
+		{
+			if (hasSelectedText() && !shiftPressed)
+			{
+				m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
+				unselect();
+			}
+			else
+			{
+				moveCursor(1);
+			}
+		}
+		if (shiftPressed)
+		{
+			selectTo(currentIndex);
+		}
 	}
 	return true;
 }
@@ -157,19 +199,7 @@ bool TextInputWidget::textEdited(const std::string& text)
 
 void TextInputWidget::moveCursor(int offset)
 {
-	if (hasSelectedText())
-	{
-		if (offset < 0)
-		{
-			m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
-		}
-		else
-		{
-			m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
-		}
-		unselect();
-	}
-	else if (offset > 0 || m_cursorIndex >= static_cast<CursorIndex>(std::abs(offset)))
+	if (offset > 0 || m_cursorIndex >= static_cast<CursorIndex>(std::abs(offset)))
 	{
 		m_cursorIndex += offset;
 		if (m_cursorIndex < 0)
@@ -184,8 +214,17 @@ void TextInputWidget::moveCursor(int offset)
 	}
 }
 
+void TextInputWidget::moveCursorAt(CursorIndex index)
+{
+	FLAT_ASSERT(index >= 0 && index <= getText().size());
+	m_cursorIndex = index;
+	unselect();
+}
+
 void TextInputWidget::selectTo(CursorIndex to)
 {
+	FLAT_ASSERT(to >= 0 && to <= getText().size())
+	m_selectionIndex = to;
 	setColor(0u, static_cast<unsigned int>(getText().size()), getTextColor());
 	unsigned int first = static_cast<unsigned int>(std::min(m_selectionIndex, m_cursorIndex));
 	unsigned int last = static_cast<unsigned int>(std::max(m_selectionIndex, m_cursorIndex));
@@ -215,8 +254,42 @@ void TextInputWidget::changeSelectedText(const std::string& text)
 	{
 		setText(newText);
 	}
-	m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex) + text.size();
-	unselect();
+	moveCursorAt(std::min(m_cursorIndex, m_selectionIndex) + text.size());
+}
+
+TextInputWidget::CursorIndex TextInputWidget::nextWordFrom(CursorIndex index) const
+{
+	const std::string& text = getText();
+	CursorIndex nextSpaceIndex = text.find_first_of(" ", index);
+	if (nextSpaceIndex == index)
+	{
+		return index + 1;
+	}
+	else if (nextSpaceIndex != std::string::npos)
+	{
+		return nextSpaceIndex;
+	}
+	else
+	{
+		return text.size();
+	}
+}
+
+TextInputWidget::CursorIndex TextInputWidget::previousWordFrom(CursorIndex index) const
+{
+	if (index > 0)
+	{
+		CursorIndex previousSpaceIndex = getText().find_last_of(" ", index - 1) + 1;
+		if (previousSpaceIndex > 0 && previousSpaceIndex == index)
+		{
+			return index - 1;
+		}
+		else if (previousSpaceIndex != std::string::npos)
+		{
+			return previousSpaceIndex;
+		}
+	}
+	return 0;
 }
 
 bool TextInputWidget::hasSelectedText()

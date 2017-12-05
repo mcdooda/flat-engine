@@ -49,10 +49,13 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		bool onMouseDown(Widget* widget, bool&);
 		bool onMouseMove(Widget* widget, bool&);
 		void moveCursor(int offset);
+		void moveCursorAt(CursorIndex index);
 		void selectTo(CursorIndex to);
 		void unselect();
 		bool hasSelectedText();
 		void changeSelectedText(const std::string& text);
+		CursorIndex nextWordFrom(CursorIndex index) const;
+		CursorIndex previousWordFrom(CursorIndex index) const;
 
 		float getCursorPositionFromIndex(CursorIndex cursorIndex) const;
 		CursorIndex getCursorIndexFromPosition(float x) const;
