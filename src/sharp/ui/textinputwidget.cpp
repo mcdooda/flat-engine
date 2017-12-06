@@ -93,6 +93,7 @@ bool TextInputWidget::onMouseMove(Widget* widget, bool&)
 bool TextInputWidget::keyJustPressed(input::Key key)
 {
 	std::string text = getText();
+	const CursorIndex currentIndex = m_selectionIndex;
 	const bool ctrlPressed = m_inputContext->getKeyboardInputContext().isPressed(K(LCTRL)) || m_inputContext->getKeyboardInputContext().isPressed(K(RCTRL));
 	const bool shiftPressed = m_inputContext->getKeyboardInputContext().isPressed(K(LSHIFT)) || m_inputContext->getKeyboardInputContext().isPressed(K(RSHIFT));
 	if (key == K(BACKSPACE) && !text.empty())
@@ -134,57 +135,56 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	}
 	else if (key == K(RETURN) || key == K(KP_ENTER))
 	{
+		unselect();
 		submit(this);
 	}
-	else if (key == K(Q))
+	else
 	{
-		if (ctrlPressed)
+		// cursor management
+		if (key == K(HOME))
 		{
 			moveCursorAt(0);
-			selectTo(text.size());
 		}
-	}
-	else if (key == K(LEFT))
-	{
-		const CursorIndex currentIndex = m_selectionIndex;
-		if(ctrlPressed)
+		else if (key == K(END))
 		{
-			moveCursorAt(previousWordFrom(m_cursorIndex));
+			moveCursorAt(text.size());
 		}
-		else
+		else if (key == K(LEFT))
 		{
-			if (hasSelectedText() && !shiftPressed)
+			if (ctrlPressed)
 			{
-				m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
-				unselect();
+				moveCursorAt(previousWordFrom(m_cursorIndex));
 			}
 			else
 			{
-				moveCursor(-1);
+				if (hasSelectedText() && !shiftPressed)
+				{
+					m_cursorIndex = std::min(m_cursorIndex, m_selectionIndex);
+					unselect();
+				}
+				else
+				{
+					moveCursor(-1);
+				}
 			}
 		}
-		if (shiftPressed)
+		else if (key == K(RIGHT))
 		{
-			selectTo(currentIndex);
-		}
-	}
-	else if (key == K(RIGHT))
-	{
-		const CursorIndex currentIndex = m_selectionIndex;
-		if (ctrlPressed)
-		{
-			moveCursorAt(nextWordFrom(m_cursorIndex));
-		}
-		else
-		{
-			if (hasSelectedText() && !shiftPressed)
+			if (ctrlPressed)
 			{
-				m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
-				unselect();
+				moveCursorAt(nextWordFrom(m_cursorIndex));
 			}
 			else
 			{
-				moveCursor(1);
+				if (hasSelectedText() && !shiftPressed)
+				{
+					m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
+					unselect();
+				}
+				else
+				{
+					moveCursor(1);
+				}
 			}
 		}
 		if (shiftPressed)
