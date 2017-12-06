@@ -136,6 +136,14 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	{
 		submit(this);
 	}
+	else if (key == K(Q))
+	{
+		if (ctrlPressed)
+		{
+			moveCursorAt(0);
+			selectTo(text.size());
+		}
+	}
 	else if (key == K(LEFT))
 	{
 		const CursorIndex currentIndex = m_selectionIndex;
