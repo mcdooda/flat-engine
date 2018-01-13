@@ -157,6 +157,14 @@ void KeyboardInputContext::setEnableTextInput(bool enable)
 	}
 }
 
+void KeyboardInputContext::copyStateFrom(const KeyboardInputContext & keyboardInputContext)
+{
+	m_pressedKeys = keyboardInputContext.m_pressedKeys;
+	m_justPressedKeys = keyboardInputContext.m_justPressedKeys;
+	m_justReleasedKeys = keyboardInputContext.m_justReleasedKeys;
+	m_numKeys = keyboardInputContext.m_numKeys;
+}
+
 } // context
 } // input
 } // flat

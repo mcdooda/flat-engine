@@ -119,6 +119,15 @@ bool MouseInputContext::isJustDoubleClicked(int button) const
 	}
 }
 
+void MouseInputContext::copyStateFrom(const MouseInputContext& from)
+{
+	m_pressedButtons = from.m_pressedButtons;
+	m_position = from.m_position;
+	m_wheelMove = from.m_wheelMove;
+	m_moved = from.m_moved;
+	m_wheelMoved = from.m_wheelMoved;
+}
+
 } // context
 } // input
 } // flat

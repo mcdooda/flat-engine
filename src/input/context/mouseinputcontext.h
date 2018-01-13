@@ -45,6 +45,8 @@ class MouseInputContext
 		inline bool wheelJustMoved() const { return m_wheelMoved; }
 		inline const Vector2& getWheelMove() const { return m_wheelMove; }
 
+		void copyStateFrom(const MouseInputContext& from);
+
 	private:
 		std::array<bool, NUM_BUTTONS> m_pressedButtons;
 		std::array<bool, NUM_BUTTONS> m_justPressedButtons;

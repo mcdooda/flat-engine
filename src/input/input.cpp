@@ -62,8 +62,10 @@ void Input::clearFrameEvents()
 void Input::pushContext(const std::shared_ptr<context::InputContext>& inputContext)
 {
 	FLAT_ASSERT(inputContext.get() != nullptr);
-	clearTopContext();
+	FLAT_ASSERT(m_inputContexts.size() > 0);
 	inputContext->clearAllEvents();
+	inputContext->copyStateFrom(*m_inputContexts.back().lock().get());
+	clearTopContext();
 	m_inputContexts.push_back(inputContext);
 }
 

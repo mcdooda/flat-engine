@@ -46,6 +46,12 @@ void WindowInputContext::clearAllEvents()
 	clearFrameEvents();
 }
 
+void WindowInputContext::copyStateFrom(const WindowInputContext& from)
+{
+	m_closed = from.m_closed;
+	m_resized = from.m_resized;
+}
+
 } // context
 } // input
 } // flat

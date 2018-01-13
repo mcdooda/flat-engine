@@ -37,6 +37,13 @@ void InputContext::clearAllEvents()
 	m_windowInputContext.clearAllEvents();
 }
 
+void InputContext::copyStateFrom(const InputContext& from)
+{
+	m_keyboardInputContext.copyStateFrom(from.m_keyboardInputContext);
+	m_mouseInputContext.copyStateFrom(from.m_mouseInputContext);
+	m_windowInputContext.copyStateFrom(from.m_windowInputContext);
+}
+
 } // context
 } // input
 } // flat
