@@ -67,6 +67,14 @@ class Convertible
 		{
 			return *asP<T>();
 		}
+
+		// test type
+		template <class T>
+		inline bool is() const
+		{
+			const Base* base = static_cast<const Base*>(this);
+			return dynamic_cast<const T*>(base) != nullptr;
+		}
 };
 
 } // util
