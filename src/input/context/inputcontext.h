@@ -27,6 +27,8 @@ class InputContext
 		void clearFrameEvents();
 		void clearAllEvents();
 
+		void copyStateFrom(const InputContext& from);
+
 		inline KeyboardInputContext& getKeyboardInputContext() { return m_keyboardInputContext; }
 		inline const KeyboardInputContext& getKeyboardInputContext() const { return m_keyboardInputContext; }
 

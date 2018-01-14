@@ -31,6 +31,8 @@ class WindowInputContext
 		inline bool isClosed() const { return m_closed; }
 		inline bool isResized() const { return m_resized; }
 
+		void copyStateFrom(const WindowInputContext& from);
+
 	private:
 		video::Window* m_videoWindow;
 

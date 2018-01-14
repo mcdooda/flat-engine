@@ -39,6 +39,8 @@ class KeyboardInputContext
 		inline void setEnableKeyRepeat(bool enableKeyRepeat) { m_enableKeyRepeat = enableKeyRepeat; }
 		void setEnableTextInput(bool enable);
 
+		void copyStateFrom(const KeyboardInputContext& keyboardInputContext);
+
 	public:
 		Slot<Key> keyJustPressed;
 		Slot<Key> keyJustReleased;
