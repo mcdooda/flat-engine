@@ -5,6 +5,8 @@
 
 #define K(k) SDL_SCANCODE_##k
 #define KMOD(k) KMOD_##k
+#define C(c) SDLK_##c
+
 
 namespace flat
 {
@@ -12,6 +14,7 @@ namespace input
 {
 
 using Key = SDL_Scancode;
+using Character = SDL_Keycode;
 using KeyMod = SDL_Keymod;
 
 } // input

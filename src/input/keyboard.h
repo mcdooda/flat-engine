@@ -25,12 +25,16 @@ class Keyboard
 		~Keyboard() = default;
 		
 		bool isPressed(Key key) const;
+		bool isPressed(Character character) const;
 		bool isJustPressed(Key key) const;
 		bool isJustReleased(Key key) const;
 
 		void getPressedKeys(std::vector<Key>& pressedKeys) const;
 		void getJustPressedKeys(std::vector<Key>& justPressedKeys) const;
 		void getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const;
+
+		static Key getKey(input::Character character);
+		static Character getCharacter(input::Key key);
 
 	private:
 		std::shared_ptr<context::InputContext> m_globalInputContext;

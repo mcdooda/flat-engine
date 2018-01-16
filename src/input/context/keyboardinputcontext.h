@@ -29,6 +29,7 @@ class KeyboardInputContext
 		void clearAllEvents();
 
 		bool isPressed(Key key) const;
+		bool isPressed(Character c) const;
 		bool isJustPressed(Key key) const;
 		bool isJustReleased(Key key) const;
 

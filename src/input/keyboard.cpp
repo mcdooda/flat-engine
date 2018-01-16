@@ -18,6 +18,11 @@ bool Keyboard::isPressed(Key key) const
 	return m_globalInputContext->getKeyboardInputContext().isPressed(key);
 }
 
+bool Keyboard::isPressed(Character character) const
+{
+	return m_globalInputContext->getKeyboardInputContext().isPressed(character);
+}
+
 bool Keyboard::isJustPressed(Key key) const
 {
 	return m_globalInputContext->getKeyboardInputContext().isJustPressed(key);
@@ -41,6 +46,16 @@ void Keyboard::getJustPressedKeys(std::vector<Key>& justPressedKeys) const
 void Keyboard::getJustReleasedKeys(std::vector<Key>& justReleasedKeys) const
 {
 	return m_globalInputContext->getKeyboardInputContext().getJustReleasedKeys(justReleasedKeys);
+}
+
+Key Keyboard::getKey(input::Character character)
+{
+	return SDL_GetScancodeFromKey(character);
+}
+
+Character Keyboard::getCharacter(input::Key key)
+{
+	return SDL_GetKeyFromScancode(key);
 }
 
 } // input
