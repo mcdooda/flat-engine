@@ -16,7 +16,7 @@ class Convertible
 		{
 			static_assert(std::is_base_of<Base, T>::value, "T must inherit from Base");
 			Base* base = static_cast<Base*>(this);
-			FLAT_ASSERT(dynamic_cast<T*>(base) != nullptr);
+			FLAT_ASSERT_MSG(dynamic_cast<T*>(base) != nullptr, "Cannot convert from %s to %s", typeid(base).name(), typeid(T*).name());
 			return static_cast<T*>(base);
 		}
 
@@ -25,7 +25,7 @@ class Convertible
 		{
 			static_assert(std::is_base_of<Base, T>::value, "T must inherit from Base");
 			const Base* base = static_cast<const Base*>(this);
-			FLAT_ASSERT(dynamic_cast<const T*>(base) != nullptr);
+			FLAT_ASSERT_MSG(dynamic_cast<const T*>(base) != nullptr, "Cannot convert from %s to %s", typeid(base).name(), typeid(const T*).name());
 			return static_cast<const T*>(base);
 		}
 
