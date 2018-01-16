@@ -82,6 +82,11 @@ bool KeyboardInputContext::isPressed(Key key) const
 	}
 }
 
+bool KeyboardInputContext::isPressed(Character c) const
+{
+	return isPressed(SDL_GetScancodeFromKey(c));
+}
+
 bool KeyboardInputContext::isJustPressed(Key key) const
 {
 	if (m_justPressedKeys.isInRange(key))
