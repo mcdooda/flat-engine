@@ -43,6 +43,7 @@ CursorType TextInputWidget::getCursorType() const
 
 bool TextInputWidget::enteredFocus(Widget* widget)
 {
+	selectAll();
 	m_inputContext = std::make_unique<input::context::InputContext>(m_flat);
 	m_inputContext->getKeyboardInputContext().setEnableKeyRepeat(true);
 	m_flat.input->pushContext(m_inputContext);
@@ -252,8 +253,8 @@ void TextInputWidget::unselect()
 
 void TextInputWidget::selectAll()
 {
-	moveCursorAt(0);
-	selectTo(getText().size());
+	moveCursorAt(getText().size());
+	selectTo(0);
 }
 
 std::string TextInputWidget::replaceSelectedText(const std::string& text)
