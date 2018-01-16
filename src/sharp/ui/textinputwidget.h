@@ -52,6 +52,7 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		void moveCursorAt(CursorIndex index);
 		void selectTo(CursorIndex to);
 		void unselect();
+		void selectAll();
 		bool hasSelectedText();
 		void changeSelectedText(const std::string& text);
 		CursorIndex nextWordFrom(CursorIndex index) const;

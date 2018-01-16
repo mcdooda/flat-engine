@@ -92,11 +92,12 @@ bool TextInputWidget::onMouseMove(Widget* widget, bool&)
 
 bool TextInputWidget::keyJustPressed(input::Key key)
 {
+	input::Character character = input::Keyboard::getCharacter(key);
 	std::string text = getText();
 	const CursorIndex currentIndex = m_selectionIndex;
 	const bool ctrlPressed = m_inputContext->getKeyboardInputContext().isPressed(K(LCTRL)) || m_inputContext->getKeyboardInputContext().isPressed(K(RCTRL));
 	const bool shiftPressed = m_inputContext->getKeyboardInputContext().isPressed(K(LSHIFT)) || m_inputContext->getKeyboardInputContext().isPressed(K(RSHIFT));
-	if (key == K(BACKSPACE) && !text.empty())
+	if (character == C(BACKSPACE) && !text.empty())
 	{
 		if (hasSelectedText())
 		{
@@ -115,7 +116,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 			}
 		}
 	}
-	else if (key == K(DELETE) && !text.empty())
+	else if (character == C(DELETE) && !text.empty())
 	{
 		if (hasSelectedText())
 		{
@@ -133,7 +134,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 			}
 		}
 	}
-	else if (key == K(RETURN) || key == K(KP_ENTER))
+	else if (character == C(RETURN) || character == C(KP_ENTER))
 	{
 		unselect();
 		submit(this);
@@ -141,15 +142,19 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	else
 	{
 		// cursor management
-		if (key == K(HOME))
+		if (character == 'a' && ctrlPressed)
+		{
+			selectAll();
+		}
+		else if (character == C(HOME))
 		{
 			moveCursorAt(0);
 		}
-		else if (key == K(END))
+		else if (character == C(END))
 		{
 			moveCursorAt(text.size());
 		}
-		else if (key == K(LEFT))
+		else if (character == C(LEFT))
 		{
 			if (ctrlPressed)
 			{
@@ -168,7 +173,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 				}
 			}
 		}
-		else if (key == K(RIGHT))
+		else if (character == C(RIGHT))
 		{
 			if (ctrlPressed)
 			{
@@ -243,6 +248,12 @@ void TextInputWidget::unselect()
 {
 	setColor(0u, static_cast<unsigned int>(getText().size()), getTextColor());
 	m_selectionIndex = m_cursorIndex;
+}
+
+void TextInputWidget::selectAll()
+{
+	moveCursorAt(0);
+	selectTo(getText().size());
 }
 
 std::string TextInputWidget::replaceSelectedText(const std::string& text)
