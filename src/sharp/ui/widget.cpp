@@ -1,3 +1,4 @@
+#include <iostream>
 #include <limits>
 #include <algorithm>
 #include "widget.h"
@@ -246,7 +247,7 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 
 void Widget::removeFromParent()
 {
-	FLAT_ASSERT(!m_parent.expired());
+	FLAT_ASSERT_MSG(!m_parent.expired(), "the widget has not parent");
 	if (RootWidget* root = getRootIfAncestor())
 	{
 		root->removeDirtyWidget(getWeakPtr());
