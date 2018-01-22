@@ -52,11 +52,13 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 		// flat. libraries
 		lua_newtable(L);
 #ifdef FLAT_DEBUG
-		lua_pushboolean(L, true);
+		lua_newtable(L);
+		lua_pushcfunction(L, [](lua_State* L) { FLAT_BREAK(); return 0; });
+		lua_setfield(L, -2, "debugbreak");
 #else
 		lua_pushboolean(L, false);
 #endif
-		lua_setfield(L, -2, "debug"); // flat.debug = true/false
+		lua_setfield(L, -2, "debug"); // flat.debug = {}/false
 
 		lua_newtable(L);
 		lua_setfield(L, -2, "lua"); // flat.lua = {}
