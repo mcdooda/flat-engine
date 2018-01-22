@@ -110,12 +110,12 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
 
-		{"setValue",			  l_NumberInputWidget_setValue},
-		{"getValue",			  l_NumberInputWidget_getValue},
-		{"setStep",	         	  l_NumberInputWidget_setStep},
-		{"setMin",		          l_NumberInputWidget_setMin},
-		{"setMax",		          l_NumberInputWidget_setMax},
-		{"setRange",	          l_NumberInputWidget_setRange},
+		{"setValue",              l_NumberInputWidget_setValue},
+		{"getValue",              l_NumberInputWidget_getValue},
+		{"setStep",               l_NumberInputWidget_setStep},
+		{"setMin",                l_NumberInputWidget_setMin},
+		{"setMax",                l_NumberInputWidget_setMax},
+		{"setRange",              l_NumberInputWidget_setRange},
 
 		{"valueChanged",          l_TextInputWidget_valueChanged},
 		{"submit",                l_TextInputWidget_submit},
