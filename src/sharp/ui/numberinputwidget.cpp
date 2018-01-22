@@ -97,18 +97,19 @@ size_t NumberInputWidget::getPrecision(const std::string& s)
 	return precision;
 }
 
-void NumberInputWidget::correctValue(float& f)
+void NumberInputWidget::submitFixedValue()
 {
-	if (f < m_min)
+	float value;
+	if (getText().empty())
 	{
-		f = m_min;
-		return;
+		value = m_oldValue;
 	}
-	if (f > m_max)
+	else
 	{
-		f = m_max;
-		return;
+		value = getValue();
 	}
+	setValue(value);
+	submit(this);
 }
 
 bool NumberInputWidget::keyJustPressed(input::Key key)
@@ -116,17 +117,7 @@ bool NumberInputWidget::keyJustPressed(input::Key key)
 	std::string text = getText();
 	if (key == K(RETURN) || key == K(KP_ENTER))
 	{
-		float value;
-		if (text.empty())
-		{
-			value = m_oldValue;
-		}
-		else
-		{
-			value = getValue();
-		}
-		setValue(value);
-		submit(this);
+		submitFixedValue();
 	}
 	else if (key == K(UP))
 	{
@@ -180,19 +171,40 @@ float NumberInputWidget::getValue() const
 	return value;
 }
 
+float NumberInputWidget::constraintValue(float f)
+{
+	float fixed = f;
+	if (fixed < m_min)
+	{
+		fixed = m_min;
+	}
+	else if (fixed > m_max)
+	{
+		fixed = m_max;
+	}
+	return fixed;
+}
+
 void NumberInputWidget::setValue(float value)
 {
 	if (!getText().empty())
 	{
 		m_oldValue = getValue();
 	}
-	correctValue(value);
+	value = constraintValue(value);
 	std::string text = floatToString(value, getPrecision(m_step));
 	if (getText() != text)
 	{
 		setText(text);
 		valueChanged(this);
 	}
+}
+
+bool NumberInputWidget::leftFocus(Widget* widget)
+{
+	TextInputWidget::leftFocus(widget);
+	submitFixedValue();
+	return true;
 }
 
 void NumberInputWidget::stepUp()
