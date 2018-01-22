@@ -28,13 +28,16 @@ class NumberInputWidget : public TextInputWidget
 		inline void setStep(float step) { m_step = step; }
 		inline void setMin(float min) { m_min = min; }
 		inline void setMax(float max) { m_max = max; }
-		
+
+		bool leftFocus(Widget* widget) override;
+
 	private:
 		static std::string floatToString(float f);
 		static std::string floatToString(float f, size_t precision);
 		static size_t getPrecision(float f);
 		static size_t getPrecision(const std::string& s);
-		void correctValue(float& value);
+		float constraintValue(float f);
+		void submitFixedValue();
 		bool keyJustPressed(input::Key key) override;
 		bool textEdited(const std::string& text) override;
 		bool wheelJustMoved(Widget* widget, bool& handled, const Vector2& offset);

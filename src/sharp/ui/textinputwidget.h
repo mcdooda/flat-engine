@@ -42,10 +42,10 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		virtual bool textEdited(const std::string& text);
 		virtual bool keyJustPressed(input::Key key);
 		std::string replaceSelectedText(const std::string& text);
-	
+		virtual bool leftFocus(Widget* widget);
+
 	private:
 		bool enteredFocus(Widget* widget);
-		bool leftFocus(Widget* widget);
 		bool onMouseDown(Widget* widget, bool&);
 		bool onMouseMove(Widget* widget, bool&);
 		void moveCursor(int offset);
