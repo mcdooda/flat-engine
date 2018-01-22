@@ -17,7 +17,8 @@ function MainWindow:open(editorContainer, metadata, onSave)
         nodeListMenu = nil,
         nodeContextualMenu = nil,
         metadata = metadata,
-        onSave = onSave
+        onSave = onSave,
+        isNew = false
     }, self)
     o:build()
     return o
@@ -61,7 +62,8 @@ function MainWindow:build()
                 self:saveLuaRunnerFile()
                 self:updateCustomNodeEditors()
                 if self.onSave then
-                    self:onSave()
+                    self.onSave(self.isNew)
+                    self.isNew = false
                 end
             end)
             titleContainer:addChild(saveButton)
@@ -165,6 +167,7 @@ function MainWindow:openGraph(graphPath, nodeType)
     else
         -- the graph has not been loaded
         graph.nodeType = nodeType
+        self.isNew = true
         return false
     end
 end
