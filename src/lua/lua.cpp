@@ -38,10 +38,6 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 		luaL_openlibs(L);
 
-		// remove os lib
-		lua_pushnil(L);
-		lua_setglobal(L, "os");
-
 		// panic function
 		lua_atpanic(L, panic);
 
