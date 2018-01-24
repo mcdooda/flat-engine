@@ -1037,11 +1037,12 @@ int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot)
 	(widget.*slot).on(
 		[L, callback](Widget* w)
 		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			callback.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_call(L, 1, 0);
+			callback.callFunction(
+				[w](lua_State* L)
+				{
+					pushWidget(L, w->getSharedPtr());
+				}
+			);
 			return true;
 		}
 	);
@@ -1054,21 +1055,25 @@ int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slo
 	T& widget = getWidgetOfType<T>(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	const auto& mouse = flat::lua::getFlat(L).input->mouse;
 	(widget.*slot).on(
-		[L, ref, &mouse](Widget* w, bool& eventHandled)
+		[L, callback, &mouse](Widget* w, bool& eventHandled)
 		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 			Vector2 relativePosition = w->getRelativePosition(mouse->getPosition());
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_pushnumber(L, relativePosition.x);
-			lua_pushnumber(L, relativePosition.y);
-			lua_call(L, 3, 1);
-			eventHandled = eventHandled || lua_toboolean(L, -1);
-			lua_pop(L, 1);
+			callback.callFunction(
+				[&relativePosition, w](lua_State* L)
+				{
+					pushWidget(L, w->getSharedPtr());
+					lua_pushnumber(L, relativePosition.x);
+					lua_pushnumber(L, relativePosition.y);
+				},
+				1,
+				[&eventHandled](lua_State* L)
+				{
+					eventHandled = eventHandled || lua_toboolean(L, -1);
+				}
+			);
 			return true;
 		}
 	);
@@ -1080,19 +1085,23 @@ int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, con
 	Widget& widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	FLAT_ASSERT(L == flat::lua::getMainThread(L));
-	flat::lua::SharedLuaReference<LUA_TFUNCTION> ref(L, 2);
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	(widget.*slot).on(
-		[L, ref](Widget* w, bool& eventHandled, const Vector2& offset)
+		[L, callback](Widget* w, bool& eventHandled, const Vector2& offset)
 		{
-			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			ref.push(L);
-			luaL_checktype(L, -1, LUA_TFUNCTION);
-			pushWidget(L, w->getSharedPtr());
-			lua_pushnumber(L, offset.x);
-			lua_pushnumber(L, offset.y);
-			lua_call(L, 3, 1);
-			eventHandled = eventHandled || lua_toboolean(L, -1);
-			lua_pop(L, 1);
+			callback.callFunction(
+				[&offset, w](lua_State* L)
+				{
+					pushWidget(L, w->getSharedPtr());
+					lua_pushnumber(L, offset.x);
+					lua_pushnumber(L, offset.y);
+				},
+				1,
+				[&eventHandled](lua_State* L)
+				{
+					eventHandled = eventHandled || lua_toboolean(L, -1);
+				}
+			);
 			return true;
 		}
 	);

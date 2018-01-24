@@ -15,7 +15,7 @@ namespace lua
 	{
 		using Super = LuaReference<LuaType>;
 		public:
-			UniqueLuaReference() : Super() {}
+			UniqueLuaReference() = default;
 
 			UniqueLuaReference(lua_State* L, int index) : Super(L, index)
 			{
@@ -30,23 +30,6 @@ namespace lua
 				m_luaReference = other.m_luaReference;
 				other.m_luaState = nullptr;
 				other.m_luaReference = LUA_NOREF;
-			}
-
-			inline void push(lua_State* L) const
-			{
-				FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
-				FLAT_ASSERT(m_luaReference != LUA_NOREF);
-				lua_rawgeti(L, LUA_REGISTRYINDEX, m_luaReference);
-			}
-
-			inline void reset()
-			{
-				Super::reset();
-			}
-
-			inline operator bool() const
-			{
-				return m_luaReference != LUA_NOREF;
 			}
 	};
 

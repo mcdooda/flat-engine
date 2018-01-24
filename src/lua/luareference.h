@@ -52,12 +52,24 @@ class LuaReference
 				set(L, index);
 			}
 		}
+
+		inline void push(lua_State* L) const
+		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
+			FLAT_ASSERT(m_luaReference != LUA_NOREF);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, m_luaReference);
+			FLAT_DEBUG_ONLY(luaL_checktype(L, -1, LuaType);)
+		}
 		
 		inline lua_State* getLuaState() const { return m_luaState; }
 		inline int getLuaReference() const { return m_luaReference; }
 		inline bool isEmpty() const { return m_luaReference == LUA_NOREF; }
 
-	protected:
+		inline operator bool() const
+		{
+			return m_luaReference != LUA_NOREF;
+		}
+
 		inline void reset()
 		{
 			if (m_luaState != nullptr)
@@ -73,6 +85,61 @@ class LuaReference
 				FLAT_ASSERT(m_luaReference == LUA_NOREF);
 			}
 #endif
+		}
+
+		template<typename PushArgumentsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
+		void callFunction(PushArgumentsCallback pushArgumentsCallback) const
+		{
+			FLAT_ASSERT(m_luaState != nullptr);
+			lua_State* L = m_luaState;
+			{
+				FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+				const int top = lua_gettop(L);
+				push(L);
+				pushArgumentsCallback(L);
+				const int numArguments = lua_gettop(L) - top - 1;
+
+#ifdef FLAT_DEBUG
+				if (lua_pcall(L, numArguments, LUA_MULTRET, 0) != LUA_OK)
+				{
+					std::cerr << luaL_checkstring(L, -1) << std::endl;
+				}
+#else
+				lua_call(L, numArguments, 0);
+#endif
+			}
+		}
+
+		template<typename PushArgumentsCallback, typename HandleResultsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
+		void callFunction(PushArgumentsCallback pushArgumentsCallback, int numResults, HandleResultsCallback handleResultsCallback) const
+		{
+			FLAT_ASSERT(m_luaState != nullptr);
+			lua_State* L = m_luaState;
+			{
+				FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+				const int top = lua_gettop(L);
+				push(L);
+				pushArgumentsCallback(L);
+				const int numArguments = lua_gettop(L) - top - 1;
+
+#ifdef FLAT_DEBUG
+				if (lua_pcall(L, numArguments, numResults, 0) == LUA_OK)
+				{
+#else
+				lua_call(L, numArguments, numResults);
+#endif
+				handleResultsCallback(L);
+
+#ifdef FLAT_DEBUG
+				}
+				else
+				{
+					std::cerr << luaL_checkstring(L, -1) << std::endl;
+				}
+#endif
+
+				lua_pop(L, numResults);
+			}
 		}
 		
 	protected:

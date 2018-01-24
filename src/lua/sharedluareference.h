@@ -43,9 +43,7 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
 			LuaReference<LuaType>* reference = Super::get();
 			FLAT_ASSERT(reference != nullptr);
-			int luaReference = reference->getLuaReference();
-			FLAT_ASSERT(luaReference != LUA_NOREF);
-			lua_rawgeti(L, LUA_REGISTRYINDEX, luaReference);
+			reference->push(L);
 		}
 		
 		inline lua_State* getLuaState() const
@@ -59,6 +57,22 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 		{
 			LuaReference<LuaType>* reference = Super::get();
 			return reference == nullptr || reference->isEmpty();
+		}
+
+		template<typename PushArgumentsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
+		void callFunction(PushArgumentsCallback pushArgumentsCallback) const
+		{
+			const LuaReference<LuaType>* reference = Super::get();
+			FLAT_ASSERT(reference != nullptr);
+			reference->callFunction(pushArgumentsCallback);
+		}
+
+		template<typename PushArgumentsCallback, typename HandleResultsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
+		void callFunction(PushArgumentsCallback pushArgumentsCallback, int numResults, HandleResultsCallback handleResultsCallback) const
+		{
+			const LuaReference<LuaType>* reference = Super::get();
+			FLAT_ASSERT(reference != nullptr);
+			reference->callFunction(pushArgumentsCallback, numResults, handleResultsCallback);
 		}
 };
 
