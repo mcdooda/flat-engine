@@ -100,9 +100,10 @@ class LuaReference
 				const int numArguments = lua_gettop(L) - top - 1;
 
 #ifdef FLAT_DEBUG
-				if (lua_pcall(L, numArguments, LUA_MULTRET, 0) != LUA_OK)
+				if (lua_pcall(L, numArguments, 0, 0) != LUA_OK)
 				{
-					std::cerr << luaL_checkstring(L, -1) << std::endl;
+					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
+					lua_pop(L, 1);
 				}
 #else
 				lua_call(L, numArguments, 0);
@@ -128,17 +129,20 @@ class LuaReference
 #else
 				lua_call(L, numArguments, numResults);
 #endif
-				handleResultsCallback(L);
+				{
+					FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+					handleResultsCallback(L);
+				}
+				lua_pop(L, numResults);
 
 #ifdef FLAT_DEBUG
 				}
 				else
 				{
-					std::cerr << luaL_checkstring(L, -1) << std::endl;
+					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
+					lua_pop(L, 1);
 				}
 #endif
-
-				lua_pop(L, numResults);
 			}
 		}
 		
