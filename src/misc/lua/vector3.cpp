@@ -11,7 +11,7 @@ using LuaVector3 = flat::lua::SharedCppValue<Vector3>;
 
 int openVector3(Lua& lua)
 {
-	lua_State* L = lua.state;
+	lua_State* L = lua.getMainState();
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg Vector3_lib_m[] = {

@@ -26,9 +26,7 @@ namespace lua
 
 			UniqueLuaReference(UniqueLuaReference&& other)
 			{
-				m_luaState = other.m_luaState;
 				m_luaReference = other.m_luaReference;
-				other.m_luaState = nullptr;
 				other.m_luaReference = LUA_NOREF;
 			}
 
@@ -36,12 +34,16 @@ namespace lua
 			{
 				FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
 				FLAT_ASSERT(m_luaReference != LUA_NOREF);
-				lua_rawgeti(L, LUA_REGISTRYINDEX, m_luaReference);
+				{
+					std::shared_lock<std::shared_mutex> lock(referenceMutex);
+					lua_rawgeti(L, LUA_REGISTRYINDEX, m_luaReference);
+				}
 			}
 
-			inline void reset()
+			// make the parent method public
+			inline void reset(lua_State* L)
 			{
-				Super::reset();
+				Super::reset(L);
 			}
 
 			inline operator bool() const

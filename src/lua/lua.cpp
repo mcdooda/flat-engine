@@ -13,6 +13,7 @@
 #include "../sharp/ui/lua/ui.h"
 #include "../misc/lua/vector2.h"
 #include "../misc/lua/vector3.h"
+#include "../threads/threads.h"
 
 namespace flat
 {
@@ -31,9 +32,9 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 	if (m_assetsPath[m_assetsPath.size() - 1] != '/')
 		m_assetsPath += '/';
 
-	state = luaL_newstate();
+	m_state = luaL_newstate();
 
-	lua_State* L = state;
+	lua_State* L = m_state;
 	{
 		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 		luaL_openlibs(L);
@@ -85,11 +86,26 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 		lua_pushstring(L, "init.lua");
 		lua_call(L, 1, 0);
 	}
+
+	const int numThreads = flat.threads->getNumThreads();
+	m_threadStates.resize(numThreads);
+	for (int i = 0; i < numThreads; ++i)
+	{
+		m_threadStates[i] = lua_newthread(L);
+#ifdef FLAT_DEBUG
+		std::cerr << "Lua thread #" << i << ":" << m_threadStates[i] << std::endl;
+#endif
+		luaL_ref(L, LUA_REGISTRYINDEX);
+	}
+
+	collectGarbage();
 }
 
 Lua::~Lua()
 {
-	lua_State* L = state;
+	m_threadStates.clear(); // these lua threads are going to be garbage collected
+
+	lua_State* L = getMainState();
 	{
 		sharp::ui::lua::close(L);
 
@@ -97,28 +113,27 @@ Lua::~Lua()
 		lua_pushnil(L);
 		lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 	}
-
 	lua_close(L);
 }
 
 void Lua::doFile(const std::string& fileName)
 {
-	lua::doFile(state, fileName);
+	lua::doFile(getMainState(), fileName);
 }
 
 void Lua::loadFile(const std::string& fileName)
 {
-	lua::loadFile(state, fileName);
+	lua::loadFile(getMainState(), fileName);
 }
 
 void Lua::loadLib(const std::string& fileName, const std::string& globalName)
 {
-	lua::loadLib(state, fileName, globalName);
+	lua::loadLib(getMainState(), fileName, globalName);
 }
 
 void Lua::clearLoadedPackages()
 {
-	lua::clearLoadedPackages(state);
+	lua::clearLoadedPackages(getMainState());
 }
 
 const char* Lua::getTypeName(int type) const
@@ -128,7 +143,44 @@ const char* Lua::getTypeName(int type) const
 
 void Lua::collectGarbage() const
 {
-	lua_gc(state, LUA_GCCOLLECT, 0);
+	lua_gc(getMainState(), LUA_GCCOLLECT, 0);
+}
+
+void Lua::stopGarbageCollector() const
+{
+	lua_gc(getMainState(), LUA_GCSTOP, 0);
+}
+
+void Lua::restartGarbageCollector() const
+{
+	lua_gc(getMainState(), LUA_GCRESTART, 0);
+}
+
+lua_State* Lua::getMainState() const
+{
+	FLAT_ASSERT(threads::Threads::isMainThread());
+	return m_state;
+}
+
+lua_State* Lua::getThreadState() const
+{
+	int currentThreadIndex = threads::Threads::getCurrentThreadIndex();
+	FLAT_ASSERT(currentThreadIndex != threads::Threads::INVALID_THREAD_INDEX);
+	return m_threadStates[currentThreadIndex];
+}
+
+lua_State* Lua::getCurrentState() const
+{
+	int currentThreadIndex = threads::Threads::getCurrentThreadIndex();
+	FLAT_ASSERT(currentThreadIndex != threads::Threads::INVALID_THREAD_INDEX);
+	if (currentThreadIndex == threads::Threads::MAIN_THREAD_INDEX)
+	{
+		return m_state;
+	}
+	else
+	{
+		return m_threadStates[currentThreadIndex];
+	}
 }
 
 int Lua::l_flat_require(lua_State* L)

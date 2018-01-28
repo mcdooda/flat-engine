@@ -4,8 +4,11 @@
 #include <memory>
 #include <string>
 #include <lua5.3/lua.hpp>
+
 #include "debug.h"
 #include "flat.h"
+#include "luareference.h"
+
 #include "../memory/memory.h"
 
 namespace flat
@@ -33,10 +36,19 @@ class SharedCppValue
 		{
 			FLAT_ASSERT_MSG(!metatableName.empty(), "Type not registered in ClassRegistry");
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
-			ValueType* userData = static_cast<ValueType*>(lua_newuserdata(L, sizeof(ValueType)));
-			new (userData) ValueType(constructorArgs...);
-			luaL_getmetatable(L, metatableName.c_str());
-			lua_setmetatable(L, -2);
+			ValueType* userData = nullptr;
+			{
+				std::unique_lock<std::shared_mutex> lock(referenceMutex);
+				userData = static_cast<ValueType*>(lua_newuserdata(L, sizeof(ValueType)));
+			
+				new (userData) ValueType(constructorArgs...);
+			
+				//std::shared_lock<std::shared_mutex> lock(referenceMutex);
+				luaL_getmetatable(L, metatableName.c_str());
+			
+				//std::unique_lock<std::shared_mutex> lock(referenceMutex);
+				lua_setmetatable(L, -2);
+			}
 			return *userData;
 		}
 
@@ -55,7 +67,10 @@ class SharedCppValue
 			SharedCppValue<T>::metatableName = metatableName;
 
 			// create object metatable
-			luaL_newmetatable(L, metatableName);
+			{
+				std::unique_lock<std::shared_mutex> lock(referenceMutex);
+				luaL_newmetatable(L, metatableName);
+			}
 
 			// mt.__index = mt
 			lua_pushvalue(L, -1);

@@ -15,6 +15,9 @@
 #include "time/clock.h"
 #include "time/lua/time.h"
 
+// threads
+#include "threads/threads.h"
+
 // video
 #include "video/video.h"
 
@@ -93,6 +96,7 @@ class Flat
 		Flat& operator=(const Flat&) = delete;
 		
 	public:
+		std::unique_ptr<threads::Threads> threads;
 		std::unique_ptr<time::Time> time;
 		std::unique_ptr<video::Video> video;
 		std::unique_ptr<audio::Audio> audio;

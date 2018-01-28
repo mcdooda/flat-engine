@@ -1,8 +1,12 @@
 #ifndef FLAT_LUA_LUAREFERENCE_H
 #define FLAT_LUA_LUAREFERENCE_H
 
+#include <mutex>
+#include <shared_mutex>
 #include <lua5.3/lua.hpp>
+
 #include "debug.h"
+
 #include "../debug/helpers.h"
 
 namespace flat
@@ -11,11 +15,17 @@ namespace lua
 {
 
 template <int LuaType>
+class SharedLuaReference;
+
+static std::shared_mutex referenceMutex;
+
+template <int LuaType>
 class LuaReference
 {
+	friend class SharedLuaReference<LuaType>;
+
 	public:
 		LuaReference() :
-			m_luaState(nullptr),
 			m_luaReference(LUA_NOREF)
 		{
 
@@ -28,7 +38,7 @@ class LuaReference
 		
 		~LuaReference()
 		{
-			reset();
+			FLAT_ASSERT_MSG(m_luaReference == LUA_NOREF, "The reference must be unref'ed before");
 		}
 
 		inline void set(lua_State* L, int index)
@@ -40,9 +50,11 @@ class LuaReference
 				luaL_argerror(L, index, error.c_str());
 			}
 			lua_pushvalue(L, index);
-			m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
-			
-			m_luaState = getMainThread(L);
+
+			{
+				std::unique_lock<std::shared_mutex> lock(referenceMutex);
+				m_luaReference = luaL_ref(L, LUA_REGISTRYINDEX);
+			}
 		}
 
 		inline void setIfNotNil(lua_State* L, int index)
@@ -53,30 +65,24 @@ class LuaReference
 			}
 		}
 		
-		inline lua_State* getLuaState() const { return m_luaState; }
 		inline int getLuaReference() const { return m_luaReference; }
 		inline bool isEmpty() const { return m_luaReference == LUA_NOREF; }
 
 	protected:
-		inline void reset()
+		inline void reset(lua_State* L)
 		{
-			if (m_luaState != nullptr)
+			if (m_luaReference != LUA_NOREF)
 			{
-				FLAT_LUA_EXPECT_STACK_GROWTH(m_luaState, 0);
-				luaL_unref(m_luaState, LUA_REGISTRYINDEX, m_luaReference);
-				m_luaState = nullptr;
+				FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+				{
+					std::unique_lock<std::shared_mutex> lock(referenceMutex);
+					luaL_unref(L, LUA_REGISTRYINDEX, m_luaReference);
+				}
 				m_luaReference = LUA_NOREF;
 			}
-#ifdef FLAT_DEBUG
-			else
-			{
-				FLAT_ASSERT(m_luaReference == LUA_NOREF);
-			}
-#endif
 		}
 		
 	protected:
-		lua_State* m_luaState;
 		int m_luaReference;
 };
 

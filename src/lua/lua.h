@@ -42,6 +42,12 @@ class Lua
 		const char* getTypeName(int type) const;
 
 		void collectGarbage() const;
+		void stopGarbageCollector() const;
+		void restartGarbageCollector() const;
+
+		lua_State* getMainState() const;
+		lua_State* getThreadState() const;
+		lua_State* getCurrentState() const;
 
 	private:
 		static int l_flat_require(lua_State* L);
@@ -57,9 +63,11 @@ class Lua
 		void openAssetPath(lua_State* L);
 
 	public:
-		lua_State* state;
 
 	private:
+		lua_State* m_state;
+		std::vector<lua_State*> m_threadStates;
+
 		std::string m_luaPath;
 		std::string m_assetsPath;
 
@@ -98,8 +106,9 @@ inline void Lua::registerClass(const char* metatableName, const luaL_Reg* method
 {
 	int newTypeIndex = m_nextTypeIndex++;
 	m_typeIndexToName.push_back(metatableName);
-	T::registerClass(state, newTypeIndex, metatableName, methods);
-	types::registerType(state, newTypeIndex, metatableName);
+	lua_State* L = getMainState();
+	T::registerClass(L, newTypeIndex, metatableName, methods);
+	types::registerType(L, newTypeIndex, metatableName);
 }
 
 } // lua

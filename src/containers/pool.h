@@ -42,26 +42,35 @@ public:
 	template <typename... ConstructorArgs>
 	T* create(ConstructorArgs... constructorArgs)
 	{
-		FLAT_ASSERT(m_numAllocatedObjects < Size);
-		FLAT_ASSERT(m_head != nullptr);
-		T* object = reinterpret_cast<T*>(&m_head->objectData);
-		m_head = m_head->next;
-		FLAT_DEBUG_ONLY(memset(object, FLAT_INIT_VALUE, sizeof(T));)
+		T* object = nullptr;
+		{
+			std::lock_guard<std::mutex> lock(m_mutex);
+			FLAT_ASSERT(m_numAllocatedObjects < Size);
+			FLAT_ASSERT(m_head != nullptr);
+			object = reinterpret_cast<T*>(&m_head->objectData);
+			m_head = m_head->next;
+#ifdef FLAT_DEBUG
+			memset(object, FLAT_INIT_VALUE, sizeof(T));
+			++m_numAllocatedObjects;
+#endif
+		}
 		new (object) T(constructorArgs...);
-		FLAT_DEBUG_ONLY(++m_numAllocatedObjects;)
 		return object;
 	}
 
 	void destroy(T* object)
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		FLAT_ASSERT(object != nullptr);
 		PoolEntry<T>& entry = reinterpret_cast<PoolEntry<T>&>(*object);
 		FLAT_ASSERT(indexOf(entry) >= 0);
 		object->~T();
-		FLAT_DEBUG_ONLY(memset(object, FLAT_WIPE_VALUE, sizeof(T));)
+#ifdef FLAT_DEBUG
+		memset(object, FLAT_WIPE_VALUE, sizeof(T));
+		--m_numAllocatedObjects;
+#endif
 		setNext(entry, *m_head);
 		m_head = &entry;
-		FLAT_DEBUG_ONLY(--m_numAllocatedObjects;)
 	}
 
 private:
@@ -93,6 +102,8 @@ private:
 private:
 	PoolEntry<T>* m_head;
 	FLAT_DEBUG_ONLY(size_t m_numAllocatedObjects;)
+
+	std::mutex m_mutex;
 };
 
 } // containers

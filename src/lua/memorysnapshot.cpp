@@ -18,7 +18,7 @@ using LuaMemorySnapshot = flat::lua::SharedCppReference<MemorySnapshot>;
 
 int open(Lua& lua)
 {
-	lua_State* L = lua.state;
+	lua_State* L = lua.getMainState();
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg flat_lua_snapshot_lib_s[] = {
