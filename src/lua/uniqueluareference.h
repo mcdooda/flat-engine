@@ -22,9 +22,19 @@ namespace lua
 				
 			}
 
-			UniqueLuaReference(const UniqueLuaReference& other) = delete;
+			UniqueLuaReference(const UniqueLuaReference&) = delete;
 
 			UniqueLuaReference(UniqueLuaReference&& other)
+			{
+				m_luaState = other.m_luaState;
+				m_luaReference = other.m_luaReference;
+				other.m_luaState = nullptr;
+				other.m_luaReference = LUA_NOREF;
+			}
+
+			void operator=(const UniqueLuaReference&) = delete;
+
+			void operator=(UniqueLuaReference&& other)
 			{
 				m_luaState = other.m_luaState;
 				m_luaReference = other.m_luaReference;
