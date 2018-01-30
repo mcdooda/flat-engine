@@ -23,10 +23,7 @@ class SlotProxy
 
 		~SlotProxy()
 		{
-			if (m_slot != nullptr)
-			{
-				m_slot->off(this);
-			}
+			reset();
 		}
 
 		void init(Slot<T...>* slot, std::function<void(lua_State*, T...)> pushArgumentsCallback)
@@ -35,6 +32,18 @@ class SlotProxy
 			m_slot = slot;
 			m_slot->on(this, &SlotProxy<T...>::onCall);
 			m_pushArgumentsCallback = pushArgumentsCallback;
+		}
+
+		void reset()
+		{
+			if (m_slot != nullptr)
+			{
+				m_slot->off(this);
+			}
+
+			m_callbacks.clear();
+			m_pushArgumentsCallback = nullptr;
+			m_slot = nullptr;
 		}
 
 		int addCallback(lua_State* L, int index)
