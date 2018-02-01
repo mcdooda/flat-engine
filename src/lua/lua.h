@@ -145,7 +145,13 @@ inline int Lua::protectedCall(const T* object, void (T::*callbackMethod)(Args...
 	};
 	lua_pushcfunction(state, caller);
 	lua_pushlightuserdata(state, &protectedCall);
-	return lua_pcall(state, 1, 0, 0);
+	int code = lua_pcall(state, 1, 0, 0);
+	if (code != LUA_OK)
+	{
+		std::cerr << "Lua protected section error: " << luaL_checkstring(state, -1) << std::endl;
+		printStack(state);
+	}
+	return code;
 }
 
 } // lua
