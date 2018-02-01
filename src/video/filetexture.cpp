@@ -15,10 +15,15 @@ FileTexture::FileTexture(const std::string& fileName) :
 	m_surface = IMG_Load(fileName.c_str());
 	
 	if (m_surface != nullptr)
+	{
 		load();
-		
+	}
 	else
+	{
 		std::cerr << "Warning: error in IMG_Load(" << fileName.c_str() << ") : " << IMG_GetError() << std::endl;
+		createPlaceholderTexture();
+		load();
+	}
 }
 
 FileTexture::FileTexture()
@@ -47,6 +52,8 @@ void FileTexture::getPixel(const Vector2& pixelPosition, Color& color) const
 
 void FileTexture::load()
 {
+	FLAT_ASSERT(m_surface != nullptr);
+
 	m_size = Vector2(static_cast<float>(m_surface->w), static_cast<float>(m_surface->h));
 	
 	glGenTextures(1, &m_textureId);
@@ -64,6 +71,35 @@ void FileTexture::free()
 	glDeleteTextures(1, &m_textureId);
 	SDL_FreeSurface(m_surface);
 	m_surface = nullptr;
+}
+
+void FileTexture::createPlaceholderTexture()
+{
+	SDL_FreeSurface(m_surface);
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	std::uint32_t rmask = 0xff000000;
+	std::uint32_t gmask = 0x00ff0000;
+	std::uint32_t bmask = 0x0000ff00;
+	std::uint32_t amask = 0x000000ff;
+#else
+	std::uint32_t rmask = 0x000000ff;
+	std::uint32_t gmask = 0x0000ff00;
+	std::uint32_t bmask = 0x00ff0000;
+	std::uint32_t amask = 0xff000000;
+#endif
+
+
+	m_surface = SDL_CreateRGBSurface(0, 32, 32, 32, rmask, gmask, bmask, amask);
+
+	if (m_surface != nullptr)
+	{
+		SDL_FillRect(m_surface, nullptr, SDL_MapRGB(m_surface->format, 255, 0, 255));
+	}
+	else
+	{
+		std::cerr << "Warning: error in SDL_CreateRGBSurface() : " << IMG_GetError() << std::endl;
+	}
 }
 
 } // video

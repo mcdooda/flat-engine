@@ -27,6 +27,10 @@ class FileTexture : public Texture
 		
 		void load();
 		void free();
+
+		void createPlaceholderTexture();
+
+	protected:
 		
 		SDL_Surface* m_surface;
 
