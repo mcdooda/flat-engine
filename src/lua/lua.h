@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <lua5.3/lua.hpp>
+#include "debug.h"
 #include "types.h"
 
 namespace flat
@@ -42,6 +44,12 @@ class Lua
 		const char* getTypeName(int type) const;
 
 		void collectGarbage() const;
+
+		template <class T, typename... Args>
+		int protectedCall(T* object, void (T::*callbackMethod)(Args...), Args&&... args);
+
+		template <class T, typename... Args>
+		int protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args);
 
 	private:
 		static int l_flat_require(lua_State* L);
@@ -100,6 +108,44 @@ inline void Lua::registerClass(const char* metatableName, const luaL_Reg* method
 	m_typeIndexToName.push_back(metatableName);
 	T::registerClass(state, newTypeIndex, metatableName, methods);
 	types::registerType(state, newTypeIndex, metatableName);
+}
+
+template<class T, typename ...Args>
+inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(Args...), Args&&... args)
+{
+	FLAT_LUA_EXPECT_STACK_GROWTH(state, 0);
+	std::function<int()> protectedCall = [object, callbackMethod, &args...]()
+	{
+		object->callbackMethod(std::forward<Args>(args)...);
+	};
+	auto caller = [](lua_State* L)
+	{
+		std::function<void()>& protectedCall = *static_cast<std::function<void()>*>(lua_touserdata(L, 1));
+		protectedCall();
+	}
+	lua_pushcfunction(state, &caller);
+	lua_pushlightuserdata(state, &protectedCall);
+	return lua_pcall(state, 1, 0, 0);
+}
+
+template <class T, typename... Args>
+inline int Lua::protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args)
+{
+	FLAT_LUA_IGNORE_STACK_GROWTH(state);
+	using ProtectCallBlock = std::function<void()>;
+	ProtectCallBlock protectedCall = [object, callbackMethod, &args...]()
+	{
+		(object->*callbackMethod)(std::forward<Args>(args)...);
+	};
+	auto caller = [](lua_State* L)
+	{
+		ProtectCallBlock& protectedCall = *static_cast<ProtectCallBlock*>(lua_touserdata(L, 1));
+		protectedCall();
+		return 0;
+	};
+	lua_pushcfunction(state, caller);
+	lua_pushlightuserdata(state, &protectedCall);
+	return lua_pcall(state, 1, 0, 0);
 }
 
 } // lua

@@ -21,7 +21,6 @@ ExpectStackGrowth::ExpectStackGrowth(lua_State* L, int n, const char* func, cons
 	m_file(file),
 	m_line(line)
 {
-	ignoreAll = false;
 	m_expectedTop = lua_gettop(L) + n;
 }
 
@@ -44,6 +43,24 @@ ExpectStackGrowth::~ExpectStackGrowth()
 void ExpectStackGrowth::setIgnoreAll()
 {
 	ignoreAll = true;
+}
+
+void ExpectStackGrowth::resetIgnoreAll()
+{
+	ignoreAll = false;
+}
+
+IgnoreStackGrowth::IgnoreStackGrowth(lua_State* L) :
+	m_L(L)
+{
+	ExpectStackGrowth::setIgnoreAll();
+	m_initialTop = lua_gettop(L);
+}
+
+IgnoreStackGrowth::~IgnoreStackGrowth()
+{
+	lua_settop(m_L, m_initialTop);
+	ExpectStackGrowth::resetIgnoreAll();
 }
 
 } // debug

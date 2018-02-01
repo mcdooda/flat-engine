@@ -21,6 +21,7 @@ class ExpectStackGrowth
 		~ExpectStackGrowth();
 
 		static void setIgnoreAll();
+		static void resetIgnoreAll();
 
 	private:
 		static bool ignoreAll;
@@ -30,6 +31,17 @@ class ExpectStackGrowth
 		const char* m_func;
 		const char* m_file;
 		int m_line;
+};
+
+class IgnoreStackGrowth
+{
+	public:
+		IgnoreStackGrowth(lua_State* L);
+		~IgnoreStackGrowth();
+
+	private:
+		lua_State* m_L;
+		int m_initialTop;
 };
 
 } // debug
@@ -63,6 +75,9 @@ class ExpectStackGrowth
 
 #define FLAT_LUA_IGNORE_ALL_STACK_GROWTH() \
 	flat::lua::debug::ExpectStackGrowth::setIgnoreAll();
+
+#define FLAT_LUA_IGNORE_STACK_GROWTH(L) \
+	flat::lua::debug::IgnoreStackGrowth ignoreStackGrowth(L);
 
 #else // FLAT_DEBUG
 
