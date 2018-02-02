@@ -32,6 +32,8 @@ class Lua
 		Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath);
 		~Lua();
 
+		void reset(Flat& flat);
+
 		void doFile(const std::string& fileName);
 		void loadFile(const std::string& fileName);
 		void loadLib(const std::string& fileName, const std::string& globalName);
@@ -52,6 +54,8 @@ class Lua
 		int protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args);
 
 	private:
+		void close(lua_State* L);
+
 		static int l_flat_require(lua_State* L);
 		void openRequire(lua_State* L);
 
@@ -104,6 +108,7 @@ T& getFlatAs(lua_State* L)
 template<class T>
 inline void Lua::registerClass(const char* metatableName, const luaL_Reg* methods)
 {
+	FLAT_ASSERT_MSG(std::find(m_typeIndexToName.begin(), m_typeIndexToName.end(), metatableName) == m_typeIndexToName.end(), "Metatable '%s' is already registered", metatableName);
 	int newTypeIndex = m_nextTypeIndex++;
 	m_typeIndexToName.push_back(metatableName);
 	T::registerClass(state, newTypeIndex, metatableName, methods);

@@ -21,7 +21,7 @@ namespace lua
 static char gameRegistryIndex = 'F';
 
 Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) :
-	m_nextTypeIndex(FIRST_CLASS_TYPE_INDEX)
+	state(nullptr)
 {
 	m_luaPath = luaPath;
 	if (m_luaPath[m_luaPath.size() - 1] != '/')
@@ -30,6 +30,24 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 	m_assetsPath = assetsPath;
 	if (m_assetsPath[m_assetsPath.size() - 1] != '/')
 		m_assetsPath += '/';
+
+	reset(flat);
+}
+
+Lua::~Lua()
+{
+	close(state);
+}
+
+void Lua::reset(Flat& flat)
+{
+	if (state != nullptr)
+	{
+		close(state);
+	}
+
+	m_nextTypeIndex = FIRST_CLASS_TYPE_INDEX;
+	m_typeIndexToName.clear();
 
 	state = luaL_newstate();
 
@@ -85,20 +103,6 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 	}
 }
 
-Lua::~Lua()
-{
-	lua_State* L = state;
-	{
-		sharp::ui::lua::close(L);
-
-		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-		lua_pushnil(L);
-		lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
-	}
-
-	lua_close(L);
-}
-
 void Lua::doFile(const std::string& fileName)
 {
 	lua::doFile(state, fileName);
@@ -127,6 +131,17 @@ const char* Lua::getTypeName(int type) const
 void Lua::collectGarbage() const
 {
 	lua_gc(state, LUA_GCCOLLECT, 0);
+}
+
+void Lua::close(lua_State* L)
+{
+	sharp::ui::lua::close(L);
+
+	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+	lua_pushnil(L);
+	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
+
+	lua_close(L);
 }
 
 int Lua::l_flat_require(lua_State* L)
