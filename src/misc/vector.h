@@ -35,6 +35,7 @@ using glm::length;
 using glm::length2;
 using glm::dot;
 using glm::cross;
+using glm::reflect;
 
 } // flat
 

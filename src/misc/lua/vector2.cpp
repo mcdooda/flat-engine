@@ -30,6 +30,8 @@ int openVector2(Lua& lua)
 
 		{"__mul",         l_Vector2_mul},
 
+		{"reflect",       l_Vector2_reflect},
+
 		{"__tostring",    l_Vector2_tostring},
 
 		{nullptr, nullptr}
@@ -130,6 +132,14 @@ int l_Vector2_mul(lua_State* L)
 	Vector2& vector2 = getVector2(L, 1);
 	float multiplier = static_cast<float>(luaL_checknumber(L, 2));
 	pushVector2(L, vector2 * multiplier);
+	return 1;
+}
+
+int l_Vector2_reflect(lua_State* L)
+{
+	Vector2& incident = getVector2(L, 1);
+	Vector2& normal = getVector2(L, 2);
+	pushVector2(L, flat::reflect(incident, normal));
 	return 1;
 }
 

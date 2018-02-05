@@ -8,6 +8,8 @@ return {
 
     'math/multiply',
 
+    'math/vector3/vector3reflect',
+
     'bool',
     'number',
     'string',

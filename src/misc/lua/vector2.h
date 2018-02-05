@@ -30,6 +30,8 @@ int l_Vector2_sub(lua_State* L);
 
 int l_Vector2_mul(lua_State* L);
 
+int l_Vector2_reflect(lua_State* L);
+
 int l_Vector2_tostring(lua_State* L);
 
 Vector2& getVector2(lua_State* L, int index);

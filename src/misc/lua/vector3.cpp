@@ -29,7 +29,9 @@ int openVector3(Lua& lua)
 		{"__add",         l_Vector3_add},
 		{"__sub",         l_Vector3_sub},
 
-		{"__mul",        l_Vector3_mul},
+		{"__mul",         l_Vector3_mul},
+
+		{"reflect",       l_Vector3_reflect},
 
 		{"__tostring",   l_Vector3_tostring},
 
@@ -146,6 +148,14 @@ int l_Vector3_mul(lua_State* L)
 	Vector3& vector3 = getVector3(L, 1);
 	float multiplier = static_cast<float>(luaL_checknumber(L, 2));
 	pushVector3(L, vector3 * multiplier);
+	return 1;
+}
+
+int l_Vector3_reflect(lua_State* L)
+{
+	Vector3& incident = getVector3(L, 1);
+	Vector3& normal = getVector3(L, 2);
+	pushVector3(L, flat::reflect(incident, normal));
 	return 1;
 }
 
