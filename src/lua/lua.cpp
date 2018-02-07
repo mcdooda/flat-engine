@@ -292,20 +292,24 @@ lua_State* getMainThread(lua_State* L)
 void printStack(lua_State* L)
 {
 	std::cout << "--- Lua Debug (" << L << ") ==========" << std::endl;
+	std::cout << "Error: " << lua_tostring(L, -1) << std::endl;
 	
 	lua_Debug debug;
 	std::cout << "\tCALL STACK" << std::endl;
 	for (int level = 0; lua_getstack(L, level, &debug); level++)
 	{
 		lua_getinfo(L, "Snl", &debug);
-		std::cout << "\t\tlevel #" << level << std::endl
-		          << "\t\t\tname __________ : " << (debug.name ? debug.name : "") << std::endl
-		          << "\t\t\tnamewhat ______ : " << (debug.namewhat ? debug.namewhat : "") << std::endl
-		          << "\t\t\tsource ________ : " << debug.source << std::endl
-		          << "\t\t\tshort_src _____ : " << debug.short_src << std::endl
-		          << "\t\t\tlinedefined ___ : " << debug.linedefined << std::endl
-		          << "\t\t\tlastlinedefined : " << debug.lastlinedefined << std::endl
-		          << "\t\t\tcurrentline ___ : " << debug.currentline << std::endl << std::endl;
+		std::cout << "\t\t" << debug.short_src << ':' << debug.currentline;
+		if (debug.name != nullptr)
+		{
+			std::cout << " in ";
+			if (debug.namewhat != nullptr)
+			{
+				std::cout << debug.namewhat << " ";
+			}
+			std::cout << debug.name;
+		}
+		std::cout << std::endl;
 	}
 	
 	int top = lua_gettop(L);
