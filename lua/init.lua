@@ -1,3 +1,4 @@
+flat.dofile 'table.lua'
 flat.dofile 'dump.lua'
 flat.dofile 'enum.lua'
 flat.dofile 'ui/uisettings.lua'
