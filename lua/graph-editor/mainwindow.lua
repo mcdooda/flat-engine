@@ -4,139 +4,93 @@ local PinTypes = flat.require 'graph/pintypes'
 
 local MainWindow = {}
 MainWindow.__index = MainWindow
+setmetatable(MainWindow, { __index = flat.ui.Window })
 
-function MainWindow:open(editorContainer, metadata, onSave)
-    assert(editorContainer, 'no editor container')
-    local o = setmetatable({
-        graph = nil,
-        graphPath = nil,
-        editorContainer = editorContainer,
-        nodeWidgets = {},
-        selectedNodeWidgets = {},
-        currentLink = nil,
-        nodeListMenu = nil,
-        nodeContextualMenu = nil,
-        metadata = metadata,
-        onSave = onSave,
-        isNew = false
-    }, self)
+function MainWindow:new(parent, metadata, onSave)
+    local o = flat.ui.Window:new(parent)
+    setmetatable(o, self)
+    o.graph = nil
+    o.graphPath = nil
+    o.editorContainer = editorContainer
+    o.nodeWidgets = {}
+    o.selectedNodeWidgets = {}
+    o.currentLink = nil
+    o.nodeListMenu = nil
+    o.nodeContextualMenu = nil
+    o.metadata = metadata
+    o.onSave = onSave
+    o.isNew = false
     o:build()
     return o
 end
 
-function MainWindow:close()
-    self.window:removeFromParent()
-end
-
 function MainWindow:build()
-    local window = Widget.makeColumnFlow()
-    window:setMargin(25)
-    window:setSizePolicy(Widget.SizePolicy.EXPAND)
-    window:setBackgroundColor(0x2C3E50FF)
+    self:setTitle 'Node Graph Editor'
 
-    local titleText
+    -- toolbar
     do
-        local titleContainer = Widget.makeLineFlow()
-        titleContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+        local toolbar = self:addToolbar()
+        local saveButton = toolbar:addButton('Save Graph')
+        saveButton:click(function()
+            self:saveGraph()
+            self:saveGraphLayout()
+            self:saveLuaRunnerFile()
+            self:updateCustomNodeEditors()
+            if self.onSave then
+                self.onSave(self.isNew)
+                self.isNew = false
+            end
+        end)
+    end
 
-        do
-            titleText = Widget.makeText('Node Graph Editor', table.unpack(flat.ui.settings.defaultFont))
-            titleText:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.FIXED_Y)
-            titleText:setTextColor(0xECF0F1FF)
-            titleText:setMargin(3, 0, 0, 3)
-            titleText:mouseDown(function()
-                window:drag()
-            end)
-            titleText:mouseUp(function()
-                window:drop()
-            end)
-            titleContainer:addChild(titleText)
+    -- graph canvas
+    do
+        local content = Widget.makeCanvas(1, 1)
+        content:setSizePolicy(Widget.SizePolicy.EXPAND)
+        content:setAllowScroll(true, true)
+        content:setAllowDragScrolling(true)
+        content:setRestrictScroll(false, false)
+
+        local function draw()
+            self:drawLinks()
         end
 
-        do
-            local saveButton = Widget.makeText('Save Graph', table.unpack(flat.ui.settings.defaultFont))
-            saveButton:setMargin(3, 20, 0, 20)
-            saveButton:click(function()
-                self:saveGraph()
-                self:saveGraphLayout()
-                self:saveLuaRunnerFile()
-                self:updateCustomNodeEditors()
-                if self.onSave then
-                    self.onSave(self.isNew)
-                    self.isNew = false
-                end
-            end)
-            titleContainer:addChild(saveButton)
+        local function mouseMove(content, x, y)
+            if self.currentLink then
+                self:updateCurrentLink(x, y)
+            end
         end
 
-        do
-            local closeWindowButton = Widget.makeText('X', table.unpack(flat.ui.settings.defaultFont))
-            closeWindowButton:setTextColor(0xFFFFFFFF)
-            closeWindowButton:setMargin(3, 3, 0, 0)
-            closeWindowButton:click(function()
-                self:close()
-            end)
-            titleContainer:addChild(closeWindowButton)
+        local function mouseUp(content, x, y)
+            if self.currentLink then
+                self:clearCurrentLink()
+            end
         end
 
-        window:addChild(titleContainer)
-    end
-
-    local content = Widget.makeCanvas(1, 1)
-    content:setSizePolicy(Widget.SizePolicy.EXPAND)
-    content:setMargin(3)
-    content:setAllowScroll(true, true)
-    content:setAllowDragScrolling(true)
-    content:setRestrictScroll(false, false)
-
-    local function draw()
-        self:drawLinks()
-    end
-
-    local function mouseMove(content, x, y)
-        if self.currentLink then
-            self:updateCurrentLink(x, y)
+        local function leftClick(content, x, y)
+            self:clearSelection()
+            self:closeNodeListMenu()
+            self:closeNodeContextualMenu()
         end
-    end
 
-    local function mouseUp(content, x, y)
-        if self.currentLink then
-            self:clearCurrentLink()
+        local function rightClick(content, x, y)
+            self:openNodeListMenu(x, y)
         end
+
+        content:scroll(draw)
+        content:draw(draw)
+        content:mouseMove(mouseMove)
+        content:mouseUp(mouseUp)
+        content:mouseDown(leftClick)
+        content:rightClick(rightClick)
+        self:setContent(content)
     end
-
-    local function leftClick(content, x, y)
-        self:clearSelection()
-        self:closeNodeListMenu()
-        self:closeNodeContextualMenu()
-    end
-
-    local function rightClick(content, x, y)
-        self:openNodeListMenu(x, y)
-    end
-
-    content:scroll(draw)
-    content:draw(draw)
-    content:mouseMove(mouseMove)
-    content:mouseUp(mouseUp)
-    content:mouseDown(leftClick)
-    content:rightClick(rightClick)
-    window:addChild(content)
-
-    self.window = window
-    self.editorContainer:addChild(window)
-    self.titleText = titleText
-    self.content = content
-end
-
-function MainWindow:setTitle(title)
-    self.titleText:setText('Node Graph Editor - ' .. title)
 end
 
 function MainWindow:openGraph(graphPath, nodeType)
     self.graphPath = graphPath
 
-    self:setTitle(graphPath)
+    self:setTitle('Node Graph Editor - ' .. graphPath)
 
     local graph = self:loadGraph()
     self.graph = graph
@@ -152,7 +106,7 @@ function MainWindow:openGraph(graphPath, nodeType)
             #graph.nodeInstances == #graphLayout,
             'graph and layout do not match (' .. #graph.nodeInstances .. ' and ' .. #graphLayout .. ' nodes)'
         )
-        local content = self.content
+        local content = self:getContent()
         for i = 1, #graph.nodeInstances do
             local node = graph.nodeInstances[i]
             local nodePosition = graphLayout[i]
@@ -233,7 +187,7 @@ function MainWindow:drawLinks(delayToNextFrame)
     local function draw()
         local graph = self.graph
 
-        self.content:clear(0xECF0F1FF)
+        self:getContent():clear(0xECF0F1FF)
 
         for i = 1, #graph.nodeInstances do
             local inputNode = graph.nodeInstances[i]
@@ -313,7 +267,7 @@ function MainWindow:drawLink(linkColor, inputPinX, inputPinY, outputPinX, output
         flat.Vector2(inputPinX - dx, inputPinY),
         flat.Vector2(inputPinX, inputPinY)
     }
-    self.content:drawBezier(linkColor, 2, bezier)
+    self:getContent():drawBezier(linkColor, 2, bezier)
 end
 
 function MainWindow:getPinColor(inputNode, inputPin)
@@ -324,7 +278,7 @@ end
 function MainWindow:getInputPinPosition(inputNode, inputPin)
     local nodeWidget = self.nodeWidgets[inputNode]
     local inputPinPlugWidget = nodeWidget:getInputPinPlugWidget(inputPin)
-    local x, y = self.content:getRelativePosition(inputPinPlugWidget)
+    local x, y = self:getContent():getRelativePosition(inputPinPlugWidget)
     local sx, sy = inputPinPlugWidget:getSize()
     return x, y + sy / 2
 end
@@ -332,7 +286,7 @@ end
 function MainWindow:getOutputPinPosition(outputNode, outputPin)
     local nodeWidget = self.nodeWidgets[outputNode]
     local outputPinPlugWidget = nodeWidget:getOutputPinPlugWidget(outputPin)
-    local x, y = self.content:getRelativePosition(outputPinPlugWidget)
+    local x, y = self:getContent():getRelativePosition(outputPinPlugWidget)
     local sx, sy = outputPinPlugWidget:getSize()
     return x + sx, y + sy / 2
 end
@@ -488,14 +442,15 @@ function MainWindow:openNodeListMenu(x, y)
     end
 
     local function insertNode(nodeName)
+        local content = self:getContent()
         local node = self.graph:addNode(nodeClasses[nodeName])
         local nodeWidget = self:makeNodeWidget(node)
-        local contentSizeX, contentSizeY = self.content:getComputedSize()
-        local scrollX, scrollY = self.content:getScrollPosition()
+        local contentSizeX, contentSizeY = content:getComputedSize()
+        local scrollX, scrollY = content:getScrollPosition()
         local nodeWidgetX = x + scrollX
         local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
         nodeWidget:setPosition(nodeWidgetX, nodeWidgetY)
-        self.content:addChild(nodeWidget)
+        content:addChild(nodeWidget)
         self:closeNodeListMenu()
     end
 
@@ -595,7 +550,7 @@ function MainWindow:closeNodeContextualMenu()
 end
 
 function MainWindow:getMousePositionOnContent()
-    return self.content:getRelativePosition(Mouse.getPosition())
+    return self:getContent():getRelativePosition(Mouse.getPosition())
 end
 
 function MainWindow:isNodeSelected(nodeWidget)
