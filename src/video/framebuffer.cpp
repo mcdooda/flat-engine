@@ -12,6 +12,11 @@ FrameBuffer::FrameBuffer()
 
 FrameBuffer::~FrameBuffer()
 {
+	for (const std::shared_ptr<const Texture>& texture : m_textures)
+	{
+		GLuint textureId = texture->getTextureId();
+		glDeleteTextures(1, &textureId);
+	}
 	glDeleteFramebuffers(1, &m_fboId);
 }
 

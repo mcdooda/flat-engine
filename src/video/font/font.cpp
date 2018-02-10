@@ -79,6 +79,7 @@ Font::~Font()
 {
 	TTF_CloseFont(m_font);
 	m_font = nullptr;
+	glDeleteTextures(1, &m_atlasId);
 }
 
 void Font::open()
