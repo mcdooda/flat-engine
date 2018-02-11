@@ -14,6 +14,8 @@ function MainWindow:new(parent, metadata, onSave)
     o.editorContainer = editorContainer
     o.nodeWidgets = {}
     o.selectedNodeWidgets = {}
+    o.selectionWidget = nil
+    o.initialSelectionPosition = nil
     o.currentLink = nil
     o.nodeListMenu = nil
     o.nodeContextualMenu = nil
@@ -56,21 +58,28 @@ function MainWindow:build()
         end
 
         local function mouseMove(content, x, y)
+            assert(not (self.currentLink and self.selectionWidget))
             if self.currentLink then
                 self:updateCurrentLink(x, y)
+            elseif self.selectionWidget then
+                self:updateSelectionWidget()
             end
         end
 
         local function mouseUp(content, x, y)
+            assert(not (self.currentLink and self.selectionWidget))
             if self.currentLink then
                 self:clearCurrentLink()
+            elseif self.selectionWidget then
+                self:selectWidgets()
             end
         end
 
         local function leftClick(content, x, y)
-            self:clearSelection()
+            self:clearSelectedWidgets()
             self:closeNodeListMenu()
             self:closeNodeContextualMenu()
+            self:addSelectionWidget()
         end
 
         local function rightClick(content, x, y)
@@ -575,7 +584,7 @@ function MainWindow:deselectNode(nodeWidget)
     return false
 end
 
-function MainWindow:clearSelection()
+function MainWindow:clearSelectedWidgets()
     for selectedNodeWidget in pairs(self.selectedNodeWidgets) do
         selectedNodeWidget:deselect()
     end
@@ -602,6 +611,54 @@ function MainWindow:deleteSelectedNodes()
     self.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()
     self:drawLinks()
+end
+
+function MainWindow:addSelectionWidget()
+    assert(not self.selectionWidget)
+    local content = self:getContent()
+    local selectionWidget = Widget.makeFixedSize(0, 0)
+    selectionWidget:setPositionPolicy(Widget.PositionPolicy.BOTTOM_LEFT)
+    selectionWidget:setBackgroundColor(0x44444466)
+    local mouseX, mouseY = self:getMousePositionOnContent()
+    selectionWidget:setPosition(mouseX, mouseY)
+    content:addChild(selectionWidget)
+    self.selectionWidget = selectionWidget
+    self.initialSelectionPosition = { mouseX, mouseY }
+end
+
+function MainWindow:updateSelectionWidget()
+    assert(self.selectionWidget)
+    local content = self:getContent()
+    local mouseX, mouseY = self:getMousePositionOnContent()
+    local initialSelectionX, initialSelectionY = table.unpack(self.initialSelectionPosition)
+    local selectionX, selectionY = math.min(mouseX, initialSelectionX), math.min(mouseY, initialSelectionY)
+    self.selectionWidget:setPosition(selectionX, selectionY)
+    local selectionWidth, selectionHeight = math.abs(mouseX - initialSelectionX), math.abs(mouseY - initialSelectionY)
+    self.selectionWidget:setSize(selectionWidth, selectionHeight)
+end
+
+function MainWindow:removeSelectionWidget()
+    assert(self.selectionWidget)
+    self.selectionWidget:removeFromParent()
+    self.selectionWidget = nil
+end
+
+function MainWindow:selectWidgets()
+    local selectionX, selectionY = self:getContent():getRelativePosition(self.selectionWidget)
+    local selectionWidth, selectionHeight = self.selectionWidget:getSize()
+    local selectionRight = selectionX + selectionWidth
+    local selectionTop = selectionY + selectionHeight
+    assert(selectionX <= selectionRight)
+    assert(selectionY <= selectionTop)
+    for node, nodeWidget in pairs(self.nodeWidgets) do
+        local nodeWidgetX, nodeWidgetY = self:getContent():getRelativePosition(nodeWidget.container)
+        local nodeWidgetWidth, nodeWidgetHeight = nodeWidget.container:getComputedSize()
+        local centerX, centerY = nodeWidgetX + nodeWidgetWidth / 2, nodeWidgetY + nodeWidgetHeight / 2
+        if selectionX <= centerX and centerX <= selectionRight and selectionY <= centerY and centerY <= selectionTop then
+            self:selectNode(nodeWidget)
+        end
+    end
+    self:removeSelectionWidget()
 end
 
 function MainWindow:updateAllNodesPinSocketWidgets()

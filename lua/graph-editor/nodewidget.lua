@@ -55,7 +55,7 @@ function NodeWidget:build()
             if mouseDown and not mouseMoved then
                 mouseMoved = true
                 if not self.mainWindow:isNodeSelected(self) then
-                    self.mainWindow:clearSelection()
+                    self.mainWindow:clearSelectedWidgets()
                     selectedNode = self.mainWindow:selectNode(self)
                 end
                 self.mainWindow:dragSelectedNodeWidgets()
