@@ -22,13 +22,32 @@ void Ui::setCursor(CursorType cursorType)
 	if (m_cursor.get() == nullptr || *m_cursor != cursorType)
 	{
 		m_cursor = std::make_shared<Cursor>(cursorType);
-		m_cursor->setCursor();
+
+		if (m_cursorOverride.get() == nullptr)
+		{
+			m_cursor->setCursor();
+		}
 	}
 }
 
 void Ui::setDefaultCursor()
 {
 	m_cursor = m_defaultCursor;
+	if (m_cursorOverride.get() == nullptr)
+	{
+		m_cursor->setCursor();
+	}
+}
+
+void Ui::setCursorOverride(CursorType cursorType)
+{
+	m_cursorOverride = std::make_shared<Cursor>(cursorType);
+	m_cursorOverride->setCursor();
+}
+
+void Ui::resetCursorOverride()
+{
+	m_cursorOverride.reset();
 	m_cursor->setCursor();
 }
 

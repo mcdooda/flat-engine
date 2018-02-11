@@ -16,6 +16,9 @@ int open(lua_State* L);
 
 int l_Mouse_getPosition(lua_State* L);
 
+int l_Mouse_setCursor(lua_State* L);
+int l_Mouse_setDefaultCursor(lua_State* L);
+
 } // mouse
 } // lua
 } // input

@@ -185,6 +185,7 @@ class Widget : public util::Convertible<Widget>
 
 		inline void setAllowDragScrolling(bool allowDragScrolling) { m_allowDragScrolling = allowDragScrolling; }
 		inline bool getAllowDragScrolling() { return m_allowDragScrolling; }
+		CursorType getDragScrollingCursorType() const;
 
 		inline void setRestrictScrollX(bool restrictScrollX) { m_restrictScrollX = restrictScrollX; }
 		inline bool getRestrictScrollX() const { return m_restrictScrollX; }

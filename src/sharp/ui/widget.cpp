@@ -144,6 +144,25 @@ void Widget::setAllowScrollY(bool allowScrollY)
 	m_allowScrollY = allowScrollY;
 }
 
+CursorType Widget::getDragScrollingCursorType() const
+{
+	FLAT_ASSERT(m_allowDragScrolling);
+	FLAT_ASSERT(m_allowScrollX || m_allowScrollY);
+	if (m_allowScrollX && m_allowScrollY)
+	{
+		return CURSOR(SIZEALL);
+	}
+	else if (m_allowScrollX)
+	{
+		return CURSOR(SIZEWE);
+	}
+	else
+	{
+		FLAT_ASSERT(m_allowScrollY);
+		return CURSOR(SIZENS);
+	}
+}
+
 bool Widget::mouseWheelMoved(Widget* widget, bool& handled, const Vector2& offset)
 {
 	handled = true;

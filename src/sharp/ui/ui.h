@@ -22,6 +22,9 @@ class Ui
 		void setCursor(CursorType cursorType);
 		void setDefaultCursor();
 
+		void setCursorOverride(CursorType cursorType);
+		void resetCursorOverride();
+
 	public:
 		WidgetFactory factory;
 		std::shared_ptr<sharp::ui::RootWidget> root;
@@ -29,6 +32,7 @@ class Ui
 	private:
 		std::shared_ptr<Cursor> m_cursor;
 		std::shared_ptr<Cursor> m_defaultCursor;
+		std::shared_ptr<Cursor> m_cursorOverride;
 };
 
 } // ui

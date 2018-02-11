@@ -117,6 +117,7 @@ function Window:build(parent)
                     local initialWindowWidth, initialWindowHeight
                     local initialMouseX, initialMouseY
                     local resizeTimer
+                    local mouseOver = false
 
                     local function resize()
                         local mouseX, mouseY = Mouse.getPosition()
@@ -127,6 +128,7 @@ function Window:build(parent)
                         window:setSize(newWidth, newHeight)
                     end
                     local function startResize()
+                        Mouse.setCursor(Mouse.Cursor.SIZENWSE)
                         initialWindowWidth, initialWindowHeight = window:getSize()
                         initialMouseX, initialMouseY = Mouse.getPosition()
                         resizeTimer = Timer.start(0, nil, function()
@@ -134,8 +136,12 @@ function Window:build(parent)
                         end, true)
                     end
                     local function stopResize()
+                        if not mouseOver then
+                            Mouse.setDefaultCursor()
+                        end
                         resize()
                         resizeTimer:stop()
+                        resizeTimer = nil
                     end
 
                     bottomRightResizeIcon:mouseDown(function()
@@ -143,6 +149,16 @@ function Window:build(parent)
                     end)
                     bottomRightResizeIcon:mouseUp(function()
                         stopResize()
+                    end)
+                    bottomRightResizeIcon:mouseEnter(function()
+                        mouseOver = true
+                        Mouse.setCursor(Mouse.Cursor.SIZENWSE)
+                    end)
+                    bottomRightResizeIcon:mouseLeave(function()
+                        mouseOver = false
+                        if not resizeTimer then
+                            Mouse.setDefaultCursor()
+                        end
                     end)
                 end
         
