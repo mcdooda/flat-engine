@@ -562,6 +562,12 @@ function MainWindow:getMousePositionOnContent()
     return self:getContent():getRelativePosition(Mouse.getPosition())
 end
 
+function MainWindow:getMousePositionOnContentWithScrolling()
+    local mouseX, mouseY = self:getContent():getRelativePosition(Mouse.getPosition())
+    local scrollX, scrollY = self:getContent():getScrollPosition()
+    return mouseX + scrollX, mouseY + scrollY
+end
+
 function MainWindow:isNodeSelected(nodeWidget)
     return self.selectedNodeWidgets[nodeWidget]
 end
@@ -619,7 +625,7 @@ function MainWindow:addSelectionWidget()
     local selectionWidget = Widget.makeFixedSize(0, 0)
     selectionWidget:setPositionPolicy(Widget.PositionPolicy.BOTTOM_LEFT)
     selectionWidget:setBackgroundColor(0x44444466)
-    local mouseX, mouseY = self:getMousePositionOnContent()
+    local mouseX, mouseY = self:getMousePositionOnContentWithScrolling()
     selectionWidget:setPosition(mouseX, mouseY)
     content:addChild(selectionWidget)
     self.selectionWidget = selectionWidget
@@ -629,7 +635,7 @@ end
 function MainWindow:updateSelectionWidget()
     assert(self.selectionWidget)
     local content = self:getContent()
-    local mouseX, mouseY = self:getMousePositionOnContent()
+    local mouseX, mouseY = self:getMousePositionOnContentWithScrolling()
     local initialSelectionX, initialSelectionY = table.unpack(self.initialSelectionPosition)
     local selectionX, selectionY = math.min(mouseX, initialSelectionX), math.min(mouseY, initialSelectionY)
     self.selectionWidget:setPosition(selectionX, selectionY)
