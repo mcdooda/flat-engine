@@ -36,7 +36,6 @@ void RootWidget::clearAll()
 	m_mouseDownWidget.reset();
 	m_focusWidget.reset();
 	m_draggedWidgets.clear();
-	m_mouseOver = false;
 	setDirty();
 }
 
@@ -375,7 +374,6 @@ void RootWidget::handleMouseEnter()
 {
 	if (Widget* mouseOverWidget = m_mouseOverWidget.lock().get())
 	{
-		mouseOverWidget->m_mouseOver = true;
 		mouseOverWidget->mouseEnter(mouseOverWidget);
 	}
 }
@@ -384,7 +382,6 @@ void RootWidget::handleMouseLeave()
 {
 	if (Widget* mouseOverWidget = m_mouseOverWidget.lock().get())
 	{
-		mouseOverWidget->m_mouseOver = false;
 		mouseOverWidget->mouseLeave(mouseOverWidget);
 	}
 }

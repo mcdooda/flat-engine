@@ -298,7 +298,6 @@ class Widget : public util::Convertible<Widget>
 		bool m_restrictScrollY : 1;
 
 		// computed
-		bool m_mouseOver : 1;
 		bool m_hasFocus : 1;
 		bool m_scrolled : 1;
 		bool m_dragged : 1;

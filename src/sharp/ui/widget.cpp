@@ -35,7 +35,6 @@ Widget::Widget() :
 	m_allowDragScrolling(false),
 	m_restrictScrollX(true),
 	m_restrictScrollY(true),
-	m_mouseOver(false),
 	m_hasFocus(false),
 	m_scrolled(false),
 	m_dragged(false)
