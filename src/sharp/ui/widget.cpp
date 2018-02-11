@@ -575,8 +575,9 @@ bool Widget::canBeFocused() const
 
 bool Widget::isAncestor(Widget* ancestorWidget) const
 {
+	FLAT_ASSERT(ancestorWidget != nullptr);
 	const Widget* widget = this;
-	while (!widget->isRoot() && widget != ancestorWidget)
+	while (widget != nullptr && !widget->isRoot() && widget != ancestorWidget)
 	{
 		widget = widget->getParent().lock().get();
 	}
@@ -586,11 +587,17 @@ bool Widget::isAncestor(Widget* ancestorWidget) const
 Widget* Widget::getCommonAncestor(Widget* a, Widget* b)
 {
 	// TODO: optimize this
-	while (!a->isRoot() && !b->isAncestor(a))
+	if (b == nullptr)
 	{
-		a = a->getParent().lock().get();
+		return nullptr;
 	}
-	return a;
+	Widget* widget = a;
+	while (widget != nullptr && !widget->isRoot() && !b->isAncestor(widget))
+	{
+		widget = widget->getParent().lock().get();
+	}
+	FLAT_ASSERT(widget == nullptr || a->isAncestor(widget));
+	return widget != nullptr && b->isAncestor(widget) ? widget : nullptr;
 }
 
 RootWidget* Widget::getRootIfAncestor()

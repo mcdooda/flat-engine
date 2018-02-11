@@ -16,22 +16,17 @@ function Toolbar:addButton(text)
     button:setPadding(2, 4, 2, 4)
     button:setBackgroundColor(Theme.BUTTON_BACKGROUND_COLOR)
 
-    local function mouseEnter()
+    button:mouseEnter(function()
         button:setBackgroundColor(Theme.BUTTON_BACKGROUND_COLOR_OVER)
-    end
-    local function mouseLeave()
+    end)
+    button:mouseLeave(function()
         button:setBackgroundColor(Theme.BUTTON_BACKGROUND_COLOR)
-    end
-
-    button:mouseEnter(mouseEnter)
-    button:mouseLeave(mouseLeave)
+    end)
 
     do
         local buttonText = Widget.makeText(text, table.unpack(Theme.BUTTON_FONT))
         buttonText:setTextColor(Theme.BUTTON_TEXT_COLOR)
         buttonText:setMargin(0, 5, 0, 5)
-        buttonText:mouseEnter(mouseEnter)
-        buttonText:mouseLeave(mouseLeave)
         button:addChild(buttonText)
     end
 

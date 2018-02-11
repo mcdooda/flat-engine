@@ -414,7 +414,7 @@ void RootWidget::handleMouseLeave(Widget* nextMouseOverWidget)
 		commonAncestor = getCommonAncestor(widget, nextMouseOverWidget);
 	}
 
-	while (widget != commonAncestor)
+	while (widget != nullptr && widget != commonAncestor)
 	{
 		widget->mouseLeave(widget);
 		widget = widget->getParent().lock().get();
