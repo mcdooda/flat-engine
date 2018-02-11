@@ -96,6 +96,13 @@ function MainWindow:build()
     end
 end
 
+function MainWindow:close()
+    self:closeNodeListMenu()
+    self:closeNodeContextualMenu()
+
+    flat.ui.Window.close(self)
+end
+
 function MainWindow:openGraph(graphPath, nodeType)
     self.graphPath = graphPath
 
