@@ -53,6 +53,11 @@ function MainWindow:build()
         content:setAllowDragScrolling(true)
         content:setRestrictScroll(false, false)
 
+        local function scroll()
+            self:closeAllRightClickMenus()
+            self:drawLinks()
+        end
+
         local function draw()
             self:drawLinks()
         end
@@ -86,7 +91,7 @@ function MainWindow:build()
             self:openNodeListMenu(x, y)
         end
 
-        content:scroll(draw)
+        content:scroll(scroll)
         content:draw(draw)
         content:mouseMove(mouseMove)
         content:mouseUp(mouseUp)
@@ -97,10 +102,14 @@ function MainWindow:build()
 end
 
 function MainWindow:close()
-    self:closeNodeListMenu()
-    self:closeNodeContextualMenu()
+    self:closeAllRightClickMenus()
 
     flat.ui.Window.close(self)
+end
+
+function MainWindow:closeAllRightClickMenus()
+    self:closeNodeListMenu()
+    self:closeNodeContextualMenu()
 end
 
 function MainWindow:openGraph(graphPath, nodeType)
@@ -427,8 +436,7 @@ function MainWindow:openRightClickMenu()
 end
 
 function MainWindow:openNodeListMenu(x, y)
-    self:closeNodeListMenu()
-    self:closeNodeContextualMenu()
+    self:closeAllRightClickMenus()
 
     local nodeListMenu = self:openRightClickMenu()
     nodeListMenu:setSizePolicy(Widget.SizePolicy.FIXED)
@@ -541,8 +549,7 @@ function MainWindow:closeNodeListMenu()
 end
 
 function MainWindow:openNodeContextualMenu()
-    self:closeNodeListMenu()
-    self:closeNodeContextualMenu()
+    self:closeAllRightClickMenus()
 
     local nodeContextualMenu = self:openRightClickMenu()
 

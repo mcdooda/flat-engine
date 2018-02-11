@@ -270,7 +270,10 @@ class Widget : public util::Convertible<Widget>
 		Widget* getFixedLayoutAncestor();
 		void setAncestorDirty();
 		bool hasFixedSize() const;
+
+		void resetScrollPosition();
 		
+	protected:
 		// Widget settings
 		Margin m_margin;
 		Padding m_padding;

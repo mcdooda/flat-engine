@@ -263,7 +263,7 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 	setAncestorDirty();
 	widget->m_parent.reset();
 
-	setScrollPosition(ScrollPosition(0.f, 0.f));
+	resetScrollPosition();
 }
 
 void Widget::removeFromParent()
@@ -286,7 +286,7 @@ void Widget::removeAllChildren()
 
 	setAncestorDirty();
 
-	setScrollPosition(ScrollPosition(0.f, 0.f));
+	resetScrollPosition();
 }
 
 void Widget::layoutDone()
@@ -617,6 +617,23 @@ void Widget::setAncestorDirty()
 bool Widget::hasFixedSize() const
 {
 	return hasLayout<FixedLayout>() && m_sizePolicy == Widget::SizePolicy::FIXED;
+}
+
+void Widget::resetScrollPosition()
+{
+	ScrollPosition scrollPosition(0.f, 0.f);
+
+	if (!m_restrictScrollX)
+	{
+		scrollPosition.x = m_scrollPosition.x;
+	}
+
+	if (!m_restrictScrollY)
+	{
+		scrollPosition.y = m_scrollPosition.y;
+	}
+
+	setScrollPosition(scrollPosition);
 }
 
 } // ui
