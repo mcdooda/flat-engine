@@ -163,6 +163,7 @@ void RootWidget::updateDragScrollingWidget()
 		ScrollPosition newScrollPosition = -m_dragScrollingOffset - mouse->getPosition();
 		if (newScrollPosition != widget->getScrollPosition())
 		{
+			m_flat.ui->setCursorOverride(CURSOR(SIZEALL));
 			widget->setScrollPosition(newScrollPosition);
 			m_dragScrolled = true;
 		}
@@ -334,7 +335,6 @@ void RootWidget::handleRightMouseButtonDown()
 
 		m_dragScrollingWidget = widget->getWeakPtr();
 		m_dragScrollingOffset = -widget->getScrollPosition() - mouse->getPosition();
-		m_flat.ui->setCursorOverride(widget->getDragScrollingCursorType());
 	}
 	else if (mouseOverWidget != nullptr)
 	{

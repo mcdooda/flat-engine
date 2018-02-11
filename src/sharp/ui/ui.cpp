@@ -41,8 +41,11 @@ void Ui::setDefaultCursor()
 
 void Ui::setCursorOverride(CursorType cursorType)
 {
-	m_cursorOverride = std::make_shared<Cursor>(cursorType);
-	m_cursorOverride->setCursor();
+	if (m_cursorOverride.get() == nullptr || *m_cursorOverride != cursorType)
+	{
+		m_cursorOverride = std::make_shared<Cursor>(cursorType);
+		m_cursorOverride->setCursor();
+	}
 }
 
 void Ui::resetCursorOverride()
