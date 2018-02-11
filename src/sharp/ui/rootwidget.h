@@ -67,8 +67,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleRightMouseButtonDown();
 		void handleRightMouseButtonUp();
 		void handleMouseMove();
-		void handleMouseEnter();
-		void handleMouseLeave();
+		void handleMouseEnter(Widget* previousMouseOverWidget);
+		void handleMouseLeave(Widget* nextMouseOverWidget);
 		void handleMouseWheel();
 
 		template <class... Args>

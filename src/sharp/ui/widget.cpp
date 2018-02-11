@@ -573,6 +573,26 @@ bool Widget::canBeFocused() const
 	return false;
 }
 
+bool Widget::isAncestor(Widget* ancestorWidget) const
+{
+	const Widget* widget = this;
+	while (!widget->isRoot() && widget != ancestorWidget)
+	{
+		widget = widget->getParent().lock().get();
+	}
+	return widget == ancestorWidget;
+}
+
+Widget* Widget::getCommonAncestor(Widget* a, Widget* b)
+{
+	// TODO: optimize this
+	while (!a->isRoot() && !b->isAncestor(a))
+	{
+		a = a->getParent().lock().get();
+	}
+	return a;
+}
+
 RootWidget* Widget::getRootIfAncestor()
 {
 	std::weak_ptr<Widget> widget = getWeakPtr();

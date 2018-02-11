@@ -181,9 +181,10 @@ void RootWidget::updateInput(bool updateMouseOver)
 			mouseOverWidget = nullptr;
 		}
 
-		if (mouseOverWidget != m_mouseOverWidget.lock().get())
+		Widget* previousMouseOverWidget = m_mouseOverWidget.lock().get();
+		if (mouseOverWidget != previousMouseOverWidget)
 		{
-			handleMouseLeave();
+			handleMouseLeave(mouseOverWidget);
 			if (mouseOverWidget != nullptr)
 			{
 				m_mouseOverWidget = mouseOverWidget->getWeakPtr();
@@ -192,7 +193,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 			{
 				m_mouseOverWidget.reset();
 			}
-			handleMouseEnter();
+			handleMouseEnter(previousMouseOverWidget);
 		}
 
 		handleMouseMove();
@@ -370,19 +371,53 @@ void RootWidget::handleMouseMove()
 	}
 }
 
-void RootWidget::handleMouseEnter()
+void RootWidget::handleMouseEnter(Widget* previousMouseOverWidget)
 {
-	if (Widget* mouseOverWidget = m_mouseOverWidget.lock().get())
+	Widget* widget = m_mouseOverWidget.lock().get();
+	if (widget == nullptr)
 	{
-		mouseOverWidget->mouseEnter(mouseOverWidget);
+		return;
+	}
+
+	Widget* commonAncestor = nullptr;
+	if (previousMouseOverWidget == nullptr)
+	{
+		commonAncestor = this;
+	}
+	else
+	{
+		commonAncestor = getCommonAncestor(widget, previousMouseOverWidget);
+	}
+
+	while (widget != commonAncestor)
+	{
+		widget->mouseEnter(widget);
+		widget = widget->getParent().lock().get();
 	}
 }
 
-void RootWidget::handleMouseLeave()
+void RootWidget::handleMouseLeave(Widget* nextMouseOverWidget)
 {
-	if (Widget* mouseOverWidget = m_mouseOverWidget.lock().get())
+	Widget* widget = m_mouseOverWidget.lock().get();
+	if (widget == nullptr)
 	{
-		mouseOverWidget->mouseLeave(mouseOverWidget);
+		return;
+	}
+	
+	Widget* commonAncestor = nullptr;
+	if (nextMouseOverWidget == nullptr)
+	{
+		commonAncestor = this;
+	}
+	else
+	{
+		commonAncestor = getCommonAncestor(widget, nextMouseOverWidget);
+	}
+
+	while (widget != commonAncestor)
+	{
+		widget->mouseLeave(widget);
+		widget = widget->getParent().lock().get();
 	}
 }
 

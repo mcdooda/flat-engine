@@ -209,7 +209,7 @@ class Widget : public util::Convertible<Widget>
 		void removeFromParent();
 		void removeAllChildren();
 
-		inline std::weak_ptr<Widget> getParent() { return m_parent; }
+		inline const std::weak_ptr<Widget>& getParent() const { return m_parent; }
 
 		virtual void preLayout() = 0;
 		virtual void layout(bool computePosition) = 0;
@@ -232,6 +232,9 @@ class Widget : public util::Convertible<Widget>
 		virtual void clearDirty();
 
 		virtual bool canBeFocused() const;
+
+		bool isAncestor(Widget* ancestorWidget) const;
+		static Widget* getCommonAncestor(Widget* a, Widget* b);
 
 	public:
 		Slot<Widget*, bool&> leftClick;
