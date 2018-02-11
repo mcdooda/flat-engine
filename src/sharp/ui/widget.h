@@ -252,6 +252,7 @@ class Widget : public util::Convertible<Widget>
 		void getScissor(ScissorRectangle& scissor) const;
 		bool computeAndApplyScissor(ScissorRectangle& scissor, const ScissorRectangle& parentScissor) const;
 		void drawChildren(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const;
+		void drawScrollbars(const render::RenderSettings& renderSettings, const ScissorRectangle& scissor) const;
 		
 		float getInnerWidth() const { return m_computedSize.x - m_padding.left - m_padding.right; }
 		void setInnerWidth(float innerWidth) { m_computedSize.x = innerWidth + m_padding.left + m_padding.right; }
@@ -261,8 +262,6 @@ class Widget : public util::Convertible<Widget>
 
 		float getOuterWidth() const { return m_computedSize.x + m_margin.left + m_margin.right; }
 		float getOuterHeight() const { return m_computedSize.y + m_margin.top + m_margin.bottom; }
-
-		Vector2 getMaxScrollPosition() const;
 
 		Widget* getMouseOverWidget(const Vector2& mousePosition);
 

@@ -109,7 +109,7 @@ void Widget::setBackground(const std::shared_ptr<const video::Texture>& backgrou
 {
 	m_background = background;
 	m_backgroundSize = background->getSize();
-	setBackgroundColor(flat::video::Color::WHITE);
+	setBackgroundColor(video::Color::WHITE);
 }
 
 void Widget::setAllowScrollX(bool allowScrollX)
@@ -262,6 +262,8 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 	// set the ancestor dirty before resetting the parent!
 	setAncestorDirty();
 	widget->m_parent.reset();
+
+	setScrollPosition(ScrollPosition(0.f, 0.f));
 }
 
 void Widget::removeFromParent()
@@ -283,6 +285,8 @@ void Widget::removeAllChildren()
 	m_children.clear();
 
 	setAncestorDirty();
+
+	setScrollPosition(ScrollPosition(0.f, 0.f));
 }
 
 void Widget::layoutDone()
@@ -388,6 +392,8 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 	}
 
 	drawChildren(renderSettings, scissor);
+
+	drawScrollbars(renderSettings, scissor);
 }
 
 CursorType Widget::getCursorType() const
@@ -485,21 +491,48 @@ void Widget::drawChildren(const render::RenderSettings& renderSettings, const Sc
 	}
 }
 
-Vector2 Widget::getMaxScrollPosition() const
+void Widget::drawScrollbars(const render::RenderSettings& renderSettings, const ScissorRectangle& scissor) const
 {
-	Vector2 maxScrollPosition;
-
-	for (const std::shared_ptr<Widget>& child : m_children)
+	if (/*!m_allowScrollX &&*/ !m_allowScrollY)
 	{
-		float right = child->m_transform[3][0] + child->m_computedSize.x + child->m_margin.right;
-		maxScrollPosition.x = std::max(right, maxScrollPosition.x);
-		float bottom = child->m_transform[3][1] - child->m_margin.bottom;
-		maxScrollPosition.y = std::min(bottom, maxScrollPosition.y);
+		return;
 	}
 
-	maxScrollPosition -= m_computedSize;
+	if (/*m_minScrollPosition.x >= 0.f &&*/ m_minScrollPosition.y >= 0.f)
+	{
+		return;
+	}
 
-	return maxScrollPosition;
+	glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+
+	constexpr int scrollbarWidth = 2;
+	static video::Color scrollbarColor(1.f, 1.f, 1.f, 0.4f);
+
+	renderSettings.colorUniform.set(scrollbarColor);
+	renderSettings.textureGivenUniform.set(false);
+	renderSettings.vertexColorGivenUniform.set(false);
+	renderSettings.modelMatrixUniform.set(m_transform);
+
+	glEnableVertexAttribArray(renderSettings.positionAttribute);
+
+	if (m_allowScrollY && m_minScrollPosition.y <= 0.f)
+	{
+		const float ratio = m_scrollPosition.y / m_minScrollPosition.y;
+		const float scrollbarHeight = (m_computedSize.y / (m_computedSize.y - m_minScrollPosition.y)) * m_computedSize.y;
+		const float scrollbarY = (m_computedSize.y - scrollbarHeight) * (1.f - m_scrollPosition.y / m_minScrollPosition.y);
+
+		const float position[] = {
+			m_computedSize.x - scrollbarWidth,  scrollbarY,
+			m_computedSize.x,                   scrollbarY,
+			m_computedSize.x,                   scrollbarY + scrollbarHeight,
+			m_computedSize.x - scrollbarWidth,  scrollbarY + scrollbarHeight
+		};
+
+		glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, position);
+		glDrawArrays(GL_QUADS, 0, 4);
+	}
+
+	glDisableVertexAttribArray(renderSettings.positionAttribute);
 }
 
 Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)
