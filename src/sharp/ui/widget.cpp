@@ -336,7 +336,6 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 			0.f, m_computedSize.y
 		};
 
-		glEnableVertexAttribArray(renderSettings.positionAttribute);
 		glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, position);
 
 		if (background != nullptr)
@@ -383,7 +382,6 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 		glDrawArrays(GL_QUADS, 0, 4);
 
 		// disable vertex attrib array
-		glDisableVertexAttribArray(renderSettings.positionAttribute);
 		if (background != nullptr)
 		{
 			glDisableVertexAttribArray(renderSettings.uvAttribute);
@@ -512,8 +510,6 @@ void Widget::drawScrollbars(const render::RenderSettings& renderSettings, const 
 	renderSettings.vertexColorGivenUniform.set(false);
 	renderSettings.modelMatrixUniform.set(m_transform);
 
-	glEnableVertexAttribArray(renderSettings.positionAttribute);
-
 	if (m_allowScrollY && m_minScrollPosition.y <= 0.f)
 	{
 		const float ratio = m_scrollPosition.y / m_minScrollPosition.y;
@@ -530,8 +526,6 @@ void Widget::drawScrollbars(const render::RenderSettings& renderSettings, const 
 		glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, position);
 		glDrawArrays(GL_QUADS, 0, 4);
 	}
-
-	glDisableVertexAttribArray(renderSettings.positionAttribute);
 }
 
 Widget* Widget::getMouseOverWidget(const Vector2& mousePosition)

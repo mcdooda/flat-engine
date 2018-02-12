@@ -44,7 +44,9 @@ void RootWidget::draw(const flat::render::RenderSettings& renderSettings) const
 	glEnable(GL_SCISSOR_TEST);
 	ScissorRectangle screenScissor;
 	getScissor(screenScissor);
+	glEnableVertexAttribArray(renderSettings.positionAttribute);
 	drawChildren(renderSettings, screenScissor);
+	glDisableVertexAttribArray(renderSettings.positionAttribute);
 	glDisable(GL_SCISSOR_TEST);
 }
 

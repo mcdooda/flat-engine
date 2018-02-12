@@ -49,7 +49,6 @@ void TextWidget::draw(const render::RenderSettings& renderSettings, const Scisso
 	renderSettings.secondaryColorUniform.set(video::Color::BLACK);
 	renderSettings.textureGivenUniform.set(true);
 	
-	glEnableVertexAttribArray(renderSettings.positionAttribute);
 	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&(getVertices()[0])));
 
 	glEnableVertexAttribArray(renderSettings.colorAttribute);
@@ -60,7 +59,7 @@ void TextWidget::draw(const render::RenderSettings& renderSettings, const Scisso
 	
 	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(getUv().size()));
 	
-	glDisableVertexAttribArray(renderSettings.positionAttribute);
+	glDisableVertexAttribArray(renderSettings.colorAttribute);
 	glDisableVertexAttribArray(renderSettings.uvAttribute);
 }
 

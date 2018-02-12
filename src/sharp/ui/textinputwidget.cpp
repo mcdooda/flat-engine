@@ -403,11 +403,8 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 
 	glLineWidth(1);
 
-	glEnableVertexAttribArray(renderSettings.positionAttribute);
 	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
 	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(cursorVertices.size()));
-
-	glDisableVertexAttribArray(renderSettings.positionAttribute);
 }
 
 void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const
@@ -440,11 +437,8 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 
 	glLineWidth(1);
 
-	glEnableVertexAttribArray(renderSettings.positionAttribute);
 	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
 	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cursorVertices.size()));
-
-	glDisableVertexAttribArray(renderSettings.positionAttribute);
 }
 
 } // ui
