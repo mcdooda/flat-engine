@@ -7,8 +7,11 @@ return {
     'script/scriptoutput',
 
     'math/multiply',
+    'math/lessthan',
 
     'math/vector3/vector3reflect',
+    'math/vector3/vector3numbermultiply',
+    'math/vector3/vector3length',
 
     'bool',
     'number',

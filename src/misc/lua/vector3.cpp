@@ -146,8 +146,8 @@ int l_Vector3_sub(lua_State* L)
 int l_Vector3_mul(lua_State* L)
 {
 	Vector3& vector3 = getVector3(L, 1);
-	float multiplier = static_cast<float>(luaL_checknumber(L, 2));
-	pushVector3(L, vector3 * multiplier);
+	float factor = static_cast<float>(luaL_checknumber(L, 2));
+	pushVector3(L, vector3 * factor);
 	return 1;
 }
 
