@@ -344,7 +344,7 @@ void RootWidget::handleRightMouseButtonDown()
 
 void RootWidget::handleRightMouseButtonUp()
 {
-	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
+	Widget* mouseOverWidget = m_dragScrollingWidget.lock().get();
 	if (mouseOverWidget != nullptr)
 	{
 		m_dragScrollingWidget.reset();
@@ -353,7 +353,7 @@ void RootWidget::handleRightMouseButtonUp()
 	
 	if (!m_dragScrolled)
 	{
-		propagateEvent(mouseOverWidget, &Widget::rightClick);
+		propagateEvent(m_mouseOverWidget.lock().get(), &Widget::rightClick);
 	}
 	m_dragScrolled = false;
 }
