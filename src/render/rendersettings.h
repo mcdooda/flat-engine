@@ -27,6 +27,15 @@ struct RenderSettings
 	video::Attribute colorAttribute;
 
 	std::uint32_t getHash() const;
+
+	RenderSettings() :
+		positionAttribute(-1),
+		normalAttribute(-1),
+		uvAttribute(-1),
+		colorAttribute(-1)
+	{
+
+	}
 };
 
 } // render
