@@ -362,15 +362,30 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.outputNode then
         if self:canPlugPins(currentLink.outputNode, currentLink.outputPin, inputNode, inputPin) then
+            local updateInputNodeWidget = false
+            local unpluggedOutputPin = false
             if inputPin.pluggedOutputPin then
+                unpluggedOutputPin = true
                 local outputPin = inputPin.pluggedOutputPin.outputPin
                 local previousOutputNode = inputPin.pluggedOutputPin.node
-                inputNode:unplugInputPin(inputPin)
-                local nodeWidget = self.nodeWidgets[previousOutputNode]
-                nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+                local updateOutputNodeWidget, updateInputNodeWidgetUnplug = inputNode:unplugInputPin(inputPin, true)
+
+                do
+                    local outputNodeWidget = self.nodeWidgets[previousOutputNode]
+                    if updateOutputNodeWidget then
+                        outputNodeWidget:rebuild()
+                    else
+                        outputNodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+                    end
+                    outputNodeWidget:updateCustomNodeEditor()
+                end
+
+                do
+                    updateInputNodeWidget = updateInputNodeWidget or updateInputNodeWidgetUnplug
+                end
             end
-            local outputPinIsAny = currentLink.outputPin.pinType == PinTypes.ANY
-            local updateOutputNodeWidget, updateInputNodeWidget = currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin)
+
+            local updateOutputNodeWidget, updateInputNodeWidgetPlug = currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin, unpluggedOutputPin)
             self.currentLink = nil
             self:drawLinks()
             
@@ -383,6 +398,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
             end
 
             do
+                updateInputNodeWidget = updateInputNodeWidget or updateInputNodeWidgetPlug
                 local inputNodeWidget = self.nodeWidgets[inputNode]
                 if updateInputNodeWidget then
                     inputNodeWidget:rebuild()

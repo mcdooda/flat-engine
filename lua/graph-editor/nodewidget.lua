@@ -156,8 +156,19 @@ function NodeWidget:makeInputPinWidget(node, pin)
             if pin.pluggedOutputPin then
                 local outputPin = pin.pluggedOutputPin.outputPin
                 local outputNode = pin.pluggedOutputPin.node
-                node:unplugInputPin(pin)
-                self:setInputPinPlugged(pin, false)
+                local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
+
+                if updateOutputNodeWidget then
+                    local outputNodeWidget = self.mainWindow.nodeWidgets[outputNode]
+                    outputNode:rebuild()
+                end
+
+                if updateInputNodeWidget then
+                    self:rebuild()
+                else
+                    self:setInputPinPlugged(pin, false)
+                end
+
                 self.mainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
             else
                 self.mainWindow:beginDragWireFromInputPin(node, pin)

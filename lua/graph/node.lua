@@ -42,7 +42,7 @@ function Node:getLoadArguments()
     -- overriden when needed, should return the arguments to pass to load(...)
 end
 
-function Node:addInputPin(pinType, pinName, onPlugged)
+function Node:addInputPin(pinType, pinName, onPlugged, onUnplugged)
     assert(pinType, 'no pin type for pin ' .. tostring(pinName))
     assert(pinName, 'no pin name')
     local inputPin = {
@@ -51,8 +51,22 @@ function Node:addInputPin(pinType, pinName, onPlugged)
         pluggedOutputPin = nil,
         onPlugged = onPlugged
     }
+
+    -- the editor always run with flat.debug
+    if flat.debug then
+        inputPin.onUnplugged = onUnplugged
+    end
+
     self.inputPins[#self.inputPins + 1] = inputPin
     return inputPin
+end
+
+function Node:removeInputPin(inputPin)
+    local inputPinIndex = self:findInputPinIndex(inputPin)
+    for i = inputPinIndex, #self.inputPins - 1 do
+        self.inputPins[i] = self.inputPins[i + 1]
+    end
+    self.inputPins[#self.inputPins] = nil
 end
 
 function Node:getInputPin(inputPinIndex)
@@ -67,7 +81,7 @@ function Node:findInputPinIndex(inputPin)
     end
 end
 
-function Node:addOutputPin(pinType, pinName, onPlugged)
+function Node:addOutputPin(pinType, pinName, onPlugged, onUnplugged)
     assert(pinType, 'no pin type for pin ' .. tostring(pinName))
     assert(pinName, 'no pin name')
     local outputPin = {
@@ -76,12 +90,34 @@ function Node:addOutputPin(pinType, pinName, onPlugged)
         pluggedInputPins = {},
         onPlugged = onPlugged
     }
+
+    -- the editor always run with flat.debug
+    if flat.debug then
+        outputPin.onUnplugged = onUnplugged
+    end
+
     self.outputPins[#self.outputPins + 1] = outputPin
     return outputPin
 end
 
+function Node:removeOutputPin(outputPin)
+    local outputPinIndex = self:findOutputPinIndex(outputPin)
+    for i = outputPinIndex, #self.outputPins - 1 do
+        self.outputPins[i] = self.outputPins[i + 1]
+    end
+    self.outputPins[#self.outputPins] = nil
+end
+
 function Node:getOutputPin(outputPinIndex)
     return self.outputPins[outputPinIndex]
+end
+
+function Node:findOutputPinIndex(outputPin)
+    for i = 1, #self.outputPins do
+        if self.outputPins[i] == outputPin then
+            return i
+        end
+    end
 end
 
 function Node:clearPins()
@@ -98,20 +134,15 @@ function Node:rebuildPins()
     self:buildPins()
 end
 
-function Node:plugPins(outputPin, node, inputPin)
+function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged)
     assert(not inputPin.pluggedOutputPin, 'the input pin is already plugged')
+    assert(not otherOutputPinUnplugged or flat.debug)
 
-    local onOutputPinPlugged
-    local onInputPinPlugged
     if outputPin.pinType == PinTypes.ANY then
         assert(inputPin.pinType ~= PinTypes.ANY)
         outputPin.pinType = inputPin.pinType
-        onOutputPinPlugged = outputPin.onPlugged
-        outputPin.onPlugged = nil
     elseif inputPin.pinType == PinTypes.ANY then
         inputPin.pinType = outputPin.pinType
-        onInputPinPlugged = inputPin.onPlugged
-        inputPin.onPlugged = nil
     end
 
     assert(
@@ -119,11 +150,11 @@ function Node:plugPins(outputPin, node, inputPin)
         'type mismatch between pins '
         .. self:getName() .. ' -> ' .. outputPin.pinName .. ' (' .. self:pinTypeToString(outputPin.pinType) .. ') '
         .. 'and '
-        .. node:getName() .. ' -> ' .. inputPin.pinName .. ' (' .. self:pinTypeToString(inputPin.pinType) .. ')'
+        .. inputNode:getName() .. ' -> ' .. inputPin.pinName .. ' (' .. self:pinTypeToString(inputPin.pinType) .. ')'
     )
     outputPin.pluggedInputPins[#outputPin.pluggedInputPins + 1] = {
         inputPin = inputPin,
-        node = node
+        node = inputNode
     }
     inputPin.pluggedOutputPin = {
         outputPin = outputPin,
@@ -132,17 +163,18 @@ function Node:plugPins(outputPin, node, inputPin)
 
     local updateOutputNode = false
     local updateInputNode = false
-    if onOutputPinPlugged then
-        updateOutputNode = onOutputPinPlugged(self, outputPin)
+    if outputPin.onPlugged then
+        updateOutputNode = outputPin.onPlugged(self, outputPin)
     end
-    if onInputPinPlugged then
-        updateInputNode = onInputPinPlugged(node, inputPin)
+    if inputPin.onPlugged then
+        updateInputNode = inputPin.onPlugged(inputNode, inputPin, otherOutputPinUnplugged)
     end
     return updateOutputNode, updateInputNode
 end
 
-function Node:unplugInputPin(inputPin)
+function Node:unplugInputPin(inputPin, otherOutputPinPlugged)
     assert(inputPin.pluggedOutputPin, 'the input pin is not plugged')
+    
     local outputPin = inputPin.pluggedOutputPin.outputPin
     local numPluggedInputPins = #outputPin.pluggedInputPins
     for i = 1, numPluggedInputPins do
@@ -155,7 +187,18 @@ function Node:unplugInputPin(inputPin)
             break
         end
     end
+    local outputNode = inputPin.pluggedOutputPin.node
     inputPin.pluggedOutputPin = nil
+
+    local updateOutputNode = false
+    local updateInputNode = false
+    if outputPin.onUnplugged then
+        updateOutputNode = outputPin.onUnplugged(outputNode, outputPin)
+    end
+    if inputPin.onUnplugged then
+        updateInputNode = inputPin.onUnplugged(self, inputPin, otherOutputPinPlugged)
+    end
+    return updateOutputNode, updateInputNode
 end
 
 function Node:unplugAllPins()
