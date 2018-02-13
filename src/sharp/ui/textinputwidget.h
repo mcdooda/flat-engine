@@ -46,8 +46,8 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 
 	private:
 		bool enteredFocus(Widget* widget);
-		bool onMouseDown(Widget* widget, bool&);
-		bool onMouseMove(Widget* widget, bool&);
+		bool onMouseDown(Widget* widget, bool& eventHandled);
+		bool onMouseMove(Widget* widget, bool& eventHandled);
 		void moveCursor(int offset);
 		void moveCursorAt(CursorIndex index);
 		void selectTo(CursorIndex to);

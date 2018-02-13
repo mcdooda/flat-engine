@@ -67,8 +67,9 @@ bool TextInputWidget::leftFocus(Widget* widget)
 	return true;
 }
 
-bool TextInputWidget::onMouseDown(Widget* widget, bool&)
+bool TextInputWidget::onMouseDown(Widget* widget, bool& eventHandled)
 {
+	eventHandled = true;
 	if (hasSelectedText())
 	{
 		unselect();
@@ -79,11 +80,12 @@ bool TextInputWidget::onMouseDown(Widget* widget, bool&)
 	return true;
 }
 
-bool TextInputWidget::onMouseMove(Widget* widget, bool&)
+bool TextInputWidget::onMouseMove(Widget* widget, bool& eventHandled)
 {
 	auto& mouse = m_flat.input->mouse;
 	if (hasFocus() && mouse->isPressed(M(LEFT)))
 	{
+		eventHandled = true;
 		const float mouseX = getRelativePosition(mouse->getPosition()).x;
 		m_cursorIndex = getCursorIndexFromPosition(mouseX);
 		selectTo(m_selectionIndex);
