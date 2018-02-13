@@ -13,6 +13,8 @@ return {
     'math/vector3/vector3numbermultiply',
     'math/vector3/vector3length',
 
+    'print',
+
     'bool',
     'number',
     'string',

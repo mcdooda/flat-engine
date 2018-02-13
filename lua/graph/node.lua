@@ -130,11 +130,15 @@ function Node:plugPins(outputPin, node, inputPin)
         node = self
     }
 
-    if onInputPinPlugged then
-        return onInputPinPlugged(node, inputPin)
-    elseif onOutputPinPlugged then
-        return onOutputPinPlugged(self, outputPin)
+    local updateOutputNode = false
+    local updateInputNode = false
+    if onOutputPinPlugged then
+        updateOutputNode = onOutputPinPlugged(self, outputPin)
     end
+    if onInputPinPlugged then
+        updateInputNode = onInputPinPlugged(node, inputPin)
+    end
+    return updateOutputNode, updateInputNode
 end
 
 function Node:unplugInputPin(inputPin)

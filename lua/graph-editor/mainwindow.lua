@@ -369,24 +369,28 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                 local nodeWidget = self.nodeWidgets[previousOutputNode]
                 nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
             end
-            local inputPinIsAny = inputPin.pinType == PinTypes.ANY
             local outputPinIsAny = currentLink.outputPin.pinType == PinTypes.ANY
-            local updateWidget = currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin)
+            local updateOutputNodeWidget, updateInputNodeWidget = currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin)
             self.currentLink = nil
             self:drawLinks()
-            if updateWidget then
-                local nodeWidget
-                if inputPinIsAny then
-                    nodeWidget = self.nodeWidgets[inputNode]
-                elseif outputPinIsAny then
-                    nodeWidget = self.nodeWidgets[currentLink.outputNode]
+            
+            do
+                local outputNodeWidget = self.nodeWidgets[currentLink.outputNode]
+                if updateOutputNodeWidget then
+                    outputNodeWidget:rebuild()
                 end
-                assert(nodeWidget)
-                nodeWidget:rebuild()
+                outputNodeWidget:updateCustomNodeEditor()
             end
-            local nodeWidget = self.nodeWidgets[inputNode]
-            nodeWidget:setInputPinPlugged(inputPin, true)
-            nodeWidget:updateCustomNodeEditor()
+
+            do
+                local inputNodeWidget = self.nodeWidgets[inputNode]
+                if updateInputNodeWidget then
+                    inputNodeWidget:rebuild()
+                else
+                    inputNodeWidget:setInputPinPlugged(inputPin, true)
+                end
+                inputNodeWidget:updateCustomNodeEditor()
+            end
         else
             local nodeWidget = self.nodeWidgets[currentLink.outputNode]
             local outputPin = currentLink.outputPin
@@ -401,18 +405,27 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.inputNode then
         if self:canPlugPins(outputNode, outputPin, currentLink.inputNode, currentLink.inputPin) then
-            local updateWidget = outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
+            local updateOutputNodeWidget, updateInputNodeWidget = outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
             self.currentLink = nil
             self:drawLinks()
-            local outputNodeWidget = self.nodeWidgets[outputNode]
-            if updateWidget then
-                outputNodeWidget:rebuild()
-            else
-                outputNodeWidget:setOutputPinPlugged(outputPin, true)
+
+            do
+                local outputNodeWidget = self.nodeWidgets[outputNode]
+                if updateOutputNodeWidget then
+                    outputNodeWidget:rebuild()
+                else
+                    outputNodeWidget:setOutputPinPlugged(outputPin, true)
+                end
+                outputNodeWidget:updateCustomNodeEditor()
             end
-            outputNodeWidget:updateCustomNodeEditor()
-            local inputNodeWidget = self.nodeWidgets[currentLink.inputNode]
-            inputNodeWidget:updateCustomNodeEditor()
+
+            do
+                local inputNodeWidget = self.nodeWidgets[currentLink.inputNode]
+                if updateInputNodeWidget then
+                    inputNodeWidget:rebuild()
+                end
+                inputNodeWidget:updateCustomNodeEditor()
+            end
         else
             local nodeWidget = self.nodeWidgets[currentLink.inputNode]
             nodeWidget:setInputPinPlugged(currentLink.inputPin, false)
