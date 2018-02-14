@@ -8,6 +8,8 @@ return {
 
     'math/multiply',
     'math/lessthan',
+    'math/greaterthan',
+    'math/equal',
 
     'math/vector3/vector3reflect',
     'math/vector3/vector3numbermultiply',
