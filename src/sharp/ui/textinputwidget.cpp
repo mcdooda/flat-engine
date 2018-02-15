@@ -41,6 +41,12 @@ CursorType TextInputWidget::getCursorType() const
 	return CURSOR(IBEAM);
 }
 
+void TextInputWidget::replaceText(const std::string& text)
+{
+	setText(text);
+	unselect();
+}
+
 bool TextInputWidget::enteredFocus(Widget* widget)
 {
 	selectAll();

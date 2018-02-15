@@ -41,6 +41,7 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 	protected:
 		virtual bool textEdited(const std::string& text);
 		virtual bool keyJustPressed(input::Key key);
+		void replaceText(const std::string& text);
 		std::string replaceSelectedText(const std::string& text);
 		virtual bool leftFocus(Widget* widget);
 
