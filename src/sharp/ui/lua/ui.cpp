@@ -1032,7 +1032,7 @@ int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot)
 {
 	T& widget = getWidgetOfType<T>(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	//FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	(widget.*slot).on(
 		[L, callback](Widget* w)
@@ -1054,7 +1054,7 @@ int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slo
 {
 	T& widget = getWidgetOfType<T>(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	//FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	const auto& mouse = flat::lua::getFlat(L).input->mouse;
 	(widget.*slot).on(
