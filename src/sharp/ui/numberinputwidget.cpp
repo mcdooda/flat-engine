@@ -195,7 +195,7 @@ void NumberInputWidget::setValue(float value)
 	std::string text = floatToString(value, getPrecision(m_step));
 	if (getText() != text)
 	{
-		setText(text);
+		replaceText(text);
 		valueChanged(this);
 	}
 }

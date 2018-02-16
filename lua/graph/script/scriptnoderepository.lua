@@ -7,7 +7,12 @@ return {
     'script/scriptoutput',
 
     'math/multiply',
+    'math/divide',
+    'math/add',
+    'math/substract',
     'math/lessthan',
+    'math/greaterthan',
+    'math/equal',
 
     'math/vector3/vector3reflect',
     'math/vector3/vector3numbermultiply',
