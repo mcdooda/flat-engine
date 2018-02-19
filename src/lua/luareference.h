@@ -103,6 +103,7 @@ class LuaReference
 				if (lua_pcall(L, numArguments, 0, 0) != LUA_OK)
 				{
 					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
+					printStack(L);
 					lua_pop(L, 1);
 				}
 #else
@@ -140,6 +141,7 @@ class LuaReference
 				else
 				{
 					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
+					printStack(L);
 					lua_pop(L, 1);
 				}
 #endif
