@@ -112,7 +112,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 
 		{"setValue",              l_NumberInputWidget_setValue},
 		{"getValue",              l_NumberInputWidget_getValue},
-		{"setStep",               l_NumberInputWidget_setStep},
+		{"setPrecision",          l_NumberInputWidget_setPrecision},
 		{"setMin",                l_NumberInputWidget_setMin},
 		{"setMax",                l_NumberInputWidget_setMax},
 		{"setRange",              l_NumberInputWidget_setRange},
@@ -772,11 +772,11 @@ int l_NumberInputWidget_getValue(lua_State* L)
 	return 1;
 }
 
-int l_NumberInputWidget_setStep(lua_State* L)
+int l_NumberInputWidget_setPrecision(lua_State* L)
 {
 	NumberInputWidget& numberInputWidget = getWidgetOfType<NumberInputWidget>(L, 1);
-	float step = static_cast<float>(luaL_checknumber(L, 2));
-	numberInputWidget.setStep(step);
+	size_t precision = static_cast<size_t>(luaL_checknumber(L, 2));
+	numberInputWidget.setPrecision(precision);
 	return 0;
 }
 

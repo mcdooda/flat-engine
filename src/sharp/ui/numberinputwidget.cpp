@@ -19,7 +19,8 @@ NumberInputWidget::NumberInputWidget(Flat& flat, const std::shared_ptr<const vid
 	m_step(1.f),
 	m_min(0.f),
 	m_max(std::numeric_limits<float>::max()),
-	m_oldValue(m_min)
+	m_oldValue(m_min),
+	m_precision(1)
 {
 	Widget::setAllowScrollY(true);
 	mouseEnter.on(this, &NumberInputWidget::mouseEntered);
@@ -75,19 +76,19 @@ size_t NumberInputWidget::getPrecision(float f)
 	return getPrecision(ss.str());
 }
 
-size_t NumberInputWidget::getPrecision(const std::string& s)
+size_t NumberInputWidget::getPrecision(const std::string& text)
 {
 	size_t precision = 0;
 	try
 	{
 		size_t i;
-		std::stof(s, &i);
-		if (i == s.size())
+		std::stof(text, &i);
+		if (i == text.size())
 		{
-			size_t lastOf = s.find_last_of(".");
-			if (lastOf != std::string::npos && s.size() > 0)
+			size_t lastOf = text.find_last_of(".");
+			if (lastOf != std::string::npos && text.size() > 0)
 			{
-				precision = s.size() - 1 - lastOf;
+				precision = text.size() - 1 - lastOf;
 			}
 		}
 	}
@@ -95,6 +96,18 @@ size_t NumberInputWidget::getPrecision(const std::string& s)
 	{
 	}
 	return precision;
+}
+
+float NumberInputWidget::computeSmallestStep(const std::string& text)
+{
+	float smallestStep = 1;
+	if (getPrecision(text) > 0)
+	{
+		std::string decimals = text.substr(text.find_last_of("."));
+		size_t precisionWithoutTrailingZeros = decimals.find_last_not_of('0');
+		smallestStep = 1 / pow(10.f, precisionWithoutTrailingZeros);
+	}
+	return smallestStep;
 }
 
 void NumberInputWidget::submitFixedValue()
@@ -142,9 +155,14 @@ bool NumberInputWidget::textEdited(const std::string& text)
 	{
 		size_t i = 0;
 		float value = std::stof(newText, &i);
-		if (i == newText.size() && getPrecision(value) <= getPrecision(m_step))
+		if (i == newText.size() && getPrecision(value) <= m_precision)
 		{
 			TextInputWidget::textEdited(text);
+			float newStep = computeSmallestStep(getText());
+			if (newStep < m_step)
+			{
+				m_step = newStep;
+			}
 		}
 	}
 	catch (...)
@@ -192,7 +210,7 @@ void NumberInputWidget::setValue(float value)
 		m_oldValue = getValue();
 	}
 	value = constraintValue(value);
-	std::string text = floatToString(value, getPrecision(m_step));
+	std::string text = floatToString(value, m_precision);
 	if (getText() != text)
 	{
 		replaceText(text);
@@ -222,7 +240,6 @@ void NumberInputWidget::stepDown()
 	setValue(value);
 	submit(this);
 }
-
 } // ui
 } // sharp
 } // flat
