@@ -1,34 +1,34 @@
 local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
 local PinTypes = flat.require 'graph/pintypes'
 
-local BoolNode = FunctionalScriptNode:inherit 'Bool'
+local BooleanNode = FunctionalScriptNode:inherit 'Boolean'
 
-function BoolNode:buildPins()
+function BooleanNode:buildPins()
     self.boolOutPin = self:addOutputPin(flat.types.BOOLEAN, '')
 end
 
-function BoolNode:execute(runtime)
+function BooleanNode:execute(runtime)
     runtime:writePin(self.boolOutPin, self.value)
 end
 
-function BoolNode:setValue(value)
+function BooleanNode:setValue(value)
     assert(flat.type(value) == flat.types.BOOLEAN, 'Wrong type for setValue: boolean expected, got ' .. flat.typetostring(flat.type(value)))
     self.value = value
 end
 
-function BoolNode:getValue()
+function BooleanNode:getValue()
     assert(flat.type(self.value) == flat.types.BOOLEAN, 'Wrong type for self.value: boolean expected, got ' .. flat.typetostring(flat.type(value)))
     return self.value
 end
 
-function BoolNode:init()
+function BooleanNode:init()
     self:setValue(false)
 end
 
-function BoolNode:getLoadArguments()
+function BooleanNode:getLoadArguments()
     return self.value
 end
 
-BoolNode.load = BoolNode.setValue
+BooleanNode.load = BooleanNode.setValue
 
-return BoolNode
+return BooleanNode
