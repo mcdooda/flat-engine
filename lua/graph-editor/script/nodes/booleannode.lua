@@ -1,4 +1,4 @@
-local BoolNodeEditor = {}
+local BooleanNodeEditor = {}
 
 local function boolToStringAndColor(bool)
     assert(flat.type(bool) == flat.types.BOOLEAN)
@@ -9,7 +9,7 @@ local function boolToStringAndColor(bool)
     end
 end
 
-function BoolNodeEditor.build(boolNode, nodeWidget, pinsWidget)
+function BooleanNodeEditor.build(boolNode, nodeWidget, pinsWidget)
     local str, color = boolToStringAndColor(boolNode:getValue())
     local textValue = Widget.makeText(str, table.unpack(flat.ui.settings.defaultFont))
     textValue:setMargin(2)
@@ -29,4 +29,4 @@ function BoolNodeEditor.build(boolNode, nodeWidget, pinsWidget)
     return true
 end
 
-return BoolNodeEditor
+return BooleanNodeEditor

@@ -20,7 +20,7 @@ return {
 
     'print',
 
-    'bool',
+    'boolean',
     'number',
     'string',
     'test',
