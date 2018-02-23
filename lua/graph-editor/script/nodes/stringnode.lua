@@ -17,7 +17,7 @@ function StringNodeEditor.build(stringNode, nodeWidget, pinsWidget)
     end)
     inputContainer:addChild(textInputWidget)
     pinsWidget:addChild(inputContainer)
-    return true
+    return true, inputContainer
 end
 
 return StringNodeEditor

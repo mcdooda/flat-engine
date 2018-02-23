@@ -26,7 +26,7 @@ function BooleanNodeEditor.build(boolNode, nodeWidget, pinsWidget)
         textValue:setSize(30, h)
     end)
     pinsWidget:addChild(textValue)
-    return true
+    return true, textValue
 end
 
 return BooleanNodeEditor

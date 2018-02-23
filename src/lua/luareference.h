@@ -94,18 +94,27 @@ class LuaReference
 			lua_State* L = m_luaState;
 			{
 				FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+
+#ifdef FLAT_DEBUG
+				lua_getglobal(L, "debug");
+				lua_getfield(L, -1, "traceback");
+				lua_remove(L, -2);
+#endif
 				const int top = lua_gettop(L);
+
 				push(L);
 				pushArgumentsCallback(L);
+
 				const int numArguments = lua_gettop(L) - top - 1;
 
 #ifdef FLAT_DEBUG
-				if (lua_pcall(L, numArguments, 0, 0) != LUA_OK)
+				if (lua_pcall(L, numArguments, 0, top) != LUA_OK)
 				{
 					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
 					printStack(L);
 					lua_pop(L, 1);
 				}
+				lua_pop(L, 1); // pop traceback function
 #else
 				lua_call(L, numArguments, 0);
 #endif
@@ -119,14 +128,22 @@ class LuaReference
 			lua_State* L = m_luaState;
 			{
 				FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+
+#ifdef FLAT_DEBUG
+				lua_getglobal(L, "debug");
+				lua_getfield(L, -1, "traceback");
+				lua_remove(L, -2);
+#endif
 				const int top = lua_gettop(L);
+
 				push(L);
 				pushArgumentsCallback(L);
 				const int numArguments = lua_gettop(L) - top - 1;
 
 #ifdef FLAT_DEBUG
-				if (lua_pcall(L, numArguments, numResults, 0) == LUA_OK)
+				if (lua_pcall(L, numArguments, numResults, top) == LUA_OK)
 				{
+					lua_remove(L, top); // pop traceback function
 #else
 				lua_call(L, numArguments, numResults);
 #endif
@@ -142,7 +159,7 @@ class LuaReference
 				{
 					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
 					printStack(L);
-					lua_pop(L, 1);
+					lua_pop(L, 2); // pop error message and traceback function
 				}
 #endif
 			}

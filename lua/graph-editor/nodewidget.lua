@@ -3,7 +3,7 @@ local PinTypes = flat.require 'graph/pintypes'
 local NodeWidget = {}
 NodeWidget.__index = NodeWidget
 
-function NodeWidget:new(node, mainWindow)
+function NodeWidget:new(node, mainWindow, foldedNodes)
     assert(node, 'no node given')
     local nodeType = mainWindow.graph.nodeType
     local nodePath = node.path
@@ -19,7 +19,9 @@ function NodeWidget:new(node, mainWindow)
         outputPinPlugWidgets = {},
         outputPinSocketWidgets = {},
         pinsWidget = nil,
-        customNodeEditor = customNodeEditor
+        customNodeEditor = customNodeEditor,
+        inputPinNameWidgetContainers = {},
+        foldedConstantEditorWidgets = {},
     }, self)
 
     local nodeWidget = Widget.makeColumnFlow()
@@ -30,14 +32,15 @@ function NodeWidget:new(node, mainWindow)
         return true
     end)
     o.container = nodeWidget
-    o:build()
+    o:build(foldedNodes)
     return o
 end
 
-function NodeWidget:build()
+function NodeWidget:build(foldedNodes)
     local nodeWidget = self.container
     local node = self.node
 
+    -- node name
     do
         local nodeNameContainer = Widget.makeExpand()
         nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
@@ -87,21 +90,25 @@ function NodeWidget:build()
         nodeWidget:addChild(nodeNameContainer)
     end
 
+    -- all pins
     do
         local pinsWidget = Widget.makeLineFlow()
 
+        -- input pins
         do
             local inputPinsWidget = Widget.makeColumnFlow()
             inputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
             for i = 1, #node.inputPins do
                 local pin = node.inputPins[i]
-                local inputPinWidget = self:makeInputPinWidget(node, pin)
-                self:setInputPinPlugged(pin, pin.pluggedOutputPin ~= nil)
+                local pinPlugged = pin.pluggedOutputPin ~= nil and not foldedNodes[pin.pluggedOutputPin.node]
+                local inputPinWidget = self:makeInputPinWidget(node, pin, foldedNodes)
+                self:setInputPinPlugged(pin, pinPlugged)
                 inputPinsWidget:addChild(inputPinWidget)
             end
             pinsWidget:addChild(inputPinsWidget)
         end
 
+        -- optional custom editor
         do
             local customEditor = false
             if self.customNodeEditor then
@@ -114,6 +121,7 @@ function NodeWidget:build()
             end
         end
 
+        -- output pins
         do
             local outputPinsWidget = Widget.makeColumnFlow()
             outputPinsWidget:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
@@ -137,7 +145,7 @@ function NodeWidget:rebuild()
     self:build()
 end
 
-function NodeWidget:makeInputPinWidget(node, pin)
+function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
     local inputPinWidget = Widget.makeLineFlow()
 
     do
@@ -156,20 +164,25 @@ function NodeWidget:makeInputPinWidget(node, pin)
             if pin.pluggedOutputPin then
                 local outputPin = pin.pluggedOutputPin.outputPin
                 local outputNode = pin.pluggedOutputPin.node
-                local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
+                local outputNodeWidget = self.mainWindow.nodeWidgets[outputNode]
+                if outputNodeWidget then
+                    local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
 
-                if updateOutputNodeWidget then
-                    local outputNodeWidget = self.mainWindow.nodeWidgets[outputNode]
-                    outputNode:rebuild()
-                end
+                    if updateOutputNodeWidget then
+                        outputNode:rebuild()
+                    end
 
-                if updateInputNodeWidget then
-                    self:rebuild()
+                    if updateInputNodeWidget then
+                        self:rebuild()
+                    else
+                        self:setInputPinPlugged(pin, false)
+                    end
+
+                    self.mainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
+                    self:showFoldedConstantNode(pin)
                 else
-                    self:setInputPinPlugged(pin, false)
+                    self.mainWindow:beginDragWireFromInputPin(node, pin)
                 end
-
-                self.mainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
             else
                 self.mainWindow:beginDragWireFromInputPin(node, pin)
             end
@@ -185,13 +198,62 @@ function NodeWidget:makeInputPinWidget(node, pin)
     end
 
     do
-        local inputPinNameWidget = Widget.makeText(pin.pinName, table.unpack(flat.ui.settings.defaultFont))
-        inputPinNameWidget:setTextColor(0x000000FF)
-        inputPinNameWidget:setMargin(1, 0, 1, 0)
-        inputPinWidget:addChild(inputPinNameWidget)
+        local inputPinNameWidgetContainer = Widget.makeColumnFlow()
+        self.inputPinNameWidgetContainers[pin] = inputPinNameWidgetContainer
+
+        do
+            local inputPinNameWidget = Widget.makeText(pin.pinName, table.unpack(flat.ui.settings.defaultFont))
+            inputPinNameWidget:setTextColor(0x000000FF)
+            inputPinNameWidget:setMargin(1, 0, 1, 0)
+            inputPinNameWidgetContainer:addChild(inputPinNameWidget)
+        end
+
+        do
+            if not pin.pluggedOutputPin or foldedNodes[pin.pluggedOutputPin.node] then
+                -- custom constant node editor inside empty pin
+                self:showFoldedConstantNode(pin)
+            end
+        end
+
+        inputPinWidget:addChild(inputPinNameWidgetContainer)
     end
 
     return inputPinWidget
+end
+
+function NodeWidget:hideFoldedConstantNode(pin)
+    local foldedConstantEditorWidget = assert(self.foldedConstantEditorWidgets[pin])
+    foldedConstantEditorWidget:removeFromParent()
+    self.foldedConstantEditorWidgets[pin] = nil
+end
+
+function NodeWidget:showFoldedConstantNode(pin)
+    assert(not self.foldedConstantEditorWidgets[pin])
+    local graph = self.mainWindow.graph
+    local node = self.node
+    local nodeType = graph.nodeType
+    local nodeName = node:pinTypeToString(pin.pinType):lower()
+    local customConstantNodeEditor
+    pcall(function()
+        customConstantNodeEditor = flat.require('graph-editor/' .. nodeType .. '/nodes/' .. nodeName .. 'node')
+    end)
+    if customConstantNodeEditor then
+        local constantNode
+        if pin.pluggedOutputPin then
+            constantNode = pin.pluggedOutputPin.node
+        else
+            local nodeClasses = flat.graph.getNodeClasses(nodeType)
+            constantNode = graph:addNode(nodeClasses[nodeName])
+            constantNode:plugPins(constantNode:getOutputPin(1), node, pin)
+        end
+        local inputPinNameWidgetContainer = assert(self.inputPinNameWidgetContainers[pin])
+        local customEditor, customWidget = customConstantNodeEditor.build(constantNode, nil, inputPinNameWidgetContainer)
+        if customWidget then
+            self.foldedConstantEditorWidgets[pin] = customWidget
+        end
+        return true
+    end
+    return false
 end
 
 function NodeWidget:makeOutputPinWidget(node, pin)
@@ -293,8 +355,11 @@ function NodeWidget:updateInputPinSocketWidgets()
     local inputPins = self.node.inputPins
     for i = 1, #inputPins do
         local inputPin = inputPins[i]
-        local plugged = inputPin.pluggedOutputPin ~= nil
+        local plugged = inputPin.pluggedOutputPin and self.mainWindow.nodeWidgets[inputPin.pluggedOutputPin.node]
         self:setInputPinPlugged(inputPin, plugged)
+        if not plugged and not self.foldedConstantEditorWidgets[inputPin] then
+            self:showFoldedConstantNode(inputPin)
+        end
     end
 end
 

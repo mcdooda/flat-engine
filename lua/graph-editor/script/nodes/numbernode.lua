@@ -14,7 +14,7 @@ function NumberNodeEditor.build(numberNode, nodeWidget, pinsWidget)
     numberInputWidget:setStep(0.0001)
     numberInputWidget:setMin(-1000000);
     numberInputWidget:mouseWheel(function(w, x, y)
-      return true
+        return true
     end)
     local function submitValue()
         local value = numberInputWidget:getValue()
@@ -27,7 +27,7 @@ function NumberNodeEditor.build(numberNode, nodeWidget, pinsWidget)
     
     inputContainer:addChild(numberInputWidget)
     pinsWidget:addChild(inputContainer)
-    return true
+    return true, inputContainer
 end
 
 return NumberNodeEditor

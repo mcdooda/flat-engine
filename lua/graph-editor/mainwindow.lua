@@ -127,17 +127,25 @@ function MainWindow:openGraph(graphPath, nodeType)
         )
 
         local graphLayout = self:loadGraphLayout()
-        assert(
-            #graph.nodeInstances == #graphLayout,
-            'graph and layout do not match (' .. #graph.nodeInstances .. ' and ' .. #graphLayout .. ' nodes)'
-        )
         local content = self:getContent()
+
+        local foldedNodes = {}
         for i = 1, #graph.nodeInstances do
             local node = graph.nodeInstances[i]
             local nodePosition = graphLayout[i]
-            local nodeWidget = self:makeNodeWidget(node)
-            nodeWidget:setPosition(table.unpack(nodePosition))
-            content:addChild(nodeWidget)
+            if not nodePosition then
+                foldedNodes[node] = true
+            end
+        end
+
+        for i = 1, #graph.nodeInstances do
+            local node = graph.nodeInstances[i]
+            local nodePosition = graphLayout[i]
+            if nodePosition then
+                local nodeWidget = self:makeNodeWidget(node, foldedNodes)
+                nodeWidget:setPosition(table.unpack(nodePosition))
+                content:addChild(nodeWidget)
+            end
         end
 
         self:updateCustomNodeEditors()
@@ -180,8 +188,10 @@ function MainWindow:saveGraphLayout()
     for i = 1, #nodeInstances do
         local nodeInstance = nodeInstances[i]
         local nodeWidget = self.nodeWidgets[nodeInstance]
-        local nodePosition = { nodeWidget.container:getPosition() }
-        graphLayout[i] = nodePosition
+        if nodeWidget then
+            local nodePosition = { nodeWidget.container:getPosition() }
+            graphLayout[i] = nodePosition
+        end
     end
 
     local f = io.open(self.graphPath .. '.layout.lua', 'w')
@@ -199,8 +209,8 @@ function MainWindow:saveLuaRunnerFile()
     end
 end
 
-function MainWindow:makeNodeWidget(node)
-    local nodeWidget = NodeWidget:new(node, self)
+function MainWindow:makeNodeWidget(node, foldedNodes)
+    local nodeWidget = NodeWidget:new(node, self, foldedNodes)
     nodeWidget.container:dragged(function()
         self:drawLinks()
     end)
@@ -220,17 +230,19 @@ function MainWindow:drawLinks(delayToNextFrame)
                 local inputPin = inputNode.inputPins[j]
                 if inputPin.pluggedOutputPin then
                     local outputNode = inputPin.pluggedOutputPin.node
-                    local outputPin = inputPin.pluggedOutputPin.outputPin
+                    if self.nodeWidgets[outputNode] then
+                        local outputPin = inputPin.pluggedOutputPin.outputPin
 
-                    local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
-                    local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
-                    local linkColor = self:getPinColor(inputNode, inputPin)
+                        local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
+                        local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
+                        local linkColor = self:getPinColor(inputNode, inputPin)
 
-                    self:drawLink(
-                        linkColor,
-                        inputPinX, inputPinY,
-                        outputPinX, outputPinY
-                    )
+                        self:drawLink(
+                            linkColor,
+                            inputPinX, inputPinY,
+                            outputPinX, outputPinY
+                        )
+                    end
                 end
             end
         end
@@ -246,7 +258,7 @@ function MainWindow:drawLinks(delayToNextFrame)
     end
 
     if delayToNextFrame then
-        Timer.start(0.05, nil, draw) -- TODO: Timer comes from CG!
+        Timer.start(0.01, nil, draw) -- TODO: Timer comes from CG!
     else
         draw()
     end
@@ -372,12 +384,19 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
 
                 do
                     local outputNodeWidget = self.nodeWidgets[previousOutputNode]
-                    if updateOutputNodeWidget then
-                        outputNodeWidget:rebuild()
+                    if outputNodeWidget then
+                        if updateOutputNodeWidget then
+                            outputNodeWidget:rebuild()
+                        else
+                            outputNodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+                        end
+                        outputNodeWidget:updateCustomNodeEditor()
                     else
-                        outputNodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+                        self.graph:removeNode(previousOutputNode)
+                        local inputNodeWidget = assert(self.nodeWidgets[inputNode])
+                        inputNodeWidget:hideFoldedConstantNode(inputPin)
+                        Timer.start(0.01, nil, function() self:drawLinks() end)
                     end
-                    outputNodeWidget:updateCustomNodeEditor()
                 end
 
                 do
@@ -421,12 +440,24 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.inputNode then
         if self:canPlugPins(outputNode, outputPin, currentLink.inputNode, currentLink.inputPin) then
+            local inputNodeWidget = assert(self.nodeWidgets[currentLink.inputNode])
+
+            -- unplug the current folded constant node
+            if currentLink.inputPin.pluggedOutputPin then
+                local constantNode = currentLink.inputPin.pluggedOutputPin.node
+                assert(constantNode and not self.nodeWidgets[constantNode])
+                currentLink.inputNode:unplugInputPin(currentLink.inputPin, true)
+                self.graph:removeNode(constantNode)
+                inputNodeWidget:hideFoldedConstantNode(currentLink.inputPin)
+                Timer.start(0.01, nil, function() self:drawLinks() end)
+            end
+
             local updateOutputNodeWidget, updateInputNodeWidget = outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)
             self.currentLink = nil
             self:drawLinks()
 
             do
-                local outputNodeWidget = self.nodeWidgets[outputNode]
+                local outputNodeWidget = assert(self.nodeWidgets[outputNode])
                 if updateOutputNodeWidget then
                     outputNodeWidget:rebuild()
                 else
@@ -436,7 +467,6 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             end
 
             do
-                local inputNodeWidget = self.nodeWidgets[currentLink.inputNode]
                 if updateInputNodeWidget then
                     inputNodeWidget:rebuild()
                 end
