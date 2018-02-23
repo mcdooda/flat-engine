@@ -118,7 +118,7 @@ int l_TextInputWidget_submit(lua_State* L);
 // NumberInputWidget only
 int l_NumberInputWidget_setValue(lua_State* L);
 int l_NumberInputWidget_getValue(lua_State* L);
-int l_NumberInputWidget_setStep(lua_State* L);
+int l_NumberInputWidget_setPrecision(lua_State* L);
 int l_NumberInputWidget_setMin(lua_State* L);
 int l_NumberInputWidget_setMax(lua_State* L);
 int l_NumberInputWidget_setRange(lua_State* L);

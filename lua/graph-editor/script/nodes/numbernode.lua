@@ -11,7 +11,7 @@ function NumberNodeEditor.build(numberNode, nodeWidget, pinsWidget)
     numberInputWidget:setSize(100, h)
     numberInputWidget:setTextColor(0x000000FF)
     numberInputWidget:setMargin(1)
-    numberInputWidget:setStep(0.0001)
+    numberInputWidget:setPrecision(4)
     numberInputWidget:setMin(-1000000);
     numberInputWidget:mouseWheel(function(w, x, y)
         return true

@@ -25,7 +25,7 @@ class NumberInputWidget : public TextInputWidget
 		NumberInputWidget& operator=(const NumberInputWidget&) = delete;
 		float getValue() const;
 		void setValue(float value);
-		inline void setStep(float step) { m_step = step; }
+		inline void setPrecision(size_t precision) { m_precision = precision; }
 		inline void setMin(float min) { m_min = min; }
 		inline void setMax(float max) { m_max = max; }
 
@@ -36,6 +36,7 @@ class NumberInputWidget : public TextInputWidget
 		static std::string floatToString(float f, size_t precision);
 		static size_t getPrecision(float f);
 		static size_t getPrecision(const std::string& s);
+		static float computeSmallestStep(const std::string& text);
 		float constraintValue(float f);
 		void submitFixedValue();
 		bool keyJustPressed(input::Key key) override;
@@ -51,6 +52,7 @@ class NumberInputWidget : public TextInputWidget
 		float m_min;
 		float m_max;
 		float m_oldValue;
+		size_t m_precision;
 };
 
 } // ui
