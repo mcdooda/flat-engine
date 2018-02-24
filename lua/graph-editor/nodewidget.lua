@@ -1,5 +1,8 @@
 local PinTypes = flat.require 'graph/pintypes'
 
+local Theme = flat.ui.settings.theme.graphEditor.node
+local GridTheme = flat.ui.settings.theme.graphEditor.grid
+
 local NodeWidget = {}
 NodeWidget.__index = NodeWidget
 
@@ -26,7 +29,7 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
     }, self)
 
     local nodeWidget = Widget.makeColumnFlow()
-    nodeWidget:setBackgroundColor(0xBDC3C7FF)
+    nodeWidget:setBackgroundColor(Theme.BACKGROUND_COLOR)
     nodeWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
     nodeWidget:rightClick(function()
         mainWindow:openNodeContextualMenu()
@@ -47,7 +50,7 @@ function NodeWidget:build(foldedNodes)
     do
         local nodeNameContainer = Widget.makeExpand()
         nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-        nodeNameContainer:setBackgroundColor(0x2C3E50FF)
+        nodeNameContainer:setBackgroundColor(Theme.TITLE_BACKGROUND_COLOR)
         local mouseMoved = false
         local mouseDown = false
         local selectedNode = false
@@ -84,7 +87,7 @@ function NodeWidget:build(foldedNodes)
 
         do
             local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))
-            nodeNameText:setTextColor(0xECF0F1FF)
+            nodeNameText:setTextColor(Theme.TITLE_TEXT_COLOR)
             nodeNameText:setPositionPolicy(Widget.PositionPolicy.CENTER)
             nodeNameText:setMargin(3)
             nodeNameContainer:addChild(nodeNameText)
@@ -159,7 +162,7 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
         inputPinPlugWidget:setBackgroundColor(self:getPinColorByType(pin.pinType))
 
         local inputPinSocketWidget = Widget.makeFixedSize(6, 4)
-        inputPinSocketWidget:setBackgroundColor(0xECF0F1FF)
+        inputPinSocketWidget:setBackgroundColor(GridTheme.BACKGROUND_COLOR)
         inputPinSocketWidget:setMargin(2, 2, 2, 0)
         inputPinPlugWidget:addChild(inputPinSocketWidget)
         self.inputPinSocketWidgets[pin] = inputPinSocketWidget
@@ -207,7 +210,7 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
 
         do
             local inputPinNameWidget = Widget.makeText(pin.pinName, table.unpack(flat.ui.settings.defaultFont))
-            inputPinNameWidget:setTextColor(0x000000FF)
+            inputPinNameWidget:setTextColor(Theme.PIN_NAME_TEXT_COLOR)
             inputPinNameWidget:setMargin(1, 0, 1, 0)
             inputPinNameWidgetContainer:addChild(inputPinNameWidget)
         end
@@ -266,7 +269,7 @@ function NodeWidget:makeOutputPinWidget(node, pin)
 
     do
         local outputPinNameWidget = Widget.makeText(pin.pinName, table.unpack(flat.ui.settings.defaultFont))
-        outputPinNameWidget:setTextColor(0x000000FF)
+        outputPinNameWidget:setTextColor(Theme.PIN_NAME_TEXT_COLOR)
         outputPinNameWidget:setMargin(1, 0, 1, 0)
         outputPinWidget:addChild(outputPinNameWidget)
     end
@@ -279,7 +282,7 @@ function NodeWidget:makeOutputPinWidget(node, pin)
 
         do
             local outputPinSocketWidget = Widget.makeFixedSize(6, 4)
-            outputPinSocketWidget:setBackgroundColor(0xECF0F1FF)
+            outputPinSocketWidget:setBackgroundColor(GridTheme.BACKGROUND_COLOR)
             outputPinSocketWidget:setMargin(2, 0, 2, 2)
             outputPinPlugWidget:addChild(outputPinSocketWidget)
             self.outputPinSocketWidgets[pin] = outputPinSocketWidget
@@ -302,11 +305,11 @@ function NodeWidget:makeOutputPinWidget(node, pin)
 end
 
 function NodeWidget:select()
-    self.container:setBackgroundColor(0x9BA1A5FF)
+    self.container:setBackgroundColor(Theme.SELECTED_BACKGROUND_COLOR)
 end
 
 function NodeWidget:deselect()
-    self.container:setBackgroundColor(0xBDC3C7FF)
+    self.container:setBackgroundColor(Theme.BACKGROUND_COLOR)
 end
 
 local pinColors = {

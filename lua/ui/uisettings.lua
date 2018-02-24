@@ -21,7 +21,15 @@ flat.ui.settings.theme = {
         BUTTON_FONT                  = flat.ui.settings.defaultFont
     },
     graphEditor = {
+        node = {
+            BACKGROUND_COLOR          = 0xBDC3C7AA,
+            SELECTED_BACKGROUND_COLOR = 0x9BA1A5AA,
+            TITLE_BACKGROUND_COLOR    = 0x2C3E50EE,
+            TITLE_TEXT_COLOR          = 0xECF0F1FF,
+            PIN_NAME_TEXT_COLOR       = 0x000000FF
+        },
         grid = {
+            BACKGROUND_COLOR = 0xECF0F1FF,
             BIG_STEP         = 100,
             BIG_LINE_COLOR   = 0xD4D8D9FF,
             BIG_LINE_WIDTH   = 2,
