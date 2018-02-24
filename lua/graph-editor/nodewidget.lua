@@ -235,7 +235,7 @@ function NodeWidget:hideFoldedConstantNode(pin)
 end
 
 function NodeWidget:showFoldedConstantNode(pin)
-    assert(not self.foldedConstantEditorWidgets[pin])
+    self.foldedConstantEditorWidgets[pin] = nil
     local graph = self.mainWindow.graph
     local node = self.node
     local nodeType = graph.nodeType
