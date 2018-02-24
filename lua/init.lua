@@ -1,8 +1,8 @@
+flat.dofile 'table.lua'
 flat.dofile 'dump.lua'
 
 flat.dofile 'enum.lua'
 
-flat.dofile 'table.lua'
 
 flat.dofile 'slot.lua'
 
