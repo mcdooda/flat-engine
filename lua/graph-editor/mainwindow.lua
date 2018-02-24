@@ -236,49 +236,49 @@ function MainWindow:drawLinks(delayToNextFrame)
             do
                 local firstSmallX = -scrollX % gridTheme.SMALL_STEP
                 local firstBigX = -scrollX % gridTheme.BIG_STEP
-                for i = 0, w, gridTheme.SMALL_STEP do
-                    if (i + firstSmallX - firstBigX) % gridTheme.BIG_STEP > 0 then
+                for x = firstSmallX, w, gridTheme.SMALL_STEP do
+                    if (x - firstBigX) % gridTheme.BIG_STEP > 0 then
                         content:drawLine(
                             gridTheme.SMALL_LINE_COLOR,
                             gridTheme.SMALL_LINE_WIDTH,
                             false,
-                            flat.Vector2(i + firstSmallX, 0),
-                            flat.Vector2(i + firstSmallX, h)
+                            flat.Vector2(x, 0),
+                            flat.Vector2(x, h)
                         )
                     end
                 end
-                for i = 0, w, gridTheme.BIG_STEP do
+                for x = firstBigX, w, gridTheme.BIG_STEP do
                     content:drawLine(
                         gridTheme.BIG_LINE_COLOR,
                         gridTheme.BIG_LINE_WIDTH,
                         false,
-                        flat.Vector2(i + firstBigX, 0),
-                        flat.Vector2(i + firstBigX, h)
+                        flat.Vector2(x, 0),
+                        flat.Vector2(x, h)
                     )
                 end
             end
 
             do
-                local firstSmallY = -scrollY % gridTheme.SMALL_STEP
-                local firstBigY = -scrollY % gridTheme.BIG_STEP
-                for i = 0, h, gridTheme.SMALL_STEP do
-                    if (i + firstSmallY - firstBigY) % gridTheme.BIG_STEP > 0 then
+                local firstSmallY = (scrollY % gridTheme.SMALL_STEP) - gridTheme.SMALL_STEP
+                local firstBigY = (scrollY % gridTheme.BIG_STEP) - gridTheme.BIG_STEP
+                for y = firstSmallY, h, gridTheme.SMALL_STEP do
+                    if (y - firstBigY) % gridTheme.BIG_STEP > 0 then
                         content:drawLine(
                             gridTheme.SMALL_LINE_COLOR,
                             gridTheme.SMALL_LINE_WIDTH,
                             false,
-                            flat.Vector2(0, i + firstSmallY),
-                            flat.Vector2(w, i + firstSmallY)
+                            flat.Vector2(0, h - y),
+                            flat.Vector2(w, h - y)
                         )
                     end
                 end
-                for i = 0, h, gridTheme.BIG_STEP do
+                for y = firstBigY, h, gridTheme.BIG_STEP do
                     content:drawLine(
                         gridTheme.BIG_LINE_COLOR,
                         gridTheme.BIG_LINE_WIDTH,
                         false,
-                        flat.Vector2(0, i + firstBigY),
-                        flat.Vector2(w, i + firstBigY)
+                        flat.Vector2(0, h - y),
+                        flat.Vector2(w, h - y)
                     )
                 end
             end
