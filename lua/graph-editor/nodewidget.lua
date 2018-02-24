@@ -4,6 +4,7 @@ local NodeWidget = {}
 NodeWidget.__index = NodeWidget
 
 function NodeWidget:new(node, mainWindow, foldedNodes)
+    assert(foldedNodes)
     assert(node, 'no node given')
     local nodeType = mainWindow.graph.nodeType
     local nodePath = node.path
@@ -37,6 +38,8 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
 end
 
 function NodeWidget:build(foldedNodes)
+    assert(foldedNodes)
+
     local nodeWidget = self.container
     local node = self.node
 
@@ -140,9 +143,10 @@ function NodeWidget:build(foldedNodes)
     end
 end
 
-function NodeWidget:rebuild()
+function NodeWidget:rebuild(foldedNodes)
+    assert(foldedNodes)
     self.container:removeAllChildren()
-    self:build()
+    self:build(foldedNodes)
 end
 
 function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
@@ -169,11 +173,11 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
                     local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
 
                     if updateOutputNodeWidget then
-                        outputNode:rebuild()
+                        outputNode:rebuild(self.mainWindow:getFoldedNodes())
                     end
 
                     if updateInputNodeWidget then
-                        self:rebuild()
+                        self:rebuild(self.mainWindow:getFoldedNodes())
                     else
                         self:setInputPinPlugged(pin, false)
                     end

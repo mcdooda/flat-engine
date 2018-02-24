@@ -210,6 +210,7 @@ function MainWindow:saveLuaRunnerFile()
 end
 
 function MainWindow:makeNodeWidget(node, foldedNodes)
+    assert(foldedNodes)
     local nodeWidget = NodeWidget:new(node, self, foldedNodes)
     nodeWidget.container:dragged(function()
         self:drawLinks()
@@ -386,7 +387,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                     local outputNodeWidget = self.nodeWidgets[previousOutputNode]
                     if outputNodeWidget then
                         if updateOutputNodeWidget then
-                            outputNodeWidget:rebuild()
+                            outputNodeWidget:rebuild(self:getFoldedNodes())
                         else
                             outputNodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
                         end
@@ -411,7 +412,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
             do
                 local outputNodeWidget = self.nodeWidgets[currentLink.outputNode]
                 if updateOutputNodeWidget then
-                    outputNodeWidget:rebuild()
+                    outputNodeWidget:rebuild(self:getFoldedNodes())
                 end
                 outputNodeWidget:updateCustomNodeEditor()
             end
@@ -420,7 +421,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                 updateInputNodeWidget = updateInputNodeWidget or updateInputNodeWidgetPlug
                 local inputNodeWidget = self.nodeWidgets[inputNode]
                 if updateInputNodeWidget then
-                    inputNodeWidget:rebuild()
+                    inputNodeWidget:rebuild(self:getFoldedNodes())
                 else
                     inputNodeWidget:setInputPinPlugged(inputPin, true)
                 end
@@ -459,7 +460,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             do
                 local outputNodeWidget = assert(self.nodeWidgets[outputNode])
                 if updateOutputNodeWidget then
-                    outputNodeWidget:rebuild()
+                    outputNodeWidget:rebuild(self:getFoldedNodes())
                 else
                     outputNodeWidget:setOutputPinPlugged(outputPin, true)
                 end
@@ -468,7 +469,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
 
             do
                 if updateInputNodeWidget then
-                    inputNodeWidget:rebuild()
+                    inputNodeWidget:rebuild(self:getFoldedNodes())
                 end
                 inputNodeWidget:updateCustomNodeEditor()
             end
@@ -527,7 +528,7 @@ function MainWindow:openNodeListMenu(x, y)
     local function insertNode(nodeName)
         local content = self:getContent()
         local node = self.graph:addNode(nodeClasses[nodeName])
-        local nodeWidget = self:makeNodeWidget(node)
+        local nodeWidget = self:makeNodeWidget(node, self:getFoldedNodes())
         local contentSizeX, contentSizeY = content:getComputedSize()
         local scrollX, scrollY = content:getScrollPosition()
         local nodeWidgetX = x + scrollX
@@ -757,6 +758,18 @@ function MainWindow:updateCustomNodeEditors()
     if redrawLinks then
         self:drawLinks(true)
     end
+end
+
+function MainWindow:getFoldedNodes()
+    local foldedNodes = {}
+    local nodes = self.graph:getNodes()
+    for i = 1, #nodes do
+        local node = nodes[i]
+        if not self.nodeWidgets[node] then
+            foldedNodes[node] = true
+        end
+    end
+    return foldedNodes
 end
 
 return MainWindow
