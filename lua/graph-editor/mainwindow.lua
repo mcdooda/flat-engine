@@ -222,9 +222,69 @@ end
 function MainWindow:drawLinks(delayToNextFrame)
     local function draw()
         local graph = self.graph
+        local content = self:getContent()
 
-        self:getContent():clear(0xECF0F1FF)
+        content:clear(0xECF0F1FF)
 
+        -- draw grid
+        do
+            local scrollX, scrollY = content:getScrollPosition()
+            local w, h = content:getComputedSize()
+
+            local gridTheme = flat.ui.settings.theme.graphEditor.grid
+
+            do
+                local firstSmallX = -scrollX % gridTheme.SMALL_STEP
+                local firstBigX = -scrollX % gridTheme.BIG_STEP
+                for i = 0, w, gridTheme.SMALL_STEP do
+                    if (i + firstSmallX - firstBigX) % gridTheme.BIG_STEP > 0 then
+                        content:drawLine(
+                            gridTheme.SMALL_LINE_COLOR,
+                            gridTheme.SMALL_LINE_WIDTH,
+                            false,
+                            flat.Vector2(i + firstSmallX, 0),
+                            flat.Vector2(i + firstSmallX, h)
+                        )
+                    end
+                end
+                for i = 0, w, gridTheme.BIG_STEP do
+                    content:drawLine(
+                        gridTheme.BIG_LINE_COLOR,
+                        gridTheme.BIG_LINE_WIDTH,
+                        false,
+                        flat.Vector2(i + firstBigX, 0),
+                        flat.Vector2(i + firstBigX, h)
+                    )
+                end
+            end
+
+            do
+                local firstSmallY = -scrollY % gridTheme.SMALL_STEP
+                local firstBigY = -scrollY % gridTheme.BIG_STEP
+                for i = 0, h, gridTheme.SMALL_STEP do
+                    if (i + firstSmallY - firstBigY) % gridTheme.BIG_STEP > 0 then
+                        content:drawLine(
+                            gridTheme.SMALL_LINE_COLOR,
+                            gridTheme.SMALL_LINE_WIDTH,
+                            false,
+                            flat.Vector2(0, i + firstSmallY),
+                            flat.Vector2(w, i + firstSmallY)
+                        )
+                    end
+                end
+                for i = 0, h, gridTheme.BIG_STEP do
+                    content:drawLine(
+                        gridTheme.BIG_LINE_COLOR,
+                        gridTheme.BIG_LINE_WIDTH,
+                        false,
+                        flat.Vector2(0, i + firstBigY),
+                        flat.Vector2(w, i + firstBigY)
+                    )
+                end
+            end
+        end
+
+        -- draw plugged links
         for i = 1, #graph.nodeInstances do
             local inputNode = graph.nodeInstances[i]
             for j = 1, #inputNode.inputPins do
@@ -248,6 +308,7 @@ function MainWindow:drawLinks(delayToNextFrame)
             end
         end
 
+        -- draw currently dragged link
         local currentLink = self.currentLink
         if currentLink then
             self:drawLink(
@@ -305,7 +366,7 @@ function MainWindow:drawLink(linkColor, inputPinX, inputPinY, outputPinX, output
         flat.Vector2(inputPinX - dx, inputPinY),
         flat.Vector2(inputPinX, inputPinY)
     }
-    self:getContent():drawBezier(linkColor, 2, bezier)
+    self:getContent():drawBezier(linkColor, 2, true, bezier)
 end
 
 function MainWindow:getPinColor(inputNode, inputPin)

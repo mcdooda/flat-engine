@@ -133,6 +133,7 @@ int l_CanvasWidget_redraw(lua_State* L);
 int l_CanvasWidget_clear(lua_State* L);
 int l_CanvasWidget_drawLine(lua_State* L);
 int l_CanvasWidget_drawBezier(lua_State* L);
+int l_CanvasWidget_getBounds(lua_State* L);
 
 // static Widget functions
 int l_Widget_getRoot(lua_State* L);

@@ -24,11 +24,11 @@ class CanvasWidget : public WidgetImpl<FixedLayout>
 
 		void clear(const video::Color& clearColor);
 
-		void drawLine(const video::Color& color, float width, const Vector2& from, const Vector2& to);
-		void drawBezier(const video::Color& color, float width, const std::vector<Vector2>& controlPoints);
+		void drawLine(const video::Color& color, float width, bool smoothLine, const Vector2& from, const Vector2& to);
+		void drawBezier(const video::Color& color, float width, bool smoothLine, const std::vector<Vector2>& controlPoints);
 
 	private:
-		void drawLines(const video::Color& color, float width, const Vector2* vertices, GLsizei count);
+		void drawLines(const video::Color& color, float width, bool smoothLine, const Vector2* vertices, GLsizei count);
 
 		bool updateCanvasSize();
 

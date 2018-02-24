@@ -40,15 +40,15 @@ void CanvasWidget::clear(const video::Color& clearColor)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void CanvasWidget::drawLine(const video::Color& color, float width, const Vector2& from, const Vector2& to)
+void CanvasWidget::drawLine(const video::Color& color, float width, bool smoothLine, const Vector2& from, const Vector2& to)
 {
 	Vector2 vertices[2];
 	vertices[0] = from;
 	vertices[1] = to;
-	drawLines(color, width, vertices, 2);
+	drawLines(color, width, smoothLine, vertices, 2);
 }
 
-void CanvasWidget::drawBezier(const video::Color& color, float width, const std::vector<Vector2>& controlPoints)
+void CanvasWidget::drawBezier(const video::Color& color, float width, bool smoothLine, const std::vector<Vector2>& controlPoints)
 {
 	FLAT_ASSERT(controlPoints.size() > 1);
 	std::vector<Vector2> bezierCurve;
@@ -59,12 +59,16 @@ void CanvasWidget::drawBezier(const video::Color& color, float width, const std:
 	}
 	int numSteps = std::max(2, static_cast<int>(length / 10.f));
 	geometry::bezier::computeBezier(controlPoints, numSteps, bezierCurve);
-	drawLines(color, width, bezierCurve.data(), static_cast<GLsizei>(bezierCurve.size()));
+	drawLines(color, width, smoothLine, bezierCurve.data(), static_cast<GLsizei>(bezierCurve.size()));
 }
 
-void CanvasWidget::drawLines(const video::Color& color, float width, const Vector2* vertices, GLsizei count)
+void CanvasWidget::drawLines(const video::Color& color, float width, bool smoothLine, const Vector2* vertices, GLsizei count)
 {
 	glDisable(GL_DEPTH_BUFFER);
+	if (smoothLine)
+	{
+		glEnable(GL_LINE_SMOOTH);
+	}
 
 	const render::ProgramSettings* render = m_render.get();
 
@@ -91,6 +95,10 @@ void CanvasWidget::drawLines(const video::Color& color, float width, const Vecto
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glEnable(GL_DEPTH_BUFFER);
+	if (smoothLine)
+	{
+		glDisable(GL_LINE_SMOOTH);
+	}
 }
 
 bool CanvasWidget::updateCanvasSize()

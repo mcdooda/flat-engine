@@ -91,7 +91,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"getRestrictScroll",     l_Widget_getRestrictScroll},
 
 		{"getScrollPosition",     l_Widget_getScrollPosition},
-		
+
 		{"click",                 l_Widget_click},
 		{"rightClick",            l_Widget_rightClick},
 		{"mouseDown",             l_Widget_mouseDown},
@@ -105,7 +105,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 
 		{"drag",                  l_Widget_drag},
 		{"drop",                  l_Widget_drop},
-		
+
 		{"setText",               l_TextWidget_setText},
 		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
@@ -128,6 +128,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"clear",                 l_CanvasWidget_clear},
 		{"drawLine",              l_CanvasWidget_drawLine},
 		{"drawBezier",            l_CanvasWidget_drawBezier},
+		{"getBounds",             l_CanvasWidget_getBounds},
 		
 		{nullptr, nullptr}
 	};
@@ -846,10 +847,11 @@ int l_CanvasWidget_drawLine(lua_State* L)
 	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	float width = static_cast<float>(luaL_checknumber(L, 3));
-	flat::Vector2 from = flat::lua::getVector2(L, 4);
-	flat::Vector2 to = flat::lua::getVector2(L, 5);
+	bool smoothLine = lua_toboolean(L, 4) == 1;
+	flat::Vector2 from = flat::lua::getVector2(L, 5);
+	flat::Vector2 to = flat::lua::getVector2(L, 6);
 	flat::video::Color lineColor(color);
-	canvasWidget.drawLine(lineColor, width, from, to);
+	canvasWidget.drawLine(lineColor, width, smoothLine, from, to);
 	return 0;
 }
 
@@ -858,19 +860,26 @@ int l_CanvasWidget_drawBezier(lua_State * L)
 	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	uint32_t color = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 	float width = static_cast<float>(luaL_checknumber(L, 3));
-	luaL_checktype(L, 4, LUA_TTABLE);
-	size_t numControlPoints = lua_rawlen(L, 4);
+	bool smoothLine = lua_toboolean(L, 4) == 1;
+	luaL_checktype(L, 5, LUA_TTABLE);
+	size_t numControlPoints = lua_rawlen(L, 5);
 	std::vector<Vector2> controlPoints;
 	controlPoints.reserve(numControlPoints);
 	for (int i = 1; i <= numControlPoints; ++i)
 	{
-		lua_rawgeti(L, 4, i);
+		lua_rawgeti(L, 5, i);
 		flat::Vector2 controlPoint = flat::lua::getVector2(L, -1);
 		controlPoints.push_back(controlPoint);
 		lua_pop(L, 1);
 	}
 	flat::video::Color lineColor(color);
-	canvasWidget.drawBezier(lineColor, width, controlPoints);
+	canvasWidget.drawBezier(lineColor, width, smoothLine, controlPoints);
+	return 0;
+}
+
+int l_CanvasWidget_getBounds(lua_State * L)
+{
+	CanvasWidget& canvasWidget = getWidgetOfType<CanvasWidget>(L, 1);
 	return 0;
 }
 
