@@ -11,7 +11,6 @@ function MainWindow:new(parent, metadata, onSave)
     setmetatable(o, self)
     o.graph = nil
     o.graphPath = nil
-    o.editorContainer = editorContainer
     o.nodeWidgets = {}
     o.selectedNodeWidgets = {}
     o.selectionWidget = nil

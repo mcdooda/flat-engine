@@ -17,7 +17,7 @@ function BooleanNode:setValue(value)
 end
 
 function BooleanNode:getValue()
-    assert(flat.type(self.value) == flat.types.BOOLEAN, 'Wrong type for self.value: boolean expected, got ' .. flat.typetostring(flat.type(value)))
+    assert(flat.type(self.value) == flat.types.BOOLEAN, 'Wrong type for self.value: boolean expected, got ' .. flat.typetostring(flat.type(self.value)))
     return self.value
 end
 
