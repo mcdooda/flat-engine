@@ -93,6 +93,9 @@ class IgnoreStackGrowth
 #define FLAT_LUA_IGNORE_ALL_STACK_GROWTH() \
 	{}
 
+#define FLAT_LUA_IGNORE_STACK_GROWTH(L) \
+	{}
+
 #endif // FLAT_DEBUG
 
 #endif // FLAT_LUA_DEBUG_H
