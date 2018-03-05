@@ -6,7 +6,7 @@ local MainWindow = {}
 MainWindow.__index = MainWindow
 setmetatable(MainWindow, { __index = flat.ui.Window })
 
-function MainWindow:new(parent, metadata, onSave)
+function MainWindow:new(parent, metadata, onSave, getRunnerFileCode)
     local o = flat.ui.Window:new(parent)
     setmetatable(o, self)
     o.graph = nil
@@ -20,6 +20,7 @@ function MainWindow:new(parent, metadata, onSave)
     o.nodeContextualMenu = nil
     o.metadata = metadata
     o.onSave = onSave
+    o.getRunnerFileCode = getRunnerFileCode
     o.isNew = false
     o:build()
     return o
@@ -202,8 +203,17 @@ end
 function MainWindow:saveLuaRunnerFile()
     local componentFilePath = self.graphPath .. '.lua'
     if not io.open(componentFilePath, 'r') then
+        local runnerCode
+        if self.getRunnerFileCode then
+            runnerCode = self.getRunnerFileCode(self.graphPath)
+        end
+        if not runnerCode then
+            runnerCode = ([[return flat.graph.script.run '%s']]):format(self.graphPath)
+        end
+        
         local f = io.open(componentFilePath, 'w')
-        f:write(([[return flat.graph.script.run '%s']]):format(self.graphPath))
+        assert(runnerCode)
+        f:write(runnerCode)
         f:close()
     end
 end
