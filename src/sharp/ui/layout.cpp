@@ -151,6 +151,7 @@ void Layout::computeExpandHeight(Widget& widget)
 
 void Layout::computeCompressWidth(Widget& widget)
 {
+	int numExpandChildren = 0;
 	float compressWidth = 0;
 	for (const std::shared_ptr<Widget>& childSharedPtr : widget.m_children)
 	{
@@ -165,16 +166,36 @@ void Layout::computeCompressWidth(Widget& widget)
 			computeCompressWidth(*child);
 			compressWidth = std::max(compressWidth, child->m_computedSize.x + child->m_margin.left + child->m_margin.right);
 		}
+		else if ((sizePolicy & Widget::SizePolicy::EXPAND_X) != 0)
+		{
+			++numExpandChildren;
+			continue;
+		}
 		else
 		{
 			FLAT_ASSERT(false);
 		}
 	}
 	widget.m_computedSize.x = compressWidth;
+
+	if (numExpandChildren > 0)
+	{
+		FLAT_ASSERT_MSG(numExpandChildren < widget.m_children.size(), "There must be at least 1 non expand widget inside a compress widget");
+		for (const std::shared_ptr<Widget>& childSharedPtr : widget.m_children)
+		{
+			Widget* child = childSharedPtr.get();
+			const Widget::SizePolicy sizePolicy = child->getSizePolicy();
+			if ((sizePolicy & Widget::SizePolicy::EXPAND_X) != 0)
+			{
+				computeExpandWidth(*child);
+			}
+		}
+	}
 }
 
 void Layout::computeCompressHeight(Widget& widget)
 {
+	int numExpandChildren = 0;
 	float compressHeight = 0;
 	for (const std::shared_ptr<Widget>& childSharedPtr : widget.m_children)
 	{
@@ -189,12 +210,31 @@ void Layout::computeCompressHeight(Widget& widget)
 			computeCompressHeight(*child);
 			compressHeight = std::max(compressHeight, child->m_computedSize.y + child->m_margin.bottom + child->m_margin.top);
 		}
+		else if ((sizePolicy & Widget::SizePolicy::EXPAND_Y) != 0)
+		{
+			++numExpandChildren;
+			continue;
+		}
 		else
 		{
 			FLAT_ASSERT(false);
 		}
 	}
 	widget.m_computedSize.y = compressHeight;
+
+	if (numExpandChildren > 0)
+	{
+		FLAT_ASSERT_MSG(numExpandChildren < widget.m_children.size(), "There must be at least 1 non expand widget inside a compress widget");
+		for (const std::shared_ptr<Widget>& childSharedPtr : widget.m_children)
+		{
+			Widget* child = childSharedPtr.get();
+			const Widget::SizePolicy sizePolicy = child->getSizePolicy();
+			if ((sizePolicy & Widget::SizePolicy::EXPAND_Y) != 0)
+			{
+				computeExpandHeight(*child);
+			}
+		}
+	}
 }
 
 void Layout::computePosition(Widget& widget, Vector2& position)
