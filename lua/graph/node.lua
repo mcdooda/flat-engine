@@ -62,6 +62,7 @@ function Node:addInputPin(pinType, pinName, onPlugged, onUnplugged)
 end
 
 function Node:removeInputPin(inputPin)
+    assert(not inputPin.pluggedOutputPin, 'the input pin is plugged')
     local inputPinIndex = self:findInputPinIndex(inputPin)
     for i = inputPinIndex, #self.inputPins - 1 do
         self.inputPins[i] = self.inputPins[i + 1]

@@ -6,6 +6,8 @@ flat.dofile 'enum.lua'
 
 flat.dofile 'slot.lua'
 
+flat.dofile 'formula/formula.lua'
+
 flat.dofile 'ui/init.lua'
 flat.dofile 'graph/init.lua'
 flat.dofile 'graph-editor/init.lua'

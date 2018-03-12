@@ -466,7 +466,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                         self.graph:removeNode(previousOutputNode)
                         local inputNodeWidget = assert(self.nodeWidgets[inputNode])
                         inputNodeWidget:hideFoldedConstantNode(inputPin)
-                        Timer.start(0.01, nil, function() self:drawLinks() end)
+                        self:drawLinks(true)
                     end
                 end
 
@@ -520,7 +520,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
                 currentLink.inputNode:unplugInputPin(currentLink.inputPin, true)
                 self.graph:removeNode(constantNode)
                 inputNodeWidget:hideFoldedConstantNode(currentLink.inputPin)
-                Timer.start(0.01, nil, function() self:drawLinks() end)
+                self:drawLinks(true)
             end
 
             local updateOutputNodeWidget, updateInputNodeWidget = outputNode:plugPins(outputPin, currentLink.inputNode, currentLink.inputPin)

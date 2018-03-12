@@ -13,6 +13,7 @@ return {
     'math/lessthan',
     'math/greaterthan',
     'math/equal',
+    'math/formula',
 
     'math/vector3/vector3reflect',
     'math/vector3/vector3numbermultiply',
