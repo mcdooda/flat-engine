@@ -64,6 +64,19 @@ void FileTexture::load()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	m_requiresAlphaBlending = false;
+	for (int i = 0; i < m_surface->w * m_surface->h; ++i)
+	{
+		std::uint32_t pixel = *(static_cast<std::uint32_t*>(m_surface->pixels) + i);
+		std::uint8_t r, g, b, a;
+		SDL_GetRGBA(pixel, m_surface->format, &r, &g, &b, &a);
+		if (a > 0 && a < 255)
+		{
+			m_requiresAlphaBlending = true;
+			break;
+		}
+	}
 }
 
 void FileTexture::free()

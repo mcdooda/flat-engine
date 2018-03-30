@@ -38,6 +38,7 @@ void SpriteBatch::add(const Sprite& sprite)
 	const Matrix4& transform = sprite.getModelMatrix();
 	const video::Color& color = sprite.getColor();
 	const Vector3& normal = sprite.getNormal();
+	const float depth = sprite.getDepth();
 	const Sprite::Vertex* vertices = sprite.m_vertices.data();
 	for (int i = 0; i < numVerticesPerSprite; ++i)
 	{
@@ -49,6 +50,7 @@ void SpriteBatch::add(const Sprite& sprite)
 		spriteBatchVertex.uv = spriteVertex->uv;
 		spriteBatchVertex.color = color;
 		spriteBatchVertex.normal = normal;
+		spriteBatchVertex.depth = depth;
 	}
 }
 
@@ -61,6 +63,7 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	const video::Attribute uvAttribute = renderSettings.uvAttribute;
 	const video::Attribute colorAttribute = renderSettings.colorAttribute;
 	const video::Attribute normalAttribute = renderSettings.normalAttribute;
+	const video::Attribute depthAttribute = renderSettings.depthAttribute;
 
 	glEnableVertexAttribArray(positionAttribute);
 	glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].pos);
@@ -74,12 +77,16 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	glEnableVertexAttribArray(normalAttribute);
 	glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].normal);
 
+	glEnableVertexAttribArray(depthAttribute);
+	glVertexAttribPointer(depthAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].depth);
+
 	glDrawArrays(GL_TRIANGLES, 0, m_numVertices);
 
 	glDisableVertexAttribArray(positionAttribute);
 	glDisableVertexAttribArray(uvAttribute);
 	glDisableVertexAttribArray(colorAttribute);
 	glDisableVertexAttribArray(normalAttribute);
+	glDisableVertexAttribArray(depthAttribute);
 }
 
 } // render

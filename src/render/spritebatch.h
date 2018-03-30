@@ -33,10 +33,11 @@ public:
 		Vector2 uv;
 		video::Color color;
 		Vector3 normal;
+		float depth;
 	};
 
 private:
-	std::array<Vertex, 16384> m_vertices;
+	std::array<Vertex, 1024 * 1024> m_vertices;
 	GLsizei m_numVertices;
 	const video::Texture* m_texture;
 };

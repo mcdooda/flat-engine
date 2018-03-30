@@ -137,7 +137,6 @@ void Lua::close(lua_State* L)
 {
 	sharp::ui::lua::close(L);
 
-	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_pushnil(L);
 	lua_rawsetp(L, LUA_REGISTRYINDEX, &gameRegistryIndex);
 

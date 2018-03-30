@@ -36,11 +36,13 @@ class Texture
 
 		inline std::uint32_t getHash() const { return static_cast<std::uint32_t>(m_textureId); }
 		
+		inline bool requiresAlphaBlending() const { return m_requiresAlphaBlending; }
 		
 	protected:
 		GLuint m_textureId;
 		Vector2 m_size;
 		std::string m_name;
+		bool m_requiresAlphaBlending;
 };
 
 } // video

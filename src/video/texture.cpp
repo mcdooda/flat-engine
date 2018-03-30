@@ -6,7 +6,8 @@ namespace video
 {
 
 Texture::Texture() :
-	m_textureId(0)
+	m_textureId(0),
+	m_requiresAlphaBlending(true)
 {
 	
 }

@@ -25,6 +25,7 @@ struct RenderSettings
 	video::Attribute normalAttribute;
 	video::Attribute uvAttribute;
 	video::Attribute colorAttribute;
+	video::Attribute depthAttribute;
 
 	std::uint32_t getHash() const;
 
@@ -32,7 +33,8 @@ struct RenderSettings
 		positionAttribute(-1),
 		normalAttribute(-1),
 		uvAttribute(-1),
-		colorAttribute(-1)
+		colorAttribute(-1),
+		depthAttribute(-1)
 	{
 
 	}

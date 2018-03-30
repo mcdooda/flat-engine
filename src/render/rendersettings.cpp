@@ -7,7 +7,7 @@ namespace render
 
 std::uint32_t RenderSettings::getHash() const
 {
-	return (((((((((((((((
+	return ((((((((((((((((
 		  textureUniform.getHash() * 7)
 		+ textureGivenUniform.getHash()) * 11)
 		+ colorUniform.getHash()) * 13)
@@ -19,7 +19,8 @@ std::uint32_t RenderSettings::getHash() const
 		+ positionAttribute * 37)
 		+ normalAttribute * 41)
 		+ uvAttribute * 43)
-		+ colorAttribute * 47);
+		+ colorAttribute * 47)
+		+ depthAttribute * 53);
 }
 
 } // render

@@ -34,6 +34,9 @@ class Sprite
 
 		inline void setNormal(const Vector3& normal) { m_normal = normal; }
 		inline const Vector3& getNormal() const { return m_normal; }
+
+		inline void setDepth(float depth) { m_depth = depth; }
+		inline float getDepth() const { return m_depth; }
 		
 		inline void setRotation(const Vector3& rotation) { m_rotation = rotation; m_modelMatrixIsDirty = true; }
 		inline void setRotationX(float rotationX) { m_rotation.x = rotationX; m_modelMatrixIsDirty = true; }
@@ -71,6 +74,8 @@ class Sprite
 		void getAABB(AABB2& aabb) const;
 
 		virtual void getPixel(const Vector2& point, video::Color& color) const;
+
+		inline bool requiresAlphaBlending() const { return m_texture->requiresAlphaBlending(); }
 		
 		struct Vertex
 		{
@@ -85,6 +90,7 @@ class Sprite
 		
 		video::Color m_color;
 		Vector3 m_normal;
+		float m_depth;
 		
 		Vector3 m_rotation;
 		Vector2 m_position;

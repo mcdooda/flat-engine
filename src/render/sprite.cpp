@@ -10,6 +10,7 @@ namespace render
 Sprite::Sprite() :
 	m_color(video::Color::WHITE),
 	m_normal(0.f, 0.f, 1.f),
+	m_depth(0.f),
 	m_rotation(0.f),
 	m_position(0.f, 0.f),
 	m_origin(0.f, 0.f),
