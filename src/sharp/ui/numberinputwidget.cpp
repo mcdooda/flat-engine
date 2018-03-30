@@ -100,12 +100,12 @@ size_t NumberInputWidget::getPrecision(const std::string& text)
 
 float NumberInputWidget::computeSmallestStep(const std::string& text)
 {
-	float smallestStep = 1;
+	float smallestStep = 1.f;
 	if (getPrecision(text) > 0)
 	{
 		std::string decimals = text.substr(text.find_last_of("."));
 		size_t precisionWithoutTrailingZeros = decimals.find_last_not_of('0');
-		smallestStep = 1 / pow(10.f, precisionWithoutTrailingZeros);
+		smallestStep = 1.f / static_cast<float>(std::pow(10.f, precisionWithoutTrailingZeros));
 	}
 	return smallestStep;
 }
