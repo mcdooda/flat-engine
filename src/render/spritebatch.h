@@ -15,7 +15,7 @@ class Texture;
 }
 namespace render
 {
-class Sprite;
+class BaseSprite;
 struct RenderSettings;
 
 class SpriteBatch
@@ -24,7 +24,7 @@ public:
 	SpriteBatch();
 
 	void clear();
-	void add(const Sprite& sprite);
+	void add(const BaseSprite& sprite);
 	void draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const;
 
 	struct Vertex

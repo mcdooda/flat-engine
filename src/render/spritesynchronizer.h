@@ -1,20 +1,21 @@
-#ifndef FLAT_RENDER_SPRITE_H
-#define FLAT_RENDER_SPRITE_H
+#ifndef FLAT_RENDER_SPRITESYNCHRONIZER_H
+#define FLAT_RENDER_SPRITESYNCHRONIZER_H
 
 #include "basesprite.h"
+#include "spriteanimator.h"
 
 namespace flat
 {
 namespace render
 {
+class SynchronizedSprite;
 
-class Sprite : public BaseSprite
+class SpriteSynchronizer : public BaseSprite, public SpriteAnimator
 {
+	friend class SynchronizedSprite;
 	public:
-		Sprite();
-		virtual ~Sprite();
-
-		void setTexture(const std::shared_ptr<const video::Texture>& texture); // not virtual!
+		SpriteSynchronizer();
+		virtual ~SpriteSynchronizer();
 
 	protected:
 		const VertexPositions& getVertexPositions() const override;
@@ -24,12 +25,12 @@ class Sprite : public BaseSprite
 
 	private:
 		VertexPositions m_vertexPositions;
-		static VertexUvs vertexUvs;
+		VertexUvs m_vertexUvs;
 };
 
 } // render
 } // flat
 
-#endif // FLAT_RENDER_SPRITE_H
+#endif // FLAT_RENDER_SPRITESYNCHRONIZER_H
 
 

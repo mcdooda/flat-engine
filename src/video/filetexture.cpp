@@ -4,6 +4,8 @@
 #include <GL/glew.h>
 #include "filetexture.h"
 
+#include "../debug/helpers.h"
+
 namespace flat
 {
 namespace video
@@ -36,6 +38,7 @@ FileTexture::~FileTexture()
 	free();
 }
 
+FLAT_OPTIMIZE_OFF()
 void FileTexture::getPixel(const Vector2& pixelPosition, Color& color) const
 {
 	int x = static_cast<int>(std::floor(pixelPosition.x));
@@ -49,6 +52,7 @@ void FileTexture::getPixel(const Vector2& pixelPosition, Color& color) const
 	SDL_GetRGBA(pixel, m_surface->format, &r, &g, &b, &a);
 	color = Color(r, g, b, a);
 }
+FLAT_OPTIMIZE_ON()
 
 void FileTexture::load()
 {

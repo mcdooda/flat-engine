@@ -291,11 +291,12 @@ lua_State* getMainThread(lua_State* L)
 void printStack(lua_State* L)
 {
 	std::cout << "--- Lua Debug (" << L << ") ==========" << std::endl;
-	std::cout << "Error: " << lua_tostring(L, -1) << std::endl;
+	const char* error = lua_tostring(L, -1);
+	std::cout << "Error: " << (error ? error : "???") << std::endl;
 	
 	lua_Debug debug;
 	std::cout << "\tCALL STACK" << std::endl;
-	for (int level = 0; lua_getstack(L, level, &debug); level++)
+	for (int level = 0; lua_getstack(L, level, &debug); ++level)
 	{
 		lua_getinfo(L, "Snl", &debug);
 		std::cout << "\t\t" << debug.short_src << ':' << debug.currentline;
@@ -314,7 +315,7 @@ void printStack(lua_State* L)
 	int top = lua_gettop(L);
 	std::cout << "\tLUA STACK" << std::endl;
 	
-	for (int i = 1; i <= top; i++)
+	for (int i = top; i >= 1; --i)
 	{
 		std::cout << "\t\t#" << i << " : ";
 		printValue(L, i);

@@ -1,4 +1,6 @@
 #include "heightmap.h"
+#include "rendersettings.h"
+
 #include "../memory/memory.h"
 
 namespace flat
@@ -17,18 +19,8 @@ HeightMap::HeightMap() :
 
 HeightMap::~HeightMap()
 {
-	if (!m_isLightCopy)
-	{
-		FLAT_DELETE_ARRAY(m_vertices);
-		FLAT_DELETE_ARRAY(m_indices);
-	}
-}
-
-Sprite* HeightMap::lightCopy()
-{
-	HeightMap* heightMap = new HeightMap(*this);
-	heightMap->m_isLightCopy = true;
-	return heightMap;
+	FLAT_DELETE_ARRAY(m_vertices);
+	FLAT_DELETE_ARRAY(m_indices);
 }
 
 void HeightMap::draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const

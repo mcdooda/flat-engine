@@ -1,5 +1,6 @@
 #include "spritebatch.h"
-#include "sprite.h"
+#include "basesprite.h"
+#include "rendersettings.h"
 
 namespace flat
 {
@@ -18,9 +19,8 @@ void SpriteBatch::clear()
 	m_texture = nullptr;
 }
 
-void SpriteBatch::add(const Sprite& sprite)
+void SpriteBatch::add(const BaseSprite& sprite)
 {
-	static const int numVerticesPerSprite = 6;
 	if (m_numVertices == 0)
 	{
 		FLAT_ASSERT(m_texture == nullptr);
@@ -29,7 +29,7 @@ void SpriteBatch::add(const Sprite& sprite)
 	FLAT_DEBUG_ONLY(
 	else
 	{
-		FLAT_ASSERT(m_numVertices > 0 && m_numVertices + numVerticesPerSprite < m_vertices.size());
+		FLAT_ASSERT(m_numVertices > 0 && m_numVertices + BaseSprite::NUM_VERTICES < m_vertices.size());
 		FLAT_ASSERT(m_texture == sprite.getTexture().get());
 	}
 	)
@@ -39,15 +39,15 @@ void SpriteBatch::add(const Sprite& sprite)
 	const video::Color& color = sprite.getColor();
 	const Vector3& normal = sprite.getNormal();
 	const float depth = sprite.getDepth();
-	const Sprite::Vertex* vertices = sprite.m_vertices.data();
-	for (int i = 0; i < numVerticesPerSprite; ++i)
+	const BaseSprite::VertexPositions& vertexPositions = sprite.getVertexPositions();
+	const BaseSprite::VertexUvs& vertexUvs = sprite.getVertexUvs();
+	for (int i = 0; i < BaseSprite::NUM_VERTICES; ++i)
 	{
-		const Sprite::Vertex* spriteVertex = vertices + i;
 		FLAT_ASSERT(m_numVertices + 1 > 0);
 		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
 		FLAT_ASSERT(m_numVertices > 0);
-		spriteBatchVertex.pos = Vector2(transform * Vector4(spriteVertex->pos, 0.f, 1.f));
-		spriteBatchVertex.uv = spriteVertex->uv;
+		spriteBatchVertex.pos = Vector2(transform * Vector4(vertexPositions[i], 0.f, 1.f));
+		spriteBatchVertex.uv = vertexUvs[i];
 		spriteBatchVertex.color = color;
 		spriteBatchVertex.normal = normal;
 		spriteBatchVertex.depth = depth;
