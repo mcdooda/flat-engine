@@ -5,6 +5,7 @@ local function prompt(message)
     content:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
     content:setBackgroundColor(0xFF0000FF)
 
+    local textInputWidget
     do
         local textInputBorder = Widget.makeExpand()
         textInputBorder:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
@@ -18,7 +19,7 @@ local function prompt(message)
             textInputBackground:setMargin(1)
 
             do
-                local textInputWidget = Widget.makeTextInput(table.unpack(TextInputTheme.FONT))
+                textInputWidget = Widget.makeTextInput(table.unpack(TextInputTheme.FONT))
                 textInputWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.FIXED_Y)
                 textInputWidget:setTextColor(TextInputTheme.TEXT_COLOR)
                 textInputWidget:setText 'DEFAULT'
