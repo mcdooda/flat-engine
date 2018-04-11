@@ -4,8 +4,6 @@
 #include <GL/glew.h>
 #include "filetexture.h"
 
-#include "../debug/helpers.h"
-
 namespace flat
 {
 namespace video

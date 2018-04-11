@@ -5,8 +5,6 @@
 #include "../misc/aabb2.h"
 #include "../video/filetexture.h"
 
-#include "../debug/helpers.h"
-
 namespace flat
 {
 namespace render
