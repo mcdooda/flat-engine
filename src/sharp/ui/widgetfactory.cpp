@@ -55,6 +55,14 @@ std::shared_ptr<Widget> WidgetFactory::makeExpand() const
 	return widget;
 }
 
+std::shared_ptr<Widget> WidgetFactory::makeCompress() const
+{
+	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<FixedLayout>>();
+	widget->setWeakPtr(widget);
+	widget->setSizePolicy(Widget::SizePolicy::COMPRESS);
+	return widget;
+}
+
 std::shared_ptr<Widget> WidgetFactory::makeLineFlow() const
 {
 	std::shared_ptr<Widget> widget = std::make_shared<WidgetImpl<LineFlowLayout>>();

@@ -37,6 +37,7 @@ class WidgetFactory
 		std::shared_ptr<Widget> makeImage(const std::string& fileName) const;
 		std::shared_ptr<Widget> makeFixedSize(const Vector2& size) const;
 		std::shared_ptr<Widget> makeExpand() const;
+		std::shared_ptr<Widget> makeCompress() const;
 		std::shared_ptr<Widget> makeLineFlow() const;
 		std::shared_ptr<Widget> makeColumnFlow() const;
 		std::shared_ptr<TextWidget> makeText(const std::string& text, const std::string& fileName, int fontSize) const;

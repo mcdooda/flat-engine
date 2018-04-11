@@ -142,6 +142,7 @@ int open(flat::Flat& flat, flat::lua::Lua& lua)
 		{"makeImage",       l_Widget_makeImage},
 		{"makeFixedSize",   l_Widget_makeFixedSize},
 		{"makeExpand",      l_Widget_makeExpand},
+		{"makeCompress",    l_Widget_makeCompress},
 		{"makeLineFlow",    l_Widget_makeLineFlow},
 		{"makeColumnFlow",  l_Widget_makeColumnFlow},
 		{"makeText",        l_Widget_makeText},
@@ -928,6 +929,14 @@ int l_Widget_makeExpand(lua_State * L)
 {
 	WidgetFactory& widgetFactory = getWidgetFactory(L);
 	std::shared_ptr<Widget> widget = widgetFactory.makeExpand();
+	pushWidget(L, widget);
+	return 1;
+}
+
+int l_Widget_makeCompress(lua_State * L)
+{
+	WidgetFactory& widgetFactory = getWidgetFactory(L);
+	std::shared_ptr<Widget> widget = widgetFactory.makeCompress();
 	pushWidget(L, widget);
 	return 1;
 }

@@ -13,13 +13,16 @@ function Window:new(parent)
         userContentContainer = nil,
         content = nil,
 
-        bottomRightResizeIcon = nil
+        bottomRightResizeIcon = nil,
+
+        onClose = flat.Slot:new()
     }, self)
     o:build(parent)
     return o
 end
 
 function Window:close()
+    self:onClose()
     self.window:removeFromParent()
 end
 
@@ -105,6 +108,7 @@ function Window:build(parent)
 
             do
                 local userContentContainer = Widget.makeExpand()
+                userContentContainer:setBackgroundColor(Theme.CONTENT_BACKGROUND_COLOR)
                 contentContainer:addChild(userContentContainer)
                 self.userContentContainer = userContentContainer
             end
@@ -131,9 +135,9 @@ function Window:build(parent)
                         Mouse.setCursor(Mouse.Cursor.SIZENWSE)
                         initialWindowWidth, initialWindowHeight = window:getSize()
                         initialMouseX, initialMouseY = Mouse.getPosition()
-                        resizeTimer = Timer.start(0, nil, function()
-                            resize()
-                        end, true)
+                        resizeTimer = Timer.new()
+                        resizeTimer:onEnd(resize)
+                        resizeTimer:start(0, true)
                     end
                     local function stopResize()
                         if not mouseOver then
@@ -175,6 +179,22 @@ function Window:build(parent)
 
     parent:addChild(window)
     self.window = window
+end
+
+function Window:setSize(width, height)
+    self.window:setSize(width, height)
+end
+
+function Window:setPosition(x, y)
+    self.window:setPosition(x, y)
+end
+
+function Window:setPositionPolicy(positionPolicy)
+    self.window:setPositionPolicy(positionPolicy)
+end
+
+function Window:setResizable(resizable)
+    self.bottomRightResizeIcon:setVisible(resizable)
 end
 
 flat.ui.Window = Window

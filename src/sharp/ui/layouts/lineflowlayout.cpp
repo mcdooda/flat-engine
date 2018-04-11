@@ -19,9 +19,9 @@ void LineFlowLayout::preLayout(Widget& widget)
 	{
 		Widget& parent = getParent(widget);
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
-		if (parentSizePolicy & Widget::SizePolicy::FIXED_Y)
+		if (parentSizePolicy & (Widget::SizePolicy::FIXED_Y | Widget::SizePolicy::EXPAND_Y))
 		{
-			getComputedSize(widget).y = getComputedSize(parent).y - getMargin(widget).bottom - getMargin(widget).top;
+			computeExpandHeight(widget);
 		}
 	}
 
@@ -33,7 +33,7 @@ void LineFlowLayout::preLayout(Widget& widget)
 	{
 		Widget& parent = getParent(widget);
 		Widget::SizePolicy parentSizePolicy = getSizePolicy(parent);
-		if (parentSizePolicy & Widget::SizePolicy::FIXED_X)
+		if (parentSizePolicy & (Widget::SizePolicy::FIXED_X | Widget::SizePolicy::EXPAND_X))
 		{
 			computeExpandWidth(widget);
 		}

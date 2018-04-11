@@ -163,7 +163,8 @@ void Layout::computeCompressWidth(Widget& widget)
 		}
 		else if ((sizePolicy & Widget::SizePolicy::COMPRESS_X) != 0)
 		{
-			computeCompressWidth(*child);
+			//computeCompressWidth(*child);
+			child->fullLayout();
 			compressWidth = std::max(compressWidth, child->m_computedSize.x + child->m_margin.left + child->m_margin.right);
 		}
 		else if ((sizePolicy & Widget::SizePolicy::EXPAND_X) != 0)
@@ -176,6 +177,7 @@ void Layout::computeCompressWidth(Widget& widget)
 			FLAT_ASSERT(false);
 		}
 	}
+	compressWidth += widget.m_padding.left + widget.m_padding.right;
 	widget.m_computedSize.x = compressWidth;
 
 	if (numExpandChildren > 0)
@@ -207,7 +209,8 @@ void Layout::computeCompressHeight(Widget& widget)
 		}
 		else if ((sizePolicy & Widget::SizePolicy::COMPRESS_Y) != 0)
 		{
-			computeCompressHeight(*child);
+			//computeCompressHeight(*child);
+			child->fullLayout();
 			compressHeight = std::max(compressHeight, child->m_computedSize.y + child->m_margin.bottom + child->m_margin.top);
 		}
 		else if ((sizePolicy & Widget::SizePolicy::EXPAND_Y) != 0)
@@ -220,6 +223,7 @@ void Layout::computeCompressHeight(Widget& widget)
 			FLAT_ASSERT(false);
 		}
 	}
+	compressHeight += widget.m_padding.bottom + widget.m_padding.top;
 	widget.m_computedSize.y = compressHeight;
 
 	if (numExpandChildren > 0)

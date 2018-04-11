@@ -142,6 +142,7 @@ int l_Widget_focus(lua_State* L);
 int l_Widget_makeImage(lua_State* L);
 int l_Widget_makeFixedSize(lua_State* L);
 int l_Widget_makeExpand(lua_State* L);
+int l_Widget_makeCompress(lua_State* L);
 int l_Widget_makeLineFlow(lua_State* L);
 int l_Widget_makeColumnFlow(lua_State* L);
 int l_Widget_makeText(lua_State* L);

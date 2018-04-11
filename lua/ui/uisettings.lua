@@ -4,12 +4,17 @@ flat.ui.settings = {
 
 flat.ui.settings.theme = {
     window = {
-        BORDER_COLOR           = 0x888888FF,
+        BORDER_COLOR             = 0x888888FF,
 
         -- title
-        TITLE_BACKGROUND_COLOR = 0x444444FF,
-        TITLE_TEXT_COLOR       = 0xECF0F1FF,
-        TITLE_FONT             = flat.ui.settings.defaultFont,
+        TITLE_BACKGROUND_COLOR   = 0x444444FF,
+        TITLE_TEXT_COLOR         = 0xECF0F1FF,
+        TITLE_FONT               = flat.ui.settings.defaultFont,
+
+        -- content
+        CONTENT_BACKGROUND_COLOR = 0xEEEEEEFF,
+        CONTENT_TEXT_COLOR       = 0x111111FF,
+        CONTENT_FONT             = flat.ui.settings.defaultFont
     },
     toolbar = {
         BACKGROUND_COLOR = 0xCCCCCCFF,
@@ -19,6 +24,12 @@ flat.ui.settings.theme = {
         BUTTON_BACKGROUND_COLOR      = 0xCCCCCCFF,
         BUTTON_BACKGROUND_COLOR_OVER = 0xDDDDDDFF,
         BUTTON_FONT                  = flat.ui.settings.defaultFont
+    },
+    textInput = {
+        BORDER_COLOR     = 0x888888FF,
+        BACKGROUND_COLOR = 0xFFFFFFFF,
+        TEXT_COLOR       = 0x111111FF,
+        FONT             = flat.ui.settings.defaultFont
     },
     graphEditor = {
         node = {
