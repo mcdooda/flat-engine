@@ -97,7 +97,6 @@ void BaseSprite::getAABB(AABB2& aabb) const
 	FLAT_ASSERT(aabb.isValid());
 }
 
-FLAT_OPTIMIZE_OFF()
 void BaseSprite::getPixel(const Vector2& point, video::Color& color) const
 {
 	AABB2 aabb;
@@ -129,7 +128,6 @@ void BaseSprite::getPixel(const Vector2& point, video::Color& color) const
 
 	texture->getPixel(pixelPosition, color);
 }
-FLAT_OPTIMIZE_ON()
 
 bool BaseSprite::requiresAlphaBlending() const
 {
