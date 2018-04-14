@@ -37,7 +37,7 @@ public:
 	};
 
 private:
-	std::array<Vertex, 1024 * 1024 * 2> m_vertices;
+	std::array<Vertex, 1024 * 1024 * 4> m_vertices;
 	GLsizei m_numVertices;
 	const video::Texture* m_texture;
 };
