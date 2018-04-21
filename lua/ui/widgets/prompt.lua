@@ -1,6 +1,6 @@
 local TextInputTheme = flat.ui.settings.theme.textInput
 
-local function prompt(message)
+local function prompt(message, defaultValue)
     local content = Widget.makeExpand()
     content:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
     content:setBackgroundColor(0xFF0000FF)
@@ -22,7 +22,9 @@ local function prompt(message)
                 textInputWidget = Widget.makeTextInput(table.unpack(TextInputTheme.FONT))
                 textInputWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.FIXED_Y)
                 textInputWidget:setTextColor(TextInputTheme.TEXT_COLOR)
-                textInputWidget:setText 'DEFAULT'
+                if defaultValue then
+                    textInputWidget:setText(defaultValue)
+                end
                 textInputBackground:addChild(textInputWidget)
             end
 
