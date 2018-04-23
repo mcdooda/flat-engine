@@ -25,7 +25,7 @@ void MouseInputContext::addEvent(const SDL_Event& event)
 	case SDL_MOUSEBUTTONDOWN:
 		m_position.x = static_cast<float>(event.button.x);
 		m_position.y = m_videoWindow->getSize().y - event.button.y;
-		FLAT_ASSERT(!m_pressedButtons[event.button.button]);
+		//FLAT_ASSERT(!m_pressedButtons[event.button.button]);
 		m_pressedButtons[event.button.button] = true;
 		FLAT_ASSERT(!m_justPressedButtons[event.button.button]);
 		m_justPressedButtons[event.button.button] = true;
