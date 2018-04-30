@@ -26,13 +26,13 @@ void SpriteBatch::add(const BaseSprite& sprite)
 		FLAT_ASSERT(m_texture == nullptr);
 		m_texture = sprite.getTexture().get();
 	}
-	FLAT_DEBUG_ONLY(
+#ifdef FLAT_DEBUG
 	else
 	{
 		FLAT_ASSERT(m_numVertices > 0 && m_numVertices + BaseSprite::NUM_VERTICES < m_vertices.size());
 		FLAT_ASSERT(m_texture == sprite.getTexture().get());
 	}
-	)
+#endif
 	FLAT_ASSERT(m_texture != nullptr);
 
 	const Matrix4& transform = sprite.getModelMatrix();

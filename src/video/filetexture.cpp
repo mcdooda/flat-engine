@@ -57,6 +57,22 @@ void FileTexture::load()
 	m_size = Vector2(static_cast<float>(m_surface->w), static_cast<float>(m_surface->h));
 	
 	glGenTextures(1, &m_textureId);
+	if (!glIsTexture(m_textureId))
+	{
+		GLenum errorCode = glGetError();
+		std::string errorMessage;
+
+		switch (errorCode) {
+		case GL_INVALID_OPERATION:      errorMessage = "INVALID_OPERATION";      break;
+		case GL_INVALID_ENUM:           errorMessage = "INVALID_ENUM";           break;
+		case GL_INVALID_VALUE:          errorMessage = "INVALID_VALUE";          break;
+		case GL_OUT_OF_MEMORY:          errorMessage = "OUT_OF_MEMORY";          break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION:  errorMessage = "INVALID_FRAMEBUFFER_OPERATION";  break;
+		}
+
+		std::cerr << "GL_" << errorMessage.c_str() << std::endl;
+		FLAT_BREAK();
+	}
 	glBindTexture(GL_TEXTURE_2D, m_textureId);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_surface->w, m_surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_surface->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
