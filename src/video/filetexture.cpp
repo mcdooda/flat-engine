@@ -57,7 +57,7 @@ void FileTexture::load()
 	m_size = Vector2(static_cast<float>(m_surface->w), static_cast<float>(m_surface->h));
 	
 	glGenTextures(1, &m_textureId);
-	if (!glIsTexture(m_textureId))
+	if (m_textureId == 0)
 	{
 		GLenum errorCode = glGetError();
 		std::string errorMessage;
