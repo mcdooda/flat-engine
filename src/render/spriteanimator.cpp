@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include "spriteanimator.h"
 #include "basesprite.h"
 #include "../misc/aabb2.h"
@@ -35,12 +36,15 @@ void SpriteAnimator::setAtlasSize(int atlasWidth, int atlasHeight)
 	const flat::Vector2& textureSize = texture->getSize();
 	FLAT_ASSERT(0 < atlasWidth  && atlasWidth  < textureSize.x);
 	FLAT_ASSERT(0 < atlasHeight && atlasHeight < textureSize.y);
-	FLAT_ASSERT_MSG(
-		textureSize.x / atlasWidth == floor(textureSize.x / atlasWidth)
-		&& textureSize.y / atlasHeight == floor(textureSize.y / atlasHeight),
-		"Cannot use size (%d, %d) for atlas %s of size (%d, %d)",
-		atlasWidth, atlasHeight, texture->getName().c_str(), static_cast<int>(textureSize.x), static_cast<int>(textureSize.y)
-	);
+	if (textureSize.x / atlasWidth != floor(textureSize.x / atlasWidth)
+		|| textureSize.y / atlasHeight != floor(textureSize.y / atlasHeight))
+	{
+		const flat::video::FileTexture* fileTexture = dynamic_cast<const flat::video::FileTexture*>(texture);
+		std::cerr << "Invalid atlas size (" << atlasWidth << ", " << atlasHeight << ") "
+			<< "for texture "
+			<< ((fileTexture != nullptr) ? fileTexture->getFileName() + " " : "")
+			<< "of size (" << static_cast<int>(textureSize.x) << ", " << static_cast<int>(textureSize.y) << ")" << std::endl;
+	}
 	m_tileSizeRatio.x = 1.f / atlasWidth;
 	m_tileSizeRatio.y = 1.f / atlasHeight;
 	setLine(0);
