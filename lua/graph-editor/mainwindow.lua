@@ -332,7 +332,7 @@ function MainWindow:drawLinks(delayToNextFrame)
         -- TODO: Timer comes from CG!
         local timer = Timer.new()
         timer:onEnd(draw)
-        timer:stat(0.01)
+        timer:start(0.01)
     else
         draw()
     end
