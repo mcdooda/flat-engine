@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "basesprite.h"
 
 #include "rendersettings.h"
@@ -125,8 +123,6 @@ void BaseSprite::getPixel(const Vector2& point, video::Color& color) const
 	Vector2 pixelPosition;
 	pixelPosition.x = (rx * (vertexUvs[1].x - vertexUvs[0].x) + vertexUvs[0].x) * textureSize.x;
 	pixelPosition.y = (ry * (vertexUvs[2].y - vertexUvs[0].y) + vertexUvs[0].y) * textureSize.y;
-
-	std::cout << "pixel position = " << pixelPosition.x << "," << pixelPosition.y << std::endl;
 
 	texture->getPixel(pixelPosition, color);
 }
