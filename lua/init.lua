@@ -13,3 +13,5 @@ flat.dofile 'graph/init.lua'
 flat.dofile 'graph-editor/init.lua'
 
 flat.dofile 'texteditor.lua'
+
+flat.dofile 'easing.lua'
