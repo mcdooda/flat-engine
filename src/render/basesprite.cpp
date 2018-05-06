@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "basesprite.h"
 
 #include "rendersettings.h"
@@ -105,8 +107,18 @@ void BaseSprite::getPixel(const Vector2& point, video::Color& color) const
 	const Vector2& textureSize = texture->getSize();
 
 	// TODO: wrong for rotated sprites
-	float rx = ((point.x - aabb.min.x) / (aabb.max.x - aabb.min.x));
-	float ry = (1.f - (point.y - aabb.min.y) / (aabb.max.y - aabb.min.y));
+	float rx = (point.x - aabb.min.x) / (aabb.max.x - aabb.min.x);
+	float ry = (point.y - aabb.min.y) / (aabb.max.y - aabb.min.y);
+
+	if (m_flipX)
+	{
+		rx = 1.f - rx;
+	}
+
+	if (m_flipY)
+	{
+		ry = 1.f - ry;
+	}
 
 	const VertexUvs& vertexUvs = getVertexUvs();
 
@@ -114,15 +126,7 @@ void BaseSprite::getPixel(const Vector2& point, video::Color& color) const
 	pixelPosition.x = (rx * (vertexUvs[1].x - vertexUvs[0].x) + vertexUvs[0].x) * textureSize.x;
 	pixelPosition.y = (ry * (vertexUvs[2].y - vertexUvs[0].y) + vertexUvs[0].y) * textureSize.y;
 
-	if (m_flipX)
-	{
-		pixelPosition.x = textureSize.x - pixelPosition.x;
-	}
-
-	if (m_flipY)
-	{
-		pixelPosition.y = textureSize.y - pixelPosition.y;
-	}
+	std::cout << "pixel position = " << pixelPosition.x << "," << pixelPosition.y << std::endl;
 
 	texture->getPixel(pixelPosition, color);
 }
