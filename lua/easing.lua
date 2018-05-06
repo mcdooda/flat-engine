@@ -25,6 +25,10 @@ local easing = {
         end
     end,
 
+    lerp = function(x, a, b, f)
+        return a * f(1 - x) + b * f(x)
+    end,
+
     linear = function(t)
         return t
     end,
