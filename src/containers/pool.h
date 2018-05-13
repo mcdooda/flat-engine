@@ -2,6 +2,7 @@
 #define FLAT_CONTAINERS_POOL_H
 
 #include <array>
+#include "../memory/memory.h"
 #include "../debug/assert.h"
 
 namespace flat

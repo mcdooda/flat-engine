@@ -26,7 +26,7 @@ using LuaWidgetFactory = flat::lua::SharedCppReference<WidgetFactory>;
 
 static char widgetFactoryRegistryIndex = 'W';
 
-int open(flat::Flat& flat, flat::lua::Lua& lua)
+int open(Flat& flat, flat::lua::Lua& lua)
 {
 	lua_State* L = lua.state;
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);

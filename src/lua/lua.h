@@ -6,8 +6,11 @@
 #include <utility>
 #include <vector>
 #include <lua5.3/lua.hpp>
+
 #include "debug.h"
 #include "types.h"
+
+#include "timer/timercontainer.h"
 
 namespace flat
 {
@@ -32,6 +35,8 @@ class Lua
 		Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath);
 		~Lua();
 
+		void endFrame();
+
 		void reset(Flat& flat);
 
 		void doFile(const std::string& fileName);
@@ -53,6 +58,8 @@ class Lua
 		template <class T, typename... Args>
 		int protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args);
 
+		std::shared_ptr<timer::TimerContainer> newTimerContainer(const std::shared_ptr<time::Clock>& clock);
+
 	private:
 		void close(lua_State* L);
 
@@ -68,15 +75,20 @@ class Lua
 		static int l_flat_assetPath(lua_State* L);
 		void openAssetPath(lua_State* L);
 
+		void updateTimerContainers();
+
 	public:
 		lua_State* state;
+		std::shared_ptr<timer::TimerContainer> defaultTimerContainer;
 
 	private:
 		std::string m_luaPath;
 		std::string m_assetsPath;
 
-		int m_nextTypeIndex;
+		std::vector<std::weak_ptr<timer::TimerContainer>> m_timerContainers;
+
 		std::vector<std::string> m_typeIndexToName;
+		int m_nextTypeIndex;
 };
 
 void close(lua_State* L);

@@ -4,6 +4,7 @@
 #include "lua.h"
 #include "memorysnapshot.h"
 #include "types.h"
+#include "timer/lua/timer.h"
 
 #include "../flat.h"
 #include "../flat/game.h"
@@ -37,6 +38,11 @@ Lua::Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath) 
 Lua::~Lua()
 {
 	close(state);
+}
+
+void Lua::endFrame()
+{
+	updateTimerContainers();
 }
 
 void Lua::reset(Flat& flat)
@@ -81,6 +87,7 @@ void Lua::reset(Flat& flat)
 
 		types::open(L);
 
+		timer::lua::open(*this);
 		time::lua::open(L);
 		input::lua::mouse::open(L);
 		video::lua::image::open(L);
@@ -101,6 +108,8 @@ void Lua::reset(Flat& flat)
 		lua_pushstring(L, "init.lua");
 		lua_call(L, 1, 0);
 	}
+
+	defaultTimerContainer = newTimerContainer(flat.time->defaultClock);
 }
 
 void Lua::doFile(const std::string& fileName)
@@ -131,6 +140,13 @@ const char* Lua::getTypeName(int type) const
 void Lua::collectGarbage() const
 {
 	lua_gc(state, LUA_GCCOLLECT, 0);
+}
+
+std::shared_ptr<timer::TimerContainer> Lua::newTimerContainer(const std::shared_ptr<time::Clock>& clock)
+{
+	std::shared_ptr<timer::TimerContainer> timerContainer = std::make_shared<timer::TimerContainer>(clock);
+	m_timerContainers.emplace_back(timerContainer);
+	return timerContainer;
 }
 
 void Lua::close(lua_State* L)
@@ -237,6 +253,24 @@ void Lua::openAssetPath(lua_State * L)
 	lua_pushcclosure(L, l_flat_assetPath, 1);
 	lua_setfield(L, -2, "assetPath");
 	lua_pop(L, 1);
+}
+
+void Lua::updateTimerContainers()
+{
+	for (std::vector<std::weak_ptr<timer::TimerContainer>>::iterator it = m_timerContainers.begin(); it != m_timerContainers.end(); )
+	{
+		std::weak_ptr<timer::TimerContainer>& timerContainerWeakPtr = *it;
+		if (timerContainerWeakPtr.expired())
+		{
+			it = m_timerContainers.erase(it);
+		}
+		else
+		{
+			timer::TimerContainer* timerContainer = timerContainerWeakPtr.lock().get();
+			timerContainer->updateTimers(state);
+			++it;
+		}
+	}
 }
 
 void doFile(lua_State* L, const std::string& fileName)

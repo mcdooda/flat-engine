@@ -12,6 +12,8 @@ Time::Time()
 {
 	m_frameDuration = 0.f;
 	setPreferedFrameRate(600.f);
+
+	defaultClock = newClock();
 }
 
 void Time::beginFrame()

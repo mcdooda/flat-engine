@@ -82,7 +82,8 @@ void Game::loop()
 		running = !input->window->isClosed() && !m_stop;
 		
 		video->endFrame();
-		
+		lua->endFrame();
+
 		time->endFrame();
 	}
 }

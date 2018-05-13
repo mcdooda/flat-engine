@@ -29,7 +29,7 @@ class WidgetFactory;
 namespace lua
 {
 
-int open(flat::Flat& flat, flat::lua::Lua& lua);
+int open(Flat& flat, flat::lua::Lua& lua);
 int close(lua_State* L);
 
 // Widget methods

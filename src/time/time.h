@@ -25,6 +25,9 @@ class Time final
 
 		std::shared_ptr<Clock> newClock();
 
+	public:
+		std::shared_ptr<Clock> defaultClock;
+
 	private:
 		void updateClocks();
 
