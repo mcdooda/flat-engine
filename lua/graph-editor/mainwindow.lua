@@ -329,7 +329,6 @@ function MainWindow:drawLinks(delayToNextFrame)
     end
 
     if delayToNextFrame then
-        -- TODO: Timer comes from CG!
         local timer = flat.Timer()
         timer:onEnd(draw)
         timer:start(0.01)

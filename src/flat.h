@@ -49,6 +49,7 @@
 #include "lua/slotproxy.h"
 #include "lua/table.h"
 #include "lua/thread.h"
+#include "lua/timer/lua/timer.h"
 
 // render
 #include "render/animatedsprite.h"
