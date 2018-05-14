@@ -28,20 +28,19 @@ int open(Lua& lua)
 		
 		{nullptr, nullptr}
 	};
-	lua.registerClass<LuaTimer>("CG.Timer", Timer_lib_m);
+	lua.registerClass<LuaTimer>("flat.Timer", Timer_lib_m);
 	
-	static const luaL_Reg Timer_lib_s[] = {
-		{"new", l_Timer_new},
-		
-		{nullptr, nullptr}
-	};
-	luaL_newlib(L, Timer_lib_s);
-	lua_setglobal(L, "Timer");
+	// constructor: flat.Timer()
+	lua_getglobal(L, "flat");
+	lua_pushcfunction(L, l_Timer);
+	lua_setfield(L, -2, "Timer");
+
+	lua_pop(L, 1);
 	
 	return 0;
 }
 
-int l_Timer_new(lua_State* L)
+int l_Timer(lua_State* L)
 {
 	TimerContainer* timerContainer = flat::lua::getFlat(L).lua->defaultTimerContainer.get();
 	pushTimer(L, timerContainer->add());

@@ -330,7 +330,7 @@ function MainWindow:drawLinks(delayToNextFrame)
 
     if delayToNextFrame then
         -- TODO: Timer comes from CG!
-        local timer = Timer.new()
+        local timer = flat.Timer()
         timer:onEnd(draw)
         timer:start(0.01)
     else

@@ -9,7 +9,7 @@ local function task(f)
     return function()
         local co = cocreate(f)
         local function fakeThread()
-            local timer = Timer.new()
+            local timer = flat.Timer()
             timer:onEnd(function()
                 assert(coresume(co))
                 if costatus(co) ~= 'dead' then

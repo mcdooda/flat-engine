@@ -135,7 +135,7 @@ function Window:build(parent)
                         Mouse.setCursor(Mouse.Cursor.SIZENWSE)
                         initialWindowWidth, initialWindowHeight = window:getSize()
                         initialMouseX, initialMouseY = Mouse.getPosition()
-                        resizeTimer = Timer.new()
+                        resizeTimer = flat.Timer()
                         resizeTimer:onEnd(resize)
                         resizeTimer:start(0, true)
                     end
