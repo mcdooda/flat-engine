@@ -49,6 +49,8 @@ void Lua::reset(Flat& flat)
 {
 	if (state != nullptr)
 	{
+		defaultTimerContainer.reset();
+
 		close(state);
 	}
 
