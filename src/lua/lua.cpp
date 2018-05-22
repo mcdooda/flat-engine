@@ -14,6 +14,7 @@
 #include "../sharp/ui/lua/ui.h"
 #include "../misc/lua/vector2.h"
 #include "../misc/lua/vector3.h"
+#include "../profiler/lua/profiler.h"
 
 namespace flat
 {
@@ -96,6 +97,8 @@ void Lua::reset(Flat& flat)
 		sharp::ui::lua::open(flat, *this);
 
 		snapshot::open(*this);
+		profiler::lua::open(L);
+
 		lua::openVector2(*this);
 		lua::openVector3(*this);
 

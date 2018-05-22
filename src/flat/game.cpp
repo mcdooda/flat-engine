@@ -8,12 +8,12 @@ Game::Game(const std::vector<std::string>& args) : Super("flat-engine/lua/", "fl
 	m_args(args),
 	m_stop(false)
 {
-	
+	FLAT_INIT_PROFILER();
 }
 
 Game::~Game()
 {
-	
+	FLAT_DEINIT_PROFILER();
 }
 
 void Game::init()
@@ -74,11 +74,17 @@ void Game::loop()
 	bool running = true;
 	while (running)
 	{
+		FLAT_PROFILE("Frame");
+
 		time->beginFrame();
 		
 		input->pollEvents();
 		
-		getStateMachine().update();
+		{
+			FLAT_PROFILE("Game state update");
+			getStateMachine().update();
+		}
+
 		running = !input->window->isClosed() && !m_stop;
 		
 		video->endFrame();

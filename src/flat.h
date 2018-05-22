@@ -84,6 +84,10 @@
 // debug
 #include "debug/helpers.h"
 
+// profiler
+#include "profiler/profiler.h"
+#include "profiler/profilersection.h"
+
 namespace flat
 {
 
