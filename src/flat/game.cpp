@@ -75,9 +75,9 @@ void Game::loop()
 	while (running)
 	{
 		FLAT_PROFILE("Frame");
-
-		time->beginFrame();
 		
+		time->beginFrame();
+
 		input->pollEvents();
 		
 		{
@@ -85,12 +85,19 @@ void Game::loop()
 			getStateMachine().update();
 		}
 
-		running = !input->window->isClosed() && !m_stop;
-		
-		video->endFrame();
-		lua->endFrame();
+		{
+			FLAT_PROFILE("Lua end frame");
+			lua->endFrame();
+		}
+
+		{
+			FLAT_PROFILE("Video end frame");
+			video->endFrame();
+		}
 
 		time->endFrame();
+
+		running = !input->window->isClosed() && !m_stop;
 	}
 }
 

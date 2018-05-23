@@ -21,3 +21,36 @@ body {
     font-size: 1.5em;
     text-align: center;
 }
+
+#content {
+    padding: 0;
+    margin: 0;
+    display: block;
+    background-color: #CCCCCC;
+    overflow: auto;
+    width: 100%;
+    position: relative;
+}
+
+#content li {
+    border: 1px solid black;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    display: block;
+    position: absolute;
+    top: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 20px;
+}
+
+#content .section-0 { background-color: #16a085; }
+#content .section-1 { background-color: #27ae60; }
+#content .section-2 { background-color: #2980b9; }
+#content .section-3 { background-color: #8e44ad; }
+#content .section-4 { background-color: #f39c12; }
+#content .section-5 { background-color: #d35400; }
+#content .section-6 { background-color: #c0392b; }
+#content .section-7 { background-color: #bdc3c7; }
