@@ -11,28 +11,15 @@ class BinaryTreeView {
         this.startTime = startTime;
         this.endTime = endTime;
         this.duration = endTime - startTime;
-        this.depth = 0;
-        this.maxTreeDepth = 5;
+        this.sectionsDepth = 0;
+        this.maxTreeDepth = 10;
     }
 
-    insertSection(sectionId, sectionName, startTime, endTime, depth) {
-        var item = document.createElement('li');
-        item.classList.add('section');
-        item.classList.add('section-' + sectionId);
-        item.setAttribute('data-start-time', startTime);
-        item.setAttribute('data-end-time', endTime);
-        item.setAttribute('data-depth', depth);
-        item.style.top = (depth * 20) + 'px';
-        var text = document.createElement('span');
-        var textContent = sectionName + ': ' + (endTime - startTime) / 1000000 + 'ms';
-        text.textContent = textContent;
-        text.setAttribute('title', textContent);
-        item.appendChild(text);
-
-        if (depth > this.depth)
-            this.depth = depth;
-
-        this.insertItem(this.tree, item, startTime, endTime, 1);
+    insertSection(section, startTime, endTime, sectionDepth) {
+        if (sectionDepth > this.sectionsDepth) {
+            this.sectionsDepth = sectionDepth;
+        }
+        this.insertItem(this.tree, section, startTime, endTime, 1);
     }
 
     insertItem(node, item, startTime, endTime, treeDepth) {
