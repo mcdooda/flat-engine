@@ -27,7 +27,8 @@ body {
     margin: 0;
     display: block;
     background-color: #CCCCCC;
-    overflow: auto;
+    overflow-x: scroll;
+    overflow-y: hidden;
     width: 100%;
     position: relative;
 }
@@ -44,6 +45,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     height: 20px;
+    cursor: default;
 }
 
 #content .section-0 { background-color: #16a085; }

@@ -7,9 +7,6 @@ var BinaryReader = {
     },
 
     fromString: function(string) {
-        var profiledEvents = [];
-        var sectionNames = [];
-
         var byteIndex = 0;
 
         function readNBytes(n) {
@@ -52,7 +49,7 @@ var BinaryReader = {
             }
         };
 
-        function readSectionNames() {
+        function readSectionNames(sectionNames) {
             while (true) {
                 var length = readNBytes(1);
                 if (length === '') {
@@ -66,11 +63,25 @@ var BinaryReader = {
 
         var eventsRoot = { events: [] };
         readEvents(eventsRoot);
-        readSectionNames();
+
+        var sectionNames = [];
+        readSectionNames(sectionNames);
+
+        var profiledEvents = eventsRoot.events;
+        var startTime = profiledEvents[0].startTime;
+        var i = profiledEvents.length - 1;
+        var endTime = profiledEvents[i].endTime;
+        --i;
+        while (i >= 0 && profiledEvents[i].endTime > endTime) {
+            endTime = profiledEvents[i].endTime;
+            --i;
+        }
 
         return {
-            profiledEvents: eventsRoot.events,
-            sectionNames:   sectionNames
+            profiledEvents: profiledEvents,
+            sectionNames:   sectionNames,
+            startTime:      startTime,
+            endTime:        endTime
         };
     }
 };
