@@ -69,13 +69,7 @@ var BinaryReader = {
 
         var profiledEvents = eventsRoot.events;
         var startTime = profiledEvents[0].startTime;
-        var i = profiledEvents.length - 1;
-        var endTime = profiledEvents[i].endTime;
-        --i;
-        while (i >= 0 && profiledEvents[i].endTime > endTime) {
-            endTime = profiledEvents[i].endTime;
-            --i;
-        }
+        var endTime = profiledEvents[profiledEvents.length - 1].endTime;
 
         return {
             profiledEvents: profiledEvents,
