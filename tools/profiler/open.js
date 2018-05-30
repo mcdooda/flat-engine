@@ -1,10 +1,14 @@
 window.onload = function() {
-    var pick = document.getElementById('pick');
-    var file = document.getElementById('file');
-    var content = document.getElementById('content');
-    var timelineCursor = document.getElementById('timeline-cursor');
+    var pickElement = document.getElementById('pick');
+    var fileElement = document.getElementById('file');
+    var profileSessionElement = document.getElementById('profile-session');
+    var timelineElement = document.getElementById('timeline');
+    var timelineCursorElement = document.getElementById('timeline-cursor');
+    var sectionsStatsElement = document.querySelector('#sections-stats tbody');
 
+    var profileSession;
     var binaryTreeView;
+    var stats;
 
     var currentVisibleRange = {
         startTime: Number.MAX_SAFE_INTEGER,
@@ -14,17 +18,18 @@ window.onload = function() {
 
     function addSectionsToTree(depth, events, sectionNames) {
         for (var event of events) {
-            var section = document.createElement('li');
-            section.classList.add('section');
-            section.classList.add('section-' + event.sectionId);
-            section.setAttribute('data-start-time', event.startTime);
-            section.setAttribute('data-end-time', event.endTime);
-            section.setAttribute('data-depth', depth);
-            section.style.top = (depth * 20) + 'px';
-            section.setAttribute('title', sectionNames[event.sectionId] + ': ' + (event.endTime - event.startTime) / 1000000 + 'ms');
-            section.addEventListener('dblclick', (function(section) { return function() { zoomToSection(section) }; })(section));
+            var sectionElement = document.createElement('li');
+            sectionElement.classList.add('section');
+            sectionElement.classList.add('section-' + (event.sectionId % 20));
+            sectionElement.setAttribute('data-start-time', event.startTime);
+            sectionElement.setAttribute('data-end-time', event.endTime);
+            sectionElement.setAttribute('data-depth', depth);
+            sectionElement.style.top = (depth * 20) + 'px';
+            sectionElement.setAttribute('title', sectionNames[event.sectionId] + ': ' + (event.endTime - event.startTime) / 1000000 + 'ms');
+            sectionElement.addEventListener('dblclick', (function(sectionElement) { return function() { zoomToSection(sectionElement) }; })(sectionElement));
 
-            binaryTreeView.insertSection(section, event.startTime, event.endTime, depth);
+            binaryTreeView.insertSection(sectionElement, event.sectionId, event.startTime, event.endTime, depth);
+            stats.insertSection(sectionElement, event.sectionId, event.startTime, event.endTime);
             addSectionsToTree(depth + 1, event.events, sectionNames);
         }
     }
@@ -36,7 +41,7 @@ window.onload = function() {
         currentVisibleRange.duration = duration;
 
         var newVisibleSections = binaryTreeView.getSectionsInRange(startTime, endTime);
-        var currentVisibleSections = content.querySelectorAll('.section');
+        var currentVisibleSections = timelineElement.querySelectorAll('.section');
         for (var section of currentVisibleSections) {
             if (!newVisibleSections.has(section)) {
                 section.remove();
@@ -46,7 +51,7 @@ window.onload = function() {
         //console.log('newVisibleSections', newVisibleSections);
         for (var section of newVisibleSections) {
             if (!section.parentNode) {
-                content.appendChild(section);
+                timelineElement.appendChild(section);
             }
             var sectionStartTime = parseInt(section.getAttribute('data-start-time'));
             var sectionEndTime = parseInt(section.getAttribute('data-end-time'));
@@ -87,19 +92,19 @@ window.onload = function() {
         }, stepDuration);
     }
 
-    function zoomToSection(section) {
-        var startTime = parseInt(section.getAttribute('data-start-time'));
-        var endTime = parseInt(section.getAttribute('data-end-time'));
+    function zoomToSection(sectionElement) {
+        var startTime = parseInt(sectionElement.getAttribute('data-start-time'));
+        var endTime = parseInt(sectionElement.getAttribute('data-end-time'));
         zoomToVisibleRange(startTime, endTime);
     }
 
     function getCursorTimelinePosition(e) {
-        return currentVisibleRange.startTime + currentVisibleRange.duration * ((e.pageX - content.offsetLeft) / content.offsetWidth);
+        return currentVisibleRange.startTime + currentVisibleRange.duration * ((e.pageX - timelineElement.offsetLeft) / timelineElement.offsetWidth);
     }
 
-    function initContentElement() {
-        content.style.height = ((binaryTreeView.sectionsDepth + 1) * 20) + 'px';
-        content.addEventListener('wheel', function(e) {
+    function initTimeline() {
+        timelineElement.style.height = ((binaryTreeView.sectionsDepth + 1) * 20) + 'px';
+        timelineElement.addEventListener('wheel', function(e) {
             var cursorTimelinePosition = getCursorTimelinePosition(e);
             var deltaY = 0;
             if (e.wheelDelta) {
@@ -118,13 +123,13 @@ window.onload = function() {
         var selectionStart;
         var selectionStartTimelinePosition;
         var selectionEndTimelinePosition;
-        content.addEventListener('mousedown', function(e) {
+        timelineElement.addEventListener('mousedown', function(e) {
             isSelecting = true;
             selectionStartTimelinePosition = getCursorTimelinePosition(e);
-            selectionStart = parseInt(timelineCursor.style.left);
-            timelineCursor.classList.add('selecting');
+            selectionStart = parseInt(timelineCursorElement.style.left);
+            timelineCursorElement.classList.add('selecting');
         });
-        content.addEventListener('mouseup', function(e) {
+        timelineElement.addEventListener('mouseup', function(e) {
             selectionEndTimelinePosition = getCursorTimelinePosition(e);
             if (selectionStartTimelinePosition > selectionEndTimelinePosition) {
                 var tmp = selectionStartTimelinePosition;
@@ -134,49 +139,91 @@ window.onload = function() {
             if (selectionStartTimelinePosition < selectionEndTimelinePosition) {
                 zoomToVisibleRange(selectionStartTimelinePosition, selectionEndTimelinePosition);
             }
-            timelineCursor.classList.remove('selecting');
-            timelineCursor.style.width = '1px';
+            timelineCursorElement.classList.remove('selecting');
+            timelineCursorElement.style.width = '1px';
             isSelecting = false;
-            timelineCursor.style.left = (e.pageX - content.offsetLeft + content.scrollLeft - 2) + 'px';
+            timelineCursorElement.style.left = (e.pageX - timelineElement.offsetLeft + timelineElement.scrollLeft - 2) + 'px';
         });
-        content.addEventListener('mouseenter', function(e) {
-            timelineCursor.classList.remove('hidden');
+        timelineElement.addEventListener('mouseenter', function(e) {
+            timelineCursorElement.classList.remove('hidden');
         });
-        content.addEventListener('mouseleave', function(e) {
-            timelineCursor.classList.add('hidden');
+        timelineElement.addEventListener('mouseleave', function(e) {
+            timelineCursorElement.classList.add('hidden');
         });
-        content.addEventListener('mousemove', function(e) {
+        timelineElement.addEventListener('mousemove', function(e) {
             if (isSelecting) {
-                var position = e.pageX - content.offsetLeft + content.scrollLeft - 2;
+                var position = e.pageX - timelineElement.offsetLeft + timelineElement.scrollLeft - 2;
                 var left = Math.min(position, selectionStart);
                 var right = Math.max(position, selectionStart);
-                timelineCursor.style.left = left + 'px';
-                timelineCursor.style.width = (right - left) + 'px';
+                timelineCursorElement.style.left = left + 'px';
+                timelineCursorElement.style.width = (right - left) + 'px';
             } else {
-                timelineCursor.style.left = (e.pageX - content.offsetLeft + content.scrollLeft - 2) + 'px';
+                timelineCursorElement.style.left = (e.pageX - timelineElement.offsetLeft + timelineElement.scrollLeft - 2) + 'px';
             }
         });
-        content.classList.remove('hidden');
     }
 
-    function showProfileSession(profileSession) {
+    function roundToMs(ns) {
+        return Math.round(ns / 1000) / 1000;
+    }
+
+    function initStats() {
+        var numSections = Object.keys(stats.sections).length;
+        for (var sectionId = 0; sectionId < numSections; ++sectionId) {
+            var sectionStats = stats.sections[sectionId];
+
+            var sectionStatElement = document.createElement('tr');
+            sectionStatElement.classList.add('section-' + (sectionId % 20));
+
+            var sectionNameElement = document.createElement('td');
+            sectionNameElement.textContent = profileSession.sectionNames[sectionId];
+            sectionStatElement.appendChild(sectionNameElement);
+
+            var sectionAverageElement = document.createElement('td');
+            sectionAverageElement.textContent = roundToMs(sectionStats.averageDuration) + 'ms';
+            sectionStatElement.appendChild(sectionAverageElement);
+
+            var sectionWorstElement = document.createElement('td');
+            sectionWorstElement.classList.add('worst-section');
+            sectionWorstElement.textContent = roundToMs(sectionStats.worstDuration) + 'ms';
+            (function(worstTimelineSectionElement) {
+                sectionWorstElement.addEventListener('click', function() {
+                    zoomToSection(worstTimelineSectionElement);
+                });
+            })(sectionStats.worstElement);
+            sectionStatElement.appendChild(sectionWorstElement);
+            
+            sectionsStatsElement.appendChild(sectionStatElement);
+        }
+    }
+
+    function initProfileSession() {
+        initTimeline();
+        initStats();
+        profileSessionElement.classList.remove('hidden');
+    }
+
+    function showProfileSession() {
         binaryTreeView = new BinaryTreeView(profileSession.startTime, profileSession.endTime);
+        stats = new Stats();
         addSectionsToTree(0, profileSession.profiledEvents, profileSession.sectionNames);
         //console.log('binaryTreeView', binaryTreeView);
-        initContentElement();
-        setVisibleRange(profileSession.startTime, profileSession.endTime);
+        initProfileSession();
+        var maxInitVisibleRange = 1000000000;
+        var endTime = Math.min(profileSession.endTime, profileSession.startTime + maxInitVisibleRange);
+        setVisibleRange(profileSession.startTime, endTime);
     }
 
-    file.addEventListener('change', function(event) {
+    fileElement.addEventListener('change', function(event) {
         var reader = new FileReader();
         reader.onloadend = function(event) {
             if (event.target.readyState == FileReader.DONE) {
-                var profileSession = BinaryReader.fromString(event.target.result);
+                profileSession = BinaryReader.fromString(event.target.result);
                 //console.log('profileSession', profileSession);
-                pick.classList.add('hidden');
-                showProfileSession(profileSession);
+                pickElement.classList.add('hidden');
+                showProfileSession();
             }
         }
-        reader.readAsBinaryString(file.files[0]);
+        reader.readAsBinaryString(fileElement.files[0]);
     });
 }

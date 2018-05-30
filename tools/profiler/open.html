@@ -2,8 +2,10 @@
     <head>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="open.css" type="text/css" />
+        <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
         <script src="binaryreader.js"></script>
         <script src="binarytreeview.js"></script>
+        <script src="stats.js"></script>
         <script src="open.js"></script>
     </head>
 
@@ -11,8 +13,28 @@
         <div id="pick">
             <input type="file" id="file" name="file" />
         </div>
-        <ul id="content" class="hidden">
-            <li id="timeline-cursor" class="hidden"></li>
-        </ul>
+        <div id="profile-session" class="hidden">
+            <ul id="timeline">
+                <li id="timeline-cursor" class="hidden"></li>
+            </ul>
+            <h2>Sections Stats</h2>
+            <table id="sections-stats">
+                <thead>
+                    <tr>
+                        <th>Section</th>
+                        <th>Average</th>
+                        <th>Worst</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Section</th>
+                        <th>Average</th>
+                        <th>Worst</th>
+                    </tr>
+                </tfoot>
+                <tbody></tbody>
+            </table>
+        </div>
     </body>
 </html>

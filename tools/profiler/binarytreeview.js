@@ -15,16 +15,17 @@ class BinaryTreeView {
         this.maxTreeDepth = 10;
     }
 
-    insertSection(section, startTime, endTime, sectionDepth) {
+    insertSection(sectionElement, sectionId, startTime, endTime, sectionDepth) {
         if (sectionDepth > this.sectionsDepth) {
             this.sectionsDepth = sectionDepth;
         }
-        this.insertItem(this.tree, section, startTime, endTime, 1);
+
+        this.insertItem(this.tree, sectionElement, startTime, endTime, 1);
     }
 
-    insertItem(node, item, startTime, endTime, treeDepth) {
+    insertItem(node, sectionElement, startTime, endTime, treeDepth) {
         if (treeDepth == this.maxTreeDepth) {
-            node.items.push(item);
+            node.items.push(sectionElement);
             return;
         }
 
@@ -39,7 +40,7 @@ class BinaryTreeView {
                     right: null
                 }
             }
-            this.insertItem(node.left, item, startTime, endTime, treeDepth + 1);
+            this.insertItem(node.left, sectionElement, startTime, endTime, treeDepth + 1);
         } else if (middle <= startTime && endTime <= node.endTime) {
             if (!node.right) {
                 node.right = {
@@ -50,9 +51,9 @@ class BinaryTreeView {
                     right: null
                 }
             }
-            this.insertItem(node.right, item, startTime, endTime, treeDepth + 1);
+            this.insertItem(node.right, sectionElement, startTime, endTime, treeDepth + 1);
         } else {
-            node.items.push(item);
+            node.items.push(sectionElement);
         }
     }
 
@@ -68,11 +69,11 @@ class BinaryTreeView {
 
     findSectionsInRange(result, node, startTime, endTime) {
         if (this.rangesOverlap(node.startTime, node.endTime, startTime, endTime)) {
-            for (var item of node.items) {
-                var itemStartTime = parseInt(item.getAttribute('data-start-time'));
-                var itemEndTime = parseInt(item.getAttribute('data-end-time'));
+            for (var sectionElement of node.items) {
+                var itemStartTime = parseInt(sectionElement.getAttribute('data-start-time'));
+                var itemEndTime = parseInt(sectionElement.getAttribute('data-end-time'));
                 if (this.rangesOverlap(startTime, endTime, itemStartTime, itemEndTime)) {
-                    result.add(item);
+                    result.add(sectionElement);
                 }
             }
 
