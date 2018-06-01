@@ -28,24 +28,27 @@ var BinaryReader = {
         }
 
         function readEvents(parent) {
-            var code = readNBytes(1);
-            if (code == BinaryReader.Codes.PUSH_SECTION) {
-                var event = { events: [] };
-                parent.events.push(event);
-                var sectionId = readNBytes(2);
-                var startTime = readNBytes(8);
-                readEvents(event);
-                var popCode = readNBytes(1);
-                console.assert(popCode == BinaryReader.Codes.POP_SECTION);
-                var endTime = readNBytes(8);
-                event.sectionId = binaryStringToNumber(sectionId);
-                event.startTime = binaryStringToNumber(startTime);
-                event.endTime   = binaryStringToNumber(endTime);
-                readEvents(parent);
-            } else if (code == BinaryReader.Codes.POP_SECTION) {
-                pushBackNBytes(1);
-            } else {
-                console.assert(code == BinaryReader.Codes.SECTION_NAMES);
+            while (true) {
+                var code = readNBytes(1);
+                if (code == BinaryReader.Codes.PUSH_SECTION) {
+                    var event = { events: [] };
+                    parent.events.push(event);
+                    var sectionId = readNBytes(2);
+                    var startTime = readNBytes(8);
+                    readEvents(event);
+                    var popCode = readNBytes(1);
+                    console.assert(popCode == BinaryReader.Codes.POP_SECTION);
+                    var endTime = readNBytes(8);
+                    event.sectionId = binaryStringToNumber(sectionId);
+                    event.startTime = binaryStringToNumber(startTime);
+                    event.endTime   = binaryStringToNumber(endTime);
+                } else if (code == BinaryReader.Codes.POP_SECTION) {
+                    pushBackNBytes(1);
+                    break;
+                } else {
+                    console.assert(code == BinaryReader.Codes.SECTION_NAMES);
+                    break;
+                }
             }
         };
 
