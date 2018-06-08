@@ -5,6 +5,7 @@ window.onload = function() {
     var timelineElement = document.getElementById('timeline');
     var timelineCursorElement = document.getElementById('timeline-cursor');
     var sectionsStatsElement = document.querySelector('#sections-stats tbody');
+    var sectionsStatsElement = document.querySelector('#sections-stats tbody');
 
     var profileSession;
     var binaryTreeView;
@@ -215,15 +216,17 @@ window.onload = function() {
     }
 
     fileElement.addEventListener('change', function(event) {
-        var reader = new FileReader();
-        reader.onloadend = function(event) {
-            if (event.target.readyState == FileReader.DONE) {
-                profileSession = BinaryReader.fromString(event.target.result);
-                //console.log('profileSession', profileSession);
+        var worker = new Worker('sessionloader.js');
+        worker.onmessage = function(message) {
+            if (message.data.profileSession) {
                 pickElement.classList.add('hidden');
+                //console.log('loadedProfileSession', message.data.profileSession);
+                profileSession = message.data.profileSession;
                 showProfileSession();
+            } else if (message.data.loading) {
+                console.log(message.data.loading);
             }
-        }
-        reader.readAsBinaryString(fileElement.files[0]);
+        };
+        worker.postMessage(fileElement.files[0]);
     });
 }

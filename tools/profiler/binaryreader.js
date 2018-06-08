@@ -7,11 +7,17 @@ var BinaryReader = {
     },
 
     fromString: function(string) {
+        const POST_MESSAGE_INTERVAL = 500000;
         var byteIndex = 0;
+        var nextByteProgressionNotification = byteIndex + POST_MESSAGE_INTERVAL;
 
         function readNBytes(n) {
             var c = string.slice(byteIndex, byteIndex + n);
             byteIndex += n;
+            if (byteIndex > nextByteProgressionNotification) {
+                postMessage({ loading: byteIndex / string.length });
+                nextByteProgressionNotification += POST_MESSAGE_INTERVAL;
+            }
             return c;
         }
 
