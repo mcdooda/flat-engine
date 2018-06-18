@@ -4,6 +4,7 @@
 #include <lua5.3/lua.hpp>
 #include "debug.h"
 #include "../debug/helpers.h"
+#include "../profiler/profilersection.h"
 
 namespace flat
 {
@@ -90,6 +91,8 @@ class LuaReference
 		template<typename PushArgumentsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
 		void callFunction(PushArgumentsCallback pushArgumentsCallback) const
 		{
+			FLAT_PROFILE("Call lua function (no result)");
+
 			FLAT_ASSERT(m_luaState != nullptr);
 			lua_State* L = m_luaState;
 			{
@@ -123,6 +126,8 @@ class LuaReference
 		template<typename PushArgumentsCallback, typename HandleResultsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
 		void callFunction(PushArgumentsCallback pushArgumentsCallback, int numResults, HandleResultsCallback handleResultsCallback) const
 		{
+			FLAT_PROFILE("Call lua function");
+
 			FLAT_ASSERT(m_luaState != nullptr);
 			lua_State* L = m_luaState;
 			{

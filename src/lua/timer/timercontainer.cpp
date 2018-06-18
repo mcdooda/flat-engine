@@ -4,6 +4,7 @@
 #include "timer.h"
 #include "lua/timer.h"
 #include "../../time/clock.h"
+#include "../../profiler/profilersection.h"
 
 namespace flat
 {
@@ -65,6 +66,8 @@ bool TimerContainer::stop(Timer* timer)
 
 void TimerContainer::updateTimers(lua_State* L)
 {
+	FLAT_PROFILE("Timer container update");
+
 	FLAT_ASSERT(m_clock != nullptr);
 	const float time = m_clock->getTime();
 	size_t size = m_timers.size();
@@ -96,7 +99,7 @@ void TimerContainer::updateTimers(lua_State* L)
 		}
 		else
 		{
-			it++;
+			++it;
 		}
 	}
 
@@ -195,6 +198,8 @@ bool TimerContainer::compareTimersByTimeout(const Timer* a, const Timer* b)
 
 void TimerContainer::callTimerUpdate(lua_State* L, Timer* timer)
 {
+	FLAT_PROFILE("Timer update");
+
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	const flat::lua::SharedLuaReference<LUA_TFUNCTION>& onUpdate = timer->getOnUpdate();
 	if (!onUpdate.isEmpty())
@@ -209,6 +214,8 @@ void TimerContainer::callTimerUpdate(lua_State* L, Timer* timer)
 
 void TimerContainer::callTimerEnd(lua_State* L, Timer* timer)
 {
+	FLAT_PROFILE("Timer end");
+
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	const flat::lua::SharedLuaReference<LUA_TFUNCTION>& onEnd = timer->getOnEnd();
 	if (!onEnd.isEmpty())

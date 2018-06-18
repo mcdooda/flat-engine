@@ -1,6 +1,7 @@
 window.onload = function() {
     var pickElement = document.getElementById('pick');
     var fileElement = document.getElementById('file');
+    var fileLoadingElement = document.getElementById('file-loading');
     var profileSessionElement = document.getElementById('profile-session');
     var timelineElement = document.getElementById('timeline');
     var timelineCursorElement = document.getElementById('timeline-cursor');
@@ -118,6 +119,8 @@ window.onload = function() {
             var newEndTime = cursorTimelinePosition - (cursorTimelinePosition - currentVisibleRange.endTime) * zoom;
             //console.log(currentVisibleRange, newStartTime, newEndTime);
             setVisibleRange(newStartTime, newEndTime);
+            e.preventDefault();
+            return false;
         });
 
         var isSelecting = false;
@@ -224,7 +227,8 @@ window.onload = function() {
                 profileSession = message.data.profileSession;
                 showProfileSession();
             } else if (message.data.loading) {
-                console.log(message.data.loading);
+                fileLoadingElement.style.display = 'block';
+                fileLoadingElement.style.width = (message.data.loading * 100) + '%';
             }
         };
         worker.postMessage(fileElement.files[0]);
