@@ -83,6 +83,11 @@ bool TextInputWidget::onMouseDown(Widget* widget, bool& eventHandled)
 	auto& mouse = m_flat.input->mouse;
 	const float mouseX = getRelativePosition(mouse->getPosition()).x;
 	moveCursorAt(getCursorIndexFromPosition(mouseX));
+	if (mouse->isJustDoubleClicked(M(LEFT)))
+	{
+		moveCursorAt(nextWordFrom(m_cursorIndex));
+		selectTo(previousWordFrom(m_cursorIndex));
+	}
 	return true;
 }
 
