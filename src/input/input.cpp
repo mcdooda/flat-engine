@@ -71,7 +71,8 @@ void Input::pushContext(const std::shared_ptr<context::InputContext>& inputConte
 
 void Input::popContext(const std::shared_ptr<context::InputContext>& inputContext)
 {
-	FLAT_ASSERT(inputContext == m_inputContexts.back().lock());
+	FLAT_ASSERT(inputContext != nullptr && inputContext == m_inputContexts.back().lock());
+	inputContext->clearAllEvents();
 	m_inputContexts.pop_back();
 	clearTopContext();
 	FLAT_ASSERT_MSG(!m_inputContexts.empty(), "Cannot pop the global input context!");
