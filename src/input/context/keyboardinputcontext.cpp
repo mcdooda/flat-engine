@@ -166,7 +166,7 @@ void KeyboardInputContext::setEnableTextInput(bool enable)
 	}
 }
 
-void KeyboardInputContext::copyStateFrom(const KeyboardInputContext & keyboardInputContext)
+void KeyboardInputContext::copyStateFrom(const KeyboardInputContext& keyboardInputContext)
 {
 	m_pressedKeys = keyboardInputContext.m_pressedKeys;
 	m_justPressedKeys = keyboardInputContext.m_justPressedKeys;
