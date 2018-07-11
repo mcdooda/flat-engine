@@ -37,6 +37,7 @@ class Game : public Flat, public state::Agent
 		template <class GameType>
 		static int run(int argc, char* argv[])
 		{
+			FLAT_INIT_PROFILER();
 			static_assert(std::is_base_of<Game, GameType>::value, "GameType must inherit from Game");
 			std::vector<std::string> args;
 			args.assign(argv, argv + argc);
@@ -44,6 +45,7 @@ class Game : public Flat, public state::Agent
 			game->init();
 			game->loop();
 			delete game;
+			FLAT_DEINIT_PROFILER();
 			return 0;
 		}
 		

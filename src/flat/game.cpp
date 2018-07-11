@@ -8,12 +8,12 @@ Game::Game(const std::vector<std::string>& args) : Super("flat-engine/lua/", "fl
 	m_args(args),
 	m_stop(false)
 {
-	FLAT_INIT_PROFILER();
+
 }
 
 Game::~Game()
 {
-	FLAT_DEINIT_PROFILER();
+
 }
 
 void Game::init()
