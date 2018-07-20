@@ -418,6 +418,7 @@ const char* codeToString(int code)
 	static const char* ok = "LUA_OK";
 	static const char* yield = "LUA_YIELD";
 	static const char* errRun = "LUA_ERRRUN";
+	static const char* errSyntax = "LUA_ERRSYNTAX";
 	static const char* errMem = "LUA_ERRMEM";
 	static const char* errErr = "LUA_ERRERR";
 	static const char* errGcMm = "LUA_ERRGCMM";
@@ -435,6 +436,10 @@ const char* codeToString(int code)
 			
 		case LUA_ERRRUN:
 			return errRun;
+			break;
+
+		case LUA_ERRSYNTAX:
+			return errSyntax;
 			break;
 			
 		case LUA_ERRMEM:
