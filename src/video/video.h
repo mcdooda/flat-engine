@@ -8,7 +8,7 @@
 #include "color.h"
 #include "filetexture.h"
 #include "font/font.h"
-#include "../resource/resourcemanager.h"
+#include "../resource/weakresourcemanager.h"
 
 namespace flat
 {
@@ -34,8 +34,8 @@ class Video
 		Window* window;
 		
 	private:
-		resource::ResourceManager<FileTexture, std::string> m_textureManager;
-		resource::ResourceManager<font::Font, std::string, int> m_fontManager;
+		resource::WeakResourceManager<FileTexture, std::string> m_textureManager;
+		resource::WeakResourceManager<font::Font, std::string, int> m_fontManager;
 };
 
 } // video

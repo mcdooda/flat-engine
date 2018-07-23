@@ -64,7 +64,8 @@
 #include "containers/dynamicpool.h"
 
 // resource
-#include "resource/resourcemanagertimer.h"
+#include "resource/sharedresourcemanager.h"
+#include "resource/weakresourcemanager.h"
 
 // sharp
 // ui

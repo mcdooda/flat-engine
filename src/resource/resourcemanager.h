@@ -9,29 +9,13 @@ namespace flat
 namespace resource
 {
 
-template <class T, typename... U>
+template <class T, template<typename> class CacheValueContainer, typename... U>
 class ResourceManager
 {
 	protected:
 		using CacheKeyType = std::tuple<U...>;
-		using CacheValueType = std::weak_ptr<const T>;
+		using CacheValueType = CacheValueContainer<const T>;
 		using CacheType = std::map<CacheKeyType, CacheValueType>;
-		
-	public:
-		std::shared_ptr<const T> getResource(const U&... initializers) const
-		{
-			CacheKeyType initializersTuple(initializers...);
-			typename CacheType::iterator it = m_loadedResources.find(initializersTuple);
-			if (it != m_loadedResources.end())
-				if (std::shared_ptr<const T> sharedResource = it->second.lock())
-					return sharedResource;
-	
-			const T* resource = new T(initializers...);
-			std::shared_ptr<const T> sharedResource;
-			sharedResource.reset(resource);
-			m_loadedResources[initializersTuple] = CacheValueType(sharedResource);
-			return sharedResource;
-		}
 
 	protected:
 		mutable CacheType m_loadedResources;
