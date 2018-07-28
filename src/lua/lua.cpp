@@ -50,8 +50,6 @@ void Lua::reset(Flat& flat)
 {
 	if (state != nullptr)
 	{
-		defaultTimerContainer.reset();
-
 		close(state);
 	}
 
@@ -156,6 +154,8 @@ std::shared_ptr<timer::TimerContainer> Lua::newTimerContainer(const std::shared_
 
 void Lua::close(lua_State* L)
 {
+	defaultTimerContainer.reset();
+
 	sharp::ui::lua::close(L);
 
 	lua_pushnil(L);
