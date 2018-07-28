@@ -356,7 +356,7 @@ void printStack(lua_State* L)
 	
 	for (int i = top; i >= 1; --i)
 	{
-		std::cout << "\t\t#" << i << " : ";
+		std::cout << "\t\t#" << i << "/-" << top - i + 1 << "\t : ";
 		printValue(L, i);
 		std::cout << std::endl;
 	}
