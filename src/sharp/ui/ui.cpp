@@ -12,6 +12,11 @@ namespace ui
 Ui::Ui(Flat& flat) :
 	factory(flat)
 {
+	reset();
+}
+
+void Ui::reset()
+{
 	root = factory.makeRoot();
 	setCursor(CURSOR(ARROW));
 	m_defaultCursor = m_cursor;
