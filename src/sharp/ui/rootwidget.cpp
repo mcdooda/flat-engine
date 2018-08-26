@@ -175,7 +175,8 @@ void RootWidget::updateInput(bool updateMouseOver)
 {
 	auto& mouse = m_flat.input->mouse;
 
-	if (updateMouseOver || mouse->justMoved())
+	const bool mouseMoved = mouse->justMoved();
+	if (updateMouseOver || mouseMoved)
 	{
 		Widget* mouseOverWidget = getMouseOverWidget(mouse->getPosition());
 		if (mouseOverWidget == this) // root
@@ -184,7 +185,8 @@ void RootWidget::updateInput(bool updateMouseOver)
 		}
 
 		Widget* previousMouseOverWidget = m_mouseOverWidget.lock().get();
-		if (mouseOverWidget != previousMouseOverWidget)
+		const bool mouseOverWidgetChanged = mouseOverWidget != previousMouseOverWidget;
+		if (mouseOverWidgetChanged)
 		{
 			handleMouseLeave(mouseOverWidget);
 			if (mouseOverWidget != nullptr)
@@ -198,7 +200,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 			handleMouseEnter(previousMouseOverWidget);
 		}
 
-		handleMouseMove();
+		handleMouseMove(mouseOverWidgetChanged || mouseMoved);
 	}
 
 	if (mouse->isJustPressed(M(LEFT)))
@@ -360,12 +362,15 @@ void RootWidget::handleRightMouseButtonUp()
 	m_dragScrolled = false;
 }
 
-void RootWidget::handleMouseMove()
+void RootWidget::handleMouseMove(bool movedOverCurrentWidget)
 {
 	Widget* mouseDownWidget = m_mouseDownWidget.lock().get();
 	Widget* mouseOverWidget = m_mouseOverWidget.lock().get();
 
-	propagateEvent(mouseDownWidget, &Widget::mouseMove);
+	if (movedOverCurrentWidget)
+	{
+		propagateEvent(mouseDownWidget, &Widget::mouseMove);
+	}
 
 	if (mouseOverWidget != mouseDownWidget)
 	{
