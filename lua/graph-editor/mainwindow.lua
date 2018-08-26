@@ -438,7 +438,15 @@ function MainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
 end
 
 function MainWindow:canPlugPins(outputNode, outputPin, inputNode, inputPin)
-    return outputNode ~= inputNode and (inputPin.pinType == outputPin.pinType and not (inputPin.pinType == PinTypes.ANY and outputPin.pinType == PinTypes.ANY))
+    if outputNode == inputNode then
+        return false
+    end
+    if inputPin.pinType == PinTypes.ANY then
+        return outputPin.pinType ~= PinTypes.ANY and outputPin.pinType ~= PinTypes.IMPULSE
+    elseif outputPin.pinType == PinTypes.ANY then
+        return inputPin.pinType ~= PinTypes.ANY and inputPin.pinType ~= PinTypes.IMPULSE
+    end
+    return inputPin.pinType == outputPin.pinType
 end
 
 function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
