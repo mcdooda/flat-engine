@@ -191,7 +191,7 @@ function MainWindow:saveGraphLayout()
         local nodeInstance = nodeInstances[i]
         local nodeWidget = self.nodeWidgets[nodeInstance]
         if nodeWidget then
-            local nodePosition = { nodeWidget:getPosition() }
+            local nodePosition = { nodeWidget:getVisiblePosition() }
             graphLayout[i] = nodePosition
         end
     end
@@ -465,12 +465,13 @@ end
 function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.outputNode then
+        local outputPin = currentLink.outputPin
         if self:canPlugPins(currentLink.outputNode, currentLink.outputPin, inputNode, inputPin) then
             local updateInputNodeWidget = false
             local unpluggedOutputPin = false
             if inputPin.pluggedOutputPin then
                 unpluggedOutputPin = true
-                local outputPin = inputPin.pluggedOutputPin.outputPin
+                local oldOutputPin = inputPin.pluggedOutputPin.outputPin
                 local previousOutputNode = inputPin.pluggedOutputPin.node
                 local updateOutputNodeWidget, updateInputNodeWidgetUnplug = inputNode:unplugInputPin(inputPin, true)
 
@@ -480,7 +481,9 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                         if updateOutputNodeWidget then
                             outputNodeWidget:rebuild(self:getFoldedNodes())
                         else
-                            outputNodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+                            if oldOutputPin ~= outputPin then
+                                outputNodeWidget:setOutputPinPlugged(oldOutputPin, #oldOutputPin.pluggedInputPins > 0)
+                            end
                         end
                         outputNodeWidget:updateCustomNodeEditor()
                     else
@@ -520,7 +523,6 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
             end
         else
             local nodeWidget = self.nodeWidgets[currentLink.outputNode]
-            local outputPin = currentLink.outputPin
             nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
             self.currentLink = nil
             self:drawLinks()
@@ -866,7 +868,7 @@ end
 
 function MainWindow:snapTo(node, pin)
     assert(node and pin)
-    if node ~= self.snapNode and pin ~= self.snapPin then
+    if self.currentLink and ((pin.pluggedInputPins and self.currentLink.inputNode) or (not pin.pluggedInputPins and self.currentLink.outputNode)) then
         if self.snapNode then
             self:clearOldSnap()
         end
@@ -881,14 +883,8 @@ function MainWindow:clearOldSnap()
     if self.snapPin.pluggedInputPins then
         self.nodeWidgets[self.snapNode]:setOutputPinPlugged(self.snapPin, #self.snapPin.pluggedInputPins > 0)
     else
-        if self.snapPin.pluggedOutputPin then
-            print(self.snapPin.pluggedOutputPin.outputPin.pinName)
-            for k,v in pairs(self.snapPin.pluggedOutputPin.node) do
-                print(k,v)
-            end
-        end
         local foldedNodes = self:getFoldedNodes()
-       self.nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, self.snapPin.pluggedOutputPin and foldedNodes[self.snapPin.pluggedOutputPin.node] == nil)
+        self.nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, self.snapPin.pluggedOutputPin and foldedNodes[self.snapPin.pluggedOutputPin.node] == nil)
     end
 end
 
@@ -902,7 +898,7 @@ function MainWindow:clearSnap()
 end
 
 function MainWindow:validSnap()
-    if self.snapNode and self.currentLink then
+    if self.snapNode then
         assert(self.snapPin)
         if self.snapPin.pluggedInputPins then
             self:linkReleasedOnOutputPin(self.snapNode, self.snapPin)
