@@ -35,8 +35,11 @@ int close(lua_State* L);
 // Widget methods
 int l_Widget_addChild(lua_State* L);
 int l_Widget_removeChild(lua_State* L);
-int l_Widget_removeFromParent(lua_State* L);
 int l_Widget_removeAllChildren(lua_State* L);
+int l_Widget_getChildrenCount(lua_State* L);
+int l_Widget_getChildByIndex(lua_State* L);
+int l_Widget_removeFromParent(lua_State* L);
+int l_Widget_getParent(lua_State* L);
 
 int l_Widget_setSizePolicy(lua_State* L);
 int l_Widget_setSizePolicyX(lua_State* L);

@@ -209,6 +209,9 @@ class Widget : public util::Convertible<Widget>
 		void removeFromParent();
 		void removeAllChildren();
 
+		inline size_t getChildrenCount() const { return m_children.size(); }
+		inline const std::shared_ptr<Widget>& getChildByIndex(int index) const { return m_children[index]; }
+
 		inline const std::weak_ptr<Widget>& getParent() const { return m_parent; }
 
 		virtual void preLayout() = 0;

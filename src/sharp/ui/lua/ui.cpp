@@ -35,8 +35,11 @@ int open(Flat& flat, flat::lua::Lua& lua)
 	static const luaL_Reg Widget_lib_m[] = {
 		{"addChild",              l_Widget_addChild},
 		{"removeChild",           l_Widget_removeChild},
-		{"removeFromParent",      l_Widget_removeFromParent},
 		{"removeAllChildren",     l_Widget_removeAllChildren},
+		{"getChildrenCount",      l_Widget_getChildrenCount},
+		{"getChildByIndex",       l_Widget_getChildByIndex},
+		{"removeFromParent",      l_Widget_removeFromParent},
+		{"getParent",             l_Widget_getParent},
 
 		{"setSizePolicy",         l_Widget_setSizePolicy},
 		{"setSizePolicyX",        l_Widget_setSizePolicyX},
@@ -246,6 +249,30 @@ int l_Widget_removeChild(lua_State* L)
 	return 0;
 }
 
+int l_Widget_removeAllChildren(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	widget.removeAllChildren();
+	return 0;
+}
+
+int l_Widget_getChildrenCount(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushinteger(L, widget.getChildrenCount());
+	return 1;
+}
+
+int l_Widget_getChildByIndex(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	int index = static_cast<int>(luaL_checkinteger(L, 2)) - 1;
+	size_t count = widget.getChildrenCount();
+	luaL_argcheck(L, 0 <= index && index < count, 2, "Invalid child index");
+	pushWidget(L, widget.getChildByIndex(index));
+	return 1;
+}
+
 int l_Widget_removeFromParent(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
@@ -253,11 +280,11 @@ int l_Widget_removeFromParent(lua_State* L)
 	return 0;
 }
 
-int l_Widget_removeAllChildren(lua_State* L)
+int l_Widget_getParent(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
-	widget.removeAllChildren();
-	return 0;
+	pushWidget(L, widget.getParent().lock());
+	return 1;
 }
 
 int l_Widget_setSizePolicy(lua_State* L)
