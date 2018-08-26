@@ -9,7 +9,7 @@ NodeWidget.__index = NodeWidget
 function NodeWidget:new(node, mainWindow, foldedNodes)
     assert(foldedNodes)
     assert(node, 'no node given')
-    local nodeType = mainWindow.graph.nodeType
+    local nodeType = mainWindow:getCurrentGraph().nodeType
     local nodePath = node.path
     local customNodeEditor
     pcall(function()
@@ -171,7 +171,7 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
             if pin.pluggedOutputPin then
                 local outputPin = pin.pluggedOutputPin.outputPin
                 local outputNode = pin.pluggedOutputPin.node
-                local outputNodeWidget = self.mainWindow.nodeWidgets[outputNode]
+                local outputNodeWidget = self.mainWindow:getCurrentGraphNodeWidgets()[outputNode]
                 if outputNodeWidget then
                     local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
 
@@ -236,7 +236,7 @@ end
 
 function NodeWidget:showFoldedConstantNode(pin)
     self.foldedConstantEditorWidgets[pin] = nil
-    local graph = self.mainWindow.graph
+    local graph = self.mainWindow:getCurrentGraph()
     local node = self.node
     local nodeType = graph.nodeType
     local nodeName = node:pinTypeToString(pin.pinType):lower()
@@ -359,10 +359,11 @@ function NodeWidget:updatePinSocketWidgets()
 end
 
 function NodeWidget:updateInputPinSocketWidgets()
+    local nodeWidgets = self.mainWindow:getCurrentGraphNodeWidgets()
     local inputPins = self.node.inputPins
     for i = 1, #inputPins do
         local inputPin = inputPins[i]
-        local plugged = inputPin.pluggedOutputPin and self.mainWindow.nodeWidgets[inputPin.pluggedOutputPin.node]
+        local plugged = inputPin.pluggedOutputPin and nodeWidgets[inputPin.pluggedOutputPin.node]
         self:setInputPinPlugged(inputPin, plugged)
         if not plugged and not self.foldedConstantEditorWidgets[inputPin] then
             self:showFoldedConstantNode(inputPin)

@@ -25,6 +25,16 @@ flat.ui.settings.theme = {
         BUTTON_BACKGROUND_COLOR_OVER = 0xDDDDDDFF,
         BUTTON_FONT                  = flat.ui.settings.defaultFont
     },
+    breadcrumb = {
+        BACKGROUND_COLOR                = 0xBBBBBBFF,
+
+        -- button
+        BUTTON_TEXT_COLOR               = 0x2C3E50FF,
+        BUTTON_BACKGROUND_COLOR         = 0xBBBBBBFF,
+        BUTTON_BACKGROUND_COLOR_OVER    = 0xDDDDDDFF,
+        BUTTON_BACKGROUND_COLOR_CURRENT = 0xCCCCCCFF,
+        BUTTON_FONT                     = flat.ui.settings.defaultFont
+    },
     textInput = {
         BORDER_COLOR     = 0x888888FF,
         BACKGROUND_COLOR = 0xFFFFFFFF,
