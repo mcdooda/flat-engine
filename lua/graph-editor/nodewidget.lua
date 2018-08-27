@@ -52,7 +52,6 @@ function NodeWidget:buildContainer()
             leftBar:setBackgroundColor(0x00660000)
             container:addChild(leftBar)
             leftBar:mouseMove(function(bar, x, y)
-                -- print(math.random())
                 local closestInputPin = self:getClosestInputPin(bar, x, y)
                 if closestInputPin then
                     self.mainWindow:snapTo(self.node, closestInputPin)
