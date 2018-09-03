@@ -1,3 +1,6 @@
+
+local Icon = require 'data/scripts/ui/icon'
+
 local Theme = flat.ui.settings.theme.window
 
 local Window = {}
@@ -12,6 +15,7 @@ function Window:new(parent)
         contentContainer = nil,
         userContentContainer = nil,
         content = nil,
+        iconContainer = nil,
 
         bottomRightResizeIcon = nil,
 
@@ -63,8 +67,14 @@ function Window:build(parent)
         do
             local titleContainer = Widget.makeLineFlow()
             titleContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-            titleContainer:setPadding(4)
+            local containerPadded = Widget.makeLineFlow()
+            containerPadded:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+            containerPadded:setPadding(6)
+            titleContainer:addChild(containerPadded)
             titleContainer:setBackgroundColor(Theme.TITLE_BACKGROUND_COLOR)
+            local iconContainer = Widget.makeFixedSize(0, 12)
+            containerPadded:addChild(iconContainer)
+            self.iconContainer = iconContainer
 
             do
                 local titleLabel = Widget.makeText('Window', table.unpack(Theme.TITLE_FONT))
@@ -78,19 +88,26 @@ function Window:build(parent)
                     window:drop()
                 end)
 
-                titleContainer:addChild(titleLabel)
+                containerPadded:addChild(titleLabel)
                 self.titleLabel = titleLabel
             end
 
             do
-                local closeWindowButton = Widget.makeImage(flat.assetPath 'ui/window/close-button.png')
-                closeWindowButton:setMargin(2, 2, 0, 0)
-                closeWindowButton:click(function()
+
+                local closeWindowButton = Icon:new('cancel', 16)
+                closeWindowButton.container:setPadding(6, 8, 6, 8)
+                closeWindowButton.container:setMargin(0)
+                closeWindowButton.container:click(function()
                     self:close()
                 end)
-                titleContainer:addChild(closeWindowButton)
+                closeWindowButton.container:mouseEnter(function()
+                    closeWindowButton.container:setBackgroundColor(0x995454FF)
+                end)
+                closeWindowButton.container:mouseLeave(function()
+                    closeWindowButton.container:setBackgroundColor(0xAD3B3B00)
+                end)
+                titleContainer:addChild(closeWindowButton.container)
             end
-
             windowContent:addChild(titleContainer)
         end
 
@@ -165,7 +182,7 @@ function Window:build(parent)
                         end
                     end)
                 end
-        
+
                 contentContainer:addChild(bottomRightResizeIcon)
                 self.bottomRightResizeIcon = bottomRightResizeIcon
             end
@@ -183,6 +200,12 @@ end
 
 function Window:setSize(width, height)
     self.window:setSize(width, height)
+end
+function Window:setIcon(icon)
+    self.iconContainer:setSize(18, 16)
+    self.iconContainer:setMargin(1, 2, 0, 0)
+    local iconWidget = Icon:new(icon, 14)
+    self.iconContainer:addChild(iconWidget.container)
 end
 
 function Window:setPosition(x, y)
