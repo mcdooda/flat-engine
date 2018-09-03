@@ -18,8 +18,8 @@ function ArrayNode:buildPins()
     self.arrayOutPin = self:addOutputPin(flat.types.TABLE, 'Array')
 end
 
-function ArrayNode:addCustomPin(pin)
-    pin.pinName = self:makePinNameFromType(pin.pinType)
+function ArrayNode:addCustomPin(pin, otherPin)
+    pin.pinName = otherPin.pinName
     self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
     return true
 end

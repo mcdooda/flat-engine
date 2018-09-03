@@ -8,8 +8,10 @@ function ScriptRuntime:new(graph)
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]
         outputPinValues[node] = {}
-        for i, outputPin in pairs(node.outputPins) do
-            if outputPin.pinType ~= PinTypes.IMPULSE then
+        local outputPins = node.outputPins
+        for i = 1, #outputPins do
+            local outputPin = outputPins[i]
+            if outputPin.pinType ~= PinTypes.IMPULSE and #outputPin.pluggedInputPins > 0 then
                 outputPinValues[node][outputPin] = { value = nil }
             end
         end
@@ -19,13 +21,18 @@ function ScriptRuntime:new(graph)
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]
         inputPinValues[node] = {}
-        for i, inputPin in pairs(node.inputPins) do
+        local inputPins = node.inputPins
+        for i = 1, #inputPins do
+            local inputPin = inputPins[i]
             if inputPin.pinType ~= PinTypes.IMPULSE then
                 local pluggedOutputPin = inputPin.pluggedOutputPin
                 if pluggedOutputPin then
                     local outputPin = pluggedOutputPin.outputPin
                     local outputNode = pluggedOutputPin.node
-                    inputPinValues[node][inputPin] = outputPinValues[outputNode][outputPin]
+                    inputPinValues[node][inputPin] = assert(
+                        outputPinValues[outputNode][outputPin],
+                        'No output pin value for ' .. outputNode:getName() .. '->' .. outputPin.pinName
+                    )
                 end
             end
         end

@@ -39,7 +39,18 @@ local function dumpKeyString(write, str)
 	end
 end
 
-local function dump(write, value, tabs, allowAllTypes, isIntKeyValue)
+local function dump(write, value, tabs, allowAllTypes, seen, isIntKeyValue)
+	if type(value) == 'table' then
+		if seen[value] then
+			if allowAllTypes then -- basically a debug output
+				write(tabs, tostring(value) .. ' *RECURSIVE*')
+				return
+			else
+				error('trying to serialize a recursive object')
+			end
+		end
+		seen[value] = true
+	end
 	tabs = tabs or ''
 	local t = type(value)
 	if t == 'table' then
@@ -49,7 +60,7 @@ local function dump(write, value, tabs, allowAllTypes, isIntKeyValue)
 		write('{\n')
 		local length = #value
 		for i = 1, length do
-			dump(write, value[i], tabs .. '  ', allowAllTypes, true)
+			dump(write, value[i], tabs .. '  ', allowAllTypes, seen, true)
 			write ',\n'
 		end
 		for k, v in sortedpairs(value) do
@@ -59,15 +70,15 @@ local function dump(write, value, tabs, allowAllTypes, isIntKeyValue)
 					dumpKeyString(write, k)
 				else
 					write '['
-					dump(write, k, '', allowAllTypes)
+					dump(write, k, '', allowAllTypes, seen)
 					write ']'
 				end
 				write ' = '
 				local t1 = type(v)
 				if t1 == 'string' or t1 == 'number' then
-					dump(write, v, '', allowAllTypes)
+					dump(write, v, '', allowAllTypes, seen)
 				else
-					dump(write, v, tabs .. '  ', allowAllTypes)
+					dump(write, v, tabs .. '  ', allowAllTypes, seen)
 				end
 				write ',\n'
 			end
@@ -98,15 +109,16 @@ local function dumpToString(value)
 			buffer[bufferSize] = select(i, ...)
 		end
 	end
-	dump(addToBuffer, value)
+	dump(addToBuffer, value, '', false, {})
 	return table.concat(buffer)
 end
 
-local function dumpToOutput(output, value, allowAllTypes)
+local function dumpToOutput(output, value, allowAllTypes, seen)
 	local function writeToOutput(...)
 		output:write(...)
 	end
-	dump(writeToOutput, value, '', allowAllTypes)
+	seen = seen or {}
+	dump(writeToOutput, value, '', allowAllTypes, seen)
 end
 
 local function easyDump(value)

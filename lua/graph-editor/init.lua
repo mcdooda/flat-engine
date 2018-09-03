@@ -1,7 +1,7 @@
 flat.graph.editor = {}
 
-function flat.graph.editor.open(editorContainer, graphPath, nodeType, metadata, onSave, getRunnerFileCode)
+function flat.graph.editor.open(editorContainer, graphPath, nodeType, metadata, onSave)
     local MainWindow = flat.require 'graph-editor/mainwindow'
-    local window = MainWindow:new(editorContainer, metadata, onSave, getRunnerFileCode)
+    local window = MainWindow:new(editorContainer, metadata, onSave)
     return window:openGraph(graphPath, nodeType)
 end

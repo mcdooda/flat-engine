@@ -10,7 +10,7 @@ function PrintNode:buildPins()
     self.impulseOutPin = self:addOutputPin(PinTypes.IMPULSE, 'Out')
 end
 
-function PrintNode:valuePinPlugged(pin, otherOutputPinUnplugged)
+function PrintNode:valuePinPlugged(pin)
     return true
 end
 
