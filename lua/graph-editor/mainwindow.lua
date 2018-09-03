@@ -29,6 +29,8 @@ function MainWindow:new(parent, metadata, onSave)
     o.metadata = metadata
     o.onSave = onSave
     o.isNew = false
+    o.snapPin = nil
+    o.snapNode = nil
     o:build()
     return o
 end
@@ -224,8 +226,8 @@ function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
             local nodePosition = graphLayout[i]
             if nodePosition then
                 local nodeWidget = self:makeNodeWidget(node, foldedNodes)
-                nodeWidget.container:setPosition(table.unpack(nodePosition))
-                content:addChild(nodeWidget.container)
+                nodeWidget:setVisiblePosition(table.unpack(nodePosition))
+                content:addChild(nodeWidget:getContainer())
             end
         end
 
@@ -275,7 +277,7 @@ function MainWindow:saveGraphLayout()
         local nodeInstance = nodeInstances[i]
         local nodeWidget = nodeWidgets[nodeInstance]
         if nodeWidget then
-            local nodePosition = { nodeWidget.container:getPosition() }
+            local nodePosition = { nodeWidget:getVisiblePosition() }
             graphLayout[i] = nodePosition
         end
     end
@@ -290,10 +292,9 @@ function MainWindow:saveLuaRunnerFile()
     local graphPath = self.currentGraphInfo.path
     local componentFilePath = graphPath .. '.lua'
     if not io.open(componentFilePath, 'r') then
-
         -- TODO: should depend on the node type
         local runnerCode = ([[return flat.graph.script.run '%s']]):format(graphPath)
-        
+
         local f = io.open(componentFilePath, 'w')
         assert(runnerCode)
         f:write(runnerCode)
@@ -305,7 +306,7 @@ function MainWindow:makeNodeWidget(node, foldedNodes)
     assert(node)
     assert(foldedNodes)
     local nodeWidget = NodeWidget:new(node, self, foldedNodes)
-    nodeWidget.container:dragged(function()
+    nodeWidget:dragged(function()
         self:drawLinks()
     end)
     self.currentGraphInfo.nodeWidgets[node] = nodeWidget
@@ -426,13 +427,29 @@ end
 function MainWindow:updateCurrentLink(x, y)
     local currentLink = self.currentLink
     assert(currentLink, 'no current link')
-    if currentLink.inputNode then
-        currentLink.outputPinX = x
-        currentLink.outputPinY = y
-    else
-        assert(currentLink.outputNode)
-        currentLink.inputPinX = x
-        currentLink.inputPinY = y
+    local snapped = false
+    local nodeWidgets = self.currentGraphInfo.nodeWidgets
+    if self.snapPin then
+        assert(self.snapNode)
+        if currentLink.inputNode and self:canPlugPins(self.snapNode, self.snapPin, currentLink.inputNode, currentLink.inputPin) then
+            currentLink.outputPinX, currentLink.outputPinY = self:getOutputPinPosition(self.snapNode, self.snapPin)
+            snapped = true
+            nodeWidgets[self.snapNode]:setOutputPinPlugged(self.snapPin, true)
+        elseif currentLink.outputNode and self:canPlugPins(currentLink.outputNode, currentLink.outputPin, self.snapNode, self.snapPin) then
+            currentLink.inputPinX, currentLink.inputPinY = self:getInputPinPosition(self.snapNode, self.snapPin)
+            snapped = true
+            nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, true)
+        end
+    end
+    if not snapped then
+        if currentLink.inputNode then
+            currentLink.outputPinX = x
+            currentLink.outputPinY = y
+        else
+            assert(currentLink.outputNode)
+            currentLink.inputPinX = x
+            currentLink.inputPinY = y
+        end
     end
     self:drawLinks()
 end
@@ -475,6 +492,7 @@ end
 function MainWindow:getInputPinPosition(inputNode, inputPin)
     local nodeWidget = self.currentGraphInfo.nodeWidgets[inputNode]
     local inputPinPlugWidget = nodeWidget:getInputPinPlugWidget(inputPin)
+    assert(inputPinPlugWidget)
     local x, y = self:getContent():getRelativePosition(inputPinPlugWidget)
     local sx, sy = inputPinPlugWidget:getSize()
     return x, y + sy / 2
@@ -483,6 +501,7 @@ end
 function MainWindow:getOutputPinPosition(outputNode, outputPin)
     local nodeWidget = self.currentGraphInfo.nodeWidgets[outputNode]
     local outputPinPlugWidget = nodeWidget:getOutputPinPlugWidget(outputPin)
+    assert(outputPinPlugWidget)
     local x, y = self:getContent():getRelativePosition(outputPinPlugWidget)
     local sx, sy = outputPinPlugWidget:getSize()
     return x + sx, y + sy / 2
@@ -540,12 +559,13 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
     local currentLink = self.currentLink
     if currentLink and currentLink.outputNode then
         local nodeWidgets = self.currentGraphInfo.nodeWidgets
+        local outputPin = currentLink.outputPin
         if self:canPlugPins(currentLink.outputNode, currentLink.outputPin, inputNode, inputPin) then
             local updateInputNodeWidget = false
             local unpluggedOutputPin = false
             if inputPin.pluggedOutputPin then
                 unpluggedOutputPin = true
-                local outputPin = inputPin.pluggedOutputPin.outputPin
+                local oldOutputPin = inputPin.pluggedOutputPin.outputPin
                 local previousOutputNode = inputPin.pluggedOutputPin.node
                 local updateOutputNodeWidget, updateInputNodeWidgetUnplug = inputNode:unplugInputPin(inputPin, true)
 
@@ -555,7 +575,9 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                         if updateOutputNodeWidget then
                             outputNodeWidget:rebuild(self:getFoldedNodes())
                         else
-                            outputNodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
+                            if oldOutputPin ~= outputPin then
+                                outputNodeWidget:setOutputPinPlugged(oldOutputPin, #oldOutputPin.pluggedInputPins > 0)
+                            end
                         end
                         outputNodeWidget:updateCustomNodeEditor()
                     else
@@ -575,7 +597,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
             local updateOutputNodeWidget, updateInputNodeWidgetPlug = currentLink.outputNode:plugPins(currentLink.outputPin, inputNode, inputPin, unpluggedOutputPin)
             self.currentLink = nil
             self:drawLinks()
-            
+
             do
                 local outputNodeWidget = nodeWidgets[currentLink.outputNode]
                 if updateOutputNodeWidget then
@@ -706,8 +728,8 @@ function MainWindow:openNodeListMenu(x, y)
         local scrollX, scrollY = content:getScrollPosition()
         local nodeWidgetX = x + scrollX
         local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
-        nodeWidget.container:setPosition(nodeWidgetX, nodeWidgetY)
-        content:addChild(nodeWidget.container)
+        nodeWidget:setVisiblePosition(nodeWidgetX, nodeWidgetY)
+        content:addChild(nodeWidget:getContainer())
         self:closeNodeListMenu()
     end
 
@@ -850,24 +872,26 @@ end
 function MainWindow:dragSelectedNodeWidgets()
     local selectedNodeWidgets = self.currentGraphInfo.selectedNodeWidgets
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
-        selectedNodeWidget.container:drag()
+        selectedNodeWidget:drag()
     end
 end
 
 function MainWindow:dropSelectedNodeWidgets()
     local selectedNodeWidgets = self.currentGraphInfo.selectedNodeWidgets
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
-        selectedNodeWidget.container:drop()
+        selectedNodeWidget:drop()
     end
 end
 
 function MainWindow:deleteSelectedNodes()
     local graphInfo = self.currentGraphInfo
     local graph = graphInfo.graph
+    local nodeWidgets = self.currentGraphInfo.nodeWidgets
     local selectedNodeWidgets = graphInfo.selectedNodeWidgets
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
-        selectedNodeWidget.container:removeFromParent()
+        selectedNodeWidget:delete()
         graph:removeNode(selectedNodeWidget.node)
+        nodeWidgets[selectedNodeWidget.node] = nil
     end
     graphInfo.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()
@@ -913,8 +937,8 @@ function MainWindow:selectWidgets()
     assert(selectionY <= selectionTop)
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
     for node, nodeWidget in pairs(nodeWidgets) do
-        local nodeWidgetX, nodeWidgetY = self:getContent():getRelativePosition(nodeWidget.container)
-        local nodeWidgetWidth, nodeWidgetHeight = nodeWidget.container:getComputedSize()
+        local nodeWidgetX, nodeWidgetY = nodeWidget:getRelativePositionInWindow()
+        local nodeWidgetWidth, nodeWidgetHeight = nodeWidget:getVisibleComputedSize()
         local centerX, centerY = nodeWidgetX + nodeWidgetWidth / 2, nodeWidgetY + nodeWidgetHeight / 2
         if selectionX <= centerX and centerX <= selectionRight and selectionY <= centerY and centerY <= selectionTop then
             self:selectNode(nodeWidget)
@@ -995,6 +1019,49 @@ end
 
 function MainWindow:getBreadcrumbName(graphInfo)
     return graphInfo.index .. '. ' .. string.gsub(graphInfo.path, '.+/([^/]-)$', '%1')
+end
+
+function MainWindow:snapTo(node, pin)
+    assert(node and pin)
+    if self.currentLink and ((pin.pluggedInputPins and self.currentLink.inputNode) or (not pin.pluggedInputPins and self.currentLink.outputNode)) then
+        if self.snapNode then
+            self:clearOldSnap()
+        end
+        self.snapPin = pin
+        self.snapNode = node
+    end
+end
+
+function MainWindow:clearOldSnap()
+    assert(self.snapNode and self.snapPin)
+    local nodeWidgets = self.currentGraphInfo.nodeWidgets
+    -- pluggedInputPins only exists in outputPins
+    if self.snapPin.pluggedInputPins then
+        nodeWidgets[self.snapNode]:setOutputPinPlugged(self.snapPin, #self.snapPin.pluggedInputPins > 0)
+    else
+        local foldedNodes = self:getFoldedNodes()
+        nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, self.snapPin.pluggedOutputPin and foldedNodes[self.snapPin.pluggedOutputPin.node] == nil)
+    end
+end
+
+function MainWindow:clearSnap()
+    if self.snapNode and self.currentLink then
+        self:clearOldSnap()
+    end
+
+    self.snapPin = nil
+    self.snapNode = nil
+end
+
+function MainWindow:validSnap()
+    if self.snapNode then
+        assert(self.snapPin)
+        if self.snapPin.pluggedInputPins then
+            self:linkReleasedOnOutputPin(self.snapNode, self.snapPin)
+        else
+            self:linkReleasedOnInputPin(self.snapNode, self.snapPin)
+        end
+    end
 end
 
 return MainWindow
