@@ -6,7 +6,8 @@ Graph.__index = Graph
 function Graph:new()
     local o = {
         nodeInstances = {},
-        entryNodes = {}
+        entryNodes = {},
+        compounds = {}
     }
     return setmetatable(o, self)
 end
@@ -20,6 +21,12 @@ function Graph:addNode(nodeClass, buildPins)
     self.nodeInstances[nodeIndex] = node
     node:addedToGraph(self)
     return node
+end
+
+function Graph:addNodeInstance(node)
+    local nodeIndex = #self.nodeInstances + 1
+    self.nodeInstances[nodeIndex] = node
+    node:addedToGraph(self)
 end
 
 function Graph:removeNode(node)
@@ -44,6 +51,10 @@ end
 
 function Graph:addEntryNode(node)
     self.entryNodes[#self.entryNodes + 1] = node
+end
+
+function Graph:addCompound(node)
+    self.compounds[#self.compounds + 1] = node
 end
 
 function Graph:loadGraph(graphPath)
@@ -108,6 +119,17 @@ function Graph:load(nodeType, savedGraph, nodeRepository)
 
         outputNode:plugPins(outputPin, inputNode, inputPin)
     end
+end
+
+function Graph:resolveCompounds()
+    assert(self.compounds) -- can be empty for now (it will do nothing), but not nil
+    local compounds = self.compounds
+    for i = 1, #compounds do
+        local compound = compounds[i]
+        compound:resolveSubCompounds()
+        compound:resolve(self)
+    end
+    self.compounds = nil -- avoid calling resolveCompounds again
 end
 
 function Graph:saveGraph(graphPath)

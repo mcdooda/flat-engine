@@ -265,6 +265,20 @@ void Widget::removeChild(const std::shared_ptr<Widget>& widget)
 	resetScrollPosition();
 }
 
+
+void Widget::removeChildAtIndex(int index)
+{
+	std::vector<std::shared_ptr<Widget>>::iterator it = m_children.begin() + index;
+	std::shared_ptr<Widget> widget = *it;
+	FLAT_ASSERT(it != m_children.end());
+	m_children.erase(it);
+	// set the ancestor dirty before resetting the parent!
+	setAncestorDirty();
+	widget->m_parent.reset();
+
+	resetScrollPosition();
+}
+
 void Widget::removeFromParent()
 {
 	FLAT_ASSERT_MSG(!m_parent.expired(), "the widget has not parent");

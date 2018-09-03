@@ -113,11 +113,12 @@ local function dumpToString(value)
 	return table.concat(buffer)
 end
 
-local function dumpToOutput(output, value, allowAllTypes)
+local function dumpToOutput(output, value, allowAllTypes, seen)
 	local function writeToOutput(...)
 		output:write(...)
 	end
-	dump(writeToOutput, value, '', allowAllTypes, {})
+	seen = seen or {}
+	dump(writeToOutput, value, '', allowAllTypes, seen)
 end
 
 local function easyDump(value)

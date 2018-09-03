@@ -20,8 +20,8 @@ function ScriptInputNode:buildPins()
     self:addOutputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
 end
 
-function ScriptInputNode:addCustomPin(pin)
-    pin.pinName = self:makePinNameFromType(pin.pinType)
+function ScriptInputNode:addCustomPin(pin, otherPin)
+    pin.pinName = otherPin.pinName
     self:addOutputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
     return true
 end

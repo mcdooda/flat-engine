@@ -15,6 +15,11 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
     pcall(function()
         customNodeEditor = node.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
     end)
+    if not customNodeEditor then
+        pcall(function()
+            customNodeEditor = node.require('graph-editor/common/nodes/' .. nodePath .. 'node')
+        end)
+    end
     local o = setmetatable({
         node = node,
         mainWindow = mainWindow,
@@ -26,6 +31,7 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
         customNodeEditor = customNodeEditor,
         inputPinNameWidgetContainers = {},
         foldedConstantEditorWidgets = {},
+        nodeNameContainer = nil,
     }, self)
 
     local nodeWidget = Widget.makeColumnFlow()
@@ -94,6 +100,8 @@ function NodeWidget:build(foldedNodes)
         end
 
         nodeWidget:addChild(nodeNameContainer)
+
+        self.nodeNameContainer = nodeNameContainer
     end
 
     -- all pins

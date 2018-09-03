@@ -6,6 +6,8 @@ function NodeRepository:new(nodeType)
         nodeType = nodeType,
         nodeClasses = {}
     }, self)
+    -- all repositories include the common nodes
+    o:load('common', flat.require)
     o:load(nodeType, flat.require)
     return o
 end
@@ -23,6 +25,12 @@ end
 
 function NodeRepository:getNodeClasses()
     return self.nodeClasses
+end
+
+function NodeRepository:importRepository(other)
+    for nodePath, nodeClass in pairs(other.nodeClasses) do
+        self.nodeClasses[nodePath] = nodeClass
+    end
 end
 
 return NodeRepository

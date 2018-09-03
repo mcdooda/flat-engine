@@ -39,17 +39,52 @@ function MainWindow:build()
     -- toolbar
     do
         local toolbar = self:addToolbar()
-        local saveButton = toolbar:addButton('Save Graph')
-        saveButton:click(function()
-            self:saveGraph()
-            self:saveGraphLayout()
-            self:saveLuaRunnerFile() -- TODO: only for components?
-            self:updateCustomNodeEditors()
-            if self.onSave then
-                self.onSave(self.isNew)
-                self.isNew = false
-            end
-        end)
+
+        do
+            local saveButton = toolbar:addButton 'Save Graph'
+            saveButton:click(function()
+                self:saveGraph()
+                self:saveGraphLayout()
+                self:saveLuaRunnerFile() -- TODO: only for components?
+                self:updateCustomNodeEditors()
+                if self.onSave then
+                    self.onSave(self.isNew)
+                    self.isNew = false
+                end
+            end)
+        end
+
+        do
+            local useCompoundButton = toolbar:addButton 'Use Compound'
+            useCompoundButton:click(flat.ui.task(function()
+                while true do
+                    local compoundPath = flat.ui.prompt 'Compound Path:'
+                    if compoundPath then
+                        local content = self:getContent()
+                        local graphInfo = self.currentGraphInfo
+                        local graph = graphInfo.graph
+                        local nodeClasses = flat.graph.getNodeClasses(graph.nodeType)
+                        local compoundNode = graph:addNode(nodeClasses['compound'], false)
+                        if compoundNode:load(compoundPath) then
+                            compoundNode:buildPins()
+                            local nodeWidget = self:makeNodeWidget(compoundNode, self:getFoldedNodes())
+                            local contentSizeX, contentSizeY = content:getComputedSize()
+                            local scrollX, scrollY = content:getScrollPosition()
+                            local nodeWidgetX = scrollX + contentSizeX / 2
+                            local nodeWidgetY = scrollY - contentSizeY / 2 -- move the relative position from bottom left to top left
+                            nodeWidget.container:setPosition(nodeWidgetX, nodeWidgetY)
+                            content:addChild(nodeWidget.container)
+                            break
+                        else
+                            graph:removeNode(compoundNode)
+                            -- compoundNode:load already displayed an error
+                        end
+                    else
+                        break
+                    end
+                end
+            end))
+        end
     end
 
     -- open graphs breadcrumb
@@ -128,17 +163,35 @@ function MainWindow:closeAllRightClickMenus()
 end
 
 function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
+    local graphInfos = self.graphInfos
+    
+    -- if the graph is already open right below, only change the breadcrumb focus
+    if self.currentGraphInfo then
+        local subGraphInfo = graphInfos[self.currentGraphInfo.index + 1]
+        if subGraphInfo and subGraphInfo.path == graphPath then
+            self:setCurrentGraphInfo(subGraphInfo)
+            self.breadcrumb:setCurrentItem(subGraphInfo.index)
+            return
+        end
+
+        -- remove sub graphs
+        for i = #graphInfos, self.currentGraphInfo.index + 1, -1 do
+            graphInfos[i] = nil
+            self.breadcrumb:removeItem(i)
+        end
+    end
+
     local graph = self:loadGraph(graphPath)
 
     local graphInfo = {
         graph = graph,
         path = graphPath,
-        index = #self.graphInfos + 1,
+        index = #graphInfos + 1,
         nodeWidgets = {},
         selectedNodeWidgets = {},
         parentGraphInfo = parentGraphInfo
     }
-    self.graphInfos[graphInfo.index] = graphInfo
+    graphInfos[graphInfo.index] = graphInfo
     self:setCurrentGraphInfo(graphInfo)
 
     local item = self.breadcrumb:addItem(self:getBreadcrumbName(graphInfo))
@@ -171,8 +224,8 @@ function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
             local nodePosition = graphLayout[i]
             if nodePosition then
                 local nodeWidget = self:makeNodeWidget(node, foldedNodes)
-                nodeWidget:setPosition(table.unpack(nodePosition))
-                content:addChild(nodeWidget)
+                nodeWidget.container:setPosition(table.unpack(nodePosition))
+                content:addChild(nodeWidget.container)
             end
         end
 
@@ -256,7 +309,7 @@ function MainWindow:makeNodeWidget(node, foldedNodes)
         self:drawLinks()
     end)
     self.currentGraphInfo.nodeWidgets[node] = nodeWidget
-    return nodeWidget.container
+    return nodeWidget
 end
 
 function MainWindow:drawLinks(delayToNextFrame)
@@ -472,7 +525,15 @@ function MainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
 end
 
 function MainWindow:canPlugPins(outputNode, outputPin, inputNode, inputPin)
-    return outputNode ~= inputNode and (inputPin.pinType == outputPin.pinType and not (inputPin.pinType == PinTypes.ANY and outputPin.pinType == PinTypes.ANY))
+    if outputNode == inputNode then
+        return false
+    end
+    if inputPin.pinType == PinTypes.ANY then
+        return outputPin.pinType ~= PinTypes.ANY
+    elseif outputPin.pinType == PinTypes.ANY then
+        return inputPin.pinType ~= PinTypes.ANY
+    end
+    return inputPin.pinType == outputPin.pinType
 end
 
 function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
@@ -623,12 +684,14 @@ function MainWindow:openNodeListMenu(x, y)
         searchNodes = {}
         local search = textInputWidget:getText():lower()
         for nodeName, nodeClass in pairs(nodeClasses) do
-            local nodeVisualName = nodeClass:getName()
-            if #search == 0 or nodeVisualName:lower():match(search) then
-                searchNodes[#searchNodes + 1] = {
-                    visualName = nodeVisualName,
-                    name = nodeName
-                }
+            if nodeClass:isBrowsable() then
+                local nodeVisualName = nodeClass:getName()
+                if #search == 0 or nodeVisualName:lower():match(search) then
+                    searchNodes[#searchNodes + 1] = {
+                        visualName = nodeVisualName,
+                        name = nodeName
+                    }
+                end
             end
         end
         table.sort(searchNodes, function(a, b) return a.visualName < b.visualName end)
@@ -643,8 +706,8 @@ function MainWindow:openNodeListMenu(x, y)
         local scrollX, scrollY = content:getScrollPosition()
         local nodeWidgetX = x + scrollX
         local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
-        nodeWidget:setPosition(nodeWidgetX, nodeWidgetY)
-        content:addChild(nodeWidget)
+        nodeWidget.container:setPosition(nodeWidgetX, nodeWidgetY)
+        content:addChild(nodeWidget.container)
         self:closeNodeListMenu()
     end
 
@@ -896,6 +959,10 @@ function MainWindow:getFoldedNodes()
     return foldedNodes
 end
 
+function MainWindow:getCurrentGraphInfo()
+    return self.currentGraphInfo
+end
+
 function MainWindow:getCurrentGraph()
     return self.currentGraphInfo.graph
 end
@@ -929,6 +996,5 @@ end
 function MainWindow:getBreadcrumbName(graphInfo)
     return graphInfo.index .. '. ' .. string.gsub(graphInfo.path, '.+/([^/]-)$', '%1')
 end
-
 
 return MainWindow

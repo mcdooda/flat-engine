@@ -76,6 +76,8 @@ void Lua::reset(Flat& flat)
 		lua_newtable(L);
 		lua_pushcfunction(L, [](lua_State* L) { FLAT_BREAK(); return 0; });
 		lua_setfield(L, -2, "debugbreak");
+		lua_pushcfunction(L, [](lua_State* L) { printStack(L); return 0; });
+		lua_setfield(L, -2, "printstack");
 #else
 		lua_pushboolean(L, false);
 #endif

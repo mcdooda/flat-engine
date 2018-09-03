@@ -14,7 +14,6 @@ function Breadcrumb:new(parent)
 end
 
 function Breadcrumb:build(parent)
-    print('parent', parent)
     local breadcrumb = Widget.makeLineFlow()
     breadcrumb:setSizePolicy(Widget.SizePolicy.COMPRESS_X + Widget.SizePolicy.COMPRESS_Y)
     breadcrumb:setBackgroundColor(Theme.BACKGROUND_COLOR)
@@ -67,6 +66,15 @@ function Breadcrumb:addItem(text)
     self.buttons[buttonIndex] = button
 
     return button
+end
+
+function Breadcrumb:removeItem(index)
+    if index > 1 then
+        local separatorWidgetIndex = (index - 1) * 2
+        self.breadcrumb:removeChildAtIndex(separatorWidgetIndex)
+    end
+    self.buttons[index]:removeFromParent()
+    self.buttons[index] = nil
 end
 
 function Breadcrumb:setCurrentItem(index)
