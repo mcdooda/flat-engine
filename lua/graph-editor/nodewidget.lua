@@ -317,13 +317,27 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
         inputPinPlugWidget:addChild(inputPinSocketWidget)
         self.inputPinSocketWidgets[pin] = inputPinSocketWidget
 
+        local mouseIsInside = false
         inputPinPlugWidget:mouseDown(function()
             self:drawLinkFromInputPin(node, pin)
             return true
         end)
 
         inputPinPlugWidget:mouseUp(function()
-            return self.mainWindow:linkReleasedOnInputPin(node, pin)
+            self.mainWindow:validSnap()
+        end)
+
+        inputPinPlugWidget:mouseMove(function()
+            if mouseIsInside then
+                self.mainWindow:snapTo(node, pin)
+            end
+        end)
+        inputPinPlugWidget:mouseLeave(function()
+            mouseIsInside = false
+            self.mainWindow:clearSnap()
+        end)
+        inputPinPlugWidget:mouseEnter(function()
+            mouseIsInside = true
         end)
 
         inputPinWidget:addChild(inputPinPlugWidget)
@@ -414,13 +428,29 @@ function NodeWidget:makeOutputPinWidget(node, pin)
             self.outputPinSocketWidgets[pin] = outputPinSocketWidget
         end
 
+        local mouseIsInside = false
+
+        outputPinPlugWidget:mouseEnter(function()
+            mouseIsInside = true
+        end)
+
+        outputPinPlugWidget:mouseMove(function()
+            if mouseIsInside then
+                self.mainWindow:snapTo(node, pin)
+            end
+        end)
+        outputPinPlugWidget:mouseLeave(function()
+            mouseIsInside = false
+            self.mainWindow:clearSnap()
+        end)
+
         outputPinPlugWidget:mouseDown(function()
             self.mainWindow:beginDragWireFromOutputPin(node, pin)
             return true
         end)
 
         outputPinPlugWidget:mouseUp(function()
-            return self.mainWindow:linkReleasedOnOutputPin(node, pin)
+            return self.mainWindow:validSnap()
         end)
 
         outputPinWidget:addChild(outputPinPlugWidget)
