@@ -411,8 +411,12 @@ function MainWindow:drawLinks(delayToNextFrame)
 
         -- draw currently dragged link
         if currentLink then
+            local linkColor = currentLink.color
+            if currentLink.snapped and currentLink.inputPin and currentLink.inputPin.pinType == PinTypes.ANY then
+                linkColor = self:getPinColor(self.snapNode, self.snapPin)
+            end
             self:drawLink(
-                currentLink.color,
+                linkColor,
                 currentLink.inputPinX, currentLink.inputPinY,
                 currentLink.outputPinX, currentLink.outputPinY
             )
