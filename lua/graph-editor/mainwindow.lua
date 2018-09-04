@@ -445,10 +445,12 @@ function MainWindow:updateCurrentLink(x, y)
         if currentLink.inputNode then
             currentLink.outputPinX = x
             currentLink.outputPinY = y
+            currentLink.inputPinX, currentLink.inputPinY = self:getInputPinPosition(currentLink.inputNode, currentLink.inputPin)
         else
             assert(currentLink.outputNode)
             currentLink.inputPinX = x
             currentLink.inputPinY = y
+            currentLink.outputPinX, currentLink.outputPinY = self:getOutputPinPosition(currentLink.outputNode, currentLink.outputPin)
         end
     end
     self:drawLinks()
