@@ -20,7 +20,9 @@ end
 
 function ArrayNode:addCustomPin(pin, otherPin)
     pin.pinName = otherPin.pinName
-    self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
+    if self.inputPins[#self.inputPins].pinName ~= 'New Pin' then
+        self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
+    end
     return true
 end
 
