@@ -166,7 +166,7 @@ end
 
 function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
     local graphInfos = self.graphInfos
-    
+
     -- if the graph is already open right below, only change the breadcrumb focus
     if self.currentGraphInfo then
         local subGraphInfo = graphInfos[self.currentGraphInfo.index + 1]
@@ -316,16 +316,16 @@ end
 function MainWindow:drawLinks(delayToNextFrame)
     local function draw()
         local content = self:getContent()
-        
+
         content:clear(0xECF0F1FF)
-        
+
         -- draw grid
         do
             local scrollX, scrollY = content:getScrollPosition()
             local w, h = content:getComputedSize()
-            
+
             local gridTheme = flat.ui.settings.theme.graphEditor.grid
-            
+
             do
                 local firstSmallX = -scrollX % gridTheme.SMALL_STEP
                 local firstBigX = -scrollX % gridTheme.BIG_STEP
@@ -350,7 +350,7 @@ function MainWindow:drawLinks(delayToNextFrame)
                     )
                 end
             end
-            
+
             do
                 local firstSmallY = (scrollY % gridTheme.SMALL_STEP) - gridTheme.SMALL_STEP
                 local firstBigY = (scrollY % gridTheme.BIG_STEP) - gridTheme.BIG_STEP
@@ -376,7 +376,8 @@ function MainWindow:drawLinks(delayToNextFrame)
                 end
             end
         end
-        
+        local currentLink = self.currentLink
+
         -- draw plugged links
         local graphInfo = self.currentGraphInfo
         local graph = graphInfo.graph
@@ -392,7 +393,11 @@ function MainWindow:drawLinks(delayToNextFrame)
 
                         local inputPinX, inputPinY = self:getInputPinPosition(inputNode, inputPin)
                         local outputPinX, outputPinY = self:getOutputPinPosition(outputNode, outputPin)
+
                         local linkColor = self:getPinColor(inputNode, inputPin)
+                        if currentLink and currentLink.snapped and self.snapPin == inputPin then
+                            linkColor = linkColor - 0x00000099
+                        end
 
                         self:drawLink(
                             linkColor,
@@ -405,7 +410,6 @@ function MainWindow:drawLinks(delayToNextFrame)
         end
 
         -- draw currently dragged link
-        local currentLink = self.currentLink
         if currentLink then
             self:drawLink(
                 currentLink.color,
@@ -413,6 +417,7 @@ function MainWindow:drawLinks(delayToNextFrame)
                 currentLink.outputPinX, currentLink.outputPinY
             )
         end
+
     end
 
     if delayToNextFrame then
@@ -427,21 +432,22 @@ end
 function MainWindow:updateCurrentLink(x, y)
     local currentLink = self.currentLink
     assert(currentLink, 'no current link')
-    local snapped = false
+    currentLink.snapped = false
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
     if self.snapPin then
         assert(self.snapNode)
         if currentLink.inputNode and self:canPlugPins(self.snapNode, self.snapPin, currentLink.inputNode, currentLink.inputPin) then
             currentLink.outputPinX, currentLink.outputPinY = self:getOutputPinPosition(self.snapNode, self.snapPin)
-            snapped = true
+            currentLink.snapped = true
             nodeWidgets[self.snapNode]:setOutputPinPlugged(self.snapPin, true)
         elseif currentLink.outputNode and self:canPlugPins(currentLink.outputNode, currentLink.outputPin, self.snapNode, self.snapPin) then
+            currentLink.snapped = true
             currentLink.inputPinX, currentLink.inputPinY = self:getInputPinPosition(self.snapNode, self.snapPin)
-            snapped = true
+            currentLink.snapped = true
             nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, true)
         end
     end
-    if not snapped then
+    if not currentLink.snapped then
         if currentLink.inputNode then
             currentLink.outputPinX = x
             currentLink.outputPinY = y
