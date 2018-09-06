@@ -396,7 +396,7 @@ function MainWindow:drawLinks(delayToNextFrame)
 
                         local linkColor = self:getPinColor(inputNode, inputPin)
                         if currentLink and currentLink.snapped and self.snapPin == inputPin then
-                            linkColor = linkColor - 0x00000099
+                            linkColor = linkColor & 0xFFFFFF88
                         end
 
                         self:drawLink(
