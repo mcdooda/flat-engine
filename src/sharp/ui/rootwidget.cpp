@@ -462,6 +462,16 @@ void RootWidget::updateCursor() const
 	}
 }
 
+Widget* RootWidget::getCurrentMouseOverWidget() const
+{
+	Widget* mouseOverWidget = m_mouseDownWidget.lock().get();
+	if (mouseOverWidget != nullptr && mouseOverWidget->getRootIfAncestor() != nullptr)
+	{
+		return mouseOverWidget;
+	}
+	return nullptr;
+}
+
 } // ui
 } // sharp
 } // flat
