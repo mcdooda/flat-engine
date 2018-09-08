@@ -3,18 +3,25 @@ local PinTypes = flat.require 'graph/pintypes'
 local Theme = flat.ui.settings.theme.graphEditor.node
 local GridTheme = flat.ui.settings.theme.graphEditor.grid
 
+local MAGNET_BARS_WIDTH = 8
+
 local NodeWidget = {}
 NodeWidget.__index = NodeWidget
 
 function NodeWidget:new(node, mainWindow, foldedNodes)
     assert(foldedNodes)
     assert(node, 'no node given')
-    local nodeType = mainWindow.graph.nodeType
+    local nodeType = mainWindow:getCurrentGraph().nodeType
     local nodePath = node.path
     local customNodeEditor
     pcall(function()
         customNodeEditor = node.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
     end)
+    if not customNodeEditor then
+        pcall(function()
+            customNodeEditor = node.require('graph-editor/common/nodes/' .. nodePath .. 'node')
+        end)
+    end
     local o = setmetatable({
         node = node,
         mainWindow = mainWindow,
@@ -26,24 +33,100 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
         customNodeEditor = customNodeEditor,
         inputPinNameWidgetContainers = {},
         foldedConstantEditorWidgets = {},
+        nodeNameContainer = nil,
+        closestInputPin = nil,
+        closestOutputPin = nil,
     }, self)
 
-    local nodeWidget = Widget.makeColumnFlow()
-    nodeWidget:setBackgroundColor(Theme.BACKGROUND_COLOR)
-    nodeWidget:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
-    nodeWidget:rightClick(function()
-        mainWindow:openNodeContextualMenu()
-        return true
-    end)
-    o.container = nodeWidget
+    o:buildContainer()
     o:build(foldedNodes)
+
     return o
+end
+
+function NodeWidget:buildContainer()
+    local container
+    local visibleContainer
+    do
+        container = Widget.makeLineFlow()
+
+        -- left magnet bar
+        do
+            local leftBar = Widget.makeExpand()
+            leftBar:setSizePolicy(Widget.SizePolicy.FIXED_X + Widget.SizePolicy.EXPAND_Y)
+            leftBar:setSize(MAGNET_BARS_WIDTH, 1)
+            leftBar:setBackgroundColor(0x00660000)
+            container:addChild(leftBar)
+            leftBar:mouseMove(function(bar, x, y)
+                local closestInputPin = self:getClosestInputPin(bar, x, y)
+                if closestInputPin then
+                    self.mainWindow:snapTo(self.node, closestInputPin)
+                else
+                    self.mainWindow:clearSnap()
+                end
+            end)
+            leftBar:mouseLeave(function()
+                self.mainWindow:clearSnap()
+            end)
+            leftBar:mouseDown(function(bar, x, y)
+                local closestInputPin = self:getClosestInputPin(bar, x, y)
+                self:drawLinkFromInputPin(self.node, closestInputPin)
+                return true
+            end)
+            leftBar:mouseUp(function()
+                self.mainWindow:validSnap()
+            end)
+        end
+
+        -- visible container
+        do
+            visibleContainer = Widget.makeColumnFlow()
+            visibleContainer:setBackgroundColor(Theme.BACKGROUND_COLOR)
+            visibleContainer:setPositionPolicy(Widget.PositionPolicy.TOP_LEFT)
+            visibleContainer:rightClick(function()
+                self.mainWindow:openNodeContextualMenu()
+                return true
+            end)
+            container:addChild(visibleContainer)
+        end
+
+        -- right magnet bar
+        do
+            local rightBar = Widget.makeExpand()
+            rightBar:setSizePolicy(Widget.SizePolicy.FIXED_X + Widget.SizePolicy.EXPAND_Y)
+            rightBar:setSize(MAGNET_BARS_WIDTH, 1)
+            rightBar:setBackgroundColor(0x0066F500)
+            container:addChild(rightBar)
+            rightBar:mouseMove(function(bar, x, y)
+                local closestOutputPin = self:getClosestOutputPin(bar, x, y)
+                if closestOutputPin then
+                    self.mainWindow:snapTo(self.node, closestOutputPin)
+                else
+                    self.mainWindow:clearSnap()
+                end
+            end)
+            rightBar:mouseDown(function(bar, x, y)
+                local closestOutputPin = self:getClosestOutputPin(bar, x, y)
+                self.mainWindow:beginDragWireFromOutputPin(self.node, closestOutputPin)
+                return true
+            end)
+            rightBar:mouseLeave(function()
+                self.mainWindow:clearSnap()
+            end)
+            rightBar:mouseUp(function()
+                self.mainWindow:validSnap()
+            end)
+        end
+    end
+
+    self.container = container
+    self.visibleContainer = visibleContainer
 end
 
 function NodeWidget:build(foldedNodes)
     assert(foldedNodes)
 
-    local nodeWidget = self.container
+    local nodeWidget = self.visibleContainer
     local node = self.node
 
     -- node name
@@ -94,6 +177,8 @@ function NodeWidget:build(foldedNodes)
         end
 
         nodeWidget:addChild(nodeNameContainer)
+
+        self.nodeNameContainer = nodeNameContainer
     end
 
     -- all pins
@@ -148,8 +233,73 @@ end
 
 function NodeWidget:rebuild(foldedNodes)
     assert(foldedNodes)
-    self.container:removeAllChildren()
+    self.visibleContainer:removeAllChildren()
     self:build(foldedNodes)
+end
+
+function NodeWidget:getVisiblePosition()
+    local trueX, trueY = self.container:getPosition()
+    return trueX + MAGNET_BARS_WIDTH, trueY
+end
+
+function NodeWidget:dragged(callback)
+    self.container:dragged(callback)
+end
+
+function NodeWidget:setVisiblePosition(x, y)
+    self.container:setPosition(x - MAGNET_BARS_WIDTH, y)
+end
+
+function NodeWidget:delete(position)
+    self.container:removeFromParent()
+end
+
+function NodeWidget:drag()
+    self.container:drag()
+end
+
+function NodeWidget:drop()
+    self.container:drop()
+end
+
+function NodeWidget:getRelativePositionInWindow()
+    return self.mainWindow:getContent():getRelativePosition(self.visibleContainer)
+end
+
+function NodeWidget:getVisibleComputedSize()
+    return self.visibleContainer:getComputedSize()
+end
+
+function NodeWidget:getContainer()
+    return self.container
+end
+
+function NodeWidget:drawLinkFromInputPin(node, pin)
+    if pin.pluggedOutputPin then
+        local outputPin = pin.pluggedOutputPin.outputPin
+        local outputNode = pin.pluggedOutputPin.node
+        local outputNodeWidget = self.mainWindow:getCurrentGraphNodeWidgets()[outputNode]
+        if outputNodeWidget then
+            local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
+
+            if updateOutputNodeWidget then
+                outputNode:rebuild(self.mainWindow:getFoldedNodes())
+            end
+
+            if updateInputNodeWidget then
+                self:rebuild(self.mainWindow:getFoldedNodes())
+            else
+                self:setInputPinPlugged(pin, false)
+            end
+
+            self.mainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
+            self:showFoldedConstantNode(pin)
+        else
+            self.mainWindow:beginDragWireFromInputPin(node, pin)
+        end
+    else
+        self.mainWindow:beginDragWireFromInputPin(node, pin)
+    end
 end
 
 function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
@@ -167,37 +317,27 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
         inputPinPlugWidget:addChild(inputPinSocketWidget)
         self.inputPinSocketWidgets[pin] = inputPinSocketWidget
 
+        local mouseIsInside = false
         inputPinPlugWidget:mouseDown(function()
-            if pin.pluggedOutputPin then
-                local outputPin = pin.pluggedOutputPin.outputPin
-                local outputNode = pin.pluggedOutputPin.node
-                local outputNodeWidget = self.mainWindow.nodeWidgets[outputNode]
-                if outputNodeWidget then
-                    local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
-
-                    if updateOutputNodeWidget then
-                        outputNode:rebuild(self.mainWindow:getFoldedNodes())
-                    end
-
-                    if updateInputNodeWidget then
-                        self:rebuild(self.mainWindow:getFoldedNodes())
-                    else
-                        self:setInputPinPlugged(pin, false)
-                    end
-
-                    self.mainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
-                    self:showFoldedConstantNode(pin)
-                else
-                    self.mainWindow:beginDragWireFromInputPin(node, pin)
-                end
-            else
-                self.mainWindow:beginDragWireFromInputPin(node, pin)
-            end
+            self:drawLinkFromInputPin(node, pin)
             return true
         end)
 
         inputPinPlugWidget:mouseUp(function()
-            return self.mainWindow:linkReleasedOnInputPin(node, pin)
+            self.mainWindow:validSnap()
+        end)
+
+        inputPinPlugWidget:mouseMove(function()
+            if mouseIsInside then
+                self.mainWindow:snapTo(node, pin)
+            end
+        end)
+        inputPinPlugWidget:mouseLeave(function()
+            mouseIsInside = false
+            self.mainWindow:clearSnap()
+        end)
+        inputPinPlugWidget:mouseEnter(function()
+            mouseIsInside = true
         end)
 
         inputPinWidget:addChild(inputPinPlugWidget)
@@ -236,7 +376,7 @@ end
 
 function NodeWidget:showFoldedConstantNode(pin)
     self.foldedConstantEditorWidgets[pin] = nil
-    local graph = self.mainWindow.graph
+    local graph = self.mainWindow:getCurrentGraph()
     local node = self.node
     local nodeType = graph.nodeType
     local nodeName = node:pinTypeToString(pin.pinType):lower()
@@ -288,13 +428,29 @@ function NodeWidget:makeOutputPinWidget(node, pin)
             self.outputPinSocketWidgets[pin] = outputPinSocketWidget
         end
 
+        local mouseIsInside = false
+
+        outputPinPlugWidget:mouseEnter(function()
+            mouseIsInside = true
+        end)
+
+        outputPinPlugWidget:mouseMove(function()
+            if mouseIsInside then
+                self.mainWindow:snapTo(node, pin)
+            end
+        end)
+        outputPinPlugWidget:mouseLeave(function()
+            mouseIsInside = false
+            self.mainWindow:clearSnap()
+        end)
+
         outputPinPlugWidget:mouseDown(function()
             self.mainWindow:beginDragWireFromOutputPin(node, pin)
             return true
         end)
 
         outputPinPlugWidget:mouseUp(function()
-            return self.mainWindow:linkReleasedOnOutputPin(node, pin)
+            return self.mainWindow:validSnap()
         end)
 
         outputPinWidget:addChild(outputPinPlugWidget)
@@ -305,11 +461,11 @@ function NodeWidget:makeOutputPinWidget(node, pin)
 end
 
 function NodeWidget:select()
-    self.container:setBackgroundColor(Theme.SELECTED_BACKGROUND_COLOR)
+    self.visibleContainer:setBackgroundColor(Theme.SELECTED_BACKGROUND_COLOR)
 end
 
 function NodeWidget:deselect()
-    self.container:setBackgroundColor(Theme.BACKGROUND_COLOR)
+    self.visibleContainer:setBackgroundColor(Theme.BACKGROUND_COLOR)
 end
 
 local pinColors = {
@@ -359,10 +515,11 @@ function NodeWidget:updatePinSocketWidgets()
 end
 
 function NodeWidget:updateInputPinSocketWidgets()
+    local nodeWidgets = self.mainWindow:getCurrentGraphNodeWidgets()
     local inputPins = self.node.inputPins
     for i = 1, #inputPins do
         local inputPin = inputPins[i]
-        local plugged = inputPin.pluggedOutputPin and self.mainWindow.nodeWidgets[inputPin.pluggedOutputPin.node]
+        local plugged = inputPin.pluggedOutputPin and nodeWidgets[inputPin.pluggedOutputPin.node]
         self:setInputPinPlugged(inputPin, plugged)
         if not plugged and not self.foldedConstantEditorWidgets[inputPin] then
             self:showFoldedConstantNode(inputPin)
@@ -384,5 +541,32 @@ function NodeWidget:updateCustomNodeEditor()
         return self.customNodeEditor.update(self.node, self, self.pinsWidget)
     end
 end
+
+local function getClosestPin(bar, pinPlugWidgets, x, y)
+    local closestPin = nil
+    local closestDistance = math.huge
+    local barWidth, barHeight = bar:getComputedSize()
+    local barX, barY = bar:getPosition()
+    for pin, plugWidget in pairs(pinPlugWidgets) do
+        local _, socketY = bar:getRelativePosition(plugWidget)
+        local _, plugHeight = plugWidget:getComputedSize()
+        local distance = math.abs(socketY + plugHeight / 2 - y)
+        local isInBar = x >= barX and x <= barX + barWidth
+        if distance < closestDistance and distance < 50 and isInBar then
+            closestDistance = distance
+            closestPin = pin
+        end
+    end
+    return closestPin
+end
+
+function NodeWidget:getClosestInputPin(leftMagnetBar, x, y)
+    return getClosestPin(leftMagnetBar, self.inputPinPlugWidgets, x, y)
+end
+
+function NodeWidget:getClosestOutputPin(rightMagnetBar, x, y)
+    return getClosestPin(rightMagnetBar, self.outputPinPlugWidgets, x, y)
+end
+
 
 return NodeWidget

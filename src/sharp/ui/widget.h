@@ -206,8 +206,12 @@ class Widget : public util::Convertible<Widget>
 		
 		void addChild(const std::shared_ptr<Widget>& widget);
 		void removeChild(const std::shared_ptr<Widget>& widget);
+		void removeChildAtIndex(int index);
 		void removeFromParent();
 		void removeAllChildren();
+
+		inline size_t getChildrenCount() const { return m_children.size(); }
+		inline const std::shared_ptr<Widget>& getChildAtIndex(int index) const { return m_children[index]; }
 
 		inline const std::weak_ptr<Widget>& getParent() const { return m_parent; }
 

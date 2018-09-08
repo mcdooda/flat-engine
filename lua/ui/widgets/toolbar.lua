@@ -11,6 +11,14 @@ function Toolbar:new(parent)
     return o
 end
 
+function Toolbar:build(parent)
+    local toolbar = Widget.makeLineFlow()
+    toolbar:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+    toolbar:setBackgroundColor(Theme.BACKGROUND_COLOR)
+    parent:addChild(toolbar)
+    self.toolbar = toolbar
+end
+
 function Toolbar:addButton(text)
     local button = Widget.makeLineFlow()
     button:setPadding(2, 4, 2, 4)
@@ -32,14 +40,6 @@ function Toolbar:addButton(text)
 
     self.toolbar:addChild(button)
     return button
-end
-
-function Toolbar:build(parent)
-    local toolbar = Widget.makeLineFlow()
-    toolbar:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-    toolbar:setBackgroundColor(Theme.BACKGROUND_COLOR)
-    parent:addChild(toolbar)
-    self.toolbar = toolbar
 end
 
 flat.ui.Toolbar = Toolbar

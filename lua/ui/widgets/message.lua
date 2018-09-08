@@ -1,5 +1,6 @@
 local ToolbarTheme = flat.ui.settings.theme.toolbar -- TODO
 local WindowTheme = flat.ui.settings.theme.window -- TODO
+local Button = require 'data/scripts/ui/button'
 
 local function message(messageString, messageContent, buttons)
     local overlay = flat.ui.overlay()
@@ -41,26 +42,11 @@ local function message(messageString, messageContent, buttons)
         for i = 1, #buttons do
             local button = buttons[i]
 
-            local buttonWidget = Widget.makeCompress()
-            buttonWidget:setBackgroundColor(ToolbarTheme.BUTTON_BACKGROUND_COLOR)
+            local buttonText = Widget.makeText(button.text, table.unpack(ToolbarTheme.BUTTON_FONT))
+            buttonText:setTextColor(ToolbarTheme.BUTTON_TEXT_COLOR)
+            local buttonWidget = Button:new(buttonText, {padding={8, 20, 8, 20}, margin=3, color=ToolbarTheme.BUTTON_BACKGROUND_COLOR, hoverColor=ToolbarTheme.BUTTON_BACKGROUND_COLOR_OVER})
             buttonWidget:click(button.click)
-            buttonWidget:setPadding(3, 5, 3, 5)
-            buttonWidget:setMargin(2)
-            buttonWidget:mouseEnter(function()
-                buttonWidget:setBackgroundColor(ToolbarTheme.BUTTON_BACKGROUND_COLOR_OVER)
-            end)
-            buttonWidget:mouseLeave(function()
-                buttonWidget:setBackgroundColor(ToolbarTheme.BUTTON_BACKGROUND_COLOR)
-            end)
-
-            do
-                local buttonText = Widget.makeText(button.text, table.unpack(ToolbarTheme.BUTTON_FONT))
-                buttonText:setTextColor(ToolbarTheme.BUTTON_TEXT_COLOR)
-
-                buttonWidget:addChild(buttonText)
-            end
-
-            buttonsContainer:addChild(buttonWidget)
+            buttonsContainer:addChild(buttonWidget.container)
         end
         contentContainer:addChild(buttonsContainer)
     end

@@ -19,6 +19,8 @@ class Ui
 	public:
 		Ui(Flat& flat);
 
+		void reset();
+
 		void setCursor(CursorType cursorType);
 		void setDefaultCursor();
 

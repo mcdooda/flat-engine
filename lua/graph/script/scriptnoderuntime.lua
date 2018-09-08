@@ -21,10 +21,15 @@ end
 
 function ScriptNodeRuntime:readPin(inputPin)
     local value = self:readOptionalPin(inputPin)
-    assert(
-        value ~= nil,
-        'Cannot read nil from pin ' .. self.node:getName() .. ' -> ' .. inputPin.pinName .. ' of type ' .. self.node:pinTypeToString(inputPin.pinType)
-    )
+    if value == nil then
+        local msg = 'Cannot read nil from pin ' .. self.node:getName() .. '->' .. inputPin.pinName .. ' of type ' .. self.node:pinTypeToString(inputPin.pinType)
+        if inputPin.pluggedOutputPin then
+            msg = msg .. ' ' .. '(plugged to ' .. inputPin.pluggedOutputPin.node:getName() .. '->' .. inputPin.pluggedOutputPin.outputPin.pinName .. ')'
+        else
+            msg = msg .. ' (not plugged)'
+        end
+        error(msg)
+    end
     return value
 end
 
@@ -59,18 +64,21 @@ end
 function ScriptNodeRuntime:writePin(outputPin, value)
     assert(
         value ~= nil,
-        'Cannot write nil to pin ' .. self.node:getName() .. ' -> ' .. outputPin.pinName .. ' of type ' .. self.node:pinTypeToString(outputPin.pinType)
+        'Cannot write nil to pin ' .. self.node:getName() .. '->' .. outputPin.pinName .. ' of type ' .. self.node:pinTypeToString(outputPin.pinType)
     )
     self:writeOptionalPin(outputPin, value)
 end
 
 function ScriptNodeRuntime:writeOptionalPin(outputPin, value)
+    -- pinValue is nil if the pin is not plugged to anything
     local pinValue = self.outputPinValues[outputPin]
-    assert(
-        value == nil or flat.type(value) == outputPin.pinType,
-        'wrong value for pin ' .. outputPin.pinName .. ': ' .. tostring(value) .. ' of type ' .. flat.typetostring(flat.type(value)) .. ', expected ' .. flat.typetostring(outputPin.pinType)
-    )
-    pinValue.value = value
+    if pinValue then
+        assert(
+            value == nil or flat.type(value) == outputPin.pinType,
+            'wrong value for pin ' .. outputPin.pinName .. ': ' .. tostring(value) .. ' of type ' .. flat.typetostring(flat.type(value)) .. ', expected ' .. flat.typetostring(outputPin.pinType)
+        )
+        pinValue.value = value
+    end
 end
 
 function ScriptNodeRuntime:impulse(outputPin)

@@ -17,6 +17,10 @@ function Node:getName()
     return self.name
 end
 
+function Node:isBrowsable()
+    return true
+end
+
 function Node:inherit(name)
     -- name is optional (for virtual classes)
     local nodeType = {
@@ -40,6 +44,13 @@ end
 
 function Node:getLoadArguments()
     -- overriden when needed, should return the arguments to pass to load(...)
+end
+
+function Node:clone()
+    local clone = getmetatable(self):new()
+    clone:load(self:getLoadArguments())
+    clone:buildPins()
+    return clone
 end
 
 function Node:addInputPin(pinType, pinName, onPlugged, onUnplugged)
@@ -136,8 +147,13 @@ function Node:rebuildPins()
 end
 
 function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged)
+    assert(outputPin, 'the output pin is missing')
+    assert(inputNode, 'the input node is missing')
+    assert(inputPin, 'the input pin is missing')
     assert(not inputPin.pluggedOutputPin, 'the input pin is already plugged')
     assert(not otherOutputPinUnplugged or flat.debug)
+    assert(self:findOutputPinIndex(outputPin), 'pin ' .. outputPin.pinName .. ' is not from node ' .. self:getName())
+    assert(inputNode:findInputPinIndex(inputPin), 'pin ' .. inputPin.pinName .. ' is not from node ' .. inputNode:getName())
 
     if outputPin.pinType == PinTypes.ANY then
         assert(inputPin.pinType ~= PinTypes.ANY)
@@ -165,10 +181,10 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged)
     local updateOutputNode = false
     local updateInputNode = false
     if outputPin.onPlugged then
-        updateOutputNode = outputPin.onPlugged(self, outputPin)
+        updateOutputNode = outputPin.onPlugged(self, outputPin, inputPin)
     end
     if inputPin.onPlugged then
-        updateInputNode = inputPin.onPlugged(inputNode, inputPin, otherOutputPinUnplugged)
+        updateInputNode = inputPin.onPlugged(inputNode, inputPin, outputPin, otherOutputPinUnplugged)
     end
     return updateOutputNode, updateInputNode
 end
@@ -219,7 +235,7 @@ end
 function Node:unplugAllOutputPins()
     for i = 1, #self.outputPins do
         local outputPin = self.outputPins[i]
-        for j = 1, #outputPin.pluggedInputPins do
+        for j = #outputPin.pluggedInputPins, 1, -1 do -- iterate backwards to avoid breaking the indices
             local pluggedInputPin = outputPin.pluggedInputPins[j]
             local node = pluggedInputPin.node
             local inputPin = pluggedInputPin.inputPin

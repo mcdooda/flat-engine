@@ -1,4 +1,9 @@
 return {
     ANY = 'ANY',
-    IMPULSE = 'IMPULSE'
+
+    -- script
+    IMPULSE = 'IMPULSE',
+
+    -- state machine
+    TRANSITION = 'TRANSITION'
 }

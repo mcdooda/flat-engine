@@ -21,7 +21,9 @@ end
 
 function FunctionNode:addCustomPin(pin)
     pin.pinName = self:makePinNameFromType(pin.pinType)
-    self:addOutputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
+    if self.outputPins[#self.outputPins].pinName ~= 'New Pin' then
+        self:addOutputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
+    end
     return true
 end
 

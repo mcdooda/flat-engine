@@ -35,8 +35,12 @@ int open(Flat& flat, flat::lua::Lua& lua)
 	static const luaL_Reg Widget_lib_m[] = {
 		{"addChild",              l_Widget_addChild},
 		{"removeChild",           l_Widget_removeChild},
-		{"removeFromParent",      l_Widget_removeFromParent},
+		{"removeChildAtIndex",    l_Widget_removeChildAtIndex},
 		{"removeAllChildren",     l_Widget_removeAllChildren},
+		{"getChildrenCount",      l_Widget_getChildrenCount},
+		{"getChildAtIndex",       l_Widget_getChildAtIndex},
+		{"removeFromParent",      l_Widget_removeFromParent},
+		{"getParent",             l_Widget_getParent},
 
 		{"setSizePolicy",         l_Widget_setSizePolicy},
 		{"setSizePolicyX",        l_Widget_setSizePolicyX},
@@ -246,10 +250,14 @@ int l_Widget_removeChild(lua_State* L)
 	return 0;
 }
 
-int l_Widget_removeFromParent(lua_State* L)
+
+int l_Widget_removeChildAtIndex(lua_State* L)
 {
-	Widget& widget = getWidget(L, 1);
-	widget.removeFromParent();
+	Widget& parent = getWidget(L, 1);
+	int index = static_cast<int>(luaL_checkinteger(L, 2)) - 1;
+	size_t count = parent.getChildrenCount();
+	luaL_argcheck(L, 0 <= index && index < count, 2, "Invalid child index");
+	parent.removeChildAtIndex(index);
 	return 0;
 }
 
@@ -258,6 +266,37 @@ int l_Widget_removeAllChildren(lua_State* L)
 	Widget& widget = getWidget(L, 1);
 	widget.removeAllChildren();
 	return 0;
+}
+
+int l_Widget_getChildrenCount(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	lua_pushinteger(L, widget.getChildrenCount());
+	return 1;
+}
+
+int l_Widget_getChildAtIndex(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	int index = static_cast<int>(luaL_checkinteger(L, 2)) - 1;
+	size_t count = widget.getChildrenCount();
+	luaL_argcheck(L, 0 <= index && index < count, 2, "Invalid child index");
+	pushWidget(L, widget.getChildAtIndex(index));
+	return 1;
+}
+
+int l_Widget_removeFromParent(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	widget.removeFromParent();
+	return 0;
+}
+
+int l_Widget_getParent(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	pushWidget(L, widget.getParent().lock());
+	return 1;
 }
 
 int l_Widget_setSizePolicy(lua_State* L)
@@ -1102,7 +1141,7 @@ int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, con
 {
 	Widget& widget = getWidget(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	//FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	(widget.*slot).on(
 		[L, callback](Widget* w, bool& eventHandled, const Vector2& offset)
