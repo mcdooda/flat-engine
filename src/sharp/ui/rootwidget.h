@@ -42,7 +42,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		void update();
 
-		Widget* getCurrentMouseOverWidget() const;
+		inline bool isMouseOver() const { return !m_mouseOverWidget.expired(); }
+		inline const std::weak_ptr<Widget>& getCurrentMouseOverWidget() const { return m_mouseOverWidget; }
 
 		bool isRoot() const override { return true; }
 
