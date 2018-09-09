@@ -58,20 +58,43 @@ function Graph:addCompound(node)
 end
 
 function Graph:loadGraph(graphPath)
-    local env = { PinTypes = PinTypes }
-    function env.__index(env, nodeType)
-        local nodeClasses = flat.graph.getNodeClasses(nodeType)
-        return function(savedGraph)
-            self:load(nodeType, savedGraph, nodeClasses)
+    io.write('Loading graph ' .. graphPath .. '\n-> ')
+    local ok, err = pcall(function()
+        io.write('Trying the new format... ')
+        local savedGraph = dofile(graphPath)
+        assert(savedGraph, 'no return value!')
+        self:load(savedGraph)
+        io.write('done.\n')
+    end)
+    if not ok then
+        print(err)
+        ok, err = pcall(function()
+            io.write('failed! fallback to the old format... ')
+            -- fallback to the old format
+            local env = { PinTypes = PinTypes }
+            function env.__index(env, nodeType)
+                return function(savedGraph)
+                    savedGraph.nodeType = nodeType
+                    self:load(savedGraph)
+                end
+            end
+        
+            setmetatable(env, env)
+        
+            assert(loadfile(graphPath, 'bt', env))()
+            io.write('fallback successful.\n')
+        end)
+        if not ok then
+            print(err)
+            io.write('fallback failed!\n')
         end
     end
-
-    setmetatable(env, env)
-
-    assert(loadfile(graphPath, 'bt', env))()
 end
 
-function Graph:load(nodeType, savedGraph, nodeRepository)
+function Graph:load(savedGraph)
+    local nodeType = savedGraph.nodeType
+    local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
+
     self.nodeType = nodeType
 
     -- build nodes
@@ -79,7 +102,7 @@ function Graph:load(nodeType, savedGraph, nodeRepository)
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
-        local nodeClass = assert(nodeRepository[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
+        local nodeClass = assert(nodeClasses[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
         local nodeInstance = self:addNode(nodeClass, false)
         local loadArguments = node.loadArguments
         if loadArguments then
@@ -132,8 +155,9 @@ function Graph:resolveCompounds()
     self.compounds = nil -- avoid calling resolveCompounds again
 end
 
-function Graph:saveGraph(graphPath)
+function Graph:getDescription()
     local graphDescription = {
+        nodeType = self.nodeType,
         nodes = {},
         links = {}
     }
@@ -165,10 +189,18 @@ function Graph:saveGraph(graphPath)
             end
         end
     end
+    return graphDescription
+end
 
+function Graph:toString()
+    local graphDescription = self:getDescription()
+    return 'return ' .. flat.dumpToString(graphDescription)
+end
+
+function Graph:saveGraph(graphPath)
+    local graphDescription = self:getDescription()
     local f = assert(io.open(graphPath, 'w'))
-    f:write(self.nodeType)
-    f:write ' '
+    f:write 'return '
     flat.dumpToOutput(f, graphDescription)
     f:close()
 end
