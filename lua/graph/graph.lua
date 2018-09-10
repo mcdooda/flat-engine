@@ -58,18 +58,13 @@ function Graph:addCompound(node)
 end
 
 function Graph:loadGraph(graphPath)
-    io.write('Loading graph ' .. graphPath .. '\n-> ')
     local ok, err = pcall(function()
-        io.write('Trying the new format... ')
         local savedGraph = dofile(graphPath)
         assert(savedGraph, 'no return value!')
         self:load(savedGraph)
-        io.write('done.\n')
     end)
     if not ok then
-        print(err)
         ok, err = pcall(function()
-            io.write('failed! fallback to the old format... ')
             -- fallback to the old format
             local env = { PinTypes = PinTypes }
             function env.__index(env, nodeType)
@@ -82,11 +77,9 @@ function Graph:loadGraph(graphPath)
             setmetatable(env, env)
         
             assert(loadfile(graphPath, 'bt', env))()
-            io.write('fallback successful.\n')
         end)
         if not ok then
-            print(err)
-            io.write('fallback failed!\n')
+            error('Could not load graph ' .. graphPath)
         end
     end
 end
