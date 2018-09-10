@@ -22,9 +22,7 @@ end
 
 function ScriptOutputNode:addCustomPin(pin, otherPin)
     pin.pinName = otherPin.pinName
-    if self.inputPins[#self.inputPins].pinName ~= 'New Pin' then
-        self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
-    end
+    self:addInputPin(PinTypes.ANY, 'New Pin', self.addCustomPin)
     return true
 end
 
