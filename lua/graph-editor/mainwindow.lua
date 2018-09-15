@@ -45,8 +45,8 @@ function MainWindow:build()
         do
             local saveButton = toolbar:addButton 'Save Graph'
             saveButton:click(function()
-                self:saveGraph()
-                self:saveGraphLayout()
+                self:saveGraphToFile()
+                self:saveGraphLayoutToFile()
                 self:saveLuaRunnerFile() -- TODO: only for components?
                 self:updateCustomNodeEditors()
                 if self.onSave then
@@ -164,7 +164,7 @@ function MainWindow:closeAllRightClickMenus()
     self:closeNodeContextualMenu()
 end
 
-function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
+function MainWindow:openGraphFromFile(graphPath, nodeType)
     local graphInfos = self.graphInfos
 
     -- if the graph is already open right below, only change the breadcrumb focus
@@ -183,7 +183,7 @@ function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
         end
     end
 
-    local graph = self:loadGraph(graphPath)
+    local graph = self:loadGraphFromFile(graphPath)
 
     local graphInfo = {
         graph = graph,
@@ -191,7 +191,8 @@ function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
         index = #graphInfos + 1,
         nodeWidgets = {},
         selectedNodeWidgets = {},
-        parentGraphInfo = parentGraphInfo
+        parentGraphInfo = nil,
+        subGraphId = nil
     }
     graphInfos[graphInfo.index] = graphInfo
     self:setCurrentGraphInfo(graphInfo)
@@ -209,7 +210,8 @@ function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
             'unexpected graph type: ' .. tostring(nodeType) .. ' expected, got ' .. tostring(graph.nodeType)
         )
 
-        local graphLayout = self:loadGraphLayout(graphPath)
+        local graphLayout = self:getGraphLayout(graphInfo)
+        graphInfo.originalLayout = graphLayout
         local content = self:getContent()
 
         local foldedNodes = {}
@@ -242,7 +244,81 @@ function MainWindow:openGraph(graphPath, nodeType, parentGraphInfo)
     end
 end
 
-function MainWindow:loadGraph(graphPath)
+function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
+    local graphInfos = self.graphInfos
+
+    -- if the graph is already open right below, only change the breadcrumb focus
+    if self.currentGraphInfo then
+        local subGraphInfo = graphInfos[self.currentGraphInfo.index + 1]
+        if subGraphInfo and subGraphInfo.graph == graph then
+            self:setCurrentGraphInfo(subGraphInfo)
+            self.breadcrumb:setCurrentItem(subGraphInfo.index)
+            return
+        end
+
+        -- remove sub graphs
+        for i = #graphInfos, self.currentGraphInfo.index + 1, -1 do
+            graphInfos[i] = nil
+            self.breadcrumb:removeItem(i)
+        end
+    end
+
+    local graphInfo = {
+        graph = graph,
+        path = nil,
+        index = #graphInfos + 1,
+        nodeWidgets = {},
+        selectedNodeWidgets = {},
+        parentGraphInfo = parentGraphInfo,
+        subGraphId = subGraphId
+    }
+    graphInfos[graphInfo.index] = graphInfo
+    self:setCurrentGraphInfo(graphInfo)
+
+    local item = self.breadcrumb:addItem(self:getBreadcrumbName(graphInfo))
+    item:click(function()
+        self:setCurrentGraphInfo(graphInfo)
+    end)
+    self.breadcrumb:setCurrentItem(graphInfo.index)
+
+    if graph.nodeType then
+        -- the graph has been loaded
+        assert(graph.nodeType, 'unknown graph type')
+
+        local graphLayout = self:getGraphLayout(graphInfo)
+        local content = self:getContent()
+
+        local foldedNodes = {}
+        for i = 1, #graph.nodeInstances do
+            local node = graph.nodeInstances[i]
+            local nodePosition = graphLayout[i]
+            if not nodePosition then
+                foldedNodes[node] = true
+            end
+        end
+
+        for i = 1, #graph.nodeInstances do
+            local node = graph.nodeInstances[i]
+            local nodePosition = graphLayout[i]
+            if nodePosition then
+                local nodeWidget = self:makeNodeWidget(node, foldedNodes)
+                nodeWidget:setVisiblePosition(table.unpack(nodePosition))
+                content:addChild(nodeWidget:getContainer())
+            end
+        end
+
+        self:updateCustomNodeEditors()
+        content:redraw()
+        return true
+    else
+        -- the graph has not been loaded
+        graph.nodeType = nodeType
+        self.isNew = true
+        return false
+    end
+end
+
+function MainWindow:loadGraphFromFile(graphPath)
     assert(graphPath)
     local graph = Graph:new()
     pcall(function()
@@ -252,12 +328,12 @@ function MainWindow:loadGraph(graphPath)
     return graph
 end
 
-function MainWindow:saveGraph()
+function MainWindow:saveGraphToFile()
     local graphInfo = self:getCurrentRootGraphInfo()
     graphInfo.graph:saveGraph(graphInfo.path .. '.graph.lua')
 end
 
-function MainWindow:loadGraphLayout(graphPath)
+function MainWindow:loadGraphLayoutFromFile(graphPath)
     assert(graphPath)
     local graphLayout
     if not pcall(function()
@@ -268,7 +344,7 @@ function MainWindow:loadGraphLayout(graphPath)
     return graphLayout
 end
 
-function MainWindow:saveGraphLayout()
+function MainWindow:saveGraphLayoutToFile()
     local graphInfo = self:getCurrentRootGraphInfo()
     local nodeWidgets = graphInfo.nodeWidgets
     local graphLayout = {}
@@ -282,6 +358,9 @@ function MainWindow:saveGraphLayout()
         end
     end
 
+    -- restore sub graph layouts
+    -- TODO graphInfo.originalLayout
+
     local f = io.open(graphInfo.path .. '.layout.lua', 'w')
     f:write 'return '
     flat.dumpToOutput(f, graphLayout)
@@ -290,15 +369,17 @@ end
 
 function MainWindow:saveLuaRunnerFile()
     local graphPath = self.currentGraphInfo.path
-    local componentFilePath = graphPath .. '.lua'
-    if not io.open(componentFilePath, 'r') then
-        -- TODO: should depend on the node type
-        local runnerCode = ([[return flat.graph.script.run '%s']]):format(graphPath)
+    if graphPath then
+        local componentFilePath = graphPath .. '.lua'
+        if not io.open(componentFilePath, 'r') then
+            -- TODO: should depend on the node type
+            local runnerCode = ([[return flat.graph.script.run '%s']]):format(graphPath)
 
-        local f = io.open(componentFilePath, 'w')
-        assert(runnerCode)
-        f:write(runnerCode)
-        f:close()
+            local f = io.open(componentFilePath, 'w')
+            assert(runnerCode)
+            f:write(runnerCode)
+            f:close()
+        end
     end
 end
 
@@ -1029,8 +1110,26 @@ function MainWindow:getCurrentRootGraphInfo()
     return graphInfo
 end
 
+function MainWindow:getGraphLayout(graphInfo)
+    assert(graphInfo.path or graphInfo.parentGraphInfo)
+    if graphInfo.path then
+        return self:loadGraphLayoutFromFile(graphInfo.path)
+    else
+        local parentLayout = self:getGraphLayout(graphInfo.parentGraphInfo)
+        local layout
+        if parentLayout.subGraphLayouts then
+            layout = parentLayout.subGraphLayouts[graphInfo.subGraphId]
+        end
+        return layout or {}
+    end
+end
+
 function MainWindow:getBreadcrumbName(graphInfo)
-    return graphInfo.index .. '. ' .. string.gsub(graphInfo.path, '.+/([^/]-)$', '%1')
+    if graphInfo.path then
+        return graphInfo.index .. '. ' .. string.gsub(graphInfo.path, '.+/([^/]-)$', '%1')
+    else
+        return graphInfo.index .. '. (' .. graphInfo.graph.nodeType .. ')'
+    end
 end
 
 function MainWindow:snapTo(node, pin)

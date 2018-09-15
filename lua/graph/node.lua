@@ -245,10 +245,8 @@ function Node:unplugAllOutputPins()
 end
 
 function Node:pinTypeToString(pinType)
-    if pinType == PinTypes.ANY then
-        return 'ANY'
-    elseif pinType == PinTypes.IMPULSE then
-        return 'IMPULSE'
+    if PinTypes[pinType] then
+        return pinType
     else
         assert(type(pinType) == 'number', 'pinType ' .. tostring(pinType) .. ' should be an integer')
         return flat.typetostring(pinType)

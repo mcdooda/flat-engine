@@ -19,6 +19,7 @@ function InnerGraphNode:load(savedGraph)
     if not loaded then
         print('Could not load inner graph in node ' .. self:getName() .. ': ' .. err)
         self.innerGraph = Graph:new() -- clear the graph to avoid unexpected errors in the editor
+        self.innerGraph.nodeType = innerGraph.nodeType
         return false
     end
     return true

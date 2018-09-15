@@ -6,7 +6,7 @@ function CompoundNodeEditor.build(compoundNode, nodeWidget, pinsWidget)
         local subGraphPath = compoundNode:getGraphPath()
         local graphInfo = mainWindow:getCurrentGraphInfo()
         local nodeType = graphInfo.graph.nodeType
-        nodeWidget.mainWindow:openGraph(subGraphPath, nodeType, nil)
+        nodeWidget.mainWindow:openGraphFromFile(subGraphPath, nodeType)
         return true
     end)
     return false

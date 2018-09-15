@@ -469,13 +469,18 @@ function NodeWidget:deselect()
 end
 
 local pinColors = {
-    [PinTypes.ANY]        = 0x888888FF,
-    [PinTypes.IMPULSE]    = 0xE74C3CFF,
-    [flat.types.BOOLEAN]  = 0x2ECC71FF,
-    [flat.types.NUMBER]   = 0xF39C12FF,
-    [flat.types.STRING]   = 0x3498DBFF,
-    [flat.types.TABLE]    = 0x8E44ADFF,
-    [flat.types.FUNCTION] = 0x34495EFF,
+    [PinTypes.ANY]           = 0x888888FF,
+
+    [PinTypes.IMPULSE]       = 0xE74C3CFF,
+
+    [PinTypes.TO_STATE]      = 0x1ABC9CFF,
+    [PinTypes.STATE_TO_RULE] = 0x9B59B6FF,
+
+    [flat.types.BOOLEAN]     = 0x2ECC71FF,
+    [flat.types.NUMBER]      = 0xF39C12FF,
+    [flat.types.STRING]      = 0x3498DBFF,
+    [flat.types.TABLE]       = 0x8E44ADFF,
+    [flat.types.FUNCTION]    = 0x34495EFF,
 
     [flat.types['flat.Vector2']] = 0xF17A88FF,
     [flat.types['flat.Vector3']] = 0xF17A00FF,
