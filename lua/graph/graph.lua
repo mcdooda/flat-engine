@@ -7,7 +7,8 @@ function Graph:new()
     local o = {
         nodeInstances = {},
         entryNodes = {},
-        compounds = {}
+        compounds = {},
+        subGraphIds = {}
     }
     return setmetatable(o, self)
 end
@@ -57,7 +58,7 @@ function Graph:addCompound(node)
     self.compounds[#self.compounds + 1] = node
 end
 
-function Graph:loadGraph(graphPath)
+function Graph:loadGraphFromFile(graphPath)
     local ok, err = pcall(function()
         local savedGraph = dofile(graphPath)
         assert(savedGraph, 'no return value!')
@@ -85,6 +86,7 @@ function Graph:loadGraph(graphPath)
 end
 
 function Graph:load(savedGraph)
+    assert(savedGraph, 'Trying to load a nil graph')
     local nodeType = savedGraph.nodeType
     local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
 
@@ -196,6 +198,17 @@ function Graph:saveGraph(graphPath)
     f:write 'return '
     flat.dumpToOutput(f, graphDescription)
     f:close()
+end
+
+function Graph:makeNewSubGraphId()
+    local newSubGraphId = #self.subGraphIds + 1
+    self.subGraphIds[newSubGraphId] = true
+    return newSubGraphId
+end
+
+function Graph:addSubGraphId(subGraphId)
+    assert(not self.subGraphIds[subGraphId])
+    self.subGraphIds[subGraphId] = true
 end
 
 return Graph

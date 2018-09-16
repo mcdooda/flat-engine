@@ -49,6 +49,7 @@ function ScriptRuntime:new(graph)
         local node = graph.nodeInstances[i]
         local nodeInputPinValues = inputPinValues[node]
         local nodeOutputPinValues = outputPinValues[node]
+        assert(node.getRuntimeType, 'Node ' .. node:getName() .. ' is not supported in scripts (getRuntimeType method missing)')
         local scriptRuntimeType = node:getRuntimeType()
         nodeRuntimes[node] = scriptRuntimeType:new(o, node, nodeInputPinValues, nodeOutputPinValues)
     end

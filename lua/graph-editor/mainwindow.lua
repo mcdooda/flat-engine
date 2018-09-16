@@ -211,7 +211,7 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
         )
 
         local graphLayout = self:getGraphLayout(graphInfo)
-        graphInfo.originalLayout = graphLayout
+        graphInfo.layout = graphLayout
         local content = self:getContent()
 
         local foldedNodes = {}
@@ -245,6 +245,9 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
 end
 
 function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
+    assert(graph)
+    assert(subGraphId)
+    assert(parentGraphInfo)
     local graphInfos = self.graphInfos
 
     -- if the graph is already open right below, only change the breadcrumb focus
@@ -286,6 +289,11 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
         assert(graph.nodeType, 'unknown graph type')
 
         local graphLayout = self:getGraphLayout(graphInfo)
+        graphInfo.layout = graphLayout
+        if not parentGraphInfo.layout.subGraphLayouts then
+            parentGraphInfo.layout.subGraphLayouts = {}
+        end
+        parentGraphInfo.layout.subGraphLayouts[subGraphId] = graphLayout
         local content = self:getContent()
 
         local foldedNodes = {}
@@ -323,7 +331,7 @@ function MainWindow:loadGraphFromFile(graphPath)
     local graph = Graph:new()
     pcall(function()
         -- if the file does not exist, we want to create a new graph
-        graph:loadGraph(graphPath .. '.graph.lua')
+        graph:loadGraphFromFile(graphPath .. '.graph.lua')
     end)
     return graph
 end
@@ -346,24 +354,9 @@ end
 
 function MainWindow:saveGraphLayoutToFile()
     local graphInfo = self:getCurrentRootGraphInfo()
-    local nodeWidgets = graphInfo.nodeWidgets
-    local graphLayout = {}
-    local nodeInstances = graphInfo.graph.nodeInstances
-    for i = 1, #nodeInstances do
-        local nodeInstance = nodeInstances[i]
-        local nodeWidget = nodeWidgets[nodeInstance]
-        if nodeWidget then
-            local nodePosition = { nodeWidget:getVisiblePosition() }
-            graphLayout[i] = nodePosition
-        end
-    end
-
-    -- restore sub graph layouts
-    -- TODO graphInfo.originalLayout
-
     local f = io.open(graphInfo.path .. '.layout.lua', 'w')
     f:write 'return '
-    flat.dumpToOutput(f, graphLayout)
+    flat.dumpToOutput(f, graphInfo.layout)
     f:close()
 end
 
@@ -386,11 +379,17 @@ end
 function MainWindow:makeNodeWidget(node, foldedNodes)
     assert(node)
     assert(foldedNodes)
+    local graphInfo = self.currentGraphInfo
     local nodeWidget = NodeWidget:new(node, self, foldedNodes)
+    local nodeIndex = assert(graphInfo.graph:findNodeIndex(node))
+    local nodeLayout = assert(graphInfo.layout[nodeIndex])
     nodeWidget:dragged(function()
         self:drawLinks()
+        local x, y = nodeWidget:getVisiblePosition()
+        nodeLayout[1] = x
+        nodeLayout[2] = y
     end)
-    self.currentGraphInfo.nodeWidgets[node] = nodeWidget
+    graphInfo.nodeWidgets[node] = nodeWidget
     return nodeWidget
 end
 
@@ -814,13 +813,16 @@ function MainWindow:openNodeListMenu(x, y)
 
     local function insertNode(nodeName)
         local content = self:getContent()
-        local graph = self:getCurrentGraph()
+        local graphInfo = self.currentGraphInfo
+        local graph = graphInfo.graph
         local node = graph:addNode(nodeClasses[nodeName])
-        local nodeWidget = self:makeNodeWidget(node, self:getFoldedNodes())
+        local nodeIndex = graph:findNodeIndex(node)
         local contentSizeX, contentSizeY = content:getComputedSize()
         local scrollX, scrollY = content:getScrollPosition()
         local nodeWidgetX = x + scrollX
         local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
+        graphInfo.layout[nodeIndex] = {nodeWidgetX, nodeWidgetY}
+        local nodeWidget = self:makeNodeWidget(node, self:getFoldedNodes())
         nodeWidget:setVisiblePosition(nodeWidgetX, nodeWidgetY)
         content:addChild(nodeWidget:getContainer())
         self:closeNodeListMenu()
@@ -981,10 +983,15 @@ function MainWindow:deleteSelectedNodes()
     local graph = graphInfo.graph
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
     local selectedNodeWidgets = graphInfo.selectedNodeWidgets
+    local layout = graphInfo.layout
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
-        selectedNodeWidget:delete()
+        local nodeIndex = graph:findNodeIndex(selectedNodeWidget.node)
+        local numNodes = #graph:getNodes()
+        layout[nodeIndex] = layout[numNodes]
+        layout[numNodes] = nil
         graph:removeNode(selectedNodeWidget.node)
         nodeWidgets[selectedNodeWidget.node] = nil
+        selectedNodeWidget:delete()
     end
     graphInfo.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()

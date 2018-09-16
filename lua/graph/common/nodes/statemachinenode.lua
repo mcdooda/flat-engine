@@ -14,12 +14,4 @@ function StateMachineNode:buildPins()
     self.resultOutPin = self:addOutputPin(PinTypes.ANY, 'Result')
 end
 
-function StateMachineNode:getLoadArguments()
-    return InnerGraphNode.getLoadArguments(self)
-end
-
-function StateMachineNode:load(graphPath)
-    InnerGraphNode.load(self, graphPath)
-end
-
 return StateMachineNode
