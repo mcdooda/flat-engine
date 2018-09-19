@@ -1,5 +1,6 @@
 flat.ui.settings = {
-    defaultFont = { flat.assetPath 'fonts/Lato-Medium.ttf', 12 }
+    defaultFont = { flat.assetPath 'fonts/Lato-Medium.ttf', 12 },
+    notifyFont = { flat.assetPath 'fonts/Lato-Medium.ttf', 14 },
 }
 
 flat.ui.settings.theme = {
@@ -15,6 +16,16 @@ flat.ui.settings.theme = {
         CONTENT_BACKGROUND_COLOR = 0xEEEEEEFF,
         CONTENT_TEXT_COLOR       = 0x111111FF,
         CONTENT_FONT             = flat.ui.settings.defaultFont
+    },
+    notify = {
+        -- TEXT_COLOR = 0xFFFFFFFF,
+        TEXT_COLOR = 0x111111FF,
+        ICON_COLOR = 0x00000080,
+        SUCCESS_BACKGROUND_COLOR = 0x27AE60FF,
+        ERROR_BACKGROUND_COLOR = 0xc0392bFF,
+        WARNING_BACKGROUND_COLOR = 0xD35400FF,
+        INFO_BACKGROUND_COLOR = 0x2980B9FF,
+        BACKGROUND_COLOR = 0xFFFFFFCC
     },
     toolbar = {
         BACKGROUND_COLOR = 0xCCCCCCFF,
