@@ -29,8 +29,7 @@ function MainWindow:new(parent, metadata, onSave)
     o.metadata = metadata
     o.onSave = onSave
     o.isNew = false
-    o.snapPin = nil
-    o.snapNode = nil
+    o.snap = nil
     o:build()
     return o
 end
@@ -413,7 +412,11 @@ function MainWindow:drawLinks(delayToNextFrame)
         if currentLink then
             local linkColor = currentLink.color
             if currentLink.snapped and ((currentLink.inputPin and currentLink.inputPin.pinType == PinTypes.ANY) or (currentLink.outputPin and currentLink.outputPin.pinType == PinTypes.ANY)) then
-                linkColor = self:getPinColor(self.snapNode, self.snapPin)
+                if self.snap.inputNode then
+                    linkColor = self:getPinColor(self.snap.inputNode, self.snap.inputPin)
+                else
+                    linkColor = self:getPinColor(self.snap.outputNode, self.snap.outputPin)
+                end
             end
             self:drawLink(
                 linkColor,
@@ -438,17 +441,15 @@ function MainWindow:updateCurrentLink(x, y)
     assert(currentLink, 'no current link')
     currentLink.snapped = false
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
-    if self.snapPin then
-        assert(self.snapNode)
-        if currentLink.inputNode and self:canPlugPins(self.snapNode, self.snapPin, currentLink.inputNode, currentLink.inputPin) then
-            currentLink.outputPinX, currentLink.outputPinY = self:getOutputPinPosition(self.snapNode, self.snapPin)
+    if self.snap then
+        if currentLink.inputNode and self:canPlugPins(self.snap.outputNode, self.snap.outputPin, currentLink.inputNode, currentLink.inputPin) then
+            currentLink.outputPinX, currentLink.outputPinY = self:getOutputPinPosition(self.snap.outputNode, self.snap.outputPin)
             currentLink.snapped = true
-            nodeWidgets[self.snapNode]:setOutputPinPlugged(self.snapPin, true)
-        elseif currentLink.outputNode and self:canPlugPins(currentLink.outputNode, currentLink.outputPin, self.snapNode, self.snapPin) then
+            nodeWidgets[self.snap.outputNode]:setOutputPinPlugged(self.snap.outputPin, true)
+        elseif currentLink.outputNode and self:canPlugPins(currentLink.outputNode, currentLink.outputPin, self.snap.inputNode, self.snap.inputPin) then
+            currentLink.inputPinX, currentLink.inputPinY = self:getInputPinPosition(self.snap.inputNode, self.snap.inputPin)
             currentLink.snapped = true
-            currentLink.inputPinX, currentLink.inputPinY = self:getInputPinPosition(self.snapNode, self.snapPin)
-            currentLink.snapped = true
-            nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, true)
+            nodeWidgets[self.snap.inputNode]:setInputPinPlugged(self.snap.inputPin, true)
         end
     end
     if not currentLink.snapped then
@@ -1033,45 +1034,52 @@ function MainWindow:getBreadcrumbName(graphInfo)
     return graphInfo.index .. '. ' .. string.gsub(graphInfo.path, '.+/([^/]-)$', '%1')
 end
 
-function MainWindow:snapTo(node, pin)
+function MainWindow:snapToInputPin(node, pin)
     assert(node and pin)
-    if self.currentLink and ((pin.pluggedInputPins and self.currentLink.inputNode) or (not pin.pluggedInputPins and self.currentLink.outputNode)) then
-        if self.snapNode then
-            self:clearOldSnap()
+    if self.currentLink and not pin.pluggedInputPins and self.currentLink.outputNode then
+        if self.snap then
+            self:clearSnapPinWidget()
         end
-        self.snapPin = pin
-        self.snapNode = node
+        self.snap = {inputPin = pin, inputNode = node}
     end
 end
 
-function MainWindow:clearOldSnap()
-    assert(self.snapNode and self.snapPin)
+function MainWindow:snapToOutputPin(node, pin)
+    assert(node and pin)
+    if self.currentLink and pin.pluggedInputPins and self.currentLink.inputNode then
+        if self.snap then
+            self:clearSnapPinWidget()
+        end
+        self.snap = {outputPin = pin, outputNode = node}
+    end
+end
+
+function MainWindow:clearSnapPinWidget()
+    assert(self.snap)
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
     -- pluggedInputPins only exists in outputPins
-    if self.snapPin.pluggedInputPins then
-        nodeWidgets[self.snapNode]:setOutputPinPlugged(self.snapPin, #self.snapPin.pluggedInputPins > 0)
+    if self.snap.outputPin then
+        nodeWidgets[self.snap.outputNode]:setOutputPinPlugged(self.snap.outputPin, #self.snap.outputPin.pluggedInputPins > 0)
     else
         local foldedNodes = self:getFoldedNodes()
-        nodeWidgets[self.snapNode]:setInputPinPlugged(self.snapPin, self.snapPin.pluggedOutputPin and foldedNodes[self.snapPin.pluggedOutputPin.node] == nil)
+        nodeWidgets[self.snap.inputNode]:setInputPinPlugged(self.snap.inputPin, self.snap.inputPin.pluggedOutputPin and foldedNodes[self.snap.inputPin.pluggedOutputPin.node] == nil)
     end
 end
 
 function MainWindow:clearSnap()
-    if self.snapNode and self.currentLink then
-        self:clearOldSnap()
+    if self.snap and self.currentLink then
+        self:clearSnapPinWidget()
     end
 
-    self.snapPin = nil
-    self.snapNode = nil
+    self.snap = nil
 end
 
 function MainWindow:validSnap()
-    if self.snapNode then
-        assert(self.snapPin)
-        if self.snapPin.pluggedInputPins then
-            self:linkReleasedOnOutputPin(self.snapNode, self.snapPin)
+    if self.snap then
+        if self.snap.outputPin then
+            self:linkReleasedOnOutputPin(self.snap.outputNode, self.snap.outputPin)
         else
-            self:linkReleasedOnInputPin(self.snapNode, self.snapPin)
+            self:linkReleasedOnInputPin(self.snap.inputNode, self.snap.inputPin)
         end
     end
 end

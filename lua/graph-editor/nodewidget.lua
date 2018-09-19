@@ -60,7 +60,7 @@ function NodeWidget:buildContainer()
             leftBar:mouseMove(function(bar, x, y)
                 local closestInputPin = self:getClosestInputPin(bar, x, y)
                 if closestInputPin then
-                    self.mainWindow:snapTo(self.node, closestInputPin)
+                    self.mainWindow:snapToInputPin(self.node, closestInputPin)
                 else
                     self.mainWindow:clearSnap()
                 end
@@ -100,7 +100,7 @@ function NodeWidget:buildContainer()
             rightBar:mouseMove(function(bar, x, y)
                 local closestOutputPin = self:getClosestOutputPin(bar, x, y)
                 if closestOutputPin then
-                    self.mainWindow:snapTo(self.node, closestOutputPin)
+                    self.mainWindow:snapToOutputPin(self.node, closestOutputPin)
                 else
                     self.mainWindow:clearSnap()
                 end
@@ -329,7 +329,7 @@ function NodeWidget:makeInputPinWidget(node, pin, foldedNodes)
 
         inputPinPlugWidget:mouseMove(function()
             if mouseIsInside then
-                self.mainWindow:snapTo(node, pin)
+                self.mainWindow:snapToInputPin(node, pin)
             end
         end)
         inputPinPlugWidget:mouseLeave(function()
@@ -436,7 +436,7 @@ function NodeWidget:makeOutputPinWidget(node, pin)
 
         outputPinPlugWidget:mouseMove(function()
             if mouseIsInside then
-                self.mainWindow:snapTo(node, pin)
+                self.mainWindow:snapToOutputPin(node, pin)
             end
         end)
         outputPinPlugWidget:mouseLeave(function()
