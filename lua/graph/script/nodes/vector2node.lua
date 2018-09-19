@@ -1,13 +1,7 @@
 local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
+local CommonVector2Node = flat.require 'graph/common/nodes/vector2node'
 
-local Vector2Node = FunctionalScriptNode:inherit 'Vector2'
-
-function Vector2Node:buildPins()
-    self.xInPin = self:addInputPin(flat.types.NUMBER, 'X')
-    self.yInPin = self:addInputPin(flat.types.NUMBER, 'Y')
-
-    self.vector2OutPin = self:addOutputPin(flat.types['flat.Vector2'], 'Vector2')
-end
+local Vector2Node = (CommonVector2Node + FunctionalScriptNode):inherit 'Vector2'
 
 function Vector2Node:execute(runtime)
     local x = runtime:readPin(self.xInPin)

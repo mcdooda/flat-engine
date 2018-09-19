@@ -14,6 +14,7 @@ function Graph:new()
 end
 
 function Graph:addNode(nodeClass, buildPins)
+    assert(nodeClass)
     local node = nodeClass:new()
     if buildPins == nil then
         node:buildPins()
@@ -135,7 +136,7 @@ function Graph:load(savedGraph)
             error('No input pin #' .. tostring(intputPinIndex) .. ' in node #' .. inputNodeIndex)
         end
 
-        outputNode:plugPins(outputPin, inputNode, inputPin)
+        outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
     end
 end
 

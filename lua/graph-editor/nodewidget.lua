@@ -13,15 +13,7 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
     assert(node, 'no node given')
     local nodeType = mainWindow:getCurrentGraph().nodeType
     local nodePath = node.path
-    local customNodeEditor
-    pcall(function()
-        customNodeEditor = node.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
-    end)
-    if not customNodeEditor then
-        pcall(function()
-            customNodeEditor = node.require('graph-editor/common/nodes/' .. nodePath .. 'node')
-        end)
-    end
+    local customNodeEditor = self:getCustomNodeEditor(node, nodeType, nodePath)
     local o = setmetatable({
         node = node,
         mainWindow = mainWindow,
@@ -380,16 +372,14 @@ function NodeWidget:showFoldedConstantNode(pin)
     local node = self.node
     local nodeType = graph.nodeType
     local nodeName = node:pinTypeToString(pin.pinType):lower()
-    local customConstantNodeEditor
-    pcall(function()
-        customConstantNodeEditor = flat.require('graph-editor/' .. nodeType .. '/nodes/' .. nodeName .. 'node')
-    end)
+    local customConstantNodeEditor = self:getCustomNodeEditor(nil, nodeType, nodeName)
     if customConstantNodeEditor then
         local constantNode
         if pin.pluggedOutputPin then
             constantNode = pin.pluggedOutputPin.node
         else
             local nodeClasses = flat.graph.getNodeClasses(nodeType)
+            assert(nodeClasses[nodeName], 'no node ' .. nodeName .. ' for node type ' .. nodeType)
             constantNode = graph:addNode(nodeClasses[nodeName])
             constantNode:plugPins(constantNode:getOutputPin(1), node, pin)
         end
@@ -573,5 +563,18 @@ function NodeWidget:getClosestOutputPin(rightMagnetBar, x, y)
     return getClosestPin(rightMagnetBar, self.outputPinPlugWidgets, x, y)
 end
 
+function NodeWidget:getCustomNodeEditor(node, nodeType, nodePath)
+    local require = node and node.require or flat.require
+    local customNodeEditor
+    pcall(function()
+        customNodeEditor = require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+    end)
+    if not customNodeEditor then
+        pcall(function()
+            customNodeEditor = require('graph-editor/common/nodes/' .. nodePath .. 'node')
+        end)
+    end
+    return customNodeEditor
+end
 
 return NodeWidget

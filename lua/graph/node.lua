@@ -26,8 +26,24 @@ function Node:inherit(name)
     local nodeType = {
         name = name
     }
+    for k, v in pairs(self) do
+        nodeType[k] = v
+    end
     nodeType.__index = nodeType
-    return setmetatable(nodeType, { __index = self })
+    return setmetatable(nodeType, { __add = self.__add })
+end
+
+function Node:__add(nodeClass)
+    -- used for multiple inheritance with (A + B):inherit()
+    local mixin = {}
+    for k, v in pairs(nodeClass) do
+        mixin[k] = v
+    end
+    for k, v in pairs(self) do
+        mixin[k] = v
+    end
+    mixin.__index = mixin
+    return mixin
 end
 
 function Node:addedToGraph(graph)
@@ -146,7 +162,7 @@ function Node:rebuildPins()
     self:buildPins()
 end
 
-function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged)
+function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, isLoadingGraph)
     assert(outputPin, 'the output pin is missing')
     assert(inputNode, 'the input node is missing')
     assert(inputPin, 'the input pin is missing')
@@ -181,10 +197,10 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged)
     local updateOutputNode = false
     local updateInputNode = false
     if outputPin.onPlugged then
-        updateOutputNode = outputPin.onPlugged(self, outputPin, inputPin)
+        updateOutputNode = outputPin.onPlugged(self, outputPin, inputPin, isLoadingGraph)
     end
     if inputPin.onPlugged then
-        updateInputNode = inputPin.onPlugged(inputNode, inputPin, outputPin, otherOutputPinUnplugged)
+        updateInputNode = inputPin.onPlugged(inputNode, inputPin, outputPin, otherOutputPinUnplugged, isLoadingGraph)
     end
     return updateOutputNode, updateInputNode
 end

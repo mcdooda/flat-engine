@@ -21,10 +21,5 @@ return {
 
     'print',
 
-    'boolean',
-    'number',
-    'string',
     'test',
-    'vector2',
-    'vector3',
 }
