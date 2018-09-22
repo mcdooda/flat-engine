@@ -244,7 +244,7 @@ function Node:unplugAllPins()
 end
 
 function Node:unplugAllInputPins()
-    for i = 1, #self.inputPins do
+    for i = #self.inputPins, 1, -1 do
         local inputPin = self.inputPins[i]
         if inputPin.pluggedOutputPin then
             self:unplugInputPin(inputPin)
@@ -253,9 +253,9 @@ function Node:unplugAllInputPins()
 end
 
 function Node:unplugAllOutputPins()
-    for i = 1, #self.outputPins do
+    for i = #self.outputPins, 1, -1 do
         local outputPin = self.outputPins[i]
-        for j = #outputPin.pluggedInputPins, 1, -1 do -- iterate backwards to avoid breaking the indices
+        for j = #outputPin.pluggedInputPins, 1, -1 do
             local pluggedInputPin = outputPin.pluggedInputPins[j]
             local node = pluggedInputPin.node
             local inputPin = pluggedInputPin.inputPin
