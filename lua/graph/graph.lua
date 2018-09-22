@@ -37,6 +37,7 @@ function Graph:removeNode(node)
     local numNodes = #self.nodeInstances
     self.nodeInstances[nodeIndex] = self.nodeInstances[numNodes]
     self.nodeInstances[numNodes] = nil
+    node:removedFromGraph(self)
 end
 
 function Graph:getNodes()
@@ -210,6 +211,11 @@ end
 function Graph:addSubGraphId(subGraphId)
     assert(not self.subGraphIds[subGraphId])
     self.subGraphIds[subGraphId] = true
+end
+
+function Graph:removeSubGraphId(subGraphId)
+    assert(self.subGraphIds[subGraphId])
+    self.subGraphIds[subGraphId] = nil
 end
 
 return Graph

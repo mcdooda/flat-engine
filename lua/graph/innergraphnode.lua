@@ -15,6 +15,11 @@ function InnerGraphNode:addedToGraph(graph)
     end
 end
 
+function InnerGraphNode:removedFromGraph(graph)
+    graph:removeSubGraphId(self.subGraphId)
+    self.subGraphId = nil
+end
+
 function InnerGraphNode:getLoadArguments()
     local subGraphId = assert(self.subGraphId, 'Inner graph has no sub graph id')
     local graphDescription = self.innerGraph:getDescription()

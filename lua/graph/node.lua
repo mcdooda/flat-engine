@@ -50,6 +50,10 @@ function Node:addedToGraph(graph)
     -- overidden when needed, called after the node is added to a graph
 end
 
+function Node:removedFromGraph(graph)
+    -- overidden when needed, called after the node is removed from a graph (in editor)
+end
+
 function Node:init()
     -- overriden when needed, called after a new node is instanced
 end

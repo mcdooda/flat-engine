@@ -326,6 +326,25 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
     end
 end
 
+function MainWindow:closeSubGraphIfOpen(subGraphId)
+    local graphInfos = self.graphInfos
+    local subGraphInfoIndex
+    for i = 1, #graphInfos do
+        local graphInfo = graphInfos[i]
+        if graphInfo.subGraphId == subGraphId then
+            subGraphInfoIndex = i
+            break
+        end
+    end
+
+    if subGraphInfoIndex then
+        for i = #graphInfos, subGraphInfoIndex, -1 do
+            graphInfos[i] = nil
+            self.breadcrumb:removeItem(i)
+        end
+    end
+end
+
 function MainWindow:loadGraphFromFile(graphPath)
     assert(graphPath)
     local graph = Graph:new()
@@ -985,12 +1004,18 @@ function MainWindow:deleteSelectedNodes()
     local selectedNodeWidgets = graphInfo.selectedNodeWidgets
     local layout = graphInfo.layout
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
-        local nodeIndex = graph:findNodeIndex(selectedNodeWidget.node)
+        local node = selectedNodeWidget.node
+        local nodeIndex = graph:findNodeIndex(node)
         local numNodes = #graph:getNodes()
         layout[nodeIndex] = layout[numNodes]
         layout[numNodes] = nil
-        graph:removeNode(selectedNodeWidget.node)
-        nodeWidgets[selectedNodeWidget.node] = nil
+        if node.subGraphId then
+            layout.subGraphLayouts[node.subGraphId] = nil
+            assert(node.subGraphId ~= graphInfo.subGraphId)
+            self:closeSubGraphIfOpen(node.subGraphId)
+        end
+        graph:removeNode(node)
+        nodeWidgets[node] = nil
         selectedNodeWidget:delete()
     end
     graphInfo.selectedNodeWidgets = {}
