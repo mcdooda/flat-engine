@@ -4,19 +4,24 @@ local ScriptNodeRuntime = {}
 ScriptNodeRuntime.__index = ScriptNodeRuntime
 
 function ScriptNodeRuntime:new(scriptRuntime, node, inputPinValues, outputPinValues)
-    local o = {
+    local o = setmetatable({
         scriptRuntime = scriptRuntime,
         node = node,
         inputPinValues = inputPinValues,
         outputPinValues = outputPinValues
-    }
-    return setmetatable(o, self)
+    }, self)
+    o:init(node)
+    return o
 end
 
 function ScriptNodeRuntime:inherit()
     local runtimeType = {}
     runtimeType.__index = runtimeType
     return setmetatable(runtimeType, { __index = self })
+end
+
+function ScriptNodeRuntime:init()
+    -- overriden when needed, called when creating the script runtime
 end
 
 function ScriptNodeRuntime:readPin(inputPin)

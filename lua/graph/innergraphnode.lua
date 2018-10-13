@@ -37,6 +37,7 @@ function InnerGraphNode:load(subGraphId, savedGraph)
         self.subGraphId = nil
         self.innerGraph = Graph:new() -- clear the graph to avoid unexpected errors in the editor
         self.innerGraph.nodeType = innerGraph.nodeType
+        self.innerGraph.parentNode = self
         return false
     end
     return true

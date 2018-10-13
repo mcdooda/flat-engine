@@ -89,7 +89,7 @@ end
 
 function Graph:load(savedGraph)
     assert(savedGraph, 'Trying to load a nil graph')
-    local nodeType = savedGraph.nodeType
+    local nodeType = assert(savedGraph.nodeType, 'Graph has no type')
     local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
 
     self.nodeType = nodeType

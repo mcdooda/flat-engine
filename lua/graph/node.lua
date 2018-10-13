@@ -172,8 +172,8 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
     assert(inputPin, 'the input pin is missing')
     assert(not inputPin.pluggedOutputPin, 'the input pin is already plugged')
     assert(not otherOutputPinUnplugged or flat.debug)
-    assert(self:findOutputPinIndex(outputPin), 'pin ' .. outputPin.pinName .. ' is not from node ' .. self:getName())
-    assert(inputNode:findInputPinIndex(inputPin), 'pin ' .. inputPin.pinName .. ' is not from node ' .. inputNode:getName())
+    assert(self:findOutputPinIndex(outputPin), 'output pin ' .. outputPin.pinName .. ' is not from node ' .. self:getName())
+    assert(inputNode:findInputPinIndex(inputPin), 'input pin ' .. inputPin.pinName .. ' is not from node ' .. inputNode:getName())
 
     if outputPin.pinType == PinTypes.ANY then
         assert(inputPin.pinType ~= PinTypes.ANY)

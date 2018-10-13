@@ -1,4 +1,6 @@
-local InnerGraphNodeEditor = {}
+local NodeEditor = flat.require 'graph-editor/nodeeditor'
+
+local InnerGraphNodeEditor = NodeEditor:inherit()
 
 function InnerGraphNodeEditor.build(innerGraphNode, nodeWidget, pinsWidget)
     nodeWidget.nodeNameContainer:rightClick(function()
