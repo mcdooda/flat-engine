@@ -1,4 +1,6 @@
-local FormulaNodeEditor = {}
+local NodeEditor = flat.require 'graph-editor/nodeeditor'
+
+local FormulaNodeEditor = NodeEditor:inherit()
 
 function FormulaNodeEditor.build(formulaNode, nodeWidget, pinsWidget)
     local formulaWidget = Widget.makeTextInput(table.unpack(flat.ui.settings.defaultFont))

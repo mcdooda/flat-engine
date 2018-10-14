@@ -1,4 +1,6 @@
-local BooleanNodeEditor = {}
+local NodeEditor = flat.require 'graph-editor/nodeeditor'
+
+local BooleanNodeEditor = NodeEditor:inherit()
 
 local function boolToStringAndColor(bool)
     assert(flat.type(bool) == flat.types.BOOLEAN)

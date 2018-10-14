@@ -1,4 +1,6 @@
-local CompoundNodeEditor = {}
+local NodeEditor = flat.require 'graph-editor/nodeeditor'
+
+local CompoundNodeEditor = NodeEditor:inherit()
 
 function CompoundNodeEditor.build(compoundNode, nodeWidget, pinsWidget)
     nodeWidget.nodeNameContainer:rightClick(function()

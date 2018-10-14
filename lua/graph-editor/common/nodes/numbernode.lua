@@ -1,4 +1,6 @@
-local NumberNodeEditor = {}
+local NodeEditor = flat.require 'graph-editor/nodeeditor'
+
+local NumberNodeEditor = NodeEditor:inherit()
 
 function NumberNodeEditor.build(numberNode, nodeWidget, pinsWidget)
     local numberInputWidget = Widget.makeNumberInput(table.unpack(flat.ui.settings.defaultFont))
