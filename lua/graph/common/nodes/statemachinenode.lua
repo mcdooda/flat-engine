@@ -22,45 +22,62 @@ local function getNodeName(node)
 end
 
 function StateMachineNode:getStateMachineDescription()
-    local rules = {}
     local states = {}
     local transitions = {}
-    for i = 1, #self.innerGraph.nodeInstances do
-        local nodeInstance = self.innerGraph.nodeInstances[i]
+    local nodeInstances = self.innerGraph.nodeInstances
+    for i = 1, #nodeInstances do
+        local nodeInstance = nodeInstances[i]
         local mt = getmetatable(nodeInstance)
         if mt == StateNode then
+            -- plugged rules
             local outRules = {}
-            for i = 1, #nodeInstance.rulesOutPin.pluggedInputPins do
-                local ruleNodeInstance = nodeInstance.rulesOutPin.pluggedInputPins[i].node
-                if #rule.stateOutPin.pluggedInputPins == 0 then
+            local rulesPluggedInputPins = nodeInstance.rulesOutPin.pluggedInputPins
+            for i = 1, #rulesPluggedInputPins do
+                local ruleNodeInstance = rulesPluggedInputPins[i].node
+                if #ruleNodeInstance.stateOutPin.pluggedInputPins == 0 then
                     print('No state following rule ' .. getNodeName(ruleNodeInstance) .. ', discarding it')
                 else
-                    local outStateNodeInstance = #rule.stateOutPin.pluggedInputPins[1].node
-                    if #rule.stateOutPin.pluggedInputPins > 1 then
+                    local outStateNodeInstance = #ruleNodeInstance.stateOutPin.pluggedInputPins[1].node
+                    if #ruleNodeInstance.stateOutPin.pluggedInputPins > 1 then
                         print('Several states following rule ' .. getNodeName(ruleNodeInstance) .. ', keeping' .. getNodeName(outStateNodeInstance))
                     end
-                    local outStateNodeInstance = rule.stateOutPin.pluggedInputPins[1]
-                    outRules[ruleNodeInstance] = {
+                    local outStateNodeInstance = ruleNodeInstance.stateOutPin.pluggedInputPins[1]
+                    outRules[#outRules + 1] = {
                         graph = ruleNodeInstance.innerGraph,
                         outState = outStateNodeInstance
                     }
                 end
             end
-            states[nodeInstance] = {
+
+            -- state name
+            local stringConstantNode = nodeInstance.nameInPin.pluggedOutputPin.node
+            local stateName = stringConstantNode:getValue()
+
+            states[stateName] = {
                 graph = nodeInstance.innerGraph,
                 outRules = outRules,
                 inTransitions = {}, 
                 outTransitions = {},
             }
-        elseif mt == TransitionNode then
-            transitions[nodeInstance] = {
-                graph = nodeInstance.innerGraph,
-                outStates = {},
-            }
         end
     end
 
-    local stateMachineDescription = {}
+    local stateMachineDescription = {
+        states = states,
+        transitions = transitions
+    }
+
+    print 'states'
+    for k,v in pairs(stateMachineDescription.states) do
+        print(k, v, k:getName())
+    end
+    print '==='
+    
+    print 'transitions'
+    for k,v in pairs(stateMachineDescription.transitions) do
+        print(k, v, k:getName())
+    end
+    print '==='
 
     return stateMachineDescription
 end

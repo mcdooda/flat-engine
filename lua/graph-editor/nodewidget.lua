@@ -195,7 +195,7 @@ function NodeWidget:build(foldedNodes)
         do
             local customEditor = false
             if self.customNodeEditor then
-                customEditor = self.customNodeEditor.build(node, self, pinsWidget)
+                customEditor = self.customNodeEditor:build(node, self, pinsWidget)
             end
 
             if not customEditor then
@@ -384,7 +384,7 @@ function NodeWidget:showFoldedConstantNode(pin)
             constantNode:plugPins(constantNode:getOutputPin(1), node, pin)
         end
         local inputPinNameWidgetContainer = assert(self.inputPinNameWidgetContainers[pin])
-        local customEditor, customWidget = customConstantNodeEditor.build(constantNode, nil, inputPinNameWidgetContainer)
+        local customEditor, customWidget = customConstantNodeEditor:build(constantNode, nil, inputPinNameWidgetContainer)
         if customWidget then
             self.foldedConstantEditorWidgets[pin] = customWidget
         end
@@ -533,7 +533,7 @@ end
 
 function NodeWidget:updateCustomNodeEditor()
     if self.customNodeEditor and self.customNodeEditor.update then
-        return self.customNodeEditor.update(self.node, self, self.pinsWidget)
+        return self.customNodeEditor:update(self.node, self, self.pinsWidget)
     end
 end
 

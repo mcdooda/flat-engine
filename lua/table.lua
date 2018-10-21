@@ -1,3 +1,6 @@
+local getmetatable = getmetatable
+local tostring = tostring
+
 local function sortedpairs(t)
     local keys = {}
     for k in pairs(t) do
@@ -7,7 +10,12 @@ local function sortedpairs(t)
         local aType = type(a)
         local bType = type(b)
         if aType == bType then
-            return a < b
+            local mt = getmetatable(a)
+            if mt and mt.__lt then
+                return a < b
+            else
+                return tostring(a) < tostring(b)
+            end
         else
             return aType < bType
         end

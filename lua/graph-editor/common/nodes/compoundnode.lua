@@ -2,7 +2,7 @@ local NodeEditor = flat.require 'graph-editor/nodeeditor'
 
 local CompoundNodeEditor = NodeEditor:inherit()
 
-function CompoundNodeEditor.build(compoundNode, nodeWidget, pinsWidget)
+function CompoundNodeEditor:build(compoundNode, nodeWidget, pinsWidget)
     nodeWidget.nodeNameContainer:rightClick(function()
         local mainWindow = nodeWidget.mainWindow
         local subGraphPath = compoundNode:getGraphPath()

@@ -11,7 +11,7 @@ function StateNode:init()
 end
 
 function StateNode:buildPins()
-    self:addInputPin(flat.types.STRING, 'Name')
+    self.nameInPin = self:addInputPin(flat.types.STRING, 'Name')
     local numInputPins = self.numInputPins or 1
     for i = 1, numInputPins do
         self:addInputPin(PinTypes.TO_STATE, 'State', self.inputPinPlugged, self.inputPinUnplugged)

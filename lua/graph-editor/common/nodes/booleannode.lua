@@ -11,7 +11,7 @@ local function boolToStringAndColor(bool)
     end
 end
 
-function BooleanNodeEditor.build(boolNode, nodeWidget, pinsWidget)
+function BooleanNodeEditor:build(boolNode, nodeWidget, pinsWidget)
     local str, color = boolToStringAndColor(boolNode:getValue())
     local textValue = Widget.makeText(str, table.unpack(flat.ui.settings.defaultFont))
     textValue:setMargin(2)
