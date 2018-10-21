@@ -1,10 +1,6 @@
-print '0'
-
 local FunctionalScriptNode = flat.require 'graph/script/functionalscriptnode'
 local ScriptNodeRuntime = flat.require 'graph/script/scriptnoderuntime'
 local CommonStateMachineNode = flat.require 'graph/common/nodes/statemachinenode'
-
-print '1'
 
 -- runtime
 
@@ -38,7 +34,7 @@ end
 
 function StateMachineNodeRuntime:evaluateRules()
     local scriptRuntime = ScriptRuntime:new(script)
-    local runner = scriptRuntime:getRunner(...)
+    local runner = scriptRuntime:getRunner()
     return runner()
 end
 

@@ -13,20 +13,13 @@ function NodeRepository:new(nodeType)
 end
 
 function NodeRepository:load(nodeTypeRepository, nodeType, require)
-    local repositoryFound, nodePaths = pcall(function()
-        return require('graph/' .. nodeTypeRepository .. '/' .. nodeTypeRepository .. 'noderepository')
-    end)
-    if repositoryFound then
+    local nodePaths = flat.safeRequire(require, 'graph/' .. nodeTypeRepository .. '/' .. nodeTypeRepository .. 'noderepository')
+    if nodePaths then
         for i = 1, #nodePaths do
             local nodePath = nodePaths[i]
-            local nodeClass
-            pcall(function()
-                nodeClass = require('graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
-            end)
+            local nodeClass = flat.safeRequire(require, 'graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
             if not nodeClass then
-                pcall(function()
-                    nodeClass = require('graph/common/nodes/' .. nodePath .. 'node')
-                end)
+                nodeClass = flat.safeRequire(require, 'graph/common/nodes/' .. nodePath .. 'node')
             end
             if nodeClass then
                 nodeClass.path = nodePath

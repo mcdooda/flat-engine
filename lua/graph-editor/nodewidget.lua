@@ -565,14 +565,9 @@ end
 
 function NodeWidget:getCustomNodeEditor(node, nodeType, nodePath)
     local require = node and node.require or flat.require
-    local customNodeEditor
-    pcall(function()
-        customNodeEditor = require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
-    end)
+    local customNodeEditor = flat.safeRequire(require, 'graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
     if not customNodeEditor then
-        pcall(function()
-            customNodeEditor = require('graph-editor/common/nodes/' .. nodePath .. 'node')
-        end)
+        customNodeEditor = flat.safeRequire(require, 'graph-editor/common/nodes/' .. nodePath .. 'node')
     end
     return customNodeEditor
 end

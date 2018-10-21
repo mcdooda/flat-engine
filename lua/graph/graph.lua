@@ -82,7 +82,7 @@ function Graph:loadGraphFromFile(graphPath)
             assert(loadfile(graphPath, 'bt', env))()
         end)
         if not ok then
-            error('Could not load graph ' .. graphPath)
+            error('Could not load graph ' .. graphPath .. '\n' .. err)
         end
     end
 end
