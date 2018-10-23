@@ -9,6 +9,7 @@ local StateMachineNodeRuntime = ScriptNodeRuntime:inherit()
 function StateMachineNodeRuntime:init(node)
     self.context = nil
     self.stateMachineDescription = nil
+    print 'TODO: remove'
     node:getStateMachineDescription()
 end
 

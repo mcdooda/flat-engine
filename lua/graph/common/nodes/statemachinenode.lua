@@ -2,29 +2,21 @@ local InnerGraphNode = flat.require 'graph/innergraphnode'
 local PinTypes = flat.require 'graph/pintypes'
 local RuleNode = flat.require 'graph/statemachine/nodes/statemachine/rulenode'
 local StateNode = flat.require 'graph/statemachine/nodes/statemachine/statenode'
-local TransitionNode =  flat.require 'graph/statemachine/nodes/statemachine/transitionnode'
-
-local StateMachineNode = InnerGraphNode:inherit 'State Machine'
-
-function StateMachineNode:init()
-    InnerGraphNode.init(self)
-    self.innerGraph.nodeType = 'statemachine'
-end
-
-function StateMachineNode:buildPins()
-    self.contextInPin = self:addInputPin(PinTypes.ANY, 'Context')
-
-    self.resultOutPin = self:addOutputPin(PinTypes.ANY, 'Result')
-end
+local TransitionNode = flat.require 'graph/statemachine/nodes/statemachine/transitionnode'
 
 local function getNodeName(node)
     return node.nameInPin.pluggedOutputPin.node:getValue()
 end
 
-function StateMachineNode:getStateMachineDescription()
+-- state machine description
+
+local StateMachineDescription = {}
+StateMachineDescription.__index = StateMachineDescription
+
+function StateMachineDescription:new(graph)
     local states = {}
     local transitions = {}
-    local nodeInstances = self.innerGraph.nodeInstances
+    local nodeInstances = graph.nodeInstances
     for i = 1, #nodeInstances do
         local nodeInstance = nodeInstances[i]
         local mt = getmetatable(nodeInstance)
@@ -81,42 +73,93 @@ function StateMachineNode:getStateMachineDescription()
                 name = stateName,
                 graph = nodeInstance.innerGraph,
                 outRules = outRules,
-                inTransitionNodes = inTransitionNodes, 
-                outTransitionNodes = outTransitionNodes,
-                inTransitions = {},
-                outTransitions = {}
+                inTransitionNodes = inTransitionNodes,
+                outTransitionNodes = outTransitionNodes
             }
         elseif mt == TransitionNode then
             local stateName = getNodeName(nodeInstance)
             transitions[nodeInstance] = {
                 name = stateName,
-                graph = nodeInstance.innerGraph
+                graph = nodeInstance.innerGraph,
+                inStates = {},
+                outStates = {}
             }
         end
     end
 
     for stateName, state in pairs(states) do
-        for i = 1, #state.inTransitionNodes do
-            local transitionNode = state.inTransitionNodes[i]
-            state.inTransitions[i] = transitions[transitionNode]
-        end
+        -- set in transitions from transition nodes
+        local inTransitions = {}
+        local inTransitionNodes = state.inTransitionNodes
         state.inTransitionNodes = nil
-
-        for i = 1, #state.outTransitionNodes do
-            local transitionNode = state.outTransitionNodes[i]
-            state.outTransitions[i] = transitions[transitionNode]
+        for i = 1, #inTransitionNodes do
+            local transitionNode = inTransitionNodes[i]
+            local transition = transitions[transitionNode]
+            flat.arrayAdd(transition.outStates, state)
+            inTransitions[transition] = true
         end
+        state.inTransitions = inTransitions
+
+        -- set out transitions from transition nodes
+        local outTransitions = {}
+        local outTransitionNodes = state.outTransitionNodes
         state.outTransitionNodes = nil
+        for i = 1, #outTransitionNodes do
+            local transitionNode = outTransitionNodes[i]
+            local transition = transitions[transitionNode]
+            flat.arrayAdd(transition.inStates, state)
+            outTransitions[transition] = true
+        end
+        state.outTransitions = outTransitions
     end
 
-    local stateMachineDescription = {
-        states = states
-    }
+    for stateName, state in pairs(states) do
+        -- find default in transition
+        for transition, _ in pairs(state.inTransitions) do
+            if #transition.inStates == 0 then
+                if not state.defaultInTransition then
+                    state.defaultInTransition = transition
+                else
+                    print('State \'' .. stateName .. '\' has several global in transitions, \'' .. transition.name .. '\' discarded')
+                end
+            end
+        end
 
-    --[[
-    print 'states'
-    for stateName, state in pairs(stateMachineDescription.states) do
-        print '---'
+        -- find default out transition
+        for transition, _ in pairs(state.outTransitions) do
+            if #transition.outStates == 0 then
+                if not state.defaultOutTransition then
+                    state.defaultOutTransition = transition
+                else
+                    print('State \'' .. stateName .. '\' has several global out transitions, \'' .. transition.name .. '\' discarded')
+                end
+            end
+        end
+    end
+
+    return setmetatable({
+        states = states
+    }, self)
+end
+
+function StateMachineDescription:getTransitionBetweenStates(from, to)
+    for transition, _ in pairs(from.outTransitions) do
+        if to.inTransitions[transition] then
+            return transition
+        end
+    end
+
+    if from.defaultOutTransition then
+        return from.defaultOutTransition
+    end
+
+    return to.defaultInTransition
+end
+
+function StateMachineDescription:debugPrint()
+    print '===================================='
+    for stateName, state in pairs(self.states) do
+        print '-----------------'
         print(stateName, state)
         if #state.outRules > 0 then
             print '\tOut rules:'
@@ -125,23 +168,39 @@ function StateMachineNode:getStateMachineDescription()
                 print('', '', rule.name)
             end
         end
-        if #state.inTransitions > 0 then
-            print 'In transitions:'
-            for i = 1, #state.inTransitions do
-                local transition = state.inTransitions[i]
-                print('', '', transition.name)
-            end
+        print '\tIn transitions:'
+        for transition, _ in pairs(state.inTransitions) do
+            print('', '', transition.name)
         end
-        if #state.outTransitions > 0 then
-            print 'Out transitions:'
-            for i = 1, #state.outTransitions do
-                local transition = state.outTransitions[i]
-                print('', '', transition.name)
-            end
+        print('\tdefault in transition: ' .. (state.defaultInTransition and state.defaultInTransition.name or '<none>'))
+        print '\tOut transitions:'
+        for transition, _ in pairs(state.outTransitions) do
+            print('', '', transition.name)
         end
+        print('\tdefault out transition: ' .. (state.defaultOutTransition and state.defaultOutTransition.name or '<none>'))
     end
-    print '==='
-    ]]
+    print '===================================='
+end
+
+-- state machine node
+
+local StateMachineNode = InnerGraphNode:inherit 'State Machine'
+
+function StateMachineNode:init()
+    InnerGraphNode.init(self)
+    self.innerGraph.nodeType = 'statemachine'
+end
+
+function StateMachineNode:buildPins()
+    self.contextInPin = self:addInputPin(PinTypes.ANY, 'Context')
+
+    self.resultOutPin = self:addOutputPin(PinTypes.ANY, 'Result')
+end
+
+function StateMachineNode:getStateMachineDescription()
+    local stateMachineDescription = StateMachineDescription:new(self.innerGraph)
+
+    --stateMachineDescription:debugPrint()
 
     return stateMachineDescription
 end
