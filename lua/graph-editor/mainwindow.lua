@@ -820,10 +820,10 @@ function MainWindow:openNodeListMenu(x, y)
             if nodeClass:isBrowsable() then
                 local nodeVisualName = nodeClass:getName()
                 if #search == 0 or nodeVisualName:lower():match(search) then
-                    searchNodes[#searchNodes + 1] = {
+                    flat.arrayAdd(searchNodes, {
                         visualName = nodeVisualName,
                         name = nodeName
-                    }
+                    })
                 end
             end
         end

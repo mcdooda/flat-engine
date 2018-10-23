@@ -9,27 +9,15 @@ function Slot:new()
 end
 
 function Slot:on(callback)
-    self.callbacks[#self.callbacks + 1] = callback
+    flat.arrayAdd(self.callbacks, callback)
 end
 
 function Slot:off(callback)
-    local index
-    local numCallbacks = #self.callbacks
-    for i = 1, numCallbacks do
-        if self.callbacks[i] == callback then
-            index = i
-            break
-        end
-    end
-
+    local index = flat.findArrayValue(self.callbacks, callback)
     if not index then
         return false
     end
-
-    if index < numCallbacks then
-        self.callbacks[index] = self.callbacks[numCallbacks]
-    end
-    self.callbacks[numCallbacks] = nil
+    flat.arrayRemoveIndexCyclic(self.callbacks, index)
     return true
 end
 

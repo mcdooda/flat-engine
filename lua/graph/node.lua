@@ -88,17 +88,13 @@ function Node:addInputPin(pinType, pinName, onPlugged, onUnplugged)
         inputPin.onUnplugged = onUnplugged
     end
 
-    self.inputPins[#self.inputPins + 1] = inputPin
+    flat.arrayAdd(self.inputPins, inputPin)
     return inputPin
 end
 
 function Node:removeInputPin(inputPin)
     assert(not inputPin.pluggedOutputPin, 'the input pin is plugged')
-    local inputPinIndex = self:findInputPinIndex(inputPin)
-    for i = inputPinIndex, #self.inputPins - 1 do
-        self.inputPins[i] = self.inputPins[i + 1]
-    end
-    self.inputPins[#self.inputPins] = nil
+    flat.arrayRemoveValue(self.inputPins, inputPin)
 end
 
 function Node:getInputPin(inputPinIndex)
@@ -106,11 +102,7 @@ function Node:getInputPin(inputPinIndex)
 end
 
 function Node:findInputPinIndex(inputPin)
-    for i = 1, #self.inputPins do
-        if self.inputPins[i] == inputPin then
-            return i
-        end
-    end
+    return flat.arrayFindValueIndex(self.inputPins, inputPin)
 end
 
 function Node:addOutputPin(pinType, pinName, onPlugged, onUnplugged)
@@ -128,16 +120,12 @@ function Node:addOutputPin(pinType, pinName, onPlugged, onUnplugged)
         outputPin.onUnplugged = onUnplugged
     end
 
-    self.outputPins[#self.outputPins + 1] = outputPin
+    flat.arrayAdd(self.outputPins, outputPin)
     return outputPin
 end
 
 function Node:removeOutputPin(outputPin)
-    local outputPinIndex = self:findOutputPinIndex(outputPin)
-    for i = outputPinIndex, #self.outputPins - 1 do
-        self.outputPins[i] = self.outputPins[i + 1]
-    end
-    self.outputPins[#self.outputPins] = nil
+    flat.arrayRemoveValue(self.outputPins, outputPin)
 end
 
 function Node:getOutputPin(outputPinIndex)
@@ -145,11 +133,7 @@ function Node:getOutputPin(outputPinIndex)
 end
 
 function Node:findOutputPinIndex(outputPin)
-    for i = 1, #self.outputPins do
-        if self.outputPins[i] == outputPin then
-            return i
-        end
-    end
+    return flat.arrayFindValueIndex(self.outputPins, outputPin)
 end
 
 function Node:clearPins()
@@ -189,10 +173,10 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
         .. 'and '
         .. inputNode:getName() .. ' -> ' .. inputPin.pinName .. ' (' .. self:pinTypeToString(inputPin.pinType) .. ')'
     )
-    outputPin.pluggedInputPins[#outputPin.pluggedInputPins + 1] = {
+    flat.arrayAdd(outputPin.pluggedInputPins, {
         inputPin = inputPin,
         node = inputNode
-    }
+    })
     inputPin.pluggedOutputPin = {
         outputPin = outputPin,
         node = self

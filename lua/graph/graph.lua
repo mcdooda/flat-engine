@@ -19,24 +19,19 @@ function Graph:addNode(nodeClass, buildPins)
     if buildPins == nil then
         node:buildPins()
     end
-    local nodeIndex = #self.nodeInstances + 1
-    self.nodeInstances[nodeIndex] = node
+    flat.arrayAdd(self.nodeInstances, node)
     node:addedToGraph(self)
     return node
 end
 
 function Graph:addNodeInstance(node)
-    local nodeIndex = #self.nodeInstances + 1
-    self.nodeInstances[nodeIndex] = node
+    flat.arrayAdd(self.nodeInstances, node)
     node:addedToGraph(self)
 end
 
 function Graph:removeNode(node)
     node:unplugAllPins()
-    local nodeIndex = assert(self:findNodeIndex(node))
-    local numNodes = #self.nodeInstances
-    self.nodeInstances[nodeIndex] = self.nodeInstances[numNodes]
-    self.nodeInstances[numNodes] = nil
+    flat.arrayRemoveValueCyclic(self.nodeInstances, node)
     node:removedFromGraph(self)
 end
 
@@ -53,11 +48,11 @@ function Graph:findNodeIndex(node)
 end
 
 function Graph:addEntryNode(node)
-    self.entryNodes[#self.entryNodes + 1] = node
+    flat.arrayAdd(self.entryNodes, node)
 end
 
 function Graph:addCompound(node)
-    self.compounds[#self.compounds + 1] = node
+    self.arrayAdd(self.compounds, node)
 end
 
 function Graph:loadGraphFromFile(graphPath)
@@ -182,7 +177,7 @@ function Graph:getDescription()
                 local inputNodeIndex = self:findNodeIndex(inputNode)
                 local inputPinIndex = inputNode:findInputPinIndex(inputPin)
                 local linkDescription = {outputNodeIndex, outputPinIndex, inputNodeIndex, inputPinIndex}
-                graphDescription.links[#graphDescription.links + 1] = linkDescription
+                flat.arrayAdd(graphDescription.links, linkDescription)
             end
         end
     end

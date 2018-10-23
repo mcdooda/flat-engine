@@ -1,6 +1,6 @@
 local type = type
 local pairs = pairs
-local sortedpairs = flat.sortedpairs
+local sortedPairs = flat.sortedPairs
 local floor = math.floor
 
 local function isInt(value)
@@ -63,7 +63,7 @@ local function dump(write, value, tabs, allowAllTypes, seen, isIntKeyValue)
 			dump(write, value[i], tabs .. '  ', allowAllTypes, seen, true)
 			write ',\n'
 		end
-		for k, v in sortedpairs(value) do
+		for k, v in sortedPairs(value) do
 			if not (isInt(k) and k <= length) then
 				write(tabs, '  ')
 				if type(k) == 'string' then
