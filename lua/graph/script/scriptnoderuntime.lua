@@ -67,6 +67,7 @@ function ScriptNodeRuntime:tryReadFromOutputPin(outputPin)
 end
 
 function ScriptNodeRuntime:writePin(outputPin, value)
+    assert(outputPin)
     assert(
         value ~= nil,
         'Cannot write nil to pin ' .. self.node:getName() .. '->' .. outputPin.pinName .. ' of type ' .. self.node:pinTypeToString(outputPin.pinType)

@@ -239,6 +239,7 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
     else
         -- the graph has not been loaded
         graph.nodeType = nodeType
+        graphInfo.layout = {}
         self.isNew = true
         return false
     end
@@ -321,6 +322,11 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
     else
         -- the graph has not been loaded
         graph.nodeType = nodeType
+        graphInfo.layout = {}
+        if not parentGraphInfo.layout.subGraphLayouts then
+            parentGraphInfo.layout.subGraphLayouts = {}
+        end
+        parentGraphInfo.layout.subGraphLayouts[subGraphId] = graphInfo.layout
         self.isNew = true
         return false
     end

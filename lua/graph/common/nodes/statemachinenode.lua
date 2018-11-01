@@ -3,9 +3,12 @@ local PinTypes = flat.require 'graph/pintypes'
 local RuleNode = flat.require 'graph/statemachine/nodes/statemachine/rulenode'
 local StateNode = flat.require 'graph/statemachine/nodes/statemachine/statenode'
 local TransitionNode = flat.require 'graph/statemachine/nodes/statemachine/transitionnode'
+local EnterNode = flat.require 'graph/statemachine/nodes/statemachine/enternode'
 
 local function getNodeName(node)
-    return node.nameInPin.pluggedOutputPin.node:getValue()
+    if node.nameInPin then
+        return node.nameInPin.pluggedOutputPin.node:getValue()
+    end
 end
 
 -- state machine description
@@ -14,11 +17,14 @@ local StateMachineDescription = {}
 StateMachineDescription.__index = StateMachineDescription
 
 function StateMachineDescription:new(graph)
-    local states = {}
+    local enterNode
+    local statesByName = {}
+    local statesByNode = {}
     local transitions = {}
     local nodeInstances = graph.nodeInstances
     for i = 1, #nodeInstances do
         local nodeInstance = nodeInstances[i]
+        local nodeName = getNodeName(nodeInstance)
         local mt = getmetatable(nodeInstance)
         if mt == StateNode then
             -- plugged rules (there are only output rules on state nodes)
@@ -28,18 +34,18 @@ function StateMachineDescription:new(graph)
                 local ruleNodeInstance = rulesPluggedInputPins[i].node
                 local ruleName = getNodeName(ruleNodeInstance)
                 if #ruleNodeInstance.stateOutPin.pluggedInputPins == 0 then
-                    print('No state following rule ' .. ruleName .. ', discarding it')
+                    print('No state following rule \'' .. ruleName .. '\', discarding it')
                 else
                     local outStateNodeInstance = #ruleNodeInstance.stateOutPin.pluggedInputPins[1].node
                     if #ruleNodeInstance.stateOutPin.pluggedInputPins > 1 then
-                        print('Several states following rule ' .. ruleName .. ', keeping' .. getNodeName(outStateNodeInstance))
+                        print('Several states following rule \'' .. ruleName .. '\', keeping \'' .. getNodeName(outStateNodeInstance) .. '\'')
                     end
-                    local outStateNodeInstance = ruleNodeInstance.stateOutPin.pluggedInputPins[1]
+                    local outStateNodeInstance = ruleNodeInstance.stateOutPin.pluggedInputPins[1].node
 
                     flat.arrayAdd(outRules, {
                         name = ruleName,
                         graph = ruleNodeInstance.innerGraph,
-                        outState = outStateNodeInstance
+                        outStateNode = outStateNodeInstance
                     })
                 end
             end
@@ -57,37 +63,63 @@ function StateMachineDescription:new(graph)
                 end
             end
 
-            -- output transitions
+            -- output transitions and state
+            local outStateNode
             local outTransitionNodes = {}
             local statePluggedInputPins = nodeInstance.stateOutPin.pluggedInputPins
             for i = 1, #statePluggedInputPins do
                 local connectedStateNodeInstance = statePluggedInputPins[i].node
                 local mt = getmetatable(connectedStateNodeInstance)
-                if mt == TransitionNode then
+                if mt == StateNode then
+                    if not outStateNode then
+                        outStateNode = connectedStateNodeInstance
+                    else
+                        print('Several output states for state \'' .. nodeName .. '\', keeping \'' .. getNodeName(outStateNode) .. '\'')
+                    end
+                elseif mt == TransitionNode then
                     flat.arrayAdd(outTransitionNodes, connectedStateNodeInstance)
                 end
             end
 
-            local stateName = getNodeName(nodeInstance)
-            states[stateName] = {
-                name = stateName,
-                graph = nodeInstance.innerGraph,
-                outRules = outRules,
-                inTransitionNodes = inTransitionNodes,
-                outTransitionNodes = outTransitionNodes
-            }
+            if not statesByName[nodeName] then
+                local state = {
+                    name = nodeName,
+                    graph = nodeInstance.innerGraph,
+                    outRules = outRules,
+                    inTransitionNodes = inTransitionNodes,
+                    outTransitionNodes = outTransitionNodes,
+                    outStateNode = outStateNode
+                }
+                statesByName[nodeName] = state
+                statesByNode[nodeInstance] = state
+            else
+                print('Several states with the same name: \'' .. nodeName .. '\'')
+            end
         elseif mt == TransitionNode then
-            local stateName = getNodeName(nodeInstance)
             transitions[nodeInstance] = {
-                name = stateName,
+                name = nodeName,
                 graph = nodeInstance.innerGraph,
                 inStates = {},
                 outStates = {}
             }
+        elseif mt == EnterNode then
+            if not enterNode then
+                enterNode = nodeInstance
+            else
+                print('Several enter nodes')
+            end
         end
     end
 
-    for stateName, state in pairs(states) do
+    for stateName, state in pairs(statesByName) do
+        -- set rules out state from out state node
+        local outRules = state.outRules
+        for i = 1, #outRules do
+            local outRule = outRules[i]
+            outRule.outState = statesByNode[outRule.outStateNode]
+            outRule.outStateNode = nil
+        end
+
         -- set in transitions from transition nodes
         local inTransitions = {}
         local inTransitionNodes = state.inTransitionNodes
@@ -111,9 +143,15 @@ function StateMachineDescription:new(graph)
             outTransitions[transition] = true
         end
         state.outTransitions = outTransitions
+
+        -- set out state from state node
+        if state.outStateNode then
+            state.outState = statesByNode[state.outStateNode]
+            state.outStateNode = nil
+        end
     end
 
-    for stateName, state in pairs(states) do
+    for stateName, state in pairs(statesByName) do
         -- find default in transition
         for transition, _ in pairs(state.inTransitions) do
             if #transition.inStates == 0 then
@@ -137,12 +175,44 @@ function StateMachineDescription:new(graph)
         end
     end
 
+    local initState
+    if enterNode then
+        local pluggedInputPins = enterNode.stateOutPin.pluggedInputPins
+        local numPluggedInputPins = #pluggedInputPins
+        if numPluggedInputPins > 0 then
+            if numPluggedInputPins > 1 then
+                print('Several states connected to the Enter node')
+            end
+            local initNode = pluggedInputPins[1].node
+            local initNodeName = getNodeName(initNode)
+            initState = statesByName[initNodeName]
+        else
+            print('No state connected to the Enter node')
+        end
+    else
+        print('No enter node, the state machine will not run properly')
+        statesByName = {}
+    end
+
     return setmetatable({
-        states = states
+        states = statesByName,
+        initState = initState
     }, self)
 end
 
+function StateMachineDescription:getStates()
+    return self.states
+end
+
+function StateMachineDescription:getStateByName(stateName)
+    return assert(self.states[stateName])
+end
+
 function StateMachineDescription:getTransitionBetweenStates(from, to)
+    if not from.outRules then -- from is a transition
+        return
+    end
+
     for transition, _ in pairs(from.outTransitions) do
         if to.inTransitions[transition] then
             return transition

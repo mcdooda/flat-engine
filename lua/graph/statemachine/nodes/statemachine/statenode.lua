@@ -23,7 +23,7 @@ end
 
 function StateNode:inputPinPlugged(inputPin, outputPin, otherOutputPinUnplugged, isLoadingGraph)
     if not isLoadingGraph and not otherOutputPinUnplugged then
-        flat.arrayAdd(#self.stateInPins, self:addInputPin(PinTypes.TO_STATE, 'State', self.inputPinPlugged, self.inputPinUnplugged))
+        flat.arrayAdd(self.stateInPins, self:addInputPin(PinTypes.TO_STATE, 'State', self.inputPinPlugged, self.inputPinUnplugged))
     end
     return true
 end

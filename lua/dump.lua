@@ -125,6 +125,25 @@ local function easyDump(value)
 	dumpToOutput(io.output(), value, true)
 end
 
+local function dumpFlat(value)
+	if type(value) == 'table' then
+		print '{'
+		local length = #value
+		for i = 1, length do
+			print('', tostring(value[i]) .. ',')
+		end
+		for k, v in sortedPairs(value) do
+			if not (isInt(k) and k <= length) then
+				print('', tostring(k), '=', tostring(v) .. ',')
+			end
+		end
+		print '}'
+	else
+		print(tostring(value))
+	end
+end
+
 flat.dump = easyDump
+flat.dumpFlat = dumpFlat
 flat.dumpToString = dumpToString
 flat.dumpToOutput = dumpToOutput

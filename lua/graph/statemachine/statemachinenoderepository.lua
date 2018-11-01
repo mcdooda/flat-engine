@@ -1,5 +1,6 @@
 return {
     'statemachine/rule',
     'statemachine/state',
-    'statemachine/transition'
+    'statemachine/transition',
+    'statemachine/enter'
 }
