@@ -74,6 +74,8 @@
 #include "sharp/ui/rootwidget.h"
 #include "sharp/ui/textwidget.h"
 #include "sharp/ui/lua/ui.h"
+// notify
+#include "sharp/notify/notify.h"
 
 // misc
 #include "misc/std.h"
@@ -107,8 +109,9 @@ class Flat
 		std::unique_ptr<audio::Audio> audio;
 		std::unique_ptr<input::Input> input;
 		std::unique_ptr<random::Random> random;
-		std::unique_ptr<sharp::ui::Ui> ui;
 		std::unique_ptr<lua::Lua> lua;
+		std::unique_ptr<sharp::ui::Ui> ui;
+		std::unique_ptr<sharp::notify::Notify> notify;
 };
 
 } // flat

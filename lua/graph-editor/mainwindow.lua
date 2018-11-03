@@ -52,6 +52,8 @@ function MainWindow:build()
                     self.onSave(self.isNew)
                     self.isNew = false
                 end
+                local graphInfo = self:getCurrentRootGraphInfo()
+                flat.ui.success('Graph ' .. graphInfo.path .. ' saved')
             end)
         end
 

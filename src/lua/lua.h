@@ -58,6 +58,8 @@ class Lua
 		template <class T, typename... Args>
 		int protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args);
 
+		void pushVariable(std::initializer_list<const char*> variableNames) const;
+
 		std::shared_ptr<timer::TimerContainer> newTimerContainer(const std::shared_ptr<time::Clock>& clock);
 
 	private:

@@ -3,6 +3,8 @@
 
 #include <lua5.3/lua.hpp>
 #include "debug.h"
+#include "table.h"
+#include "../util/variadichelpers.h"
 #include "../debug/helpers.h"
 #include "../profiler/profilersection.h"
 
@@ -121,6 +123,17 @@ class LuaReference
 				lua_call(L, numArguments, 0);
 #endif
 			}
+		}
+
+		template<typename... Args>
+		void callFunctionP(Args&&... args) const
+		{
+			callFunction(
+				[&args...](lua_State* L)
+				{
+					FLAT_VARIADIC_EXPAND(lua::table::pushValue(L, args));
+				}
+			);
 		}
 
 		template<typename PushArgumentsCallback, typename HandleResultsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>

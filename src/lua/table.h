@@ -1,6 +1,8 @@
 #ifndef FLAT_LUA_TABLE_H
 #define FLAT_LUA_TABLE_H
 
+#include <string>
+
 namespace flat
 {
 namespace lua
@@ -25,6 +27,18 @@ template <>
 inline void pushValue<int>(lua_State* L, int value)
 {
 	lua_pushinteger(L, value);
+}
+
+template <>
+inline void pushValue<const char*>(lua_State* L, const char* value)
+{
+	lua_pushstring(L, value);
+}
+
+template <>
+inline void pushValue<const std::string&>(lua_State* L, const std::string& value)
+{
+	lua_pushstring(L, value.c_str());
 }
 
 template <typename ValueType>
