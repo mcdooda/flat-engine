@@ -130,19 +130,27 @@ inline void Lua::registerClass(const char* metatableName, const luaL_Reg* method
 template<class T, typename ...Args>
 inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(Args...), Args&&... args)
 {
-	FLAT_LUA_EXPECT_STACK_GROWTH(state, 0);
-	std::function<int()> protectedCall = [object, callbackMethod, &args...]()
+	FLAT_LUA_IGNORE_STACK_GROWTH(state);
+	using ProtectCallBlock = std::function<void()>;
+	ProtectCallBlock protectedCall = [object, callbackMethod, &args...]()
 	{
-		object->callbackMethod(std::forward<Args>(args)...);
+		(object->*callbackMethod)(std::forward<Args>(args)...);
 	};
 	auto caller = [](lua_State* L)
 	{
-		std::function<void()>& protectedCall = *static_cast<std::function<void()>*>(lua_touserdata(L, 1));
+		ProtectCallBlock& protectedCall = *static_cast<ProtectCallBlock*>(lua_touserdata(L, 1));
 		protectedCall();
-	}
-	lua_pushcfunction(state, &caller);
+		return 0;
+	};
+	lua_pushcfunction(state, caller);
 	lua_pushlightuserdata(state, &protectedCall);
-	return lua_pcall(state, 1, 0, 0);
+	int code = lua_pcall(state, 1, 0, 0);
+	if (code != LUA_OK)
+	{
+		std::cerr << "Lua protected section error: " << luaL_checkstring(state, -1) << std::endl;
+		printStack(state);
+	}
+	return code;
 }
 
 template <class T, typename... Args>
