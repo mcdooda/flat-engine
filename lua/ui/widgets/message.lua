@@ -9,7 +9,7 @@ local function message(messageString, messageContent, buttons)
     window.onClose:on(function()
         overlay:removeFromParent()
     end)
-    window:setSize(300, 100)
+    window:setSize(300, 125)
     window:setPositionPolicy(Widget.PositionPolicy.CENTER)
     window:setPosition(0, 0)
     window:setResizable(false)
@@ -17,7 +17,6 @@ local function message(messageString, messageContent, buttons)
     local content = Widget.makeExpand()
     content:setMargin(5)
     local contentContainer = Widget.makeColumnFlow()
-    contentContainer:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
     contentContainer:setSizePolicy(Widget.SizePolicy.EXPAND)
 
     do
@@ -44,7 +43,13 @@ local function message(messageString, messageContent, buttons)
 
             local buttonText = Widget.makeText(button.text, table.unpack(ToolbarTheme.BUTTON_FONT))
             buttonText:setTextColor(ToolbarTheme.BUTTON_TEXT_COLOR)
-            local buttonWidget = Button:new(buttonText, {padding={8, 20, 8, 20}, margin=3, color=ToolbarTheme.BUTTON_BACKGROUND_COLOR, hoverColor=ToolbarTheme.BUTTON_BACKGROUND_COLOR_OVER})
+            local buttonWidget = Button:new(
+                buttonText,
+                {
+                    color = ToolbarTheme.BUTTON_BACKGROUND_COLOR,
+                    hoverColor = ToolbarTheme.BUTTON_BACKGROUND_COLOR_OVER
+                }
+            )
             buttonWidget:click(button.click)
             buttonsContainer:addChild(buttonWidget.container)
         end

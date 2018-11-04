@@ -1,6 +1,8 @@
 #ifndef FLAT_LUA_TABLE_H
 #define FLAT_LUA_TABLE_H
 
+#include <string>
+
 namespace flat
 {
 namespace lua
@@ -18,13 +20,43 @@ struct KeyValuePair
 template <typename ValueType>
 inline void pushValue(lua_State* L, ValueType value)
 {
-	FLAT_ASSERT_MSG(false, "Cannot lua_push* this type");
+	FLAT_ASSERT_MSG(false, "Cannot lua_push* type %s", typeid(value).name());
 }
 
 template <>
 inline void pushValue<int>(lua_State* L, int value)
 {
 	lua_pushinteger(L, value);
+}
+
+template <>
+inline void pushValue<float>(lua_State* L, float value)
+{
+	lua_pushnumber(L, value);
+}
+
+template <>
+inline void pushValue<bool>(lua_State* L, bool value)
+{
+	lua_pushboolean(L, value);
+}
+
+template <>
+inline void pushValue<void*>(lua_State* L, void* value)
+{
+	lua_pushlightuserdata(L, value);
+}
+
+template <>
+inline void pushValue<const char*>(lua_State* L, const char* value)
+{
+	lua_pushstring(L, value);
+}
+
+template <>
+inline void pushValue<std::string>(lua_State* L, std::string value)
+{
+	lua_pushstring(L, value.c_str());
 }
 
 template <typename ValueType>

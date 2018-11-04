@@ -68,7 +68,7 @@ function CompoundNode:load(graphPath)
         graph:loadGraphFromFile(graphPath .. '.graph.lua')
     end)
     if not loaded then
-        print('Could not load compound \'' .. graphPath .. '\': ' .. err)
+        flat.ui.error('Could not load compound \'' .. graphPath .. '\': ' .. err)
         self.name = '[C] (Loading error)'
         return false
     end

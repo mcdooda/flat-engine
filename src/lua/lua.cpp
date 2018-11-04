@@ -147,6 +147,24 @@ void Lua::collectGarbage() const
 	lua_gc(state, LUA_GCCOLLECT, 0);
 }
 
+
+void Lua::pushVariable(std::initializer_list<const char*> variableNames) const
+{
+	lua_State* L = state;
+	{
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+		int top = lua_gettop(L);
+		for (const char* variableName : variableNames)
+		{
+			lua_pushstring(L, variableName);
+			lua_rawget(L, -2);
+		}
+		lua_replace(L, top);
+		lua_settop(L, top);
+	}
+}
+
 std::shared_ptr<timer::TimerContainer> Lua::newTimerContainer(const std::shared_ptr<time::Clock>& clock)
 {
 	std::shared_ptr<timer::TimerContainer> timerContainer = std::make_shared<timer::TimerContainer>(clock);
