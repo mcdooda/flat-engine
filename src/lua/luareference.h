@@ -95,6 +95,7 @@ class LuaReference
 		{
 			FLAT_PROFILE("Call lua function (no result)");
 
+			FLAT_ASSERT(m_luaReference != LUA_NOREF);
 			FLAT_ASSERT(m_luaState != nullptr);
 			lua_State* L = m_luaState;
 			{
@@ -126,7 +127,7 @@ class LuaReference
 		}
 
 		template<typename... Args>
-		void callFunctionP(Args&&... args) const
+		void call(Args&&... args) const
 		{
 			callFunction(
 				[&args...](lua_State* L)
@@ -141,6 +142,7 @@ class LuaReference
 		{
 			FLAT_PROFILE("Call lua function");
 
+			FLAT_ASSERT(m_luaReference != LUA_NOREF);
 			FLAT_ASSERT(m_luaState != nullptr);
 			lua_State* L = m_luaState;
 			{

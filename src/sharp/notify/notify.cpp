@@ -11,7 +11,7 @@ namespace notify
 Notify::Notify(Flat& flat) :
 	m_flat(flat)
 {
-
+	reset();
 }
 
 void Notify::reset()
@@ -38,22 +38,22 @@ void Notify::reset()
 
 void Notify::success(const std::string& message)
 {
-	m_success.callFunctionP(message);
+	m_success.call(message);
 }
 
 void Notify::warn(const std::string& message)
 {
-	m_warn.callFunctionP(message);
+	m_warn.call(message);
 }
 
 void Notify::error(const std::string& message)
 {
-	m_error.callFunctionP(message);
+	m_error.call(message);
 }
 
 void Notify::info(const std::string& message)
 {
-	m_info.callFunctionP(message);
+	m_info.call(message);
 }
 
 } // notify
