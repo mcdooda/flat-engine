@@ -8,6 +8,10 @@ function StateNode:init()
     self.innerGraph.nodeType = 'script'
 end
 
+function StateNode:setContextType(contextType)
+    self.innerGraph:setContextType(contextType)
+end
+
 function StateNode:buildPins()
     self.nameInPin = self:addInputPin(flat.types.STRING, 'Name')
     local numStateInPins = self.numStateInPins or 1

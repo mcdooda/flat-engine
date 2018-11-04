@@ -26,7 +26,7 @@ function NodeRepository:load(nodeTypeRepository, nodeType, require)
                 nodeClass.require = require
                 self.nodeClasses[nodePath] = nodeClass
             else
-                print('Node ' .. nodePath .. ' from ' .. nodeTypeRepository .. ' does not exist')
+                flat.ui.error('Node ' .. nodePath .. ' from ' .. nodeTypeRepository .. ' does not exist')
             end
         end
     end

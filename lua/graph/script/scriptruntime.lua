@@ -57,6 +57,15 @@ function ScriptRuntime:new(graph)
     return setmetatable(o, self)
 end
 
+function ScriptRuntime:setContext(context)
+    local contextNodes = self.graph:getContextNodes()
+    for i = 1, #contextNodes do
+        local contextNode = contextNodes[i]
+        local contextNodeRuntime = self.nodeRuntimes[contextNode]
+        contextNodeRuntime:writePin(contextNode.contextOutPin, context)
+    end
+end
+
 function ScriptRuntime:writeInputPins(...)
     local numInputs = select('#', ...)
     if numInputs == 0 then

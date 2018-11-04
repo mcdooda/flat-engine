@@ -34,11 +34,11 @@ function StateMachineDescription:new(graph)
                 local ruleNodeInstance = rulesPluggedInputPins[i].node
                 local ruleName = getNodeName(ruleNodeInstance)
                 if #ruleNodeInstance.stateOutPin.pluggedInputPins == 0 then
-                    print('No state following rule \'' .. ruleName .. '\', discarding it')
+                    flat.ui.warn('No state following rule \'' .. ruleName .. '\', discarding it')
                 else
                     local outStateNodeInstance = #ruleNodeInstance.stateOutPin.pluggedInputPins[1].node
                     if #ruleNodeInstance.stateOutPin.pluggedInputPins > 1 then
-                        print('Several states following rule \'' .. ruleName .. '\', keeping \'' .. getNodeName(outStateNodeInstance) .. '\'')
+                        flat.ui.warn('Several states following rule \'' .. ruleName .. '\', keeping \'' .. getNodeName(outStateNodeInstance) .. '\'')
                     end
                     local outStateNodeInstance = ruleNodeInstance.stateOutPin.pluggedInputPins[1].node
 
@@ -74,7 +74,7 @@ function StateMachineDescription:new(graph)
                     if not outStateNode then
                         outStateNode = connectedStateNodeInstance
                     else
-                        print('Several output states for state \'' .. nodeName .. '\', keeping \'' .. getNodeName(outStateNode) .. '\'')
+                        flat.ui.warn('Several output states for state \'' .. nodeName .. '\', keeping \'' .. getNodeName(outStateNode) .. '\'')
                     end
                 elseif mt == TransitionNode then
                     flat.arrayAdd(outTransitionNodes, connectedStateNodeInstance)
@@ -93,7 +93,7 @@ function StateMachineDescription:new(graph)
                 statesByName[nodeName] = state
                 statesByNode[nodeInstance] = state
             else
-                print('Several states with the same name: \'' .. nodeName .. '\'')
+                flat.ui.warn('Several states with the same name: \'' .. nodeName .. '\'')
             end
         elseif mt == TransitionNode then
             transitions[nodeInstance] = {
@@ -106,7 +106,7 @@ function StateMachineDescription:new(graph)
             if not enterNode then
                 enterNode = nodeInstance
             else
-                print('Several enter nodes')
+                flat.ui.warn('Several enter nodes')
             end
         end
     end
@@ -158,7 +158,7 @@ function StateMachineDescription:new(graph)
                 if not state.defaultInTransition then
                     state.defaultInTransition = transition
                 else
-                    print('State \'' .. stateName .. '\' has several global in transitions, \'' .. transition.name .. '\' discarded')
+                    flat.ui.warn('State \'' .. stateName .. '\' has several global in transitions, \'' .. transition.name .. '\' discarded')
                 end
             end
         end
@@ -169,7 +169,7 @@ function StateMachineDescription:new(graph)
                 if not state.defaultOutTransition then
                     state.defaultOutTransition = transition
                 else
-                    print('State \'' .. stateName .. '\' has several global out transitions, \'' .. transition.name .. '\' discarded')
+                    flat.ui.warn('State \'' .. stateName .. '\' has several global out transitions, \'' .. transition.name .. '\' discarded')
                 end
             end
         end
@@ -181,16 +181,16 @@ function StateMachineDescription:new(graph)
         local numPluggedInputPins = #pluggedInputPins
         if numPluggedInputPins > 0 then
             if numPluggedInputPins > 1 then
-                print('Several states connected to the Enter node')
+                flat.ui.warn('Several states connected to the Enter node')
             end
             local initNode = pluggedInputPins[1].node
             local initNodeName = getNodeName(initNode)
             initState = statesByName[initNodeName]
         else
-            print('No state connected to the Enter node')
+            flat.ui.error('No state connected to the Enter node')
         end
     else
-        print('No enter node, the state machine will not run properly')
+        flat.ui.error('No enter node, the state machine will not run properly')
         statesByName = {}
     end
 
@@ -262,9 +262,20 @@ function StateMachineNode:init()
 end
 
 function StateMachineNode:buildPins()
-    self.contextInPin = self:addInputPin(PinTypes.ANY, 'Context')
+    self.contextInPin = self:addInputPin(PinTypes.ANY, 'Context', self.contextPinPlugged, self.contextPinUnplugged)
 
     self.resultOutPin = self:addOutputPin(PinTypes.ANY, 'Result')
+end
+
+function StateMachineNode:contextPinPlugged(pin)
+    self.innerGraph:setContextType(pin.pinType)
+    return true
+end
+
+function StateMachineNode:contextPinUnplugged(pin)
+    pin.pinType = PinTypes.ANY
+    self.innerGraph:setContextType(PinTypes.ANY)
+    return true
 end
 
 function StateMachineNode:getStateMachineDescription()

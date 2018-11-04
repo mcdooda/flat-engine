@@ -40,11 +40,14 @@ function StateMachineNodeRuntime:cacheScriptRuntimes()
     local runtimesByState = {}
     for stateName, state in pairs(self.stateMachineDescription:getStates()) do
         local scriptRuntime = ScriptRuntime:new(state.graph)
+        scriptRuntime:setContext(self.context)
 
         local ruleScriptRuntimes = {}
         for i = 1, #state.outRules do
             local rule = state.outRules[i]
-            ruleScriptRuntimes[rule] = ScriptRuntime:new(rule.graph)
+            local ruleScriptRuntime = ScriptRuntime:new(rule.graph)
+            ruleScriptRuntime:setContext(self.context)
+            ruleScriptRuntimes[rule] = ruleScriptRuntime
         end
 
         runtimesByState[state] = {
@@ -69,7 +72,6 @@ function StateMachineNodeRuntime:enterState(newState)
     if currentState then
         local transition = self.stateMachineDescription:getTransitionBetweenStates(currentState, newState)
         if transition then
-            print(transition, transition.name)
             newState = transition
             nextState = newState
         end

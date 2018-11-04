@@ -10,6 +10,10 @@ function TransitionNode:init()
     self.innerGraph.nodeType = 'script'
 end
 
+function TransitionNode:setContextType(contextType)
+    self.innerGraph:setContextType(contextType)
+end
+
 function TransitionNode:buildPins()
     self.nameInPin = self:addInputPin(flat.types.STRING, 'Name')
     local numInputPins = self.numInputPins or 1

@@ -16,34 +16,34 @@ local function getNotifyCenterWidget()
     return notifyCenterWidget
 end
 
-local function notify(icon, message, color)
+local function notify(icon, message, color, duration)
     local notifyCenterWidet = getNotifyCenterWidget()
     local root = Widget.getRoot()
     notifyCenterWidget:removeFromParent()
     root:addChild(notifyCenterWidget)
     color = color or themeNotify.DEFAULT_BACKGROUND_COLOR
-    local notification = Notification:new(icon, message, color)
+    local notification = Notification:new(icon, message, color, duration)
     notifyCenterWidget:addChild(notification.container)
 end
 
 local function success(message)
-    notify('ok-circle', message, themeNotify.SUCCESS_BACKGROUND_COLOR)
+    notify('ok-circle', message, themeNotify.SUCCESS_BACKGROUND_COLOR, 3)
 end
 
 local function warn(message)
-    notify('warning-sign', message, themeNotify.WARNING_BACKGROUND_COLOR)
+    notify('warning-sign', message, themeNotify.WARNING_BACKGROUND_COLOR, math.huge)
 end
 
 local function error(message)
-    notify('remove-circle', message, themeNotify.ERROR_BACKGROUND_COLOR)
+    notify('remove-circle', message, themeNotify.ERROR_BACKGROUND_COLOR, math.huge)
 end
 
 local function info(message)
-    notify('alert-circle', message, themeNotify.INFO_BACKGROUND_COLOR)
+    notify('alert-circle', message, themeNotify.INFO_BACKGROUND_COLOR, 3)
 end
 
 
-function Notification:new(icon, message, color)
+function Notification:new(icon, message, color, duration)
     local container = Widget.makeLineFlow()
     container:setBackgroundColor(color)
     container:setPositionPolicy(Widget.PositionPolicy.TOP_RIGHT)
@@ -76,7 +76,7 @@ function Notification:new(icon, message, color)
     timer:onEnd(function()
         o:remove()
     end)
-    timer:start(3)
+    timer:start(duration)
 
     return o
 end

@@ -3,6 +3,7 @@ return {
     'script/condition',
     'script/init',
     'script/function',
+    'script/getcontext',
     'script/scriptinput',
     'script/scriptoutput',
 

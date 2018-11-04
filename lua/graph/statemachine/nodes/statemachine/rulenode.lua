@@ -8,6 +8,10 @@ function RuleNode:init()
     self.innerGraph.nodeType = 'script'
 end
 
+function RuleNode:setContextType(contextType)
+    self.innerGraph:setContextType(contextType)
+end
+
 function RuleNode:buildPins()
     self.nameInPin = self:addInputPin(flat.types.STRING, 'Name')
     self.stateInPin = self:addInputPin(PinTypes.STATE_TO_RULE, 'Rules')

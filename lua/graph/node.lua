@@ -66,6 +66,10 @@ function Node:getLoadArguments()
     -- overriden when needed, should return the arguments to pass to load(...)
 end
 
+function Node:setContextType(contextType)
+    -- overriden when needed, set the inner graph context type or something...
+end
+
 function Node:clone()
     local clone = getmetatable(self):new()
     clone:load(self:getLoadArguments())
@@ -222,6 +226,15 @@ function Node:unplugInputPin(inputPin, otherOutputPinPlugged)
     return updateOutputNode, updateInputNode
 end
 
+function Node:unplugOutputPin(outputPin)
+    for j = #outputPin.pluggedInputPins, 1, -1 do
+        local pluggedInputPin = outputPin.pluggedInputPins[j]
+        local node = pluggedInputPin.node
+        local inputPin = pluggedInputPin.inputPin
+        node:unplugInputPin(inputPin)
+    end
+end
+
 function Node:unplugAllPins()
     self:unplugAllInputPins()
     self:unplugAllOutputPins()
@@ -238,13 +251,7 @@ end
 
 function Node:unplugAllOutputPins()
     for i = #self.outputPins, 1, -1 do
-        local outputPin = self.outputPins[i]
-        for j = #outputPin.pluggedInputPins, 1, -1 do
-            local pluggedInputPin = outputPin.pluggedInputPins[j]
-            local node = pluggedInputPin.node
-            local inputPin = pluggedInputPin.inputPin
-            node:unplugInputPin(inputPin)
-        end
+        self:unplugOutputPin(self.outputPins[i])
     end
 end
 

@@ -7,6 +7,8 @@ function Graph:new()
     local o = {
         nodeInstances = {},
         entryNodes = {},
+        contextNodes = {},
+        contextType = PinTypes.ANY,
         compounds = {},
         subGraphIds = {}
     }
@@ -51,8 +53,29 @@ function Graph:addEntryNode(node)
     flat.arrayAdd(self.entryNodes, node)
 end
 
+function Graph:addContextNode(node)
+    flat.arrayAdd(self.contextNodes, node)
+end
+
+function Graph:getContextNodes()
+    return self.contextNodes
+end
+
+function Graph:setContextType(contextType)
+    self.contextType = contextType
+    local nodeInstances = self.nodeInstances
+    for i = 1, #nodeInstances do
+        local nodeInstance = nodeInstances[i]
+        nodeInstance:setContextType(contextType)
+    end
+end
+
+function Graph:getContextType()
+    return self.contextType
+end
+
 function Graph:addCompound(node)
-    self.arrayAdd(self.compounds, node)
+    flat.arrayAdd(self.compounds, node)
 end
 
 function Graph:loadGraphFromFile(graphPath)
