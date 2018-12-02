@@ -3,7 +3,6 @@ local TextInputTheme = flat.ui.settings.theme.textInput
 local function prompt(message, defaultValue)
     local content = Widget.makeExpand()
     content:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-    content:setBackgroundColor(0xFF0000FF)
 
     local textInputWidget
     do
@@ -11,6 +10,7 @@ local function prompt(message, defaultValue)
         textInputBorder:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
         textInputBorder:setPositionPolicy(Widget.PositionPolicy.CENTER)
         textInputBorder:setBackgroundColor(TextInputTheme.BORDER_COLOR)
+        textInputBorder:setMargin(0, 0, 5, 0)
 
         do
             local textInputBackground = Widget.makeExpand()

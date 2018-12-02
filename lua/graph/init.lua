@@ -22,7 +22,10 @@ function flat.graph.loadNodeClasses(nodeType, root)
     local repository = getNodeRepository(nodeType)
 
     -- loads project specific nodes
-    repository:load(nodeType, function(path)
+    repository:load('common', nodeType, function(path)
+        return require(root .. '/' .. path)
+    end)
+    repository:load(nodeType, nodeType, function(path)
         return require(root .. '/' .. path)
     end)
 end

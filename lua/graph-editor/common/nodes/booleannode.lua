@@ -1,4 +1,6 @@
-local BooleanNodeEditor = {}
+local NodeEditor = flat.require 'graph-editor/nodeeditor'
+
+local BooleanNodeEditor = NodeEditor:inherit()
 
 local function boolToStringAndColor(bool)
     assert(flat.type(bool) == flat.types.BOOLEAN)
@@ -9,7 +11,7 @@ local function boolToStringAndColor(bool)
     end
 end
 
-function BooleanNodeEditor.build(boolNode, nodeWidget, pinsWidget)
+function BooleanNodeEditor:build(boolNode, nodeWidget, pinsWidget)
     local str, color = boolToStringAndColor(boolNode:getValue())
     local textValue = Widget.makeText(str, table.unpack(flat.ui.settings.defaultFont))
     textValue:setMargin(2)

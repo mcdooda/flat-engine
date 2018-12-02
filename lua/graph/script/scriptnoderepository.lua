@@ -3,6 +3,7 @@ return {
     'script/condition',
     'script/init',
     'script/function',
+    'script/getcontext',
     'script/scriptinput',
     'script/scriptoutput',
 
@@ -21,10 +22,5 @@ return {
 
     'print',
 
-    'boolean',
-    'number',
-    'string',
     'test',
-    'vector2',
-    'vector3',
 }

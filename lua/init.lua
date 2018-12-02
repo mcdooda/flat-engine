@@ -4,6 +4,8 @@ flat.dofile 'dump.lua'
 flat.dofile 'enum.lua'
 
 
+flat.dofile 'saferequire.lua'
+
 flat.dofile 'slot.lua'
 
 flat.dofile 'formula/formula.lua'

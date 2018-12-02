@@ -24,7 +24,7 @@ function FormulaNode:updateInputPins()
             local inputPin = previousPinsByName[pinName]
             if inputPin then
                 previousPinsByName[pinName] = nil
-                self.inputPins[#self.inputPins + 1] = inputPin
+                flat.arrayAdd(self.inputPins, inputPin)
             else
                 inputPin = self:addInputPin(flat.types.NUMBER, pinName)
             end

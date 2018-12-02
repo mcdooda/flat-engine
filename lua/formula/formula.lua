@@ -33,7 +33,7 @@ local getVariableNamesMt = {
             end
         end
         if not found then
-            variableNames[#variableNames + 1] = variableName
+            flat.arrayAdd(variableNames, variableName)
         end
         return fakeNumber
     end

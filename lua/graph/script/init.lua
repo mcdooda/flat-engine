@@ -6,7 +6,7 @@ flat.graph.script = {}
 function flat.graph.script.run(scriptPath, ...)
     local script = Graph:new()
 
-    script:loadGraph(scriptPath .. '.graph.lua')
+    script:loadGraphFromFile(scriptPath .. '.graph.lua')
     script:resolveCompounds()
 
     local scriptRuntime = ScriptRuntime:new(script)

@@ -13,15 +13,7 @@ function NodeWidget:new(node, mainWindow, foldedNodes)
     assert(node, 'no node given')
     local nodeType = mainWindow:getCurrentGraph().nodeType
     local nodePath = node.path
-    local customNodeEditor
-    pcall(function()
-        customNodeEditor = node.require('graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
-    end)
-    if not customNodeEditor then
-        pcall(function()
-            customNodeEditor = node.require('graph-editor/common/nodes/' .. nodePath .. 'node')
-        end)
-    end
+    local customNodeEditor = self:getCustomNodeEditor(node, nodeType, nodePath)
     local o = setmetatable({
         node = node,
         mainWindow = mainWindow,
@@ -203,7 +195,7 @@ function NodeWidget:build(foldedNodes)
         do
             local customEditor = false
             if self.customNodeEditor then
-                customEditor = self.customNodeEditor.build(node, self, pinsWidget)
+                customEditor = self.customNodeEditor:build(node, self, pinsWidget)
             end
 
             if not customEditor then
@@ -380,21 +372,19 @@ function NodeWidget:showFoldedConstantNode(pin)
     local node = self.node
     local nodeType = graph.nodeType
     local nodeName = node:pinTypeToString(pin.pinType):lower()
-    local customConstantNodeEditor
-    pcall(function()
-        customConstantNodeEditor = flat.require('graph-editor/' .. nodeType .. '/nodes/' .. nodeName .. 'node')
-    end)
+    local customConstantNodeEditor = self:getCustomNodeEditor(nil, nodeType, nodeName)
     if customConstantNodeEditor then
         local constantNode
         if pin.pluggedOutputPin then
             constantNode = pin.pluggedOutputPin.node
         else
             local nodeClasses = flat.graph.getNodeClasses(nodeType)
+            assert(nodeClasses[nodeName], 'no node ' .. nodeName .. ' for node type ' .. nodeType)
             constantNode = graph:addNode(nodeClasses[nodeName])
             constantNode:plugPins(constantNode:getOutputPin(1), node, pin)
         end
         local inputPinNameWidgetContainer = assert(self.inputPinNameWidgetContainers[pin])
-        local customEditor, customWidget = customConstantNodeEditor.build(constantNode, nil, inputPinNameWidgetContainer)
+        local customEditor, customWidget = customConstantNodeEditor:build(constantNode, nil, inputPinNameWidgetContainer)
         if customWidget then
             self.foldedConstantEditorWidgets[pin] = customWidget
         end
@@ -469,13 +459,18 @@ function NodeWidget:deselect()
 end
 
 local pinColors = {
-    [PinTypes.ANY]        = 0x888888FF,
-    [PinTypes.IMPULSE]    = 0xE74C3CFF,
-    [flat.types.BOOLEAN]  = 0x2ECC71FF,
-    [flat.types.NUMBER]   = 0xF39C12FF,
-    [flat.types.STRING]   = 0x3498DBFF,
-    [flat.types.TABLE]    = 0x8E44ADFF,
-    [flat.types.FUNCTION] = 0x34495EFF,
+    [PinTypes.ANY]           = 0x888888FF,
+
+    [PinTypes.IMPULSE]       = 0xE74C3CFF,
+
+    [PinTypes.TO_STATE]      = 0x1ABC9CFF,
+    [PinTypes.STATE_TO_RULE] = 0x9B59B6FF,
+
+    [flat.types.BOOLEAN]     = 0x2ECC71FF,
+    [flat.types.NUMBER]      = 0xF39C12FF,
+    [flat.types.STRING]      = 0x3498DBFF,
+    [flat.types.TABLE]       = 0x8E44ADFF,
+    [flat.types.FUNCTION]    = 0x34495EFF,
 
     [flat.types['flat.Vector2']] = 0xF17A88FF,
     [flat.types['flat.Vector3']] = 0xF17A00FF,
@@ -538,7 +533,7 @@ end
 
 function NodeWidget:updateCustomNodeEditor()
     if self.customNodeEditor and self.customNodeEditor.update then
-        return self.customNodeEditor.update(self.node, self, self.pinsWidget)
+        return self.customNodeEditor:update(self.node, self, self.pinsWidget)
     end
 end
 
@@ -568,5 +563,13 @@ function NodeWidget:getClosestOutputPin(rightMagnetBar, x, y)
     return getClosestPin(rightMagnetBar, self.outputPinPlugWidgets, x, y)
 end
 
+function NodeWidget:getCustomNodeEditor(node, nodeType, nodePath)
+    local require = node and node.require or flat.require
+    local customNodeEditor = flat.safeRequire(require, 'graph-editor/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+    if not customNodeEditor then
+        customNodeEditor = flat.safeRequire(require, 'graph-editor/common/nodes/' .. nodePath .. 'node')
+    end
+    return customNodeEditor
+end
 
 return NodeWidget

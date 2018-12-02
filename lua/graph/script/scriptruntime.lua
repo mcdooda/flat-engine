@@ -49,11 +49,21 @@ function ScriptRuntime:new(graph)
         local node = graph.nodeInstances[i]
         local nodeInputPinValues = inputPinValues[node]
         local nodeOutputPinValues = outputPinValues[node]
+        assert(node.getRuntimeType, 'Node ' .. node:getName() .. ' is not supported in scripts (getRuntimeType method missing)')
         local scriptRuntimeType = node:getRuntimeType()
         nodeRuntimes[node] = scriptRuntimeType:new(o, node, nodeInputPinValues, nodeOutputPinValues)
     end
 
     return setmetatable(o, self)
+end
+
+function ScriptRuntime:setContext(context)
+    local contextNodes = self.graph:getContextNodes()
+    for i = 1, #contextNodes do
+        local contextNode = contextNodes[i]
+        local contextNodeRuntime = self.nodeRuntimes[contextNode]
+        contextNodeRuntime:writePin(contextNode.contextOutPin, context)
+    end
 end
 
 function ScriptRuntime:writeInputPins(...)

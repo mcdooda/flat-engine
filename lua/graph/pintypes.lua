@@ -5,5 +5,6 @@ return {
     IMPULSE = 'IMPULSE',
 
     -- state machine
-    TRANSITION = 'TRANSITION'
+    TO_STATE = 'TO_STATE',
+    STATE_TO_RULE = 'STATE_TO_RULE'
 }

@@ -1,6 +1,6 @@
 local type = type
 local pairs = pairs
-local sortedpairs = flat.sortedpairs
+local sortedPairs = flat.sortedPairs
 local floor = math.floor
 
 local function isInt(value)
@@ -63,7 +63,7 @@ local function dump(write, value, tabs, allowAllTypes, seen, isIntKeyValue)
 			dump(write, value[i], tabs .. '  ', allowAllTypes, seen, true)
 			write ',\n'
 		end
-		for k, v in sortedpairs(value) do
+		for k, v in sortedPairs(value) do
 			if not (isInt(k) and k <= length) then
 				write(tabs, '  ')
 				if type(k) == 'string' then
@@ -125,6 +125,25 @@ local function easyDump(value)
 	dumpToOutput(io.output(), value, true)
 end
 
+local function dumpFlat(value)
+	if type(value) == 'table' then
+		print '{'
+		local length = #value
+		for i = 1, length do
+			print('', tostring(value[i]) .. ',')
+		end
+		for k, v in sortedPairs(value) do
+			if not (isInt(k) and k <= length) then
+				print('', tostring(k), '=', tostring(v) .. ',')
+			end
+		end
+		print '}'
+	else
+		print(tostring(value))
+	end
+end
+
 flat.dump = easyDump
+flat.dumpFlat = dumpFlat
 flat.dumpToString = dumpToString
 flat.dumpToOutput = dumpToOutput

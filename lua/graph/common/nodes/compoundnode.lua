@@ -65,10 +65,10 @@ end
 function CompoundNode:load(graphPath)
     local graph = Graph:new()
     local loaded, err = pcall(function()
-        graph:loadGraph(graphPath .. '.graph.lua')
+        graph:loadGraphFromFile(graphPath .. '.graph.lua')
     end)
     if not loaded then
-        print('Could not load compound \'' .. graphPath .. '\': ' .. err)
+        flat.ui.error('Could not load compound \'' .. graphPath .. '\': ' .. err)
         self.name = '[C] (Loading error)'
         return false
     end

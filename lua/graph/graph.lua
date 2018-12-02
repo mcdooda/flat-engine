@@ -7,34 +7,34 @@ function Graph:new()
     local o = {
         nodeInstances = {},
         entryNodes = {},
-        compounds = {}
+        contextNodes = {},
+        contextType = PinTypes.ANY,
+        compounds = {},
+        subGraphIds = {}
     }
     return setmetatable(o, self)
 end
 
 function Graph:addNode(nodeClass, buildPins)
+    assert(nodeClass)
     local node = nodeClass:new()
     if buildPins == nil then
         node:buildPins()
     end
-    local nodeIndex = #self.nodeInstances + 1
-    self.nodeInstances[nodeIndex] = node
+    flat.arrayAdd(self.nodeInstances, node)
     node:addedToGraph(self)
     return node
 end
 
 function Graph:addNodeInstance(node)
-    local nodeIndex = #self.nodeInstances + 1
-    self.nodeInstances[nodeIndex] = node
+    flat.arrayAdd(self.nodeInstances, node)
     node:addedToGraph(self)
 end
 
 function Graph:removeNode(node)
     node:unplugAllPins()
-    local nodeIndex = assert(self:findNodeIndex(node))
-    local numNodes = #self.nodeInstances
-    self.nodeInstances[nodeIndex] = self.nodeInstances[numNodes]
-    self.nodeInstances[numNodes] = nil
+    flat.arrayRemoveValueCyclic(self.nodeInstances, node)
+    node:removedFromGraph(self)
 end
 
 function Graph:getNodes()
@@ -50,28 +50,66 @@ function Graph:findNodeIndex(node)
 end
 
 function Graph:addEntryNode(node)
-    self.entryNodes[#self.entryNodes + 1] = node
+    flat.arrayAdd(self.entryNodes, node)
+end
+
+function Graph:addContextNode(node)
+    flat.arrayAdd(self.contextNodes, node)
+end
+
+function Graph:getContextNodes()
+    return self.contextNodes
+end
+
+function Graph:setContextType(contextType)
+    self.contextType = contextType
+    local nodeInstances = self.nodeInstances
+    for i = 1, #nodeInstances do
+        local nodeInstance = nodeInstances[i]
+        nodeInstance:setContextType(contextType)
+    end
+end
+
+function Graph:getContextType()
+    return self.contextType
 end
 
 function Graph:addCompound(node)
-    self.compounds[#self.compounds + 1] = node
+    flat.arrayAdd(self.compounds, node)
 end
 
-function Graph:loadGraph(graphPath)
-    local env = { PinTypes = PinTypes }
-    function env.__index(env, nodeType)
-        local nodeClasses = flat.graph.getNodeClasses(nodeType)
-        return function(savedGraph)
-            self:load(nodeType, savedGraph, nodeClasses)
+function Graph:loadGraphFromFile(graphPath)
+    local ok, err = pcall(function()
+        local savedGraph = dofile(graphPath)
+        assert(savedGraph, 'no return value!')
+        self:load(savedGraph)
+    end)
+    if not ok then
+        ok, err = pcall(function()
+            -- fallback to the old format
+            local env = { PinTypes = PinTypes }
+            function env.__index(env, nodeType)
+                return function(savedGraph)
+                    savedGraph.nodeType = nodeType
+                    self:load(savedGraph)
+                end
+            end
+        
+            setmetatable(env, env)
+        
+            assert(loadfile(graphPath, 'bt', env))()
+        end)
+        if not ok then
+            error('Could not load graph ' .. graphPath .. '\n' .. err)
         end
     end
-
-    setmetatable(env, env)
-
-    assert(loadfile(graphPath, 'bt', env))()
 end
 
-function Graph:load(nodeType, savedGraph, nodeRepository)
+function Graph:load(savedGraph)
+    assert(savedGraph, 'Trying to load a nil graph')
+    local nodeType = assert(savedGraph.nodeType, 'Graph has no type')
+    local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
+
     self.nodeType = nodeType
 
     -- build nodes
@@ -79,7 +117,7 @@ function Graph:load(nodeType, savedGraph, nodeRepository)
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
-        local nodeClass = assert(nodeRepository[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
+        local nodeClass = assert(nodeClasses[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
         local nodeInstance = self:addNode(nodeClass, false)
         local loadArguments = node.loadArguments
         if loadArguments then
@@ -117,7 +155,7 @@ function Graph:load(nodeType, savedGraph, nodeRepository)
             error('No input pin #' .. tostring(intputPinIndex) .. ' in node #' .. inputNodeIndex)
         end
 
-        outputNode:plugPins(outputPin, inputNode, inputPin)
+        outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
     end
 end
 
@@ -132,8 +170,9 @@ function Graph:resolveCompounds()
     self.compounds = nil -- avoid calling resolveCompounds again
 end
 
-function Graph:saveGraph(graphPath)
+function Graph:getDescription()
     local graphDescription = {
+        nodeType = self.nodeType,
         nodes = {},
         links = {}
     }
@@ -161,16 +200,40 @@ function Graph:saveGraph(graphPath)
                 local inputNodeIndex = self:findNodeIndex(inputNode)
                 local inputPinIndex = inputNode:findInputPinIndex(inputPin)
                 local linkDescription = {outputNodeIndex, outputPinIndex, inputNodeIndex, inputPinIndex}
-                graphDescription.links[#graphDescription.links + 1] = linkDescription
+                flat.arrayAdd(graphDescription.links, linkDescription)
             end
         end
     end
+    return graphDescription
+end
 
+function Graph:toString()
+    local graphDescription = self:getDescription()
+    return 'return ' .. flat.dumpToString(graphDescription)
+end
+
+function Graph:saveGraph(graphPath)
+    local graphDescription = self:getDescription()
     local f = assert(io.open(graphPath, 'w'))
-    f:write(self.nodeType)
-    f:write ' '
+    f:write 'return '
     flat.dumpToOutput(f, graphDescription)
     f:close()
+end
+
+function Graph:makeNewSubGraphId()
+    local newSubGraphId = #self.subGraphIds + 1
+    self.subGraphIds[newSubGraphId] = true
+    return newSubGraphId
+end
+
+function Graph:addSubGraphId(subGraphId)
+    assert(not self.subGraphIds[subGraphId])
+    self.subGraphIds[subGraphId] = true
+end
+
+function Graph:removeSubGraphId(subGraphId)
+    assert(self.subGraphIds[subGraphId])
+    self.subGraphIds[subGraphId] = nil
 end
 
 return Graph
