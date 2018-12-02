@@ -70,6 +70,13 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseEnter(Widget* previousMouseOverWidget);
 		void handleMouseLeave(Widget* nextMouseOverWidget);
 		void handleMouseWheel();
+		void handleTabButtonPressed();
+
+		Widget* getFocusableChildren(Widget* widget);
+		Widget* getNextFocusable(Widget* widget);
+
+		bool focusChildren(Widget* widget);
+		void focusNext(Widget* widget);
 
 		template <class... Args>
 		static bool propagateEvent(Widget* widget, Slot<Widget*, bool&, Args...> Widget::* slot, Args... args);

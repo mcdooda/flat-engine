@@ -174,6 +174,11 @@ void RootWidget::updateDragScrollingWidget()
 void RootWidget::updateInput(bool updateMouseOver)
 {
 	auto& mouse = m_flat.input->mouse;
+	auto& keyboard = m_flat.input->keyboard;
+	if (keyboard->isJustPressed(K(TAB)))
+	{
+		handleTabButtonPressed();
+	}
 
 	const bool mouseMoved = mouse->justMoved();
 	if (updateMouseOver || mouseMoved)
@@ -436,6 +441,58 @@ void RootWidget::handleMouseWheel()
 	if (wheelMove.x != 0.f || wheelMove.y != 0.f)
 	{
 		propagateEvent<const Vector2&>(m_mouseOverWidget.lock().get(), &Widget::mouseWheelMove, wheelMove);
+	}
+}
+
+Widget* RootWidget::getFocusableChildren(Widget* widget)
+{
+	if (widget->canBeFocused())
+		return widget;
+
+	Widget* child = nullptr;
+	const auto& children = widget->getChildren();
+	for (auto& iter = children.begin(); iter != children.end() && !child; iter++)
+	{
+		child = getFocusableChildren(iter->get());
+	}
+	return child;
+}
+
+Widget* RootWidget::getNextFocusable(Widget* widget)
+{
+	if (widget == this)
+	{
+		return getFocusableChildren(widget);
+	}
+
+	Widget* focusable = nullptr;
+	Widget* parent = widget->getParent().lock().get();
+	if (parent != nullptr)
+	{
+		const auto& children = parent->getChildren();
+		auto iter = std::find_if(children.begin(), children.end(),
+			[widget](const std::shared_ptr<Widget>& a) -> bool { return a.get() == widget; });
+		while(++iter != children.end() && focusable == nullptr)
+			focusable = getFocusableChildren(iter->get());
+
+		if (focusable == nullptr)
+			return getNextFocusable(parent);
+	}
+	return focusable;
+
+}
+
+void RootWidget::handleTabButtonPressed()
+{
+	Widget* focused = m_focusWidget.lock().get();
+	Widget* parent = focused->getParent().lock().get();
+	bool focusSwitched = false;
+	if (parent != nullptr)
+	{
+		Widget* next = getNextFocusable(focused);
+		if (next != nullptr)
+			focus(next);
+		Widget* focused = m_focusWidget.lock().get();
 	}
 }
 
