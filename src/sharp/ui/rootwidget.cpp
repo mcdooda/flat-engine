@@ -487,13 +487,9 @@ void RootWidget::handleTabButtonPressed()
 	Widget* focused = m_focusWidget.lock().get();
 	if (focused != nullptr)
 	{
-		Widget* parent = focused->getParent().lock().get();
-		if (parent != nullptr)
-		{
-			Widget* next = getNextFocusable(focused);
-			if (next != nullptr)
-				focus(next);
-		}
+		Widget* next = getNextFocusable(focused);
+		if (next != nullptr)
+			focus(next);
 	}
 }
 
