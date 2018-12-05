@@ -485,14 +485,17 @@ Widget* RootWidget::getNextFocusable(Widget* widget)
 void RootWidget::handleTabButtonPressed()
 {
 	Widget* focused = m_focusWidget.lock().get();
-	Widget* parent = focused->getParent().lock().get();
-	bool focusSwitched = false;
-	if (parent != nullptr)
+	if (focused != nullptr)
 	{
-		Widget* next = getNextFocusable(focused);
-		if (next != nullptr)
-			focus(next);
-		Widget* focused = m_focusWidget.lock().get();
+		Widget* parent = focused->getParent().lock().get();
+		bool focusSwitched = false;
+		if (parent != nullptr)
+		{
+			Widget* next = getNextFocusable(focused);
+			if (next != nullptr)
+				focus(next);
+			Widget* focused = m_focusWidget.lock().get();
+		}
 	}
 }
 
