@@ -20,6 +20,8 @@ TextInputWidget::TextInputWidget(Flat& flat, const std::shared_ptr<const video::
 	leaveFocus.on(this, &TextInputWidget::leftFocus);
 	mouseDown.on(this, &TextInputWidget::onMouseDown);
 	mouseMove.on(this, &TextInputWidget::onMouseMove);
+	paste.on(this, &TextInputWidget::onPaste);
+	copy.on(this, &TextInputWidget::onCopy);
 }
 
 TextInputWidget::~TextInputWidget()
@@ -51,11 +53,12 @@ bool TextInputWidget::enteredFocus(Widget* widget)
 {
 	selectAll();
 	m_inputContext = std::make_shared<input::context::InputContext>(m_flat);
-	m_inputContext->getKeyboardInputContext().setEnableKeyRepeat(true);
+	input::context::KeyboardInputContext& keyboardInputContext = m_inputContext->getKeyboardInputContext();
+	keyboardInputContext.setEnableKeyRepeat(true);
+	keyboardInputContext.keyJustPressed.on(this, &TextInputWidget::keyJustPressed);
+	keyboardInputContext.textEdited.on(this, &TextInputWidget::textEdited);
+	keyboardInputContext.setEnableTextInput(true);
 	m_flat.input->pushContext(m_inputContext);
-	m_inputContext->getKeyboardInputContext().keyJustPressed.on(this, &TextInputWidget::keyJustPressed);
-	m_inputContext->getKeyboardInputContext().textEdited.on(this, &TextInputWidget::textEdited);
-	m_inputContext->getKeyboardInputContext().setEnableTextInput(true);
 	return true;
 }
 
@@ -65,9 +68,10 @@ bool TextInputWidget::leftFocus(Widget* widget)
 	{
 		unselect();
 	}
-	m_inputContext->getKeyboardInputContext().keyJustPressed.off(this);
-	m_inputContext->getKeyboardInputContext().textEdited.off(this);
-	m_inputContext->getKeyboardInputContext().setEnableTextInput(false);
+	input::context::KeyboardInputContext& keyboardInputContext = m_inputContext->getKeyboardInputContext();
+	keyboardInputContext.keyJustPressed.off(this);
+	keyboardInputContext.textEdited.off(this);
+	keyboardInputContext.setEnableTextInput(false);
 	m_flat.input->popContext(m_inputContext);
 	m_inputContext.reset();
 	return true;
@@ -101,6 +105,18 @@ bool TextInputWidget::onMouseMove(Widget* widget, bool& eventHandled)
 		m_cursorIndex = getCursorIndexFromPosition(mouseX);
 		selectTo(m_selectionIndex);
 	}
+	return true;
+}
+
+bool TextInputWidget::onPaste(Widget* widget, const std::string& text)
+{
+	textEdited(text);
+	return true;
+}
+
+bool TextInputWidget::onCopy(Widget* widget, std::string& copied)
+{
+	copied = getSelectedText();
 	return true;
 }
 
@@ -288,6 +304,13 @@ void TextInputWidget::changeSelectedText(const std::string& text)
 		setText(newText);
 	}
 	moveCursorAt(std::min(m_cursorIndex, m_selectionIndex) + text.size());
+}
+
+std::string TextInputWidget::getSelectedText() const
+{
+	CursorIndex min = std::min(m_cursorIndex, m_selectionIndex);
+	CursorIndex max = std::max(m_cursorIndex, m_selectionIndex);
+	return getText().substr(min, max - min);
 }
 
 TextInputWidget::CursorIndex TextInputWidget::nextWordFrom(CursorIndex index) const

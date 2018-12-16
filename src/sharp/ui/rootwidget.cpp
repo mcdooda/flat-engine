@@ -179,6 +179,14 @@ void RootWidget::updateInput(bool updateMouseOver)
 	{
 		handleTabButtonPressed();
 	}
+	else if (keyboard->isJustPressed(K(C)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	{
+		handleCopy();
+	}
+	else if (keyboard->isJustPressed(K(V)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	{
+		handlePaste();
+	}
 
 	const bool mouseMoved = mouse->justMoved();
 	if (updateMouseOver || mouseMoved)
@@ -479,7 +487,6 @@ Widget* RootWidget::getNextFocusable(Widget* widget)
 			return getNextFocusable(parent);
 	}
 	return focusable;
-
 }
 
 void RootWidget::handleTabButtonPressed()
@@ -490,6 +497,26 @@ void RootWidget::handleTabButtonPressed()
 		Widget* next = getNextFocusable(focused);
 		if (next != nullptr)
 			focus(next);
+	}
+}
+
+void RootWidget::handleCopy()
+{
+	Widget* focused = m_focusWidget.lock().get();
+	if (focused != nullptr)
+	{
+		std::string copied;
+		focused->copy(focused, copied);
+		SDL_SetClipboardText(copied.c_str());
+	}
+}
+
+void RootWidget::handlePaste()
+{
+	Widget* focused = m_focusWidget.lock().get();
+	if (focused != nullptr)
+	{
+		focused->paste(focused, SDL_GetClipboardText());
 	}
 }
 

@@ -49,6 +49,8 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		bool enteredFocus(Widget* widget);
 		bool onMouseDown(Widget* widget, bool& eventHandled);
 		bool onMouseMove(Widget* widget, bool& eventHandled);
+		bool onPaste(Widget* widget, const std::string& text);
+		bool onCopy(Widget* widget, std::string& copied);
 		void moveCursor(int offset);
 		void moveCursorAt(CursorIndex index);
 		void selectTo(CursorIndex to);
@@ -56,6 +58,7 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		void selectAll();
 		bool hasSelectedText();
 		void changeSelectedText(const std::string& text);
+		std::string getSelectedText() const;
 		CursorIndex nextWordFrom(CursorIndex index) const;
 		CursorIndex previousWordFrom(CursorIndex index) const;
 

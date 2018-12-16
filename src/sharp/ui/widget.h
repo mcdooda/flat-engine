@@ -246,12 +246,14 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*, bool&> mouseDown;
 		Slot<Widget*, bool&> mouseUp;
 		Slot<Widget*, bool&> mouseMove;
-		Slot<Widget*, bool&, const Vector2&> mouseWheelMove; 
+		Slot<Widget*, bool&, const Vector2&> mouseWheelMove;
 		Slot<Widget*> scroll;
 		Slot<Widget*> dragged;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
-		Slot<Widget*> layoutFinished;
+		Slot<Widget*> layoutFinished; 
+		Slot<Widget*, std::string&> copy;
+		Slot<Widget*, const std::string&> paste;
 		
 	protected:
 		static bool intersect(const ScissorRectangle& a, const ScissorRectangle& b);

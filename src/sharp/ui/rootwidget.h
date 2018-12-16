@@ -71,6 +71,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseLeave(Widget* nextMouseOverWidget);
 		void handleMouseWheel();
 		void handleTabButtonPressed();
+		void handleCopy();
+		void handlePaste();
 
 		Widget* getFocusableChildren(Widget* widget);
 		Widget* getNextFocusable(Widget* widget);

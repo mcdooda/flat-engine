@@ -96,6 +96,8 @@ int l_Widget_getRestrictScroll(lua_State* L);
 
 int l_Widget_getScrollPosition(lua_State* L);
 
+int l_Widget_copy(lua_State* L);
+int l_Widget_paste(lua_State* L);
 int l_Widget_click(lua_State* L);
 int l_Widget_rightClick(lua_State* L);
 int l_Widget_mouseDown(lua_State* L);
@@ -160,8 +162,8 @@ FocusableWidget& getFocusableWidget(lua_State* L, int index);
 
 template <class T>
 T& getWidgetOfType(lua_State* L, int index);
-template <class T>
-int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot);
+template <class T, class... Args>
+int addWidgetCallback(lua_State* L, Slot<Widget*, Args...> T::* slot);
 template <class T>
 int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
 int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot);
