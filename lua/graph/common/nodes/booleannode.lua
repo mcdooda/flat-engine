@@ -20,6 +20,10 @@ function BooleanNode:init()
     self:setValue(false)
 end
 
+function BooleanNode:isConstant()
+    return true
+end
+
 function BooleanNode:getLoadArguments()
     return self.value
 end

@@ -70,6 +70,8 @@ function MainWindow:build()
                         local compoundNode = graph:addNode(nodeClasses['compound'], false)
                         if compoundNode:load(compoundPath) then
                             compoundNode:buildPins()
+                            local nodeIndex = graph:findNodeIndex(compoundNode)
+                            graphInfo.layout[nodeIndex] = {0, 0}
                             local nodeWidget = self:makeNodeWidget(compoundNode, self:getFoldedNodes())
                             local contentSizeX, contentSizeY = content:getComputedSize()
                             local scrollX, scrollY = content:getScrollPosition()
@@ -80,7 +82,7 @@ function MainWindow:build()
                             break
                         else
                             graph:removeNode(compoundNode)
-                            -- compoundNode:load already displayed an error
+                            flat.ui.error('Cound not load compound ' .. compoundPath)
                         end
                     else
                         break
@@ -610,9 +612,8 @@ function MainWindow:getPinColor(inputNode, inputPin)
 end
 
 function MainWindow:getInputPinPosition(inputNode, inputPin)
-    local nodeWidget = self.currentGraphInfo.nodeWidgets[inputNode]
-    local inputPinPlugWidget = nodeWidget:getInputPinPlugWidget(inputPin)
-    assert(inputPinPlugWidget)
+    local nodeWidget = assert(self.currentGraphInfo.nodeWidgets[inputNode], 'No widget for node ' .. inputNode:getName() .. ' (@=' .. tostring(inputNode) .. ') graphInfo=' .. tostring(self.currentGraphInfo) .. ')')
+    local inputPinPlugWidget = assert(nodeWidget:getInputPinPlugWidget(inputPin))
     local x, y = self:getContent():getRelativePosition(inputPinPlugWidget)
     local sx, sy = inputPinPlugWidget:getSize()
     return x, y + sy / 2
@@ -840,6 +841,7 @@ function MainWindow:openNodeListMenu(x, y)
     end
 
     local function insertNode(nodeName)
+        local foldedNodes = self:getFoldedNodes() -- this must be called before adding the new node to the graph!
         local content = self:getContent()
         local graphInfo = self.currentGraphInfo
         local graph = graphInfo.graph
@@ -850,7 +852,7 @@ function MainWindow:openNodeListMenu(x, y)
         local nodeWidgetX = x + scrollX
         local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
         graphInfo.layout[nodeIndex] = {nodeWidgetX, nodeWidgetY}
-        local nodeWidget = self:makeNodeWidget(node, self:getFoldedNodes())
+        local nodeWidget = self:makeNodeWidget(node, foldedNodes)
         nodeWidget:setVisiblePosition(nodeWidgetX, nodeWidgetY)
         content:addChild(nodeWidget:getContainer())
         self:closeNodeListMenu()
@@ -1112,6 +1114,7 @@ function MainWindow:getFoldedNodes()
         local node = nodes[i]
         if not nodeWidgets[node] then
             foldedNodes[node] = true
+            assert(node:isConstant(), 'Only constant nodes can be folded')
         end
     end
     return foldedNodes
