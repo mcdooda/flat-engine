@@ -60,6 +60,7 @@ function MainWindow:build()
         do
             local useCompoundButton = toolbar:addButton 'Use Compound'
             useCompoundButton:click(flat.ui.task(function()
+                local foldedNodes = self:getFoldedNodes()
                 while true do
                     local compoundPath = flat.ui.prompt 'Compound Path:'
                     if compoundPath then
@@ -72,7 +73,7 @@ function MainWindow:build()
                             compoundNode:buildPins()
                             local nodeIndex = graph:findNodeIndex(compoundNode)
                             graphInfo.layout[nodeIndex] = {0, 0}
-                            local nodeWidget = self:makeNodeWidget(compoundNode, self:getFoldedNodes())
+                            local nodeWidget = self:makeNodeWidget(compoundNode, foldedNodes)
                             local contentSizeX, contentSizeY = content:getComputedSize()
                             local scrollX, scrollY = content:getScrollPosition()
                             local nodeWidgetX = scrollX + contentSizeX / 2
