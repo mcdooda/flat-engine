@@ -1097,22 +1097,6 @@ T& getWidgetOfType(lua_State* L, int index)
 	return *widgetOfType;
 }
 
-void pushArgs(lua_State* L)
-{
-}
-
-void pushArgs(lua_State* L,  const std::string& s)
-{
-	lua_pushstring(L, s.c_str());
-}
-
-template <class First, class... Rest>
-void pushArgs(lua_State* L, First first, Rest... rest)
-{
-	pushArgs(L, first);
-	pushArgs(L, rest...);
-}
-
 template <class T, class... Args>
 int addWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot)
 {
@@ -1123,13 +1107,7 @@ int addWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot)
 	(widget.*slot).on(
 		[L, callback](Widget* w, Args... args)
 		{
-			callback.callFunction(
-				[w, args](lua_State* L)
-				{
-					pushWidget(L, w->getSharedPtr());
-					pushArgs(L, args...);
-				}
-			);
+			callback.call(w->getSharedPtr(), args...);
 			return true;
 		}
 	);
@@ -1145,17 +1123,17 @@ int addCopyWidgetCallback(lua_State* L, Slot <Widget*> T::* slot)
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	(widget.*slot).on(
 		[L, callback](Widget* w, std::string& copied)
-	{
-		callback.callFunction(
-			[w](lua_State* L)
 		{
-			//TODO
-			pushWidget(L, w->getSharedPtr());
-			copied = luaL_checkstring(L, 1);
+			callback.callFunction(
+				[w](lua_State* L)
+				{
+					//TODO
+					pushWidget(L, w->getSharedPtr());
+					copied = luaL_checkstring(L, 1);
+				}
+			);
+			return true;
 		}
-		);
-		return true;
-	}
 	);
 	return 0;
 }
@@ -1199,22 +1177,22 @@ int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, con
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	(widget.*slot).on(
 		[L, callback](Widget* w, bool& eventHandled, const Vector2& offset)
-	{
-		callback.callFunction(
-			[w, &offset](lua_State* L)
 		{
-			pushWidget(L, w->getSharedPtr());
-			lua_pushnumber(L, offset.x);
-			lua_pushnumber(L, offset.y);
-		},
-			1,
-			[&eventHandled](lua_State* L)
-		{
-			eventHandled = eventHandled || lua_toboolean(L, -1);
+			callback.callFunction(
+				[w, &offset](lua_State* L)
+				{
+					pushWidget(L, w->getSharedPtr());
+					lua_pushnumber(L, offset.x);
+					lua_pushnumber(L, offset.y);
+				},
+				1,
+				[&eventHandled](lua_State* L)
+				{
+					eventHandled = eventHandled || lua_toboolean(L, -1);
+				}
+			);
+			return true;
 		}
-		);
-		return true;
-	}
 	);
 	return 0;
 }

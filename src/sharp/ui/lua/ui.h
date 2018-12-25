@@ -4,6 +4,7 @@
 #include <memory>
 #include "../../../misc/slot.h"
 #include "../../../misc/lua/vector2.h"
+#include "lua/push.h"
 
 struct lua_State;
 
@@ -172,11 +173,12 @@ void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);
 RootWidget& getRootWidget(lua_State* L);
 
-
 } // lua
 } // ui
 } // sharp
 } // flat
+
+FLAT_LUA_PUSHABLE_TYPE(const std::shared_ptr<flat::sharp::ui::Widget>&, flat::sharp::ui::lua::pushWidget(L, value))
 
 #endif // FLAT_SHARP_UI_LUA_H
 

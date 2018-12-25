@@ -67,6 +67,17 @@ class SharedLuaReference : public std::shared_ptr<LuaReference<LuaType>>
 			reference->callFunction(pushArgumentsCallback);
 		}
 
+		template<typename... Args>
+		void call(Args&&... args) const
+		{
+			callFunction(
+				[&args...](lua_State* L)
+				{
+					FLAT_VARIADIC_EXPAND(lua::pushValue(L, args));
+				}
+			);
+		}
+
 		template<typename PushArgumentsCallback, typename HandleResultsCallback, typename = std::enable_if_t<LuaType == LUA_TFUNCTION>>
 		void callFunction(PushArgumentsCallback pushArgumentsCallback, int numResults, HandleResultsCallback handleResultsCallback) const
 		{

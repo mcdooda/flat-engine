@@ -2,6 +2,7 @@
 #define FLAT_MISC_LUA_VECTOR3_H
 
 #include "../vector.h"
+#include "lua/push.h"
 
 struct lua_State;
 
@@ -39,7 +40,9 @@ Vector3& getVector3(lua_State* L, int index);
 void pushVector3(lua_State* L, const Vector3& vector3);
 
 } // lua
-} // game
+} // flat
+
+FLAT_LUA_PUSHABLE_TYPE(const flat::Vector3&, flat::lua::pushVector3(L, value))
 
 #endif // FLAT_MISC_LUA_VECTOR3_H
 
