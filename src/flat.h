@@ -62,6 +62,7 @@
 // containers
 #include "containers/pool.h"
 #include "containers/dynamicpool.h"
+#include "containers/hybridarray.h"
 
 // resource
 #include "resource/sharedresourcemanager.h"
