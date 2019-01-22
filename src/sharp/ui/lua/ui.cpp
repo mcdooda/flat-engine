@@ -96,6 +96,9 @@ int open(Flat& flat, flat::lua::Lua& lua)
 
 		{"getScrollPosition",     l_Widget_getScrollPosition},
 
+		{"copy",                  l_Widget_copy},
+		{"paste",                 l_Widget_paste},
+
 		{"click",                 l_Widget_click},
 		{"rightClick",            l_Widget_rightClick},
 		{"mouseDown",             l_Widget_mouseDown},
@@ -700,6 +703,16 @@ int l_Widget_getScrollPosition(lua_State* L)
 	return 2;
 }
 
+int l_Widget_copy(lua_State* L)
+{
+	return addWidgetCallback<Widget>(L, &Widget::copy);
+}
+
+int l_Widget_paste(lua_State* L)
+{
+	return addWidgetCallback<Widget, const std::string&>(L, &Widget::paste);
+}
+
 int l_Widget_click(lua_State* L)
 {
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::leftClick);
@@ -1084,20 +1097,39 @@ T& getWidgetOfType(lua_State* L, int index)
 	return *widgetOfType;
 }
 
-template <class T>
-int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot)
+template <class T, class... Args>
+int addWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot)
 {
 	T& widget = getWidgetOfType<T>(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	//FLAT_ASSERT(L == flat::lua::getMainThread(L));
 	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
 	(widget.*slot).on(
-		[L, callback](Widget* w)
+		[L, callback](Widget* w, Args... args)
+		{
+			callback.call(w->getSharedPtr(), args...);
+			return true;
+		}
+	);
+	return 0;
+}
+
+template <class T>
+int addCopyWidgetCallback(lua_State* L, Slot <Widget*> T::* slot)
+{
+	T& widget = getWidgetOfType<T>(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	//FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
+	(widget.*slot).on(
+		[L, callback](Widget* w, std::string& copied)
 		{
 			callback.callFunction(
 				[w](lua_State* L)
 				{
+					//TODO
 					pushWidget(L, w->getSharedPtr());
+					copied = luaL_checkstring(L, 1);
 				}
 			);
 			return true;
@@ -1147,7 +1179,7 @@ int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, con
 		[L, callback](Widget* w, bool& eventHandled, const Vector2& offset)
 		{
 			callback.callFunction(
-				[&offset, w](lua_State* L)
+				[w, &offset](lua_State* L)
 				{
 					pushWidget(L, w->getSharedPtr());
 					lua_pushnumber(L, offset.x);

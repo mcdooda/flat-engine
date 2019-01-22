@@ -17,6 +17,30 @@ int8_t sign(T number)
 	return (T(0) < number) - (number < T(0));
 }
 
+inline float angle_clamp_pi(float angle)
+{
+	angle = fmodf(angle, flat::PI2);
+	if (angle < -flat::PI)
+	{
+		angle += flat::PI2;
+	}
+	else if (angle > flat::PI)
+	{
+		angle -= flat::PI2;
+	}
+	return angle;
+}
+
+inline float angle_clamp_0_2pi(float angle)
+{
+	angle = fmodf(angle, flat::PI2);
+
+	if (angle < 0.f)
+		angle += flat::PI2;
+
+	return angle;
+}
+
 } // flat
 
 #endif // FLAT_MISC_MATH_H

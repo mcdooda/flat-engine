@@ -4,6 +4,7 @@
 #include <memory>
 #include "../../../misc/slot.h"
 #include "../../../misc/lua/vector2.h"
+#include "lua/push.h"
 
 struct lua_State;
 
@@ -96,6 +97,8 @@ int l_Widget_getRestrictScroll(lua_State* L);
 
 int l_Widget_getScrollPosition(lua_State* L);
 
+int l_Widget_copy(lua_State* L);
+int l_Widget_paste(lua_State* L);
 int l_Widget_click(lua_State* L);
 int l_Widget_rightClick(lua_State* L);
 int l_Widget_mouseDown(lua_State* L);
@@ -160,8 +163,8 @@ FocusableWidget& getFocusableWidget(lua_State* L, int index);
 
 template <class T>
 T& getWidgetOfType(lua_State* L, int index);
-template <class T>
-int addWidgetCallback(lua_State* L, Slot<Widget*> T::* slot);
+template <class T, class... Args>
+int addWidgetCallback(lua_State* L, Slot<Widget*, Args...> T::* slot);
 template <class T>
 int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
 int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot);
@@ -170,11 +173,12 @@ void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);
 RootWidget& getRootWidget(lua_State* L);
 
-
 } // lua
 } // ui
 } // sharp
 } // flat
+
+FLAT_LUA_PUSHABLE_TYPE(const std::shared_ptr<flat::sharp::ui::Widget>&, flat::sharp::ui::lua::pushWidget(L, value))
 
 #endif // FLAT_SHARP_UI_LUA_H
 

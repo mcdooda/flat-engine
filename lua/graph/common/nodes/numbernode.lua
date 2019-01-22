@@ -20,6 +20,10 @@ function NumberNode:init()
     self:setValue(0)
 end
 
+function NumberNode:isConstant()
+    return true
+end
+
 function NumberNode:getLoadArguments()
     return self.value
 end

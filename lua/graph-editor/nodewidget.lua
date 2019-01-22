@@ -368,21 +368,30 @@ end
 
 function NodeWidget:showFoldedConstantNode(pin)
     self.foldedConstantEditorWidgets[pin] = nil
+
+    local constantNode
+    if pin.pluggedOutputPin then
+        local pluggedNode = pin.pluggedOutputPin.node
+        if pluggedNode:isConstant() then
+            constantNode = pluggedNode
+        else
+            return false
+        end
+    end
+
     local graph = self.mainWindow:getCurrentGraph()
     local node = self.node
     local nodeType = graph.nodeType
     local nodeName = node:pinTypeToString(pin.pinType):lower()
     local customConstantNodeEditor = self:getCustomNodeEditor(nil, nodeType, nodeName)
     if customConstantNodeEditor then
-        local constantNode
-        if pin.pluggedOutputPin then
-            constantNode = pin.pluggedOutputPin.node
-        else
+        if not constantNode then
             local nodeClasses = flat.graph.getNodeClasses(nodeType)
             assert(nodeClasses[nodeName], 'no node ' .. nodeName .. ' for node type ' .. nodeType)
             constantNode = graph:addNode(nodeClasses[nodeName])
             constantNode:plugPins(constantNode:getOutputPin(1), node, pin)
         end
+        assert(constantNode and constantNode:isConstant())
         local inputPinNameWidgetContainer = assert(self.inputPinNameWidgetContainers[pin])
         local customEditor, customWidget = customConstantNodeEditor:build(constantNode, nil, inputPinNameWidgetContainer)
         if customWidget then

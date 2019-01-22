@@ -80,18 +80,18 @@ end
 
 function Graph:loadGraphFromFile(graphPath)
     local ok, err = pcall(function()
-        local savedGraph = dofile(graphPath)
-        assert(savedGraph, 'no return value!')
-        self:load(savedGraph)
+        local graphDescription = dofile(graphPath)
+        assert(graphDescription, 'no return value!')
+        self:load(graphDescription)
     end)
     if not ok then
         ok, err = pcall(function()
             -- fallback to the old format
             local env = { PinTypes = PinTypes }
             function env.__index(env, nodeType)
-                return function(savedGraph)
-                    savedGraph.nodeType = nodeType
-                    self:load(savedGraph)
+                return function(graphDescription)
+                    graphDescription.nodeType = nodeType
+                    self:load(graphDescription)
                 end
             end
         
@@ -105,15 +105,15 @@ function Graph:loadGraphFromFile(graphPath)
     end
 end
 
-function Graph:load(savedGraph)
-    assert(savedGraph, 'Trying to load a nil graph')
-    local nodeType = assert(savedGraph.nodeType, 'Graph has no type')
+function Graph:load(graphDescription)
+    assert(graphDescription, 'Trying to load a nil graph')
+    local nodeType = assert(graphDescription.nodeType, 'Graph has no type')
     local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
 
     self.nodeType = nodeType
 
     -- build nodes
-    local nodes = savedGraph.nodes
+    local nodes = graphDescription.nodes
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
@@ -129,7 +129,7 @@ function Graph:load(savedGraph)
     end
 
     -- connect nodes together
-    local links = savedGraph.links
+    local links = graphDescription.links
     for i = 1, #links do
         local link = links[i]
 
@@ -160,7 +160,7 @@ function Graph:load(savedGraph)
 end
 
 function Graph:resolveCompounds()
-    assert(self.compounds) -- can be empty for now (it will do nothing), but not nil
+    assert(self.compounds, 'Compounds already resolved!') -- can be empty for now (it will do nothing), but not nil
     local compounds = self.compounds
     for i = 1, #compounds do
         local compound = compounds[i]
@@ -205,6 +205,14 @@ function Graph:getDescription()
         end
     end
     return graphDescription
+end
+
+function Graph:clone()
+    local graphDescription = self:getDescription()
+    local clone = getmetatable(self):new()
+    clone:load(graphDescription)
+    assert(flat.dumpToString(graphDescription) == flat.dumpToString(clone:getDescription()))
+    return clone
 end
 
 function Graph:toString()

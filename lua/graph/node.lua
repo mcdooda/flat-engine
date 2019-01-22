@@ -70,6 +70,10 @@ function Node:setContextType(contextType)
     -- overriden when needed, set the inner graph context type or something...
 end
 
+function Node:isConstant()
+    return false
+end
+
 function Node:clone()
     local clone = getmetatable(self):new()
     clone:load(self:getLoadArguments())

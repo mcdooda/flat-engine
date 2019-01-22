@@ -20,6 +20,10 @@ function StringNode:init()
     self:setValue ''
 end
 
+function StringNode:isConstant()
+    return true
+end
+
 function StringNode:getLoadArguments()
     return self.value
 end

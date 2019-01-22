@@ -11,7 +11,7 @@ namespace time
 Time::Time()
 {
 	m_frameDuration = 0.f;
-	setPreferedFrameRate(600.f);
+	setNoLimitFrameRate();
 
 	defaultClock = newClock();
 }

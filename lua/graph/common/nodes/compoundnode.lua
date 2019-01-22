@@ -224,21 +224,23 @@ function CompoundNode:resolve(parentGraph)
             local subGraphOutputNodeInputPin = subGraphOutputNodeInputPins[i]
 
             -- clone from the compound
-            local outputNode = clones[subGraphOutputNodeInputPin.pluggedOutputPin.node]
-            local outputPinIndex = subGraphOutputNodeInputPin.pluggedOutputPin.node:findOutputPinIndex(subGraphOutputNodeInputPin.pluggedOutputPin.outputPin)
-            local outputPin = outputNode.outputPins[outputPinIndex]
+            if subGraphOutputNodeInputPin.pluggedOutputPin then
+                local outputNode = clones[subGraphOutputNodeInputPin.pluggedOutputPin.node]
+                local outputPinIndex = subGraphOutputNodeInputPin.pluggedOutputPin.node:findOutputPinIndex(subGraphOutputNodeInputPin.pluggedOutputPin.outputPin)
+                local outputPin = outputNode.outputPins[outputPinIndex]
 
-            local compoundOutputPin = compoundOutputPins[i]
-            local pluggedInputPins = compoundOutputPin.pluggedInputPins
-            for j = 1, #pluggedInputPins do
-                local pluggedInputPin = pluggedInputPins[j]
+                local compoundOutputPin = compoundOutputPins[i]
+                local pluggedInputPins = compoundOutputPin.pluggedInputPins
+                for j = 1, #pluggedInputPins do
+                    local pluggedInputPin = pluggedInputPins[j]
 
-                -- node from the parent graph
-                local inputNode = pluggedInputPin.node
-                local inputPin = pluggedInputPin.inputPin
+                    -- node from the parent graph
+                    local inputNode = pluggedInputPin.node
+                    local inputPin = pluggedInputPin.inputPin
 
-                -- plug the clone to the original parent graph node
-                outputNode:plugPins(outputPin, inputNode, inputPin)
+                    -- plug the clone to the original parent graph node
+                    outputNode:plugPins(outputPin, inputNode, inputPin)
+                end
             end
         end
     end

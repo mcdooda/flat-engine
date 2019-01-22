@@ -15,6 +15,8 @@ return {
     'math/greaterthan',
     'math/equal',
     'math/formula',
+    'math/and',
+    'math/or',
 
     'math/vector3/vector3reflect',
     'math/vector3/vector3numbermultiply',

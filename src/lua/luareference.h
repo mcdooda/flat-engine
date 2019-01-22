@@ -132,7 +132,7 @@ class LuaReference
 			callFunction(
 				[&args...](lua_State* L)
 				{
-					FLAT_VARIADIC_EXPAND(lua::table::pushValue(L, args));
+					FLAT_VARIADIC_EXPAND(lua::pushValue(L, args));
 				}
 			);
 		}
