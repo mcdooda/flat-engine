@@ -664,8 +664,11 @@ function MainWindow:beginDragWireFromOutputPin(outputNode, outputPin)
 end
 
 function MainWindow:canPlugPins(outputNode, outputPin, inputNode, inputPin)
-    if outputNode == inputNode then
-        return false
+    local nodeType = self:getCurrentGraph().nodeType
+    if nodeType == 'script' then
+        if outputNode == inputNode then
+            return false
+        end
     end
     if inputPin.pinType == PinTypes.ANY then
         return outputPin.pinType ~= PinTypes.ANY
