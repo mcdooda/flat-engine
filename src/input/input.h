@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "gamepads.h"
 #include "keyboard.h"
 #include "mouse.h"
 #include "window.h"
@@ -40,6 +41,7 @@ class Input
 		std::unique_ptr<Keyboard> keyboard;
 		std::unique_ptr<Mouse> mouse;
 		std::unique_ptr<Window> window;
+		std::unique_ptr<Gamepads> gamepads;
 
 	private:
 		void cleanTopExpiredContexts();

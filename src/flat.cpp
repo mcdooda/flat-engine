@@ -13,7 +13,7 @@ namespace flat
 
 Flat::Flat(const std::string& luaPath, const std::string& assetsPath)
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 
 	time = std::make_unique<time::Time>();
 	video = std::make_unique<video::Video>();

@@ -215,7 +215,6 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
         )
 
         local graphLayout = self:getGraphLayout(graphInfo)
-        graphInfo.layout = graphLayout
         local content = self:getContent()
 
         local foldedNodes = {}
@@ -223,7 +222,13 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
             local node = graph.nodeInstances[i]
             local nodePosition = graphLayout[i]
             if not nodePosition then
-                foldedNodes[node] = true
+                --assert(node:isConstant(), 'Cannot fold a non constant node: ' .. node:getName())
+                if node:isConstant() then
+                    foldedNodes[node] = true
+                else
+                    flat.ui.error('Cannot fold a non constant node: ' .. node:getName())
+                    graphLayout[i] = {0, 0}
+                end
             end
         end
 
@@ -234,17 +239,23 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
                 local nodeWidget = self:makeNodeWidget(node, foldedNodes)
                 nodeWidget:setVisiblePosition(table.unpack(nodePosition))
                 content:addChild(nodeWidget:getContainer())
+            else
+                assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
             end
         end
 
         self:updateCustomNodeEditors()
         content:redraw()
+
+        assert(self:layoutSanityCheck())
         return true
     else
         -- the graph has not been loaded
         graph.nodeType = nodeType
         graphInfo.layout = {}
         self.isNew = true
+
+        assert(self:layoutSanityCheck())
         return false
     end
 end
@@ -294,11 +305,6 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
         assert(graph.nodeType, 'unknown graph type')
 
         local graphLayout = self:getGraphLayout(graphInfo)
-        graphInfo.layout = graphLayout
-        if not parentGraphInfo.layout.subGraphLayouts then
-            parentGraphInfo.layout.subGraphLayouts = {}
-        end
-        parentGraphInfo.layout.subGraphLayouts[subGraphId] = graphLayout
         local content = self:getContent()
 
         local foldedNodes = {}
@@ -306,7 +312,23 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
             local node = graph.nodeInstances[i]
             local nodePosition = graphLayout[i]
             if not nodePosition then
-                foldedNodes[node] = true
+                --assert(node:isConstant(), 'Cannot fold a non constant node: ' .. node:getName())
+                if node:isConstant() then
+                    foldedNodes[node] = true
+                else
+                    flat.ui.error('Cannot fold a non constant node: ' .. node:getName())
+                    graphLayout[i] = {0, 0}
+                end
+            end
+        end
+
+        local nodes = graph:getNodes()
+        for index, position in pairs(graphLayout) do
+            if type(index) == 'number' then
+                if not nodes[index] then
+                    flat.ui.error('Layout has field ' .. index .. ' but no corresponding node')
+                    graphLayout[index] = nil
+                end
             end
         end
 
@@ -317,11 +339,17 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
                 local nodeWidget = self:makeNodeWidget(node, foldedNodes)
                 nodeWidget:setVisiblePosition(table.unpack(nodePosition))
                 content:addChild(nodeWidget:getContainer())
+            else
+                assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
             end
         end
 
         self:updateCustomNodeEditors()
+
+        assert(self:layoutSanityCheck())
         content:redraw()
+
+        assert(self:layoutSanityCheck())
         return true
     else
         -- the graph has not been loaded
@@ -332,6 +360,8 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
         end
         parentGraphInfo.layout.subGraphLayouts[subGraphId] = graphInfo.layout
         self.isNew = true
+
+        assert(self:layoutSanityCheck())
         return false
     end
 end
@@ -366,6 +396,8 @@ function MainWindow:loadGraphFromFile(graphPath)
 end
 
 function MainWindow:saveGraphToFile()
+    assert(self:layoutSanityCheck())
+
     local graphInfo = self:getCurrentRootGraphInfo()
     graphInfo.graph:saveGraph(graphInfo.path .. '.graph.lua')
 end
@@ -382,10 +414,24 @@ function MainWindow:loadGraphLayoutFromFile(graphPath)
 end
 
 function MainWindow:saveGraphLayoutToFile()
+    assert(self:layoutSanityCheck())
+
     local graphInfo = self:getCurrentRootGraphInfo()
+    local layout = graphInfo.layout
+
+    -- layout sanity check
+    if flat.debug then
+        for i = 1, #graphInfo.graph.nodeInstances do
+            if not layout[i] then
+                local node = graphInfo.graph.nodeInstances[i]
+                assert(node:isConstant(), 'Cannot fold a non constant node: ' .. node:getName())
+            end
+        end
+    end
+
     local f = io.open(graphInfo.path .. '.layout.lua', 'w')
     f:write 'return '
-    flat.dumpToOutput(f, graphInfo.layout)
+    flat.dumpToOutput(f, layout)
     f:close()
 end
 
@@ -860,6 +906,7 @@ function MainWindow:openNodeListMenu(x, y)
         nodeWidget:setVisiblePosition(nodeWidgetX, nodeWidgetY)
         content:addChild(nodeWidget:getContainer())
         self:closeNodeListMenu()
+        assert(self:layoutSanityCheck())
     end
 
     local function submitInsertNode()
@@ -1013,6 +1060,7 @@ function MainWindow:dropSelectedNodeWidgets()
 end
 
 function MainWindow:deleteSelectedNodes()
+    assert(self:layoutSanityCheck())
     local graphInfo = self.currentGraphInfo
     local graph = graphInfo.graph
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
@@ -1021,9 +1069,7 @@ function MainWindow:deleteSelectedNodes()
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
         local node = selectedNodeWidget.node
         local nodeIndex = graph:findNodeIndex(node)
-        local numNodes = #graph:getNodes()
-        layout[nodeIndex] = layout[numNodes]
-        layout[numNodes] = nil
+        flat.arrayRemoveIndexCyclic(layout, nodeIndex)
         if node.subGraphId then
             layout.subGraphLayouts[node.subGraphId] = nil
             assert(node.subGraphId ~= graphInfo.subGraphId)
@@ -1033,6 +1079,7 @@ function MainWindow:deleteSelectedNodes()
         nodeWidgets[node] = nil
         selectedNodeWidget:delete()
     end
+    assert(self:layoutSanityCheck())
     graphInfo.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()
     self:drawLinks()
@@ -1160,15 +1207,24 @@ end
 
 function MainWindow:getGraphLayout(graphInfo)
     assert(graphInfo.path or graphInfo.parentGraphInfo)
+    if graphInfo.layout then
+        return graphInfo.layout
+    end
     if graphInfo.path then
-        return self:loadGraphLayoutFromFile(graphInfo.path)
+        graphInfo.layout = self:loadGraphLayoutFromFile(graphInfo.path)
+        return graphInfo.layout
     else
         local parentLayout = self:getGraphLayout(graphInfo.parentGraphInfo)
-        local layout
-        if parentLayout.subGraphLayouts then
-            layout = parentLayout.subGraphLayouts[graphInfo.subGraphId]
+        if not parentLayout.subGraphLayouts then
+            parentLayout.subGraphLayouts = {}
         end
-        return layout or {}
+        local layout = parentLayout.subGraphLayouts[graphInfo.subGraphId]
+        if not layout then
+            layout = {}
+            parentLayout.subGraphLayouts[graphInfo.subGraphId] = layout
+        end
+        graphInfo.layout = layout
+        return layout
     end
 end
 
@@ -1228,6 +1284,27 @@ function MainWindow:validSnap()
             self:linkReleasedOnInputPin(self.snap.inputNode, self.snap.inputPin)
         end
     end
+end
+
+function MainWindow:layoutSanityCheck()
+    local graphInfos = self.graphInfos
+    for i = 1, #graphInfos do
+        local graphInfo = graphInfos[i]
+        local nodeWidgets = graphInfo.nodeWidgets
+        local layout = self:getGraphLayout(graphInfo)
+        local graph = graphInfo.graph
+        local nodes = graph:getNodes()
+        for j = 1, #nodes do
+            local node = nodes[j]
+            if not nodeWidgets[node] then
+                assert(not layout[j], 'Layout exists for node ' .. node:getName() .. ' but there is no node widget')
+                assert(node:isConstant(), 'No node widget for node ' .. node:getName() .. ' which is not constant')
+            else
+                assert(layout[j], 'Node ' .. node:getName() .. ' has a node widget but no layout')
+            end
+        end
+    end
+    return true
 end
 
 return MainWindow

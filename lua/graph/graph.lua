@@ -1,5 +1,7 @@
 local PinTypes = flat.require 'graph/pintypes'
 
+local max = math.max
+
 local Graph = {}
 Graph.__index = Graph
 
@@ -229,18 +231,21 @@ function Graph:saveGraph(graphPath)
 end
 
 function Graph:makeNewSubGraphId()
-    local newSubGraphId = #self.subGraphIds + 1
-    self.subGraphIds[newSubGraphId] = true
-    return newSubGraphId
+    local highestSubGraphId = 0
+    for subGraphId in pairs(self.subGraphIds) do
+        highestSubGraphId = max(subGraphId, highestSubGraphId)
+    end
+    return highestSubGraphId + 1
 end
 
 function Graph:addSubGraphId(subGraphId)
+    print('Added sub graph id ' .. subGraphId)
     assert(not self.subGraphIds[subGraphId])
     self.subGraphIds[subGraphId] = true
 end
 
 function Graph:removeSubGraphId(subGraphId)
-    assert(self.subGraphIds[subGraphId])
+    assert(self.subGraphIds[subGraphId], 'Sub graph id ' .. tostring(subGraphId) .. ' is not part of the graph')
     self.subGraphIds[subGraphId] = nil
 end
 

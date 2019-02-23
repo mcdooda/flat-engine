@@ -17,6 +17,7 @@ Input::Input(Flat& flat)
 	keyboard = std::make_unique<Keyboard>(m_globalInputContext);
 	mouse = std::make_unique<Mouse>(m_globalInputContext);
 	window = std::make_unique<Window>(m_globalInputContext);
+	gamepads = std::make_unique<Gamepads>(m_globalInputContext);
 }
 
 void Input::pollEvents()

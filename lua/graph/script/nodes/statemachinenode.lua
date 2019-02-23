@@ -4,7 +4,8 @@ local ScriptRuntime = flat.require 'graph/script/scriptruntime'
 local CommonStateMachineNode = flat.require 'graph/common/nodes/statemachinenode'
 local PinTypes = flat.require 'graph/pintypes'
 
-local coyield = coroutine.yield
+local cocreate = coroutine.create
+local coresume = coroutine.resume
 
 -- runtime
 
@@ -17,20 +18,17 @@ function StateMachineNodeRuntime:init(node)
 end
 
 function StateMachineNodeRuntime:execute(node)
-    self.context = self:readPin(node.contextInPin)
-    self.isRunning = true
-    self:cacheScriptRuntimes()
-    self:enterState(self.stateMachineDescription.initState)
-    while self.isRunning do
-        if self.currentStateRunner then
-            self:updateCurrentState()
-            coyield()
-            local newState = self:evaluateRules()
-            if newState then
-                self:enterState(newState)
-            end
-        else
-            self.isRunning = false
+    if not self.isRunning then
+        self.context = self:readPin(node.contextInPin)
+        self.isRunning = true
+        self:cacheScriptRuntimes()
+        self:enterState(self.stateMachineDescription.initState)
+    end
+    if self.currentStateThread then
+        self:updateCurrentState()
+        local newState = self:evaluateRules()
+        if newState then
+            self:enterState(newState)
         end
     end
 end
@@ -78,7 +76,10 @@ function StateMachineNodeRuntime:enterState(newState)
     end
 
     self.currentState = newState
-    self.currentStateRunner = self.runtimesByState[newState].scriptRuntime:getRunner()
+    self.currentStateThread = cocreate(function()
+        local runner = self.runtimesByState[newState].scriptRuntime:getRunner()
+        runner()
+    end)
     self.nextState = nextState
 end
 
@@ -98,19 +99,17 @@ function StateMachineNodeRuntime:evaluateRules()
 end
 
 function StateMachineNodeRuntime:updateCurrentState()
-    local currentStateRunner = self.currentStateRunner
-    if currentStateRunner then
-        currentStateRunner()
-        if self.nextState then
-            local nextState = self.nextState
-            self.currentState = nextState
-            self.currentStateRunner = self.runtimesByState[nextState].scriptRuntime:getRunner()
-        else
-            -- keep self.currentState for evaluting the rules
-            self.currentStateRunner = nil
-        end
-        self.nextState = nil
+    local currentStateThread = assert(self.currentStateThread)
+    coresume(currentStateThread)
+    if self.nextState then
+        local nextState = self.nextState
+        self.currentState = nextState
+        self.currentStateThread = cocreate(function()
+            local runner = self.runtimesByState[nextState].scriptRuntime:getRunner()
+            runner()
+        end)
     end
+    self.nextState = nil
 end
 
 -- node
