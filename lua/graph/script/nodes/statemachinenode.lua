@@ -12,39 +12,41 @@ local coresume = coroutine.resume
 local StateMachineNodeRuntime = ScriptNodeRuntime:inherit()
 
 function StateMachineNodeRuntime:init(node)
-    self.context = nil
+    self.perContextData = setmetatable({ __mode = 'v' }, {})
     self.stateMachineDescription = node:getStateMachineDescription()
-    self.isRunning = false
 end
 
 function StateMachineNodeRuntime:execute(node)
-    if not self.isRunning then
-        self.context = self:readPin(node.contextInPin)
-        self.isRunning = true
-        self:cacheScriptRuntimes()
-        self:enterState(self.stateMachineDescription.initState)
+    local context = self:readPin(node.contextInPin)
+    local contextId = flat.getUniqueObject(context)
+    local contextData = self.perContextData[contextId]
+    if not contextData then
+        contextData = { context = context }
+        self:cacheScriptRuntimes(contextData)
+        self:enterState(contextData, self.stateMachineDescription.initState)
+        self.perContextData[contextId] = contextData
     end
-    if self.currentStateThread then
-        self:updateCurrentState()
-        local newState = self:evaluateRules()
+    if contextData.currentStateThread then
+        self:updateCurrentState(contextData)
+        local newState = self:evaluateRules(contextData)
         if newState then
-            self:enterState(newState)
+            self:enterState(contextData, newState)
         end
     end
 end
 
-function StateMachineNodeRuntime:cacheScriptRuntimes()
+function StateMachineNodeRuntime:cacheScriptRuntimes(contextData)
     -- compile rules
     local runtimesByState = {}
     for stateName, state in pairs(self.stateMachineDescription:getStates()) do
         local scriptRuntime = ScriptRuntime:new(state.graph)
-        scriptRuntime:setContext(self.context)
+        scriptRuntime:setContext(contextData.context)
 
         local ruleScriptRuntimes = {}
         for i = 1, #state.outRules do
             local rule = state.outRules[i]
             local ruleScriptRuntime = ScriptRuntime:new(rule.graph)
-            ruleScriptRuntime:setContext(self.context)
+            ruleScriptRuntime:setContext(contextData.context)
             ruleScriptRuntimes[rule] = ruleScriptRuntime
         end
 
@@ -53,19 +55,19 @@ function StateMachineNodeRuntime:cacheScriptRuntimes()
             ruleScriptRuntimes = ruleScriptRuntimes
         }
     end
-    self.runtimesByState = runtimesByState
+    contextData.runtimesByState = runtimesByState
 end
 
-function StateMachineNodeRuntime:enterStateByName(stateName)
+function StateMachineNodeRuntime:enterStateByName(contextData, stateName)
     local state = self.stateMachineDescription:getStateByName(stateName)
     if state then
-        self:enterState(state)
+        self:enterState(contextData, state)
     end
 end
 
-function StateMachineNodeRuntime:enterState(newState)
+function StateMachineNodeRuntime:enterState(contextData, newState)
     assert(newState, 'Cannot enter nil state')
-    local currentState = self.currentState
+    local currentState = contextData.currentState
     local nextState
     if currentState then
         local transition = self.stateMachineDescription:getTransitionBetweenStates(currentState, newState)
@@ -75,18 +77,18 @@ function StateMachineNodeRuntime:enterState(newState)
         end
     end
 
-    self.currentState = newState
-    self.currentStateThread = cocreate(function()
-        local runner = self.runtimesByState[newState].scriptRuntime:getRunner()
+    contextData.currentState = newState
+    contextData.currentStateThread = cocreate(function()
+        local runner = contextData.runtimesByState[newState].scriptRuntime:getRunner()
         runner()
     end)
-    self.nextState = nextState
+    contextData.nextState = nextState
 end
 
-function StateMachineNodeRuntime:evaluateRules()
-    local currentState = self.currentState
+function StateMachineNodeRuntime:evaluateRules(contextData)
+    local currentState = contextData.currentState
     if currentState then
-        local ruleScriptRuntimes = self.runtimesByState[currentState].ruleScriptRuntimes
+        local ruleScriptRuntimes = contextData.runtimesByState[currentState].ruleScriptRuntimes
         for rule, ruleScriptRuntime in pairs(ruleScriptRuntimes) do
             local runner = ruleScriptRuntime:getRunner()
             local ruleResult = runner()
@@ -98,18 +100,18 @@ function StateMachineNodeRuntime:evaluateRules()
     end
 end
 
-function StateMachineNodeRuntime:updateCurrentState()
-    local currentStateThread = assert(self.currentStateThread)
+function StateMachineNodeRuntime:updateCurrentState(contextData)
+    local currentStateThread = assert(contextData.currentStateThread)
     coresume(currentStateThread)
-    if self.nextState then
-        local nextState = self.nextState
-        self.currentState = nextState
-        self.currentStateThread = cocreate(function()
-            local runner = self.runtimesByState[nextState].scriptRuntime:getRunner()
+    if contextData.nextState then
+        local nextState = contextData.nextState
+        contextData.currentState = nextState
+        contextData.currentStateThread = cocreate(function()
+            local runner = contextData.runtimesByState[nextState].scriptRuntime:getRunner()
             runner()
         end)
     end
-    self.nextState = nil
+    contextData.nextState = nil
 end
 
 -- node

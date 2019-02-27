@@ -281,7 +281,7 @@ end
 function StateMachineNode:getStateMachineDescription()
     local stateMachineDescription = StateMachineDescription:new(self.innerGraph)
 
-    stateMachineDescription:debugPrint()
+    --stateMachineDescription:debugPrint()
 
     return stateMachineDescription
 end

@@ -3,6 +3,7 @@ flat.dofile 'dump.lua'
 
 flat.dofile 'enum.lua'
 
+flat.dofile 'types.lua'
 
 flat.dofile 'saferequire.lua'
 
