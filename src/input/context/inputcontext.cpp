@@ -85,7 +85,6 @@ void InputContext::initGamepads()
 				SDL_Joystick* joystick = SDL_JoystickOpen(i);
 				SDL_JoystickID joystickID = SDL_JoystickInstanceID(joystick);
 				m_gamepadInputContexts.emplace_back(joystickID);
-				std::cout << "Controller " << i << " added" << std::endl;
 			}
 		}
 	}
@@ -101,17 +100,14 @@ bool InputContext::handleDeviceEvent(const SDL_Event& event)
 		SDL_Joystick* joystick = SDL_JoystickOpen(event.cdevice.which);
 		SDL_JoystickID joystickID = SDL_JoystickInstanceID(joystick);
 		m_gamepadInputContexts.emplace_back(joystickID);
-		std::cout << "Controller " << event.cdevice.which << " added" << std::endl;
 		return true;
 	}
 
 	case SDL_CONTROLLERDEVICEREMOVED:
-		std::cout << "Controller " << event.cdevice.which << " removed" << std::endl;
 		FLAT_ASSERT_MSG(false, "not implemented");
 		return true;
 
 	case SDL_CONTROLLERDEVICEREMAPPED:
-		std::cout << "Controller " << event.cdevice.which << " remapped" << std::endl;
 		FLAT_ASSERT_MSG(false, "not implemented");
 		return true;
 	}

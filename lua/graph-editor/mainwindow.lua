@@ -60,6 +60,7 @@ function MainWindow:build()
         do
             local useCompoundButton = toolbar:addButton 'Use Compound'
             useCompoundButton:click(flat.ui.task(function()
+                assert(self:layoutSanityCheck())
                 local foldedNodes = self:getFoldedNodes()
                 while true do
                     local compoundPath = flat.ui.prompt 'Compound Path:'
@@ -82,13 +83,14 @@ function MainWindow:build()
                             content:addChild(nodeWidget.container)
                             break
                         else
-                            graph:removeNode(compoundNode)
+                            self:deleteNode(compoundNode)
                             flat.ui.error('Cound not load compound ' .. compoundPath)
                         end
                     else
                         break
                     end
                 end
+                assert(self:layoutSanityCheck())
             end))
         end
     end
@@ -211,7 +213,7 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
         -- the graph has been loaded
         assert(
             not nodeType or graph.nodeType == nodeType,
-            'unexpected graph type: ' .. tostring(nodeType) .. ' expected, got ' .. tostring(graph.nodeType)
+            'unexpected graph type: ' .. tostring(nodeType) .. ' expected, got ' .. tostring(graph.nodeType) .. ' (root graph)'
         )
 
         local graphLayout = self:getGraphLayout(graphInfo)
@@ -226,7 +228,7 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
                 if node:isConstant() then
                     foldedNodes[node] = true
                 else
-                    flat.ui.error('Cannot fold a non constant node: ' .. node:getName())
+                    flat.ui.error('Cannot fold a non constant node: ' .. node:getName() .. ' (root graph)')
                     graphLayout[i] = {0, 0}
                 end
             end
@@ -240,7 +242,7 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
                 nodeWidget:setVisiblePosition(table.unpack(nodePosition))
                 content:addChild(nodeWidget:getContainer())
             else
-                assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
+                assert(node:isConstant(), 'No position for non constant node: ' .. node:getName() .. ' (root graph)')
             end
         end
 
@@ -316,7 +318,7 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
                 if node:isConstant() then
                     foldedNodes[node] = true
                 else
-                    flat.ui.error('Cannot fold a non constant node: ' .. node:getName())
+                    flat.ui.error('Cannot fold a non constant node: ' .. node:getName() .. ' (sub graph ' .. tostring(subGraphId) .. ')')
                     graphLayout[i] = {0, 0}
                 end
             end
@@ -326,7 +328,7 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
         for index, position in pairs(graphLayout) do
             if type(index) == 'number' then
                 if not nodes[index] then
-                    flat.ui.error('Layout has field ' .. index .. ' but no corresponding node')
+                    flat.ui.error('Layout has field ' .. index .. ' but no corresponding node (sub graph ' .. tostring(subGraphId) .. ')')
                     graphLayout[index] = nil
                 end
             end
@@ -340,7 +342,7 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
                 nodeWidget:setVisiblePosition(table.unpack(nodePosition))
                 content:addChild(nodeWidget:getContainer())
             else
-                assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
+                assert(node:isConstant(), 'No position for non constant node: ' .. node:getName() .. ' (sub graph ' .. tostring(subGraphId) .. ')')
             end
         end
 
@@ -727,6 +729,7 @@ function MainWindow:canPlugPins(outputNode, outputPin, inputNode, inputPin)
 end
 
 function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
+    assert(self:layoutSanityCheck())
     local currentLink = self.currentLink
     if currentLink and currentLink.outputNode then
         local nodeWidgets = self.currentGraphInfo.nodeWidgets
@@ -752,8 +755,7 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                         end
                         outputNodeWidget:updateCustomNodeEditor()
                     else
-                        local graph = self:getCurrentGraph()
-                        graph:removeNode(previousOutputNode)
+                        self:deleteNode(previousOutputNode)
                         local inputNodeWidget = assert(nodeWidgets[inputNode])
                         inputNodeWidget:hideFoldedConstantNode(inputPin)
                         self:drawLinks(true)
@@ -787,17 +789,21 @@ function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)
                 end
                 inputNodeWidget:updateCustomNodeEditor()
             end
+            assert(self:layoutSanityCheck())
         else
             local nodeWidget = nodeWidgets[currentLink.outputNode]
             local outputPin = currentLink.outputPin
             nodeWidget:setOutputPinPlugged(outputPin, #outputPin.pluggedInputPins > 0)
             self.currentLink = nil
             self:drawLinks()
+            assert(self:layoutSanityCheck())
         end
     end
+    assert(self:layoutSanityCheck())
 end
 
 function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
+    assert(self:layoutSanityCheck())
     local currentLink = self.currentLink
     if currentLink and currentLink.inputNode then
         local nodeWidgets = self.currentGraphInfo.nodeWidgets
@@ -809,8 +815,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
                 local constantNode = currentLink.inputPin.pluggedOutputPin.node
                 assert(constantNode and not nodeWidgets[constantNode])
                 currentLink.inputNode:unplugInputPin(currentLink.inputPin, true)
-                local graph = self:getCurrentGraph()
-                graph:removeNode(constantNode)
+                self:deleteNode(constantNode)
                 inputNodeWidget:hideFoldedConstantNode(currentLink.inputPin)
                 self:drawLinks(true)
             end
@@ -842,6 +847,7 @@ function MainWindow:linkReleasedOnOutputPin(outputNode, outputPin)
             self:drawLinks()
         end
     end
+    assert(self:layoutSanityCheck())
 end
 
 function MainWindow:openRightClickMenu()
@@ -891,6 +897,7 @@ function MainWindow:openNodeListMenu(x, y)
     end
 
     local function insertNode(nodeName)
+        assert(self:layoutSanityCheck())
         local foldedNodes = self:getFoldedNodes() -- this must be called before adding the new node to the graph!
         local content = self:getContent()
         local graphInfo = self.currentGraphInfo
@@ -901,6 +908,7 @@ function MainWindow:openNodeListMenu(x, y)
         local scrollX, scrollY = content:getScrollPosition()
         local nodeWidgetX = x + scrollX
         local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
+        assert(not graphInfo.layout[nodeIndex])
         graphInfo.layout[nodeIndex] = {nodeWidgetX, nodeWidgetY}
         local nodeWidget = self:makeNodeWidget(node, foldedNodes)
         nodeWidget:setVisiblePosition(nodeWidgetX, nodeWidgetY)
@@ -1061,28 +1069,77 @@ end
 
 function MainWindow:deleteSelectedNodes()
     assert(self:layoutSanityCheck())
+
     local graphInfo = self.currentGraphInfo
-    local graph = graphInfo.graph
-    local nodeWidgets = self.currentGraphInfo.nodeWidgets
     local selectedNodeWidgets = graphInfo.selectedNodeWidgets
-    local layout = graphInfo.layout
     for selectedNodeWidget in pairs(selectedNodeWidgets) do
-        local node = selectedNodeWidget.node
-        local nodeIndex = graph:findNodeIndex(node)
-        flat.arrayRemoveIndexCyclic(layout, nodeIndex)
-        if node.subGraphId then
-            layout.subGraphLayouts[node.subGraphId] = nil
-            assert(node.subGraphId ~= graphInfo.subGraphId)
-            self:closeSubGraphIfOpen(node.subGraphId)
-        end
-        graph:removeNode(node)
-        nodeWidgets[node] = nil
-        selectedNodeWidget:delete()
+        self:deleteNode(selectedNodeWidget.node)
     end
+
     assert(self:layoutSanityCheck())
+
     graphInfo.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()
     self:drawLinks()
+end
+
+function MainWindow:deleteNode(node)
+    assert(self:layoutSanityCheck())
+
+    local graphInfo = self.currentGraphInfo
+    local graph = graphInfo.graph
+    local layout = graphInfo.layout
+    local nodeWidgets = self.currentGraphInfo.nodeWidgets
+
+    -- we cannot use flat.arrayRemoveIndexCyclic(layout, nodeIndex) as layout is not a valid array (contains holes)
+    local nodeIndex = graph:findNodeIndex(node)
+    local nodeCount = #graph:getNodes()
+    layout[nodeIndex] = layout[nodeCount]
+    layout[nodeCount] = nil
+
+    if node.subGraphId then
+        layout.subGraphLayouts[node.subGraphId] = nil
+        self:closeSubGraphIfOpen(node.subGraphId)
+    end
+
+    -- delete connected folded nodes
+    for i = 1, #node.inputPins do
+        local inputPin = node.inputPins[i]
+        if inputPin.pluggedOutputPin then
+            local outputNode = inputPin.pluggedOutputPin.node
+            if not nodeWidgets[outputNode] then
+                assert(outputNode:isConstant())
+                graph:removeNode(outputNode)
+            end
+        end
+    end
+
+    -- delete the node widget
+    local nodeWidget = nodeWidgets[node]
+    if nodeWidget then
+        nodeWidgets[node] = nil
+        nodeWidget:delete()
+    else
+        -- hide the folded node in the pin
+        assert(node:isConstant(), 'Node has no widget but is not constant')
+        assert(#node.outputPins == 1)
+        local outputPin = assert(node.outputPins[1])
+
+        -- the node might have already been unplugged from outside
+        assert(#outputPin.pluggedInputPins <= 1, "A folded constant node must be connected to 0 or 1 node, " .. tostring(#outputPin.pluggedInputPins) .. " connected")
+        local pluggedInputPin = outputPin.pluggedInputPins[1]
+        if pluggedInputPin then
+            local inputNode = assert(pluggedInputPin.node)
+            local inputPin = assert(pluggedInputPin.inputPin)
+            local inputNodeWidget = assert(nodeWidgets[inputNode])
+            inputNodeWidget:hideFoldedConstantNode(inputPin)
+        end
+    end
+
+    -- delete the actual node
+    graph:removeNode(node)
+
+    assert(self:layoutSanityCheck())
 end
 
 function MainWindow:addSelectionWidget()
@@ -1293,14 +1350,15 @@ function MainWindow:layoutSanityCheck()
         local nodeWidgets = graphInfo.nodeWidgets
         local layout = self:getGraphLayout(graphInfo)
         local graph = graphInfo.graph
+        local subGraphId = graphInfo.subGraphId
         local nodes = graph:getNodes()
         for j = 1, #nodes do
             local node = nodes[j]
             if not nodeWidgets[node] then
-                assert(not layout[j], 'Layout exists for node ' .. node:getName() .. ' but there is no node widget')
-                assert(node:isConstant(), 'No node widget for node ' .. node:getName() .. ' which is not constant')
+                assert(not layout[j], 'Layout exists for node ' .. node:getName() .. ' (' .. tostring(j) .. ') but there is no node widget (sub graph ' .. tostring(subGraphId) .. ')')
+                assert(node:isConstant(), 'No node widget for node ' .. node:getName() .. ' (' .. tostring(j) .. ') which is not constant (sub graph ' .. tostring(subGraphId) .. ')')
             else
-                assert(layout[j], 'Node ' .. node:getName() .. ' has a node widget but no layout')
+                assert(layout[j], 'Node ' .. node:getName() .. ' (' .. tostring(j) .. ') has a node widget but no layout (sub graph ' .. tostring(subGraphId) .. ')')
             end
         end
     end

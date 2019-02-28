@@ -123,6 +123,7 @@ end
 
 local function easyDump(value)
 	dumpToOutput(io.output(), value, true)
+	print()
 end
 
 local function dumpFlat(value)

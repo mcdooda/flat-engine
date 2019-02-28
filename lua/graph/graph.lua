@@ -235,11 +235,12 @@ function Graph:makeNewSubGraphId()
     for subGraphId in pairs(self.subGraphIds) do
         highestSubGraphId = max(subGraphId, highestSubGraphId)
     end
+    local newSubGraphId = highestSubGraphId + 1
+    self:addSubGraphId(newSubGraphId)
     return highestSubGraphId + 1
 end
 
 function Graph:addSubGraphId(subGraphId)
-    print('Added sub graph id ' .. subGraphId)
     assert(not self.subGraphIds[subGraphId])
     self.subGraphIds[subGraphId] = true
 end
