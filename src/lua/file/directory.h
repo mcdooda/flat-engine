@@ -24,6 +24,9 @@ class Directory : public File
 
 		void eachSubFile(std::function<void(const std::shared_ptr<File>&)> callback) const;
 		void getSubFiles(std::vector<std::shared_ptr<File>>& files) const;
+
+		void eachSubFileRecursive(std::function<void(const std::shared_ptr<File>&)> callback) const;
+		void getSubFilesRecursive(std::vector<std::shared_ptr<File>>& files) const;
 };
 
 } // file

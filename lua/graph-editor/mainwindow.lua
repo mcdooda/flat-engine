@@ -56,43 +56,6 @@ function MainWindow:build()
                 flat.ui.success('Graph ' .. graphInfo.path .. ' saved')
             end)
         end
-
-        do
-            local useCompoundButton = toolbar:addButton 'Use Compound'
-            useCompoundButton:click(flat.ui.task(function()
-                assert(self:layoutSanityCheck())
-                local foldedNodes = self:getFoldedNodes()
-                while true do
-                    local compoundPath = flat.ui.prompt 'Compound Path:'
-                    if compoundPath then
-                        local content = self:getContent()
-                        local graphInfo = self.currentGraphInfo
-                        local graph = graphInfo.graph
-                        local nodeClasses = flat.graph.getNodeClasses(graph.nodeType)
-                        local compoundNode = graph:addNode(nodeClasses['compound'], false)
-                        if compoundNode:load(compoundPath) then
-                            compoundNode:buildPins()
-                            local nodeIndex = graph:findNodeIndex(compoundNode)
-                            graphInfo.layout[nodeIndex] = {0, 0}
-                            local nodeWidget = self:makeNodeWidget(compoundNode, foldedNodes)
-                            local contentSizeX, contentSizeY = content:getComputedSize()
-                            local scrollX, scrollY = content:getScrollPosition()
-                            local nodeWidgetX = scrollX + contentSizeX / 2
-                            local nodeWidgetY = scrollY - contentSizeY / 2 -- move the relative position from bottom left to top left
-                            nodeWidget.container:setPosition(nodeWidgetX, nodeWidgetY)
-                            content:addChild(nodeWidget.container)
-                            break
-                        else
-                            self:deleteNode(compoundNode)
-                            flat.ui.error('Cound not load compound ' .. compoundPath)
-                        end
-                    else
-                        break
-                    end
-                end
-                assert(self:layoutSanityCheck())
-            end))
-        end
     end
 
     -- open graphs breadcrumb
@@ -875,34 +838,57 @@ function MainWindow:openNodeListMenu(x, y)
 
     local graph = self:getCurrentGraph()
     local nodeClasses = flat.graph.getNodeClasses(graph.nodeType)
+    local compounds = flat.graph.getCompounds(graph.nodeType)
     local nodesContainer
     local textInputWidget
 
     local searchNodes = {}
     local function updateNodeSearch()
         searchNodes = {}
-        local search = textInputWidget:getText():lower()
+        local search = flat.escapeRegex(textInputWidget:getText():lower())
         for nodeName, nodeClass in pairs(nodeClasses) do
             if nodeClass:isBrowsable() then
                 local nodeVisualName = nodeClass:getName()
                 if #search == 0 or nodeVisualName:lower():match(search) then
                     flat.arrayAdd(searchNodes, {
                         visualName = nodeVisualName,
-                        name = nodeName
+                        nodeName = nodeName
                     })
                 end
+            end
+        end
+        for i = 1, #compounds do
+            local compound = compounds[i]
+            local nodeVisualName = '[C] ' .. compound.name
+            if #search == 0 or nodeVisualName:lower():match(search) then
+                flat.arrayAdd(searchNodes, {
+                    visualName = nodeVisualName,
+                    compoundPath = compound.path
+                })
             end
         end
         table.sort(searchNodes, function(a, b) return a.visualName < b.visualName end)
     end
 
-    local function insertNode(nodeName)
+    local function insertNode(nodeEntry)
         assert(self:layoutSanityCheck())
         local foldedNodes = self:getFoldedNodes() -- this must be called before adding the new node to the graph!
         local content = self:getContent()
         local graphInfo = self.currentGraphInfo
         local graph = graphInfo.graph
-        local node = graph:addNode(nodeClasses[nodeName])
+        local node
+        if nodeEntry.nodeName then
+            node = graph:addNode(nodeClasses[nodeEntry.nodeName])
+        else
+            assert(nodeEntry.compoundPath)
+            node = graph:addNode(nodeClasses['compound'], false)
+            if node:load(nodeEntry.compoundPath) then
+                node:buildPins()
+            else
+                flat.ui.error('Cound not load compound ' .. compoundPath)
+                return
+            end
+        end
         local nodeIndex = graph:findNodeIndex(node)
         local contentSizeX, contentSizeY = content:getComputedSize()
         local scrollX, scrollY = content:getScrollPosition()
@@ -919,8 +905,7 @@ function MainWindow:openNodeListMenu(x, y)
 
     local function submitInsertNode()
         if #searchNodes > 0 then
-            local nodeName = searchNodes[1].name
-            insertNode(nodeName)
+            insertNode(searchNodes[1])
         end
     end
 
@@ -928,12 +913,12 @@ function MainWindow:openNodeListMenu(x, y)
         updateNodeSearch()
         nodesContainer:removeAllChildren()
         for i = 1, #searchNodes do
-            local node = searchNodes[i]
-            local nodeLabel = Widget.makeText(node.visualName, table.unpack(flat.ui.settings.defaultFont))
+            local nodeEntry = searchNodes[i]
+            local nodeLabel = Widget.makeText(nodeEntry.visualName, table.unpack(flat.ui.settings.defaultFont))
             nodeLabel:setTextColor(0x000000FF)
             nodeLabel:setMargin(2)
             nodeLabel:click(function()
-                insertNode(node.name)
+                insertNode(nodeEntry)
             end)
             nodesContainer:addChild(nodeLabel)
         end

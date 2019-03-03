@@ -73,7 +73,6 @@ int l_flat_type(lua_State* L)
 	return 1;
 }
 
-FLAT_OPTIMIZE_OFF()
 int l_flat_typetostring(lua_State* L)
 {
 	size_t type = static_cast<size_t>(luaL_checkinteger(L, 1));
@@ -95,7 +94,6 @@ int l_flat_typetostring(lua_State* L)
 	}
 	return 1;
 }
-FLAT_OPTIMIZE_ON()
 
 } // types
 } // lua

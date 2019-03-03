@@ -18,7 +18,14 @@ class File : public util::Convertible<File>
 	public:
 		File(const std::filesystem::path& path);
 
-		inline const char* getPath() const { return reinterpret_cast<const char*>(m_path.c_str()); }
+		inline std::string getPath() const { return formatPath(m_path); }
+		inline std::string getParentPath() const { return formatPath(m_path.parent_path()); }
+		inline std::string getFileName() const { return m_path.filename().string(); }
+		inline std::string getStem() const { return m_path.stem().string(); }
+		inline std::string getExtension() const { return m_path.extension().string(); }
+
+		std::string getShortStem() const;
+		std::string getFullExtension() const;
 
 		std::filesystem::file_type getType() const;
 
@@ -28,6 +35,9 @@ class File : public util::Convertible<File>
 
 		template <class T>
 		static std::shared_ptr<T> openAs(const std::filesystem::path& path);
+
+	protected:
+		static std::string formatPath(const std::filesystem::path& path);
 
 	protected:
 		std::filesystem::path m_path;

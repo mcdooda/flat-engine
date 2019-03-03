@@ -1,4 +1,5 @@
 #include "file.h"
+#include "../regularfile.h"
 #include "../directory.h"
 #include "../../sharedcppreference.h"
 
@@ -13,18 +14,27 @@ namespace lua
 
 using LuaFile = flat::lua::SharedCppReference<File>;
 
-FLAT_OPTIMIZE_OFF()
 int open(Lua& lua)
 {
 	lua_State* L = lua.state;
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg File_lib_m[] = {
-		{"path",        l_File_path},
-		{"isDirectory", l_File_isDirectory},
+		{"getPath",              l_File_getPath},
+		{"getParentPath",        l_File_getParentPath},
+		{"getFileName",          l_File_getFileName},
+		{"getStem",              l_File_getStem},
+		{"getShortStem",         l_File_getShortStem},
+		{"getExtension",         l_File_getExtension},
+		{"getFullExtension",     l_File_getFullExtension},
+		{"isRegularFile",        l_File_isRegularFile},
+		{"isDirectory",          l_File_isDirectory},
 
-		{"eachSubFile", l_Directory_eachSubFile},
-		{"getSubFiles", l_Directory_getSubFiles},
+		{"eachSubFile",          l_Directory_eachSubFile},
+		{"getSubFiles",          l_Directory_getSubFiles},
+
+		{"eachSubFileRecursive", l_Directory_eachSubFileRecursive},
+		{"getSubFilesRecursive", l_Directory_getSubFilesRecursive},
 
 		{nullptr, nullptr}
 	};
@@ -43,7 +53,6 @@ int open(Lua& lua)
 
 	return 0;
 }
-FLAT_OPTIMIZE_ON()
 
 int l_File(lua_State* L)
 {
@@ -68,6 +77,8 @@ int l_Directory_eachSubFile(lua_State* L)
 	directory.eachSubFile(
 		[L](const std::shared_ptr<File>& file)
 		{
+			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+			lua_pushvalue(L, 2);
 			pushFile(L, file);
 			lua_call(L, 1, 0);
 		}
@@ -90,10 +101,90 @@ int l_Directory_getSubFiles(lua_State* L)
 	return 1;
 }
 
-int l_File_path(lua_State* L)
+int l_Directory_eachSubFileRecursive(lua_State* L)
+{
+	Directory& directory = getFileOfType<Directory>(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	directory.eachSubFileRecursive(
+		[L](const std::shared_ptr<File>& file)
+	{
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
+		lua_pushvalue(L, 2);
+		pushFile(L, file);
+		lua_call(L, 1, 0);
+	}
+	);
+	return 0;
+}
+
+int l_Directory_getSubFilesRecursive(lua_State* L)
+{
+	Directory& directory = getFileOfType<Directory>(L, 1);
+	std::vector<std::shared_ptr<File>> files;
+	directory.getSubFilesRecursive(files);
+	const int fileCount = static_cast<int>(files.size());
+	lua_createtable(L, fileCount, 0);
+	for (int i = 0; i < fileCount; ++i)
+	{
+		pushFile(L, files[i]);
+		lua_rawseti(L, -2, i);
+	}
+	return 1;
+}
+
+int l_File_getPath(lua_State* L)
 {
 	File& file = getFile(L, 1);
-	lua_pushstring(L, file.getPath());
+	lua_pushstring(L, file.getPath().c_str());
+	return 1;
+}
+
+int l_File_getParentPath(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushstring(L, file.getParentPath().c_str());
+	return 1;
+}
+
+int l_File_getFileName(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushstring(L, file.getFileName().c_str());
+	return 1;
+}
+
+int l_File_getStem(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushstring(L, file.getStem().c_str());
+	return 1;
+}
+
+int l_File_getShortStem(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushstring(L, file.getShortStem().c_str());
+	return 1;
+}
+
+int l_File_getExtension(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushstring(L, file.getExtension().c_str());
+	return 1;
+}
+
+int l_File_getFullExtension(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushstring(L, file.getFullExtension().c_str());
+	return 1;
+}
+
+int l_File_isRegularFile(lua_State* L)
+{
+	File& file = getFile(L, 1);
+	lua_pushboolean(L, file.is<RegularFile>() && file.isValid());
 	return 1;
 }
 
