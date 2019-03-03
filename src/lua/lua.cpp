@@ -5,6 +5,7 @@
 #include "memorysnapshot.h"
 #include "types.h"
 #include "timer/lua/timer.h"
+#include "file/lua/file.h"
 
 #include "../flat.h"
 #include "../flat/game.h"
@@ -54,8 +55,7 @@ void Lua::reset(Flat& flat)
 		close(state);
 	}
 
-	m_nextTypeIndex = FIRST_CLASS_TYPE_INDEX;
-	m_typeIndexToName.clear();
+	m_typeHashToName.clear();
 
 	state = luaL_newstate();
 
@@ -104,6 +104,8 @@ void Lua::reset(Flat& flat)
 		lua::openVector2(*this);
 		lua::openVector3(*this);
 
+		file::lua::open(*this);
+
 		openRequire(L);
 		openDofile(L);
 		openLoadfile(L);
@@ -139,16 +141,20 @@ void Lua::clearLoadedPackages()
 	lua::clearLoadedPackages(state);
 }
 
-const char* Lua::getTypeName(int type) const
+const char* Lua::getTypeName(size_t type) const
 {
-	return m_typeIndexToName[type - FIRST_CLASS_TYPE_INDEX].c_str();
+	std::unordered_map<size_t, std::string>::const_iterator it = m_typeHashToName.find(type);
+	if (it != m_typeHashToName.cend())
+	{
+		return it->second.c_str();
+	}
+	return nullptr;
 }
 
 void Lua::collectGarbage() const
 {
 	lua_gc(state, LUA_GCCOLLECT, 0);
 }
-
 
 void Lua::pushVariable(std::initializer_list<const char*> variableNames) const
 {
