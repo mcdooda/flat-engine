@@ -1076,12 +1076,7 @@ function MainWindow:deleteNode(node)
     local layout = graphInfo.layout
     local nodeWidgets = self.currentGraphInfo.nodeWidgets
 
-    -- we cannot use flat.arrayRemoveIndexCyclic(layout, nodeIndex) as layout is not a valid array (contains holes)
-    local nodeIndex = graph:findNodeIndex(node)
-    local nodeCount = #graph:getNodes()
-    layout[nodeIndex] = layout[nodeCount]
-    layout[nodeCount] = nil
-
+    -- delete inner graph
     if node.subGraphId then
         layout.subGraphLayouts[node.subGraphId] = nil
         self:closeSubGraphIfOpen(node.subGraphId)
@@ -1098,6 +1093,12 @@ function MainWindow:deleteNode(node)
             end
         end
     end
+
+    -- we cannot use flat.arrayRemoveIndexCyclic(layout, nodeIndex) as layout is not a valid array (contains holes)
+    local nodeIndex = graph:findNodeIndex(node)
+    local nodeCount = #graph:getNodes()
+    layout[nodeIndex] = layout[nodeCount]
+    layout[nodeCount] = nil
 
     -- delete the node widget
     local nodeWidget = nodeWidgets[node]
