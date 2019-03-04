@@ -1,5 +1,7 @@
 local getmetatable = getmetatable
 local tostring = tostring
+local type = type
+local max = math.max
 
 local function tableLength(t)
     local length = 0
@@ -15,6 +17,21 @@ local function tableFindValueKey(t, v)
             return key
         end
     end
+end
+
+-- see http://lua-users.org/lists/lua-l/2008-11/msg00106.html
+local function isInt(n)
+    return type(n) == 'number' and (n + 2 ^ 52) - 2 ^ 52 == n
+end
+
+local function tableMaxIntKey(t)
+    local maxIntKey = 0
+    for key in pairs(t) do
+        if isInt(key) then
+            maxIntKey = max(key, maxIntKey)
+        end
+    end
+    return maxIntKey
 end
 
 local function tableIsArray(t)
@@ -48,6 +65,7 @@ local function arrayRemoveValue(t, value)
     assert(tableIsArray(t))
     local index = assert(arrayFindValueIndex(t, value), 'value not found')
     arrayRemoveIndex(t, index)
+    return index
 end
 
 local function arrayRemoveIndexCyclic(t, index)
@@ -61,6 +79,7 @@ local function arrayRemoveValueCyclic(t, value)
     assert(tableIsArray(t))
     local index = assert(arrayFindValueIndex(t, value), 'value not found')
     arrayRemoveIndexCyclic(t, index)
+    return index
 end
 
 local function sortedPairs(t)
@@ -97,6 +116,7 @@ end
 
 flat.tableLength = tableLength
 flat.tableFindValueKey = tableFindValueKey
+flat.tableMaxIntKey = tableMaxIntKey
 
 flat.tableIsArray = tableIsArray
 

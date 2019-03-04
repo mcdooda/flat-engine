@@ -1089,10 +1089,15 @@ function MainWindow:deleteNode(node)
             local outputNode = inputPin.pluggedOutputPin.node
             if not nodeWidgets[outputNode] then
                 assert(outputNode:isConstant())
-                graph:removeNode(outputNode)
+                local nodeCount = #graph:getNodes()
+                local nodeIndex = graph:removeNode(outputNode)
+                layout[nodeIndex] = layout[nodeCount]
+                layout[nodeCount] = nil
             end
         end
     end
+
+    assert(self:layoutSanityCheck())
 
     -- we cannot use flat.arrayRemoveIndexCyclic(layout, nodeIndex) as layout is not a valid array (contains holes)
     local nodeIndex = graph:findNodeIndex(node)
@@ -1345,6 +1350,13 @@ function MainWindow:layoutSanityCheck()
                 assert(node:isConstant(), 'No node widget for node ' .. node:getName() .. ' (' .. tostring(j) .. ') which is not constant (sub graph ' .. tostring(subGraphId) .. ')')
             else
                 assert(layout[j], 'Node ' .. node:getName() .. ' (' .. tostring(j) .. ') has a node widget but no layout (sub graph ' .. tostring(subGraphId) .. ')')
+            end
+        end
+        for j = 1, flat.tableMaxIntKey(layout) do
+            if layout[j] then
+                local node = nodes[j]
+                assert(node, 'Layout ' .. tostring(j) .. ' exists but there is not corresponding node')
+                assert(nodeWidgets[node], 'Layout ' .. tostring(j) .. ' exists for node ' .. node:getName() .. ' (' .. tostring(j) .. ') but there is not corresponding node widget')
             end
         end
     end

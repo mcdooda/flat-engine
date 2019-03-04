@@ -35,8 +35,9 @@ end
 
 function Graph:removeNode(node)
     node:unplugAllPins()
-    flat.arrayRemoveValueCyclic(self.nodeInstances, node)
+    local index = flat.arrayRemoveValueCyclic(self.nodeInstances, node)
     node:removedFromGraph(self)
+    return index
 end
 
 function Graph:getNodes()
