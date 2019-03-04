@@ -18,6 +18,7 @@ return {
     'math/formula',
     'math/and',
     'math/or',
+    'math/randomint',
 
     -- vector2
     'math/vector2/vector2add',
