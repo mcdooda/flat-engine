@@ -1,19 +1,21 @@
-#ifndef FLAT_LUA_FILE_LUA_FILE_H
-#define FLAT_LUA_FILE_LUA_FILE_H
+#ifndef FLAT_FILE_LUA_FILE_H
+#define FLAT_FILE_LUA_FILE_H
 
-#include "../../lua.h"
+#include "../../lua/lua.h"
 
 namespace flat
 {
 namespace lua
 {
+class Lua;
+}
 namespace file
 {
 class File;
 namespace lua
 {
 
-int open(Lua& lua);
+int open(flat::lua::Lua& lua);
 
 int l_File(lua_State* L);
 
@@ -41,7 +43,6 @@ T& getFileOfType(lua_State* L, int index);
 
 } // lua
 } // file
-} // lua
 } // flat
 
-#endif // FLAT_LUA_FILE_LUA_FILE_H
+#endif // FLAT_FILE_LUA_FILE_H

@@ -1,11 +1,9 @@
 #include "file.h"
 #include "../regularfile.h"
 #include "../directory.h"
-#include "../../sharedcppreference.h"
+#include "../../lua/sharedcppreference.h"
 
 namespace flat
-{
-namespace lua
 {
 namespace file
 {
@@ -14,7 +12,7 @@ namespace lua
 
 using LuaFile = flat::lua::SharedCppReference<File>;
 
-int open(Lua& lua)
+int open(flat::lua::Lua& lua)
 {
 	lua_State* L = lua.state;
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -227,5 +225,4 @@ T& getFileOfType(lua_State* L, int index)
 
 } // lua
 } // file
-} // lua
 } // flat

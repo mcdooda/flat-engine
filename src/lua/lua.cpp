@@ -5,7 +5,6 @@
 #include "memorysnapshot.h"
 #include "types.h"
 #include "timer/lua/timer.h"
-#include "file/lua/file.h"
 
 #include "../flat.h"
 #include "../flat/game.h"
@@ -16,6 +15,7 @@
 #include "../sharp/ui/lua/ui.h"
 #include "../misc/lua/vector2.h"
 #include "../misc/lua/vector3.h"
+#include "../file/lua/file.h"
 #include "../profiler/lua/profiler.h"
 
 namespace flat

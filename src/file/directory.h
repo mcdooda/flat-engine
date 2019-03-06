@@ -1,5 +1,5 @@
-#ifndef FLAT_LUA_FILE_DIRECTORY_H
-#define FLAT_LUA_FILE_DIRECTORY_H
+#ifndef FLAT_FILE_DIRECTORY_H
+#define FLAT_FILE_DIRECTORY_H
 
 #include <vector>
 #include <functional>
@@ -7,8 +7,6 @@
 #include "file.h"
 
 namespace flat
-{
-namespace lua
 {
 namespace file
 {
@@ -30,7 +28,6 @@ class Directory : public File
 };
 
 } // file
-} // lua
 } // flat
 
-#endif // FLAT_LUA_FILE_DIRECTORY_H
+#endif // FLAT_FILE_DIRECTORY_H

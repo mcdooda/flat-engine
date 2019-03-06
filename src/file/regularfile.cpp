@@ -2,8 +2,6 @@
 
 namespace flat
 {
-namespace lua
-{
 namespace file
 {
 
@@ -23,5 +21,4 @@ std::shared_ptr<RegularFile> RegularFile::open(const std::filesystem::path& path
 }
 
 } // file
-} // lua
 } // flat

@@ -1,14 +1,12 @@
-#ifndef FLAT_LUA_FILE_FILE_H
-#define FLAT_LUA_FILE_FILE_H
+#ifndef FLAT_FILE_FILE_H
+#define FLAT_FILE_FILE_H
 
 #include <filesystem>
 #include <memory.h>
 
-#include "../../util/convertible.h"
+#include "../util/convertible.h"
 
 namespace flat
-{
-namespace lua
 {
 namespace file
 {
@@ -55,7 +53,6 @@ std::shared_ptr<T> File::openAs(const std::filesystem::path& path)
 }
 
 } // file
-} // lua
 } // flat
 
-#endif // FLAT_LUA_FILE_FILE_H
+#endif // FLAT_FILE_FILE_H

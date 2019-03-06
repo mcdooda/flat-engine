@@ -4,8 +4,6 @@
 
 namespace flat
 {
-namespace lua
-{
 namespace file
 {
 
@@ -76,5 +74,4 @@ std::string File::formatPath(const std::filesystem::path& path)
 }
 
 } // file
-} // lua
 } // flat

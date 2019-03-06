@@ -3,8 +3,6 @@
 
 namespace flat
 {
-namespace lua
-{
 namespace file
 {
 
@@ -62,5 +60,4 @@ void Directory::getSubFilesRecursive(std::vector<std::shared_ptr<File>>& files) 
 }
 
 } // file
-} // lua
 } // flat

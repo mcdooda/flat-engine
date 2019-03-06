@@ -1,11 +1,9 @@
-#ifndef FLAT_LUA_FILE_REGULARFILE_H
-#define FLAT_LUA_FILE_REGULARFILE_H
+#ifndef FLAT_FILE_REGULARFILE_H
+#define FLAT_FILE_REGULARFILE_H
 
 #include "file.h"
 
 namespace flat
-{
-namespace lua
 {
 namespace file
 {
@@ -21,7 +19,6 @@ class RegularFile : public File
 };
 
 } // file
-} // lua
 } // flat
 
-#endif // FLAT_LUA_FILE_REGULARFILE_H
+#endif // FLAT_FILE_REGULARFILE_H
