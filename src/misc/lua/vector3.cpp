@@ -1,6 +1,7 @@
-#include "vector3.h"
-#include "vector2.h"
-#include "../../lua/sharedcppreference.h"
+#include "misc/lua/vector3.h"
+#include "misc/lua/vector2.h"
+
+#include "lua/sharedcppreference.h"
 
 namespace flat
 {

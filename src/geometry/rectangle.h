@@ -1,7 +1,7 @@
 #ifndef FLAT_GEOMETRY_RECTANGLE_H
 #define FLAT_GEOMETRY_RECTANGLE_H
 
-#include "polygon.h"
+#include "geometry/polygon.h"
 
 namespace flat
 {

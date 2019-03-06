@@ -1,22 +1,22 @@
 #include <cstdlib>
 #include <lua5.3/lua.hpp>
 
-#include "lua.h"
-#include "memorysnapshot.h"
-#include "types.h"
-#include "timer/lua/timer.h"
+#include "lua/lua.h"
+#include "lua/memorysnapshot.h"
+#include "lua/types.h"
+#include "lua/timer/lua/timer.h"
 
-#include "../flat.h"
-#include "../flat/game.h"
-#include "../time/lua/time.h"
-#include "../input/lua/mouse.h"
-#include "../input/lua/gamepads.h"
-#include "../video/lua/image.h"
-#include "../sharp/ui/lua/ui.h"
-#include "../misc/lua/vector2.h"
-#include "../misc/lua/vector3.h"
-#include "../file/lua/file.h"
-#include "../profiler/lua/profiler.h"
+#include "flat.h"
+#include "flat/game.h"
+#include "time/lua/time.h"
+#include "input/lua/mouse.h"
+#include "input/lua/gamepads.h"
+#include "video/lua/image.h"
+#include "sharp/ui/lua/ui.h"
+#include "misc/lua/vector2.h"
+#include "misc/lua/vector3.h"
+#include "file/lua/file.h"
+#include "profiler/lua/profiler.h"
 
 namespace flat
 {

@@ -4,11 +4,13 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
-#include "window.h"
-#include "color.h"
-#include "filetexture.h"
-#include "font/font.h"
-#include "../resource/weakresourcemanager.h"
+
+#include "video/window.h"
+#include "video/color.h"
+#include "video/filetexture.h"
+#include "video/font/font.h"
+
+#include "resource/weakresourcemanager.h"
 
 namespace flat
 {

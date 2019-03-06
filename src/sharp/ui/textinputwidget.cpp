@@ -1,8 +1,8 @@
 #include <cctype>
 
-#include "textinputwidget.h"
+#include "sharp/ui/textinputwidget.h"
 
-#include "../../flat.h"
+#include "flat.h"
 
 namespace flat
 {

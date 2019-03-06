@@ -1,7 +1,7 @@
 #ifndef FLAT_FILE_LUA_FILE_H
 #define FLAT_FILE_LUA_FILE_H
 
-#include "../../lua/lua.h"
+#include "lua/lua.h"
 
 namespace flat
 {

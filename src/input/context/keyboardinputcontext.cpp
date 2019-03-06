@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
-#include "keyboardinputcontext.h"
+
+#include "input/context/keyboardinputcontext.h"
 
 namespace flat
 {

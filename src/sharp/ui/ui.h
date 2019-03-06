@@ -2,8 +2,9 @@
 #define FLAT_SHARP_UI_UI_H
 
 #include <memory>
-#include "widgetfactory.h"
-#include "cursor.h"
+
+#include "sharp/ui/widgetfactory.h"
+#include "sharp/ui/cursor.h"
 
 namespace flat
 {

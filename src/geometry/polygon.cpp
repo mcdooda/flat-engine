@@ -1,6 +1,7 @@
 #include <cstring>
 #include <GL/glew.h>
-#include "polygon.h"
+
+#include "geometry/polygon.h"
 
 namespace flat
 {

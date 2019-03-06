@@ -1,6 +1,7 @@
-#include "sprite.h"
-#include "../video/filetexture.h"
-#include "../misc/aabb2.h"
+#include "render/sprite.h"
+
+#include "video/filetexture.h"
+#include "misc/aabb2.h"
 
 namespace flat
 {

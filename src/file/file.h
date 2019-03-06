@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <memory.h>
 
-#include "../util/convertible.h"
+#include "util/convertible.h"
 
 namespace flat
 {

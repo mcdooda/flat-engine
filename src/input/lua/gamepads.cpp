@@ -1,6 +1,8 @@
 #include <lua5.3/lua.hpp>
-#include <flat/game.h>
-#include "gamepads.h"
+
+#include "input/lua/gamepads.h"
+
+#include "flat.h"
 
 namespace flat
 {
@@ -131,7 +133,6 @@ int l_Gamepads_getLeftStickValue(lua_State* L)
 	lua_pushnumber(L, leftStickValue.y);
 	return 2;
 }
-
 
 int l_Gamepads_getRightStickValue(lua_State* L)
 {

@@ -2,10 +2,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "memorysnapshot.h"
-#include "lua.h"
-#include "debug.h"
-#include "sharedcppreference.h"
+#include "lua/memorysnapshot.h"
+#include "lua/lua.h"
+#include "lua/sharedcppreference.h"
+#include "lua/debug.h"
 
 namespace flat
 {

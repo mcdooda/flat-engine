@@ -4,9 +4,9 @@
 #include <array>
 #include <SDL2/SDL.h>
 
-#include "../misc/vector.h"
-#include "../video/video.h"
-#include "../video/view.h"
+#include "misc/vector.h"
+#include "video/video.h"
+#include "video/view.h"
 
 #define M(m) SDL_BUTTON_##m
 

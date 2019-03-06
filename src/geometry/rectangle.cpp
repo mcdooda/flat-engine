@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iostream>
-#include "rectangle.h"
+
+#include "geometry/rectangle.h"
 
 namespace flat
 {

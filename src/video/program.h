@@ -5,10 +5,11 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "attribute.h"
-#include "uniform.h"
-#include "window.h"
-#include "texture.h"
+
+#include "video/attribute.h"
+#include "video/uniform.h"
+#include "video/window.h"
+#include "video/texture.h"
 
 namespace flat
 {

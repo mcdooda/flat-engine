@@ -1,8 +1,8 @@
 #ifndef FLAT_RENDER_RENDERSETTINGS_H
 #define FLAT_RENDER_RENDERSETTINGS_H
 
-#include "../video/uniform.h"
-#include "../video/attribute.h"
+#include "video/uniform.h"
+#include "video/attribute.h"
 
 namespace flat
 {

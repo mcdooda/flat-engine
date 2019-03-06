@@ -1,6 +1,7 @@
 #include <lua5.3/lua.hpp>
-#include "table.h"
-#include "debug.h"
+
+#include "lua/table.h"
+#include "lua/debug.h"
 
 namespace flat
 {

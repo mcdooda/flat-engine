@@ -1,5 +1,6 @@
-#include "textwidget.h"
-#include "../../render/rendersettings.h"
+#include "sharp/ui/textwidget.h"
+
+#include "render/rendersettings.h"
 
 namespace flat
 {

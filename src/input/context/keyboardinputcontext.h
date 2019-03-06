@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "../key.h"
+#include "input/key.h"
 
-#include "../../containers/array.h"
-#include "../../misc/slot.h"
+#include "containers/array.h"
+#include "misc/slot.h"
 
 namespace flat
 {

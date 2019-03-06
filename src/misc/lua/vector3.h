@@ -1,7 +1,8 @@
 #ifndef FLAT_MISC_LUA_VECTOR3_H
 #define FLAT_MISC_LUA_VECTOR3_H
 
-#include "../vector.h"
+#include "misc/vector.h"
+
 #include "lua/push.h"
 
 struct lua_State;

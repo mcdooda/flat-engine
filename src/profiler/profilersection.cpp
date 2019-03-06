@@ -1,6 +1,7 @@
-#include "profilersection.h"
+#ifdef FLAT_PROFILER_ENABLED
 
-#include "profiler.h"
+#include "profiler/profilersection.h"
+#include "profiler/profiler.h"
 
 namespace flat
 {
@@ -22,4 +23,4 @@ ProfilerSection::~ProfilerSection()
 } // profiler
 } // flat
 
-
+#endif // FLAT_PROFILER_ENABLED

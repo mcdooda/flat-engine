@@ -1,5 +1,5 @@
-#include "thread.h"
-#include "lua.h"
+#include "lua/thread.h"
+#include "lua/lua.h"
 
 namespace flat
 {

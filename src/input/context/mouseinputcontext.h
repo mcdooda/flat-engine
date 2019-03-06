@@ -3,7 +3,7 @@
 
 #include <array>
 
-#include "../../misc/vector.h"
+#include "misc/vector.h"
 
 union SDL_Event;
 

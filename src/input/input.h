@@ -4,12 +4,11 @@
 #include <memory>
 #include <vector>
 
-#include "gamepads.h"
-#include "keyboard.h"
-#include "mouse.h"
-#include "window.h"
-
-#include "context/inputcontext.h"
+#include "input/gamepads.h"
+#include "input/keyboard.h"
+#include "input/mouse.h"
+#include "input/window.h"
+#include "input/context/inputcontext.h"
 
 namespace flat
 {

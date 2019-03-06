@@ -1,8 +1,9 @@
 #ifndef FLAT_RENDER_HEIGHTMAP_H
 #define FLAT_RENDER_HEIGHTMAP_H
 
-#include "sprite.h"
-#include "../video/filetexture.h"
+#include "render/sprite.h"
+
+#include "video/filetexture.h"
 
 namespace flat
 {

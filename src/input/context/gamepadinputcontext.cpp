@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 
-#include "gamepadinputcontext.h"
-#include "misc/std.h"
+#include "input/context/gamepadinputcontext.h"
 
-#include "../../video/window.h"
+#include "misc/std.h"
+#include "video/window.h"
 
 namespace flat
 {

@@ -1,11 +1,11 @@
 #ifndef FLAT_INPUT_CONTEXT_INPUTCONTEXT_H
 #define FLAT_INPUT_CONTEXT_INPUTCONTEXT_H
 
-#include "gamepadinputcontext.h"
-#include "keyboardinputcontext.h"
-#include "mouseinputcontext.h"
-#include "windowinputcontext.h"
-#include "../gamepadbuttons.h"
+#include "input/context/gamepadinputcontext.h"
+#include "input/context/keyboardinputcontext.h"
+#include "input/context/mouseinputcontext.h"
+#include "input/context/windowinputcontext.h"
+#include "input/gamepadbuttons.h"
 
 namespace flat
 {

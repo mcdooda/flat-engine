@@ -5,11 +5,11 @@
 #include <deque>
 #include <vector>
 
-#include "timer.h"
+#include "lua/timer/timer.h"
 
-#include "../../containers/pool.h"
-#include "../../debug/assert.h"
-#include "../../time/clock.h"
+#include "containers/pool.h"
+#include "time/clock.h"
+#include "debug/assert.h"
 
 namespace flat
 {

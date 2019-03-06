@@ -2,8 +2,10 @@
 #define FLAT_GEOMETRY_GRID_H
 
 #include <vector>
-#include "quadtree.h"
-#include "../misc/aabb2.h"
+
+#include "geometry/quadtree.h"
+
+#include "misc/aabb2.h"
 
 namespace flat
 {

@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "key.h"
+#include "input/key.h"
 
 namespace flat
 {

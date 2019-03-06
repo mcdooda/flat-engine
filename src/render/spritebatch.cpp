@@ -1,6 +1,6 @@
-#include "spritebatch.h"
-#include "basesprite.h"
-#include "rendersettings.h"
+#include "render/spritebatch.h"
+#include "render/basesprite.h"
+#include "render/rendersettings.h"
 
 namespace flat
 {

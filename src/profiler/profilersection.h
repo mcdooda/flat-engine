@@ -3,7 +3,7 @@
 
 #ifdef FLAT_PROFILER_ENABLED
 
-#include "profiler.h"
+#include "profiler/profiler.h"
 
 namespace flat
 {

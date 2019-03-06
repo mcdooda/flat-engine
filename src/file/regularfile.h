@@ -1,7 +1,7 @@
 #ifndef FLAT_FILE_REGULARFILE_H
 #define FLAT_FILE_REGULARFILE_H
 
-#include "file.h"
+#include "file/file.h"
 
 namespace flat
 {

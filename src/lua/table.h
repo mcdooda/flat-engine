@@ -1,7 +1,7 @@
 #ifndef FLAT_LUA_TABLE_H
 #define FLAT_LUA_TABLE_H
 
-#include "push.h"
+#include "lua/push.h"
 
 namespace flat
 {

@@ -1,7 +1,7 @@
 #ifndef FLAT_LUA_DEBUG_H
 #define FLAT_LUA_DEBUG_H
 
-#include "../debug/assert.h"
+#include "debug/assert.h"
 
 #ifdef FLAT_DEBUG
 

@@ -6,7 +6,7 @@
 #include <map>
 #include <fstream>
 
-#include "profiler.h"
+#include "profiler/profiler.h"
 
 namespace flat
 {

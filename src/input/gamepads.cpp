@@ -1,6 +1,5 @@
-#include "gamepads.h"
-
-#include "context/inputcontext.h"
+#include "input/gamepads.h"
+#include "input/context/inputcontext.h"
 
 namespace flat
 {

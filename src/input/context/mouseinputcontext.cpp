@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 
-#include "mouseinputcontext.h"
+#include "input/context/mouseinputcontext.h"
 
-#include "../../video/window.h"
+#include "video/window.h"
 
 namespace flat
 {

@@ -1,10 +1,12 @@
 #include <algorithm>
 #include <lua5.3/lua.hpp>
-#include "timercontainer.h"
-#include "timer.h"
+
+#include "lua/timer/timercontainer.h"
 #include "lua/timer.h"
-#include "../../time/clock.h"
-#include "../../profiler/profilersection.h"
+#include "lua/timer/lua/timer.h"
+
+#include "time/clock.h"
+#include "profiler/profilersection.h"
 
 namespace flat
 {

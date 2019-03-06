@@ -3,8 +3,9 @@
 
 #include <memory>
 #include <string>
-#include "../../misc/vector.h"
-#include "../../render/programsettings.h"
+
+#include "misc/vector.h"
+#include "render/programsettings.h"
 
 namespace flat
 {

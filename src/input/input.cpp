@@ -1,8 +1,7 @@
-#include "input.h"
-
-#include "context/keyboardinputcontext.h"
-#include "context/mouseinputcontext.h"
-#include "context/windowinputcontext.h"
+#include "input/input.h"
+#include "input/context/keyboardinputcontext.h"
+#include "input/context/mouseinputcontext.h"
+#include "input/context/windowinputcontext.h"
 
 namespace flat
 {

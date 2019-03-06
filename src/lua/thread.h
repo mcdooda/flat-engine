@@ -1,8 +1,8 @@
 #ifndef FLAT_LUA_THREAD_H
 #define FLAT_LUA_THREAD_H
 
-#include "sharedluareference.h"
-#include "uniqueluareference.h"
+#include "lua/sharedluareference.h"
+#include "lua/uniqueluareference.h"
 
 namespace flat
 {

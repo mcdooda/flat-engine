@@ -3,7 +3,8 @@
 
 #include <vector>
 #include <memory>
-#include "texture.h"
+
+#include "video/texture.h"
 
 namespace flat
 {

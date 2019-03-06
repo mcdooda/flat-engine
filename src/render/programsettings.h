@@ -1,8 +1,9 @@
 #ifndef FLAT_RENDER_PROGRAMSETTINGS_H
 #define FLAT_RENDER_PROGRAMSETTINGS_H
 
-#include "rendersettings.h"
-#include "../video/program.h"
+#include "render/rendersettings.h"
+
+#include "video/program.h"
 
 namespace flat
 {

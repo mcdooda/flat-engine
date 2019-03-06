@@ -1,9 +1,10 @@
 #ifndef FLAT_SHARP_UI_TEXTWIDGET_H
 #define FLAT_SHARP_UI_TEXTWIDGET_H
 
-#include "widget.h"
-#include "layouts/fixedlayout.h"
-#include "../../video/font/string.h"
+#include "sharp/ui/widget.h"
+#include "sharp/ui/layouts/fixedlayout.h"
+
+#include "video/font/string.h"
 
 namespace flat
 {

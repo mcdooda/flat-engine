@@ -2,8 +2,9 @@
 #define FLAT_RENDER_ANIMATEDSPRITE_H
 
 #include <iostream>
-#include "sprite.h"
-#include "spriteanimator.h"
+
+#include "render/sprite.h"
+#include "render/spriteanimator.h"
 
 namespace flat
 {
@@ -28,6 +29,3 @@ class AnimatedSprite : public Sprite, public SpriteAnimator
 } // flat
 
 #endif // FLAT_RENDER_ANIMATEDSPRITE_H
-
-
-

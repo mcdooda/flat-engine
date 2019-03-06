@@ -1,4 +1,4 @@
-#include "focusablewidget.h"
+#include "sharp/ui/focusablewidget.h"
 
 namespace flat
 {

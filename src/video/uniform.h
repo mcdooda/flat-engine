@@ -1,10 +1,11 @@
 #ifndef FLAT_VIDEO_UNIFORM_H
 #define FLAT_VIDEO_UNIFORM_H
 
-#include "color.h"
-#include "texture.h"
-#include "../misc/vector.h"
-#include "../misc/matrix4.h"
+#include "video/color.h"
+#include "video/texture.h"
+
+#include "misc/vector.h"
+#include "misc/matrix4.h"
 
 namespace flat
 {

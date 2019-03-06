@@ -1,7 +1,7 @@
 #ifndef FLAT_GEOMETRY_QUADTREE_H
 #define FLAT_GEOMETRY_QUADTREE_H
 
-#include "../misc/aabb2.h"
+#include "misc/aabb2.h"
 #include "debug/helpers.h"
 
 namespace flat

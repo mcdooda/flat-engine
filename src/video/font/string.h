@@ -4,8 +4,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "font.h"
-#include "video\color.h"
+
+#include "video/font/font.h"
+#include "video/color.h"
 
 namespace flat
 {

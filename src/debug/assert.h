@@ -12,7 +12,6 @@
 #include <csignal>
 #include <type_traits>
 
-
 #ifdef FLAT_VISUAL_STUDIO
 #define FLAT_BREAK() __debugbreak()
 #define FLAT_PRETTY_FUNCTION __FUNCSIG__
@@ -20,7 +19,6 @@
 #define FLAT_BREAK() raise(SIGTRAP)
 #define FLAT_PRETTY_FUNCTION __PRETTY_FUNCTION__
 #endif
-
 
 #define FLAT_ASSERT_MSG(cond, format, ...) \
 	static_assert(std::is_same<typename std::decay<decltype(cond)>::type, bool>::value, "condition must be a boolean"); \

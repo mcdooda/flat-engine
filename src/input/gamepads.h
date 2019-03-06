@@ -4,7 +4,8 @@
 #include <vector>
 #include <memory>
 
-#include "gamepadbuttons.h"
+#include "input/gamepadbuttons.h"
+
 #include "misc/vector.h"
 
 namespace flat

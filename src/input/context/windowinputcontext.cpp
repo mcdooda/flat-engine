@@ -1,6 +1,6 @@
-#include "windowinputcontext.h"
+#include "input/context/windowinputcontext.h"
 
-#include "../../video/window.h"
+#include "video/window.h"
 
 namespace flat
 {

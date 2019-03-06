@@ -9,10 +9,9 @@
 #include <type_traits>
 #include <lua5.3/lua.hpp>
 
-#include "debug.h"
-#include "types.h"
-
-#include "timer/timercontainer.h"
+#include "lua/debug.h"
+#include "lua/types.h"
+#include "lua/timer/timercontainer.h"
 
 namespace flat
 {

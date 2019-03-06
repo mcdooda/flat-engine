@@ -1,6 +1,6 @@
-#include "file.h"
-#include "regularfile.h"
-#include "directory.h"
+#include "file/file.h"
+#include "file/regularfile.h"
+#include "file/directory.h"
 
 namespace flat
 {

@@ -4,9 +4,11 @@
 #include <memory>
 #include <string>
 #include <lua5.3/lua.hpp>
-#include "debug.h"
+
+#include "lua/debug.h"
+
 #include "flat.h"
-#include "../memory/memory.h"
+#include "memory/memory.h"
 
 namespace flat
 {

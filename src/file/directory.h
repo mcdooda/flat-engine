@@ -4,7 +4,7 @@
 #include <vector>
 #include <functional>
 
-#include "file.h"
+#include "file/file.h"
 
 namespace flat
 {

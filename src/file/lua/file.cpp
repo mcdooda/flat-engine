@@ -1,7 +1,9 @@
 #include "file.h"
-#include "../regularfile.h"
-#include "../directory.h"
-#include "../../lua/sharedcppreference.h"
+
+#include "file/regularfile.h"
+#include "file/directory.h"
+
+#include "lua/sharedcppreference.h"
 
 namespace flat
 {

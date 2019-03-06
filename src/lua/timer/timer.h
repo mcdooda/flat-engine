@@ -1,7 +1,7 @@
 #ifndef FLAT_LUA_TIMER_TIMER_H
 #define FLAT_LUA_TIMER_TIMER_H
 
-#include "../sharedluareference.h"
+#include "lua/sharedluareference.h"
 
 namespace flat
 {

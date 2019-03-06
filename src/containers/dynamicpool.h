@@ -2,7 +2,8 @@
 #define FLAT_CONTAINERS_DYNAMICPOOL_H
 
 #include <cstdlib>
-#include "../debug/assert.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {

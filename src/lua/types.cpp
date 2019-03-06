@@ -1,8 +1,9 @@
-#include "types.h"
-#include "debug.h"
-#include "lua.h"
-#include "../debug/assert.h"
-#include "../flat.h"
+#include "lua/types.h"
+#include "lua/debug.h"
+#include "lua/lua.h"
+
+#include "flat.h"
+#include "debug/assert.h"
 
 namespace flat
 {

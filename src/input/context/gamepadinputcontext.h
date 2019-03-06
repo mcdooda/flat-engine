@@ -4,8 +4,9 @@
 #include <array>
 #include <SDL2/SDL.h>
 
-#include "../../misc/vector.h"
-#include "../gamepadbuttons.h"
+#include "input/gamepadbuttons.h"
+
+#include "misc/vector.h"
 
 namespace flat
 {

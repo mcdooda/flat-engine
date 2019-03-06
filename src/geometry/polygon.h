@@ -2,9 +2,10 @@
 #define FLAT_VIDEO_POLYGON_H
 
 #include <vector>
-#include "../misc/vector.h"
-#include "../misc/matrix4.h"
-#include "../video/attribute.h"
+
+#include "misc/vector.h"
+#include "misc/matrix4.h"
+#include "video/attribute.h"
 
 namespace flat
 {

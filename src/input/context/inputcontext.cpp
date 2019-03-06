@@ -1,6 +1,6 @@
-#include "inputcontext.h"
+#include "input/context/inputcontext.h"
 
-#include "../../flat.h"
+#include "flat.h"
 
 namespace flat
 {

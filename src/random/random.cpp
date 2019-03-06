@@ -1,6 +1,7 @@
 #include <ctime>
 #include <cstdlib>
-#include "random.h"
+
+#include "random/random.h"
 
 namespace flat
 {

@@ -3,9 +3,11 @@
 
 #include <string>
 #include <SDL2/SDL.h>
-#include "../misc/vector.h"
-#include "color.h"
-#include "texture.h"
+
+#include "video/color.h"
+#include "video/texture.h"
+
+#include "misc/vector.h"
 
 namespace flat
 {

@@ -2,7 +2,8 @@
 #define FLAT_RESOURCE_WEAKRESOURCEMANAGER_H
 
 #include <memory>
-#include "resourcemanager.h"
+
+#include "resource/resourcemanager.h"
 
 namespace flat
 {

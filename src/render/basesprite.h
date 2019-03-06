@@ -4,10 +4,9 @@
 #include <array>
 #include <memory>
 
-#include "../misc/vector.h"
-#include "../misc/matrix4.h"
-
-#include "../video/color.h"
+#include "misc/vector.h"
+#include "misc/matrix4.h"
+#include "video/color.h"
 
 namespace flat
 {

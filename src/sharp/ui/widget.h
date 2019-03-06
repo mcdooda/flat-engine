@@ -4,13 +4,15 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include "cursor.h"
-#include "../../misc/vector.h"
-#include "../../misc/matrix4.h"
-#include "../../video/attribute.h"
-#include "../../video/color.h"
-#include "../../misc/slot.h"
-#include "../../util/convertible.h"
+
+#include "sharp/ui/cursor.h"
+
+#include "misc/slot.h"
+#include "misc/matrix4.h"
+#include "misc/vector.h"
+#include "util/convertible.h"
+#include "video/attribute.h"
+#include "video/color.h"
 
 namespace flat
 {

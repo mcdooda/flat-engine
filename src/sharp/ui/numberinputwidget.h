@@ -1,8 +1,9 @@
 #ifndef FLAT_SHARP_UI_NUMBERINPUTWIDGET_H
 #define FLAT_SHARP_UI_NUMBERINPUTWIDGET_H
 
-#include "textinputwidget.h"
-#include "../../misc/vector.h"
+#include "sharp/ui/textinputwidget.h"
+
+#include "misc/vector.h"
 
 #pragma warning(disable: 4250)
 

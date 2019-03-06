@@ -1,6 +1,5 @@
-#include "mouse.h"
-
-#include "context/inputcontext.h"
+#include "input/mouse.h"
+#include "input/context/inputcontext.h"
 
 namespace flat
 {

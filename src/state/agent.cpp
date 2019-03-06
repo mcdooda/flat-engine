@@ -1,6 +1,6 @@
-#include "agent.h"
+#include "state/agent.h"
 
-#include "../memory/memory.h"
+#include "memory/memory.h"
 
 namespace flat
 {

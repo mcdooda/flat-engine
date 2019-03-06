@@ -1,6 +1,8 @@
 #include <lua5.3/lua.hpp>
-#include <flat/game.h>
-#include "mouse.h"
+
+#include "input/lua/mouse.h"
+
+#include "flat.h"
 
 namespace flat
 {

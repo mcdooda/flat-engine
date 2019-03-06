@@ -1,7 +1,7 @@
 #ifndef FLAT_SHARP_UI_LAYOUT_H
 #define FLAT_SHARP_UI_LAYOUT_H
 
-#include "widget.h"
+#include "sharp/ui/widget.h"
 
 namespace flat
 {

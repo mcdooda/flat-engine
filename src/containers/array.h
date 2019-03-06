@@ -3,8 +3,10 @@
 
 #include <cstdlib>
 #include <cstring>
-#include "bitaccessor.h"
-#include "../debug/assert.h"
+
+#include "containers/bitaccessor.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {

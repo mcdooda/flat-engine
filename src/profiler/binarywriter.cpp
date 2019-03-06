@@ -1,8 +1,8 @@
 #include <vector>
 
-#include "binarywriter.h"
+#include "profiler/binarywriter.h"
 
-#include "../debug/assert.h"
+#include "debug/assert.h"
 
 namespace flat
 {

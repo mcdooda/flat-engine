@@ -1,7 +1,7 @@
 #ifndef FLAT_RENDER_SYNCHRONIZEDSPRITE_H
 #define FLAT_RENDER_SYNCHRONIZEDSPRITE_H
 
-#include "sprite.h"
+#include "render/sprite.h"
 
 namespace flat
 {
