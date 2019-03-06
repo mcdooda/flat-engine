@@ -40,6 +40,10 @@
 // state
 #include "state/state.h"
 
+// file
+#include "file/directory.h"
+#include "file/regularfile.h"
+
 // lua
 #include "lua/lua.h"
 #include "lua/debug.h"
