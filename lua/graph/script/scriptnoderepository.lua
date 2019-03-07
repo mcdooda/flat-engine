@@ -7,6 +7,7 @@ return {
     'script/scriptinput',
     'script/scriptoutput',
     'script/impulseall',
+    'script/holdvalue',
 
     'math/multiply',
     'math/divide',
