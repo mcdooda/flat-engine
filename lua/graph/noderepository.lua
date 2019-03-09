@@ -35,16 +35,18 @@ end
 
 function NodeRepository:loadCompounds(nodeType, root)
     local compoundDirectory = flat.Directory(root)
-    compoundDirectory:eachSubFileRecursive(function(file)
-        if file:isRegularFile() and file:getFullExtension() == '.graph.lua' then
-            local compoundName = file:getShortStem()
-            local compoundPath = file:getParentPath() .. '/' .. compoundName
-            self.compounds[#self.compounds + 1] = {
-                name = compoundName,
-                path = compoundPath
-            }
-        end
-    end)
+    if compoundDirectory then
+        compoundDirectory:eachSubFileRecursive(function(file)
+            if file:isRegularFile() and file:getFullExtension() == '.graph.lua' then
+                local compoundName = file:getShortStem()
+                local compoundPath = file:getParentPath() .. '/' .. compoundName
+                self.compounds[#self.compounds + 1] = {
+                    name = compoundName,
+                    path = compoundPath
+                }
+            end
+        end)
+    end
 end
 
 function NodeRepository:getNodeClasses()
