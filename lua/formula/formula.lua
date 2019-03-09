@@ -42,13 +42,17 @@ setmetatable(fakeEnv, getVariableNamesMt)
 
 function Formula:new(code)
     local o = setmetatable({
-        code          = code,
-        compiledChunk = nil,
-        variableNames = nil,
+        code           = code,
+        compiledChunk  = nil,
+        variableNames  = nil,
+        constantResult = nil
     }, self)
 
     if o:fetchVariableNames() then
         o:compile()
+        if #o:getVariableNames() == 0 then
+            o:computeConstantResult()
+        end
     end
 
     return o
@@ -95,6 +99,20 @@ end
 function Formula:getFinalCode()
     -- add parentheses to forbid several return values
     return 'return (' .. self.code .. ')'
+end
+
+function Formula:isConstant()
+    assert((#self.variableNames == 0) == (self.constantResult ~= nil))
+    return self.constantResult ~= nil
+end
+
+function Formula:computeConstantResult()
+    assert(#self.variableNames == 0)
+    self.constantResult = self:evaluate{}
+end
+
+function Formula:getConstantResult()
+    return assert(self.constantResult)
 end
 
 flat.Formula = Formula

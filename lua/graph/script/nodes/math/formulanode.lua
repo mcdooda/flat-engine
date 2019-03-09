@@ -39,12 +39,17 @@ end
 
 function FormulaNode:execute(runtime)
     assert(self.formula:isValid())
-    local variableValues = {}
-    for variableName, inputPin in pairs(self.pinsByName) do
-        variableValues[variableName] = runtime:readPin(inputPin)
+    if self.formula:isConstant() then
+        local result = self.formula:getConstantResult()
+        runtime:writePin(self.resultOutPin, result)
+    else
+        local variableValues = {}
+        for variableName, inputPin in pairs(self.pinsByName) do
+            variableValues[variableName] = runtime:readPin(inputPin)
+        end
+        local result = self.formula:evaluate(variableValues)
+        runtime:writePin(self.resultOutPin, result)
     end
-    local result = self.formula:evaluate(variableValues)
-    runtime:writePin(self.resultOutPin, result)
 end
 
 function FormulaNode:setFormula(formula)
