@@ -14,37 +14,72 @@ Gamepads::Gamepads(const std::shared_ptr<context::InputContext>& globalInputCont
 
 bool Gamepads::isPressed(GamepadIndex index, GamepadButton button) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).isPressed(button);
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->isPressed(button);
+	}
+	return false;
 }
 
 bool Gamepads::isJustPressed(GamepadIndex index, GamepadButton button) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).isJustPressed(button);
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->isJustPressed(button);
+	}
+	return false;
 }
 
 bool Gamepads::isJustReleased(GamepadIndex index, GamepadButton button) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).isJustReleased(button);
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->isJustReleased(button);
+	}
+	return false;
 }
 
 bool Gamepads::hasAxisJustMoved(GamepadIndex index, GamepadAxis axis) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).hasAxisJustMoved(axis);
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->hasAxisJustMoved(axis);
+	}
+	return false;
 }
 
 float Gamepads::getAxisValue(GamepadIndex index, GamepadAxis axis) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).getAxisValue(axis);
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->getAxisValue(axis);
+	}
+	return false;
 }
 
 flat::Vector2 Gamepads::getLeftStickValue(GamepadIndex index) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).getLeftStickValue();
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->getLeftStickValue();
+	}
+	return flat::Vector2(0.f, 0.f);
 }
 
 flat::Vector2 Gamepads::getRightStickValue(GamepadIndex index) const
 {
-	return m_globalInputContext->getGamepadInputContext(index).getRightStickValue();
+	const context::GamepadInputContext* gamepadInputContext = m_globalInputContext->getGamepadInputContext(index);
+	if (gamepadInputContext != nullptr)
+	{
+		return gamepadInputContext->getRightStickValue();
+	}
+	return flat::Vector2(0.f, 0.f);
 }
 
 } // input
