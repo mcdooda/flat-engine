@@ -12,7 +12,7 @@ local coresume = coroutine.resume
 local StateMachineNodeRuntime = ScriptNodeRuntime:inherit()
 
 function StateMachineNodeRuntime:init(node)
-    self.perContextData = setmetatable({ __mode = 'v' }, {})
+    self.perContextData = setmetatable({}, { __mode = 'k' })
     self.stateMachineDescription = node:getStateMachineDescription()
 end
 
