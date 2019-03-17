@@ -6,7 +6,7 @@
 #include <chrono>
 #include <vector>
 
-#include "../util/singleton.h"
+#include "util/singleton.h"
 
 namespace flat
 {

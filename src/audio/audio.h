@@ -2,7 +2,8 @@
 #define FLAT_AUDIO_AUDIO_H
 
 #include <string>
-#include "music.h"
+
+#include "audio/music.h"
 
 namespace flat
 {

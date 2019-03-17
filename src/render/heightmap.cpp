@@ -1,7 +1,7 @@
-#include "heightmap.h"
-#include "rendersettings.h"
+#include "render/heightmap.h"
+#include "render/rendersettings.h"
 
-#include "../memory/memory.h"
+#include "memory/memory.h"
 
 namespace flat
 {

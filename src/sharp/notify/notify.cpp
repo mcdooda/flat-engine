@@ -1,5 +1,6 @@
-#include "notify.h"
-#include "../../flat.h"
+#include "sharp/notify/notify.h"
+
+#include "flat.h"
 
 namespace flat
 {

@@ -1,4 +1,4 @@
-#include "../../flat.h"
+#include "flat.h"
 
 namespace flat
 {

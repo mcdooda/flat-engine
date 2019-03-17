@@ -3,8 +3,10 @@
 
 #include <cstdlib>
 #include <cstring>
-#include "bitaccessor.h"
-#include "../debug/assert.h"
+
+#include "containers/bitaccessor.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {
@@ -89,7 +91,7 @@ class Array
 		
 		void memset(int c)
 		{
-			memset(m_buffer, c, m_size);
+			std::memset(m_buffer, c, m_size);
 		}
 		
 		const T* getBuffer() const
@@ -175,7 +177,7 @@ class Array<bool>
 		
 		void memset(int c)
 		{
-			::memset(m_buffer, c, getBytesSize());
+			std::memset(m_buffer, c, getBytesSize());
 		}
 		
 	private:
@@ -192,7 +194,7 @@ class Array<bool>
 } // containers
 } // flat
 
-#endif // FLAT_CONTAINERS_FIXEDSIZEARRAY_H
+#endif // FLAT_CONTAINERS_ARRAY_H
 
 
 

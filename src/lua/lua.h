@@ -5,12 +5,13 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <unordered_map>
+#include <type_traits>
 #include <lua5.3/lua.hpp>
 
-#include "debug.h"
-#include "types.h"
-
-#include "timer/timercontainer.h"
+#include "lua/debug.h"
+#include "lua/types.h"
+#include "lua/timer/timercontainer.h"
 
 namespace flat
 {
@@ -29,9 +30,6 @@ namespace lua
 class Lua
 {
 	public:
-		static constexpr int FIRST_CLASS_TYPE_INDEX = LUA_NUMTAGS;
-
-	public:
 		Lua(Flat& flat, const std::string& luaPath, const std::string& assetsPath);
 		~Lua();
 
@@ -48,7 +46,7 @@ class Lua
 		template <class T>
 		void registerClass(const char* metatableName, const luaL_Reg* methods = nullptr);
 
-		const char* getTypeName(int type) const;
+		const char* getTypeName(size_t type) const;
 
 		void collectGarbage() const;
 
@@ -89,8 +87,7 @@ class Lua
 
 		std::vector<std::weak_ptr<timer::TimerContainer>> m_timerContainers;
 
-		std::vector<std::string> m_typeIndexToName;
-		int m_nextTypeIndex;
+		std::unordered_map<size_t, std::string> m_typeHashToName;
 };
 
 void close(lua_State* L);
@@ -122,11 +119,22 @@ T& getFlatAs(lua_State* L)
 template<class T>
 inline void Lua::registerClass(const char* metatableName, const luaL_Reg* methods)
 {
-	FLAT_ASSERT_MSG(std::find(m_typeIndexToName.begin(), m_typeIndexToName.end(), metatableName) == m_typeIndexToName.end(), "Metatable '%s' is already registered", metatableName);
-	int newTypeIndex = m_nextTypeIndex++;
-	m_typeIndexToName.push_back(metatableName);
-	T::registerClass(state, newTypeIndex, metatableName, methods);
-	types::registerType(state, newTypeIndex, metatableName);
+#ifdef FLAT_DEBUG
+	auto pred = [metatableName](const std::unordered_map<size_t, std::string>::value_type& pair)
+	{
+		return pair.second == metatableName;
+	};
+	FLAT_ASSERT_MSG(
+		std::find_if(m_typeHashToName.begin(), m_typeHashToName.end(), pred) == m_typeHashToName.end(),
+		"Metatable '%s' is already registered", metatableName
+	);
+#endif
+	std::string metatableNameStr = metatableName;
+	size_t newTypeHash = std::hash<std::string>()(metatableNameStr);
+	FLAT_ASSERT(m_typeHashToName.find(newTypeHash) == m_typeHashToName.end());
+	m_typeHashToName[newTypeHash] = std::move(metatableNameStr);
+	T::registerClass(state, newTypeHash, metatableName, methods);
+	types::registerType(state, newTypeHash, metatableName);
 }
 
 template<class T, typename ...Args>

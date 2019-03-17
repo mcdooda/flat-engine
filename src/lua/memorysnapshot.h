@@ -100,8 +100,6 @@ class MemorySnapshot
 } // lua
 } // flat
 
-static int l_snapshot(lua_State *L);
-
 #endif // FLAT_LUA_MEMORYSNAPSHOT_H
 
 

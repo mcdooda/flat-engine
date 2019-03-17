@@ -1,6 +1,6 @@
-#include "cursor.h"
+#include "sharp/ui/cursor.h"
 
-#include "../../debug/assert.h"
+#include "debug/assert.h"
 
 namespace flat
 {

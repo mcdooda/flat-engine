@@ -17,17 +17,29 @@ function flat.graph.getNodeClasses(nodeType)
     return repository:getNodeClasses()
 end
 
+function flat.graph.getCompounds(nodeType)
+    local repository = getNodeRepository(nodeType)
+    return repository:getCompounds()
+end
+
+local function requireFromRoot(root)
+    return function(path)
+        return require(root .. '/' .. path)
+    end
+end
+
 function flat.graph.loadNodeClasses(nodeType, root)
     -- loads flat nodes
     local repository = getNodeRepository(nodeType)
 
     -- loads project specific nodes
-    repository:load('common', nodeType, function(path)
-        return require(root .. '/' .. path)
-    end)
-    repository:load(nodeType, nodeType, function(path)
-        return require(root .. '/' .. path)
-    end)
+    repository:loadNodes('common', nodeType, requireFromRoot(root))
+    repository:loadNodes(nodeType, nodeType, requireFromRoot(root))
+end
+
+function flat.graph.loadCompounds(nodeType, root)
+    local repository = getNodeRepository(nodeType)
+    repository:loadCompounds(nodeType, root)
 end
 
 flat.dofile 'graph/script/init.lua'

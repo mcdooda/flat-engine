@@ -1,8 +1,7 @@
-#include "input.h"
-
-#include "context/keyboardinputcontext.h"
-#include "context/mouseinputcontext.h"
-#include "context/windowinputcontext.h"
+#include "input/input.h"
+#include "input/context/keyboardinputcontext.h"
+#include "input/context/mouseinputcontext.h"
+#include "input/context/windowinputcontext.h"
 
 namespace flat
 {
@@ -17,6 +16,7 @@ Input::Input(Flat& flat)
 	keyboard = std::make_unique<Keyboard>(m_globalInputContext);
 	mouse = std::make_unique<Mouse>(m_globalInputContext);
 	window = std::make_unique<Window>(m_globalInputContext);
+	gamepads = std::make_unique<Gamepads>(m_globalInputContext);
 }
 
 void Input::pollEvents()

@@ -1,12 +1,14 @@
-#include <GL/glew.h>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <vector>
 #include <tuple>
-#include "program.h"
-#include "../debug/assert.h"
+#include <GL/glew.h>
+
+#include "video/program.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {

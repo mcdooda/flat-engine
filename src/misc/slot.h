@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <algorithm>
-#include "../memory/memory.h"
+
+#include "memory/memory.h"
+#include "debug/assert.h"
 
 namespace flat
 {
@@ -66,16 +68,18 @@ class Slot
 
 		void operator()(T... params)
 		{
-			for (std::vector<Callback*>::iterator it = m_callbacks.begin(); it != m_callbacks.end(); )
+			// we can't use iterators as new callbacks might be inserted while iterating
+			for (int i = 0; i < m_callbacks.size(); )
 			{
-				bool keepCallback = (**it)(params...);
+				Callback* callback = m_callbacks[i];
+				const bool keepCallback = (*callback)(params...);
 				if (keepCallback)
 				{
-					++it;
+					++i;
 				}
 				else
 				{
-					it = m_callbacks.erase(it);
+					m_callbacks.erase(m_callbacks.begin() + i);
 				}
 			}
 		}

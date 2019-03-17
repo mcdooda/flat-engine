@@ -1,20 +1,22 @@
 #include <cstdlib>
 #include <lua5.3/lua.hpp>
 
-#include "lua.h"
-#include "memorysnapshot.h"
-#include "types.h"
-#include "timer/lua/timer.h"
+#include "lua/lua.h"
+#include "lua/memorysnapshot.h"
+#include "lua/types.h"
+#include "lua/timer/lua/timer.h"
 
-#include "../flat.h"
-#include "../flat/game.h"
-#include "../time/lua/time.h"
-#include "../input/lua/mouse.h"
-#include "../video/lua/image.h"
-#include "../sharp/ui/lua/ui.h"
-#include "../misc/lua/vector2.h"
-#include "../misc/lua/vector3.h"
-#include "../profiler/lua/profiler.h"
+#include "flat.h"
+#include "flat/game.h"
+#include "time/lua/time.h"
+#include "input/lua/mouse.h"
+#include "input/lua/gamepads.h"
+#include "video/lua/image.h"
+#include "sharp/ui/lua/ui.h"
+#include "misc/lua/vector2.h"
+#include "misc/lua/vector3.h"
+#include "file/lua/file.h"
+#include "profiler/lua/profiler.h"
 
 namespace flat
 {
@@ -53,8 +55,7 @@ void Lua::reset(Flat& flat)
 		close(state);
 	}
 
-	m_nextTypeIndex = FIRST_CLASS_TYPE_INDEX;
-	m_typeIndexToName.clear();
+	m_typeHashToName.clear();
 
 	state = luaL_newstate();
 
@@ -93,6 +94,7 @@ void Lua::reset(Flat& flat)
 		timer::lua::open(*this);
 		time::lua::open(L);
 		input::lua::mouse::open(L);
+		input::lua::gamepads::open(L);
 		video::lua::image::open(L);
 		sharp::ui::lua::open(flat, *this);
 
@@ -101,6 +103,8 @@ void Lua::reset(Flat& flat)
 
 		lua::openVector2(*this);
 		lua::openVector3(*this);
+
+		file::lua::open(*this);
 
 		openRequire(L);
 		openDofile(L);
@@ -137,16 +141,20 @@ void Lua::clearLoadedPackages()
 	lua::clearLoadedPackages(state);
 }
 
-const char* Lua::getTypeName(int type) const
+const char* Lua::getTypeName(size_t type) const
 {
-	return m_typeIndexToName[type - FIRST_CLASS_TYPE_INDEX].c_str();
+	std::unordered_map<size_t, std::string>::const_iterator it = m_typeHashToName.find(type);
+	if (it != m_typeHashToName.cend())
+	{
+		return it->second.c_str();
+	}
+	return nullptr;
 }
 
 void Lua::collectGarbage() const
 {
 	lua_gc(state, LUA_GCCOLLECT, 0);
 }
-
 
 void Lua::pushVariable(std::initializer_list<const char*> variableNames) const
 {

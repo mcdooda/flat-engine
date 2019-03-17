@@ -2,7 +2,8 @@
 #define FLAT_LUA_SHAREDLUAREFERENCE_H
 
 #include <memory>
-#include "luareference.h"
+
+#include "lua/luareference.h"
 
 namespace flat
 {

@@ -1,9 +1,8 @@
-#include "basesprite.h"
+#include "render/basesprite.h"
+#include "render/rendersettings.h"
 
-#include "rendersettings.h"
-
-#include "../misc/aabb2.h"
-#include "../video/filetexture.h"
+#include "misc/aabb2.h"
+#include "video/filetexture.h"
 
 namespace flat
 {

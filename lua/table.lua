@@ -1,11 +1,50 @@
 local getmetatable = getmetatable
 local tostring = tostring
+local type = type
+local max = math.max
+
+local function tableLength(t)
+    local length = 0
+    for _ in pairs(t) do
+        length = length + 1
+    end
+    return length
+end
+
+local function tableFindValueKey(t, v)
+    for key, value in pairs(t) do
+        if value == v then
+            return key
+        end
+    end
+end
+
+-- see http://lua-users.org/lists/lua-l/2008-11/msg00106.html
+local function isInt(n)
+    return type(n) == 'number' and (n + 2 ^ 52) - 2 ^ 52 == n
+end
+
+local function tableMaxIntKey(t)
+    local maxIntKey = 0
+    for key in pairs(t) do
+        if isInt(key) then
+            maxIntKey = max(key, maxIntKey)
+        end
+    end
+    return maxIntKey
+end
+
+local function tableIsArray(t)
+    return #t == tableLength(t)
+end
 
 local function arrayAdd(t, value)
+    assert(tableIsArray(t))
     t[#t + 1] = value
 end
 
 local function arrayFindValueIndex(t, value)
+    assert(tableIsArray(t))
     for i = 1, #t do
         if t[i] == value then
             return i
@@ -14,6 +53,7 @@ local function arrayFindValueIndex(t, value)
 end
 
 local function arrayRemoveIndex(t, index)
+    assert(tableIsArray(t))
     local length = #t
     for i = index, length - 1 do
         t[i] = t[i + 1]
@@ -22,19 +62,24 @@ local function arrayRemoveIndex(t, index)
 end
 
 local function arrayRemoveValue(t, value)
+    assert(tableIsArray(t))
     local index = assert(arrayFindValueIndex(t, value), 'value not found')
     arrayRemoveIndex(t, index)
+    return index
 end
 
 local function arrayRemoveIndexCyclic(t, index)
+    assert(tableIsArray(t))
     local length = #t
     t[index] = t[length]
     t[length] = nil
 end
 
 local function arrayRemoveValueCyclic(t, value)
+    assert(tableIsArray(t))
     local index = assert(arrayFindValueIndex(t, value), 'value not found')
     arrayRemoveIndexCyclic(t, index)
+    return index
 end
 
 local function sortedPairs(t)
@@ -68,6 +113,12 @@ local function sortedPairs(t)
         return key, value
     end
 end
+
+flat.tableLength = tableLength
+flat.tableFindValueKey = tableFindValueKey
+flat.tableMaxIntKey = tableMaxIntKey
+
+flat.tableIsArray = tableIsArray
 
 flat.arrayAdd = arrayAdd
 flat.arrayFindValueIndex = arrayFindValueIndex

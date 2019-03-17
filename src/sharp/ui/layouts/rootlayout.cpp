@@ -1,7 +1,8 @@
-#include "rootlayout.h"
-#include "../rootwidget.h"
-#include "../../../video/window.h"
-#include "../../../flat/game.h"
+#include "sharp/ui/layouts/rootlayout.h"
+#include "sharp/ui/rootwidget.h"
+
+#include "flat/game.h"
+#include "video/window.h"
 
 namespace flat
 {

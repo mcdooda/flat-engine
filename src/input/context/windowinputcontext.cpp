@@ -1,6 +1,6 @@
-#include "windowinputcontext.h"
+#include "input/context/windowinputcontext.h"
 
-#include "../../video/window.h"
+#include "video/window.h"
 
 namespace flat
 {
@@ -15,13 +15,13 @@ WindowInputContext::WindowInputContext(video::Window* videoWindow) :
 	clearAllEvents();
 }
 
-void WindowInputContext::addEvent(const SDL_Event& event)
+bool WindowInputContext::addEvent(const SDL_Event& event)
 {
 	switch (event.type)
 	{
 	case SDL_QUIT:
 		m_closed = true;
-		break;
+		return true;
 
 	case SDL_WINDOWEVENT:
 		switch (event.window.event)
@@ -29,10 +29,12 @@ void WindowInputContext::addEvent(const SDL_Event& event)
 		case SDL_WINDOWEVENT_RESIZED:
 			m_resized = true;
 			m_videoWindow->resized({ event.window.data1, event.window.data2 });
-			break;
+			return true;
 		}
 		break;
 	}
+
+	return false;
 }
 
 void WindowInputContext::clearFrameEvents()

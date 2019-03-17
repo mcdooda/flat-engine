@@ -1,9 +1,9 @@
 #include <lua5.3/lua.hpp>
 
-#include "profiler.h"
+#include "profiler/lua/profiler.h"
+#include "profiler/profiler.h"
 
-#include "../profiler.h"
-#include "../../lua/debug.h"
+#include "lua/debug.h"
 
 namespace flat
 {

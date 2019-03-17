@@ -1,8 +1,8 @@
 #ifndef FLAT_RENDER_SPRITESYNCHRONIZER_H
 #define FLAT_RENDER_SPRITESYNCHRONIZER_H
 
-#include "basesprite.h"
-#include "spriteanimator.h"
+#include "render/basesprite.h"
+#include "render/spriteanimator.h"
 
 namespace flat
 {

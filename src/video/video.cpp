@@ -1,8 +1,10 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
-#include "video.h"
-#include "font/font.h"
-#include "../memory/memory.h"
+
+#include "video/video.h"
+#include "video/font/font.h"
+
+#include "memory/memory.h"
 
 namespace flat
 {

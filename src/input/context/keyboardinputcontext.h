@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "../key.h"
+#include "input/key.h"
 
-#include "../../containers/array.h"
-#include "../../misc/slot.h"
+#include "containers/array.h"
+#include "misc/slot.h"
 
 namespace flat
 {
@@ -24,7 +24,7 @@ class KeyboardInputContext
 		~KeyboardInputContext() = default;
 		KeyboardInputContext& operator=(const KeyboardInputContext& other);
 		
-		void addEvent(const SDL_Event& event);
+		bool addEvent(const SDL_Event& event);
 		void clearFrameEvents();
 		void clearAllEvents();
 

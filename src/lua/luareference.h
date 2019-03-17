@@ -2,11 +2,13 @@
 #define FLAT_LUA_LUAREFERENCE_H
 
 #include <lua5.3/lua.hpp>
-#include "debug.h"
-#include "table.h"
-#include "../util/variadichelpers.h"
-#include "../debug/helpers.h"
-#include "../profiler/profilersection.h"
+
+#include "lua/debug.h"
+#include "lua/table.h"
+
+#include "util/variadichelpers.h"
+#include "debug/helpers.h"
+#include "profiler/profilersection.h"
 
 namespace flat
 {

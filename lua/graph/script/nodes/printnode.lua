@@ -26,6 +26,11 @@ function PrintNode:execute(runtime, inputPin)
     local value = runtime:readPin(self.valueInPin)
 
     print('Print Node:', value)
+    --flat.debug.printstack()
+
+    if value == 'Idle' and Gamepads.isPressed(0, Gamepads.GamepadButton.B) then
+        flat.debug.debugbreak()
+    end
 
     runtime:impulse(self.impulseOutPin)
 end

@@ -1,5 +1,6 @@
 #include <SDL2/SDL_mixer.h>
-#include "audio.h"
+
+#include "audio/audio.h"
 
 namespace flat
 {

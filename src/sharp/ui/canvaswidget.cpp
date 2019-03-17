@@ -1,6 +1,7 @@
-#include "canvaswidget.h"
-#include "../../render/rendersettings.h"
-#include "../../geometry/bezier.h"
+#include "sharp/ui/canvaswidget.h"
+
+#include "render/rendersettings.h"
+#include "geometry/bezier.h"
 
 namespace flat
 {

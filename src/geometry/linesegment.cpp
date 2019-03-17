@@ -1,5 +1,6 @@
 #include <GL/glew.h>
-#include "linesegment.h"
+
+#include "geometry/linesegment.h"
 
 namespace flat
 {

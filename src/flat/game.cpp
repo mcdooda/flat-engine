@@ -1,5 +1,6 @@
 #include <iostream>
-#include "game.h"
+
+#include "flat/game.h"
 
 namespace flat
 {

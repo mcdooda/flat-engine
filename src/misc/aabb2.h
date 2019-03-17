@@ -1,7 +1,7 @@
 #ifndef FLAT_MISC_AABB2_H
 #define FLAT_MISC_AABB2_H
 
-#include "vector.h"
+#include "misc/vector.h"
 
 namespace flat
 {

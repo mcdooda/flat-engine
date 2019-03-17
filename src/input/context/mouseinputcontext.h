@@ -2,9 +2,10 @@
 #define FLAT_INPUT_CONTEXT_MOUSEINPUTCONTEXT_H
 
 #include <array>
-#include <SDL2/SDL.h>
 
-#include "../../misc/vector.h"
+#include "misc/vector.h"
+
+union SDL_Event;
 
 namespace flat
 {
@@ -30,7 +31,7 @@ class MouseInputContext
 		~MouseInputContext() = default;
 		MouseInputContext& operator=(const MouseInputContext&) = default;
 
-		void addEvent(const SDL_Event& event);
+		bool addEvent(const SDL_Event& event);
 		void clearFrameEvents();
 		void clearAllEvents();
 

@@ -1,7 +1,7 @@
 #ifndef FLAT_GEOMETRY_CIRCLE_H
 #define FLAT_GEOMETRY_CIRCLE_H
 
-#include "polygon.h"
+#include "geometry/polygon.h"
 
 namespace flat
 {

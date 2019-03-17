@@ -4,9 +4,11 @@
 #include <memory>
 #include <string>
 #include <lua5.3/lua.hpp>
-#include "debug.h"
+
+#include "lua/debug.h"
+
 #include "flat.h"
-#include "../memory/memory.h"
+#include "memory/memory.h"
 
 namespace flat
 {
@@ -48,7 +50,7 @@ class SharedCppValue
 			return 0;
 		}
 
-		static void registerClass(lua_State* L, int newTypeIndex, const char* metatableName, const luaL_Reg* methods)
+		static void registerClass(lua_State* L, size_t newTypeHash, const char* metatableName, const luaL_Reg* methods)
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
@@ -66,7 +68,7 @@ class SharedCppValue
 			lua_setfield(L, -2, "__gc");
 
 			// type for flat.type
-			lua_pushinteger(L, newTypeIndex);
+			lua_pushinteger(L, newTypeHash);
 			lua_setfield(L, -2, "type");
 
 			// others methods

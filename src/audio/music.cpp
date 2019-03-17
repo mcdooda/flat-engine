@@ -1,8 +1,8 @@
-#include "music.h"
+#include "audio/music.h"
 
-#include "../time/clock.h"
-#include "../memory/memory.h"
-#include "../debug/assert.h"
+#include "time/clock.h"
+#include "memory/memory.h"
+#include "debug/assert.h"
 
 namespace flat
 {

@@ -2,8 +2,8 @@
 #define FLAT_GAME_H
 
 #include <string>
-#include "../flat.h"
-#include "../state/agent.h"
+
+#include "flat.h"
 
 namespace flat
 {

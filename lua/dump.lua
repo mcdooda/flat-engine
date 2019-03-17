@@ -17,6 +17,7 @@ local function dumpString(write, str)
 		['\t'] = '\\\t',
 		['\v'] = '\\\v',
 		['\''] = '\\\'',
+		['\\'] = '\\\\'
 	}
 	for pattern, replacement in pairs(escape) do
 		str = str:gsub(pattern, replacement)
@@ -123,6 +124,7 @@ end
 
 local function easyDump(value)
 	dumpToOutput(io.output(), value, true)
+	print()
 end
 
 local function dumpFlat(value)

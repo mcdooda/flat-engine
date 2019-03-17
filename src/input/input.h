@@ -4,11 +4,11 @@
 #include <memory>
 #include <vector>
 
-#include "keyboard.h"
-#include "mouse.h"
-#include "window.h"
-
-#include "context/inputcontext.h"
+#include "input/gamepads.h"
+#include "input/keyboard.h"
+#include "input/mouse.h"
+#include "input/window.h"
+#include "input/context/inputcontext.h"
 
 namespace flat
 {
@@ -40,6 +40,7 @@ class Input
 		std::unique_ptr<Keyboard> keyboard;
 		std::unique_ptr<Mouse> mouse;
 		std::unique_ptr<Window> window;
+		std::unique_ptr<Gamepads> gamepads;
 
 	private:
 		void cleanTopExpiredContexts();

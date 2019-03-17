@@ -1,7 +1,8 @@
-#include "rootwidget.h"
-#include "focusablewidget.h"
-#include "../../video/window.h"
-#include "../../flat.h"
+#include "sharp/ui/rootwidget.h"
+#include "sharp/ui/focusablewidget.h"
+
+#include "flat.h"
+#include "video/window.h"
 
 namespace flat
 {

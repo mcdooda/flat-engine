@@ -2,8 +2,10 @@
 #define FLAT_VIDEO_RENDER_H
 
 #include <GL/glew.h>
-#include "program.h"
-#include "../geometry/rectangle.h"
+
+#include "video/program.h"
+
+#include "geometry/rectangle.h"
 
 namespace flat
 {

@@ -1,5 +1,5 @@
-#include "fixedlayout.h"
-#include "../widget.h"
+#include "sharp/ui/layouts/fixedlayout.h"
+#include "sharp/ui/widget.h"
 
 namespace flat
 {

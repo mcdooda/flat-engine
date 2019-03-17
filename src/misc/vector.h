@@ -6,8 +6,10 @@
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include "../debug/assert.h"
-#include "math.h"
+
+#include "misc/math.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {

@@ -1,4 +1,4 @@
-#include "spritesynchronizer.h"
+#include "render/spritesynchronizer.h"
 
 namespace flat
 {

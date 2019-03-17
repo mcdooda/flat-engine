@@ -1,7 +1,7 @@
 #ifndef FLAT_CONTAINERS_BITACCESSOR
 #define FLAT_CONTAINERS_BITACCESSOR
 
-#include "../debug/assert.h"
+#include "debug/assert.h"
 
 namespace flat
 {

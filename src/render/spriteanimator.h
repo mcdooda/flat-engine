@@ -1,7 +1,7 @@
 #ifndef FLAT_RENDER_SPRITEANIMATOR_H
 #define FLAT_RENDER_SPRITEANIMATOR_H
 
-#include "../misc/vector.h"
+#include "misc/vector.h"
 
 namespace flat
 {

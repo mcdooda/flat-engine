@@ -6,6 +6,8 @@ return {
     'script/getcontext',
     'script/scriptinput',
     'script/scriptoutput',
+    'script/impulseall',
+    'script/holdvalue',
 
     'math/multiply',
     'math/divide',
@@ -17,10 +19,18 @@ return {
     'math/formula',
     'math/and',
     'math/or',
+    'math/randomint',
 
+    -- vector2
+    'math/vector2/vector2add',
+    'math/vector2/vector2numbermultiply',
+    'math/vector2/vector2length',
+
+    -- vector3
     'math/vector3/vector3reflect',
     'math/vector3/vector3numbermultiply',
     'math/vector3/vector3length',
+    'math/vector3/vector3split',
 
     'print',
 

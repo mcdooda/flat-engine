@@ -2,8 +2,9 @@
 #define FLAT_VIDEO_PASS_H
 
 #include <GL/glew.h>
-#include "program.h"
-#include "framebuffer.h"
+
+#include "video/program.h"
+#include "video/framebuffer.h"
 
 namespace flat
 {

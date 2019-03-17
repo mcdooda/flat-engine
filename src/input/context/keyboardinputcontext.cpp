@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
-#include "keyboardinputcontext.h"
+
+#include "input/context/keyboardinputcontext.h"
 
 namespace flat
 {
@@ -30,7 +31,7 @@ KeyboardInputContext& KeyboardInputContext::operator=(const KeyboardInputContext
 	return *this;
 }
 
-void KeyboardInputContext::addEvent(const SDL_Event& event)
+bool KeyboardInputContext::addEvent(const SDL_Event& event)
 {
 	switch (event.type)
 	{
@@ -41,7 +42,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 			m_justPressedKeys[event.key.keysym.scancode] = true;
 			keyJustPressed(event.key.keysym.scancode);
 		}
-		break;
+		return true;
 
 	case SDL_KEYUP:
 		if (m_justReleasedKeys.isInRange(event.key.keysym.scancode))
@@ -50,12 +51,14 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 			m_justReleasedKeys[event.key.keysym.scancode] = true;
 			keyJustReleased(event.key.keysym.scancode);
 		}
-		break;
+		return true;
 
 	case SDL_TEXTINPUT:
 		textEdited(event.text.text);
-		break;
+		return true;
 	}
+
+	return false;
 }
 
 void KeyboardInputContext::clearFrameEvents()

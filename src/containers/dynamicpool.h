@@ -2,7 +2,8 @@
 #define FLAT_CONTAINERS_DYNAMICPOOL_H
 
 #include <cstdlib>
-#include "../debug/assert.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {
@@ -33,10 +34,10 @@ public:
 
 	void operator=(const DynamicPool&) = delete;
 
-	template <class T, unsigned int Size>
+	template <class T, unsigned int StaticSize>
 	void init()
 	{
-		init(sizeof(T), Size);
+		init(sizeof(T), StaticSize);
 	}
 
 	void init(size_t objectSize, size_t size)
@@ -65,7 +66,7 @@ public:
 		FLAT_ASSERT(m_head != nullptr);
 		T* object = reinterpret_cast<T*>(m_head);
 		m_head = *reinterpret_cast<void**>(m_head);
-		FLAT_DEBUG_ONLY(memset(object, FLAT_INIT_VALUE, sizeof(T));)
+		FLAT_DEBUG_ONLY(std::memset(object, FLAT_INIT_VALUE, sizeof(T));)
 		new (object) T(constructorArgs...);
 		FLAT_DEBUG_ONLY(++m_numAllocatedObjects;)
 		return object;
@@ -79,7 +80,7 @@ public:
 		void* entry = reinterpret_cast<void*>(object);
 		FLAT_ASSERT(indexOf(entry) >= 0);
 		object->~T();
-		FLAT_DEBUG_ONLY(memset(object, FLAT_WIPE_VALUE, sizeof(T));)
+		FLAT_DEBUG_ONLY(std::memset(object, FLAT_WIPE_VALUE, sizeof(T));)
 		setNext(entry, m_head);
 		m_head = entry;
 		FLAT_DEBUG_ONLY(--m_numAllocatedObjects;)

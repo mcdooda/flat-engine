@@ -1,14 +1,16 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
-#include "widget.h"
-#include "rootwidget.h"
-#include "layouts/fixedlayout.h"
-#include "../../render/rendersettings.h"
-#include "../../video/color.h"
-#include "../../video/texture.h"
-#include "../../memory/memory.h"
-#include "../../debug/helpers.h"
+
+#include "sharp/ui/widget.h"
+#include "sharp/ui/rootwidget.h"
+#include "sharp/ui/layouts/fixedlayout.h"
+
+#include "render/rendersettings.h"
+#include "video/color.h"
+#include "video/texture.h"
+#include "memory/memory.h"
+#include "debug/helpers.h"
 
 namespace flat
 {
@@ -629,6 +631,9 @@ Widget* Widget::getFixedLayoutAncestor()
 		return nullptr;
 
 	Widget* parent = m_parent.lock().get();
+
+	if (parent->isRoot())
+		return this;
 
 	if (parent->hasFixedSize())
 		return parent;

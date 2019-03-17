@@ -1,7 +1,7 @@
 #ifndef FLAT_LUA_UNIQUELUAREFERENCE_H
 #define FLAT_LUA_UNIQUELUAREFERENCE_H
 
-#include "luareference.h"
+#include "lua/luareference.h"
 
 namespace flat
 {

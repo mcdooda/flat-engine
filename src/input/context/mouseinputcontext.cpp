@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 
-#include "mouseinputcontext.h"
+#include "input/context/mouseinputcontext.h"
 
-#include "../../video/window.h"
+#include "video/window.h"
 
 namespace flat
 {
@@ -14,11 +14,10 @@ namespace context
 MouseInputContext::MouseInputContext(video::Window* videoWindow) :
 	m_videoWindow(videoWindow)
 {
-	m_pressedButtons.fill(false);
 	clearAllEvents();
 }
 
-void MouseInputContext::addEvent(const SDL_Event& event)
+bool MouseInputContext::addEvent(const SDL_Event& event)
 {
 	switch (event.type)
 	{
@@ -33,7 +32,7 @@ void MouseInputContext::addEvent(const SDL_Event& event)
 		{
 			m_justDoubleClickedButtons[event.button.button] = true;
 		}
-		break;
+		return true;
 
 	case SDL_MOUSEBUTTONUP:
 		m_position.x = static_cast<float>(event.button.x);
@@ -42,20 +41,22 @@ void MouseInputContext::addEvent(const SDL_Event& event)
 		m_pressedButtons[event.button.button] = false;
 		//FLAT_ASSERT(!m_justReleasedButtons[event.button.button]);
 		m_justReleasedButtons[event.button.button] = true;
-		break;
+		return true;
 
 	case SDL_MOUSEMOTION:
 		m_position.x = static_cast<float>(event.button.x);
 		m_position.y = m_videoWindow->getSize().y - event.button.y;
 		m_moved = true;
-		break;
+		return true;
 
 	case SDL_MOUSEWHEEL:
 		m_wheelMove.x = static_cast<float>(event.wheel.x);
 		m_wheelMove.y = static_cast<float>(event.wheel.y);
 		m_wheelMoved = true;
-		break;
+		return true;
 	}
+
+	return false;
 }
 
 void MouseInputContext::clearFrameEvents()

@@ -2,8 +2,9 @@
 #define FLAT_SHARP_UI_LUA_H
 
 #include <memory>
-#include "../../../misc/slot.h"
-#include "../../../misc/lua/vector2.h"
+
+#include "misc/slot.h"
+#include "misc/lua/vector2.h"
 #include "lua/push.h"
 
 struct lua_State;

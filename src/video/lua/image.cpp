@@ -1,6 +1,8 @@
 #include <lua5.3/lua.hpp>
-#include "../../flat/game.h"
-#include "image.h"
+
+#include "video/lua/image.h"
+
+#include "flat/game.h"
 
 namespace flat
 {

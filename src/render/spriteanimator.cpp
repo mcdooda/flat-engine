@@ -1,9 +1,11 @@
 #include <cmath>
 #include <iostream>
-#include "spriteanimator.h"
-#include "basesprite.h"
-#include "../misc/aabb2.h"
-#include "../video/filetexture.h"
+
+#include "render/spriteanimator.h"
+#include "render/basesprite.h"
+
+#include "misc/aabb2.h"
+#include "video/filetexture.h"
 
 namespace flat
 {

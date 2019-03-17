@@ -2,8 +2,9 @@
 #define FLAT_CONTAINERS_POOL_H
 
 #include <array>
-#include "../memory/memory.h"
-#include "../debug/assert.h"
+
+#include "memory/memory.h"
+#include "debug/assert.h"
 
 namespace flat
 {
@@ -18,14 +19,14 @@ union alignas(std::max(alignof(T), alignof(PoolEntry<T>*))) PoolEntry
 	PoolEntry<T>* next;
 };
 
-template <class T, unsigned int Size>
-class Pool : public std::array<PoolEntry<T>, Size>
+template <class T, unsigned int StaticSize>
+class Pool : public std::array<PoolEntry<T>, StaticSize>
 {
 public:
 	Pool()
 		FLAT_DEBUG_ONLY(: m_numAllocatedObjects(0))
 	{
-		for (unsigned int i = 0; i < Size - 1; ++i)
+		for (unsigned int i = 0; i < StaticSize - 1; ++i)
 		{
 			setNext((*this)[i], (*this)[i + 1]);
 		}
@@ -43,7 +44,7 @@ public:
 	template <typename... ConstructorArgs>
 	T* create(ConstructorArgs... constructorArgs)
 	{
-		FLAT_ASSERT(m_numAllocatedObjects < Size);
+		FLAT_ASSERT(m_numAllocatedObjects < StaticSize);
 		FLAT_ASSERT(m_head != nullptr);
 		T* object = reinterpret_cast<T*>(&m_head->objectData);
 		m_head = m_head->next;
@@ -80,7 +81,7 @@ private:
 
 	inline PoolEntry<T>& last()
 	{
-		return (*this)[Size - 1];
+		return (*this)[StaticSize - 1];
 	}
 
 	std::ptrdiff_t indexOf(const PoolEntry<T>& entry)

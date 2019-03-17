@@ -1,8 +1,9 @@
 #include <cstdlib>
-#include "machine.h"
 
-#include "state.h"
-#include "../memory/memory.h"
+#include "state/machine.h"
+#include "state/state.h"
+
+#include "memory/memory.h"
 
 namespace flat
 {

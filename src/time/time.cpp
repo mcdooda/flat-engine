@@ -1,7 +1,8 @@
 #include <algorithm>
 #include <SDL2/SDL.h>
-#include "time.h"
-#include "clock.h"
+
+#include "time/time.h"
+#include "time/clock.h"
 
 namespace flat
 {
@@ -59,7 +60,6 @@ std::shared_ptr<Clock> Time::newClock()
 	m_clocks.emplace_back(clock);
 	return clock;
 }
-
 
 void Time::updateClocks()
 {

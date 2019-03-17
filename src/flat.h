@@ -40,6 +40,10 @@
 // state
 #include "state/state.h"
 
+// file
+#include "file/directory.h"
+#include "file/regularfile.h"
+
 // lua
 #include "lua/lua.h"
 #include "lua/debug.h"
@@ -62,6 +66,7 @@
 // containers
 #include "containers/pool.h"
 #include "containers/dynamicpool.h"
+#include "containers/hybridarray.h"
 
 // resource
 #include "resource/sharedresourcemanager.h"

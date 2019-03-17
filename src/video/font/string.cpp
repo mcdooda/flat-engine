@@ -1,8 +1,7 @@
 #include <iterator>
 #include <algorithm>
-#include "string.h"
 
-#include <iostream>
+#include "video/font/string.h"
 
 namespace flat
 {

@@ -4,15 +4,16 @@ NodeRepository.__index = NodeRepository
 function NodeRepository:new(nodeType)
     local o = setmetatable({
         nodeType = nodeType,
-        nodeClasses = {}
+        nodeClasses = {},
+        compounds = {}
     }, self)
     -- all repositories include the common nodes
-    o:load('common', nodeType, flat.require)
-    o:load(nodeType, nodeType, flat.require)
+    o:loadNodes('common', nodeType, flat.require)
+    o:loadNodes(nodeType, nodeType, flat.require)
     return o
 end
 
-function NodeRepository:load(nodeTypeRepository, nodeType, require)
+function NodeRepository:loadNodes(nodeTypeRepository, nodeType, require)
     local nodePaths = flat.safeRequire(require, 'graph/' .. nodeTypeRepository .. '/' .. nodeTypeRepository .. 'noderepository')
     if nodePaths then
         for i = 1, #nodePaths do
@@ -32,8 +33,28 @@ function NodeRepository:load(nodeTypeRepository, nodeType, require)
     end
 end
 
+function NodeRepository:loadCompounds(nodeType, root)
+    local compoundDirectory = flat.Directory(root)
+    if compoundDirectory then
+        compoundDirectory:eachSubFileRecursive(function(file)
+            if file:isRegularFile() and file:getFullExtension() == '.graph.lua' then
+                local compoundName = file:getShortStem()
+                local compoundPath = file:getParentPath() .. '/' .. compoundName
+                self.compounds[#self.compounds + 1] = {
+                    name = compoundName,
+                    path = compoundPath
+                }
+            end
+        end)
+    end
+end
+
 function NodeRepository:getNodeClasses()
     return self.nodeClasses
+end
+
+function NodeRepository:getCompounds()
+    return self.compounds
 end
 
 function NodeRepository:importRepository(other)

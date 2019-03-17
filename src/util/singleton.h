@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../debug/assert.h"
+#include "debug/assert.h"
 
 namespace flat
 {

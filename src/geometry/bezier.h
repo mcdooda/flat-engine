@@ -2,7 +2,8 @@
 #define FLAT_GEOMETRY_BEZIER_H
 
 #include <vector>
-#include "../misc/vector.h"
+
+#include "misc/vector.h"
 
 namespace flat
 {

@@ -1,8 +1,9 @@
 #ifndef FLAT_STATE_AGENT_H
 #define FLAT_STATE_AGENT_H
 
-#include "machine.h"
-#include "../util/convertible.h"
+#include "state/machine.h"
+
+#include "util/convertible.h"
 
 namespace flat
 {

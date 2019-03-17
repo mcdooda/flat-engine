@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <functional>
-#include "uniqueluareference.h"
-#include "../misc/slot.h"
+
+#include "lua/uniqueluareference.h"
+
+#include "misc/slot.h"
 
 namespace flat
 {

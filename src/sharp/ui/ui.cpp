@@ -1,6 +1,7 @@
-#include "ui.h"
-#include "lua/ui.h"
-#include "../../flat.h"
+#include "sharp/ui/ui.h"
+#include "sharp/ui/lua/ui.h"
+
+#include "flat.h"
 
 namespace flat
 {

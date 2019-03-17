@@ -1,5 +1,5 @@
-#include "view.h"
-#include "window.h"
+#include "video/view.h"
+#include "video/window.h"
 
 namespace flat
 {

@@ -1,7 +1,7 @@
 #ifndef FLAT_SHARP_NOTITY_NOTIFY_H
 #define FLAT_SHARP_NOTITY_NOTIFY_H
 
-#include "../../lua/uniqueluareference.h"
+#include "lua/uniqueluareference.h"
 
 namespace flat
 {

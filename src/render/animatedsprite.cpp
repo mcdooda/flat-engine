@@ -1,7 +1,9 @@
 #include <cmath>
-#include "animatedsprite.h"
-#include "../misc/aabb2.h"
-#include "../video/filetexture.h"
+
+#include "render/animatedsprite.h"
+
+#include "misc/aabb2.h"
+#include "video/filetexture.h"
 
 namespace flat
 {

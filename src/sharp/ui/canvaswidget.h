@@ -1,10 +1,11 @@
 #ifndef FLAT_SHARP_UI_CANVASWIDGET_H
 #define FLAT_SHARP_UI_CANVASWIDGET_H
 
-#include "widget.h"
-#include "layouts/fixedlayout.h"
-#include "../../video/framebuffer.h"
-#include "../../render/programsettings.h"
+#include "sharp/ui/widget.h"
+#include "sharp/ui/layouts/fixedlayout.h"
+
+#include "video/framebuffer.h"
+#include "render/programsettings.h"
 
 namespace flat
 {

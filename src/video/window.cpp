@@ -1,7 +1,9 @@
 #include <iostream>
 #include <GL/glew.h>
-#include <flat.h>
-#include "window.h"
+
+#include "video/window.h"
+
+#include "flat.h"
 
 namespace flat
 {

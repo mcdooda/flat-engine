@@ -235,7 +235,7 @@ function StateMachineDescription:debugPrint()
             print '\tOut rules:'
             for i = 1, #state.outRules do
                 local rule = state.outRules[i]
-                print('', '', rule.name)
+                print('', '', rule.name, '->', rule.outState.name)
             end
         end
         print '\tIn transitions:'

@@ -24,7 +24,7 @@ class WindowInputContext
 		~WindowInputContext() = default;
 		WindowInputContext& operator=(const WindowInputContext&) = default;
 
-		void addEvent(const SDL_Event& event);
+		bool addEvent(const SDL_Event& event);
 		void clearFrameEvents();
 		void clearAllEvents();
 

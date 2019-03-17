@@ -1,7 +1,8 @@
-#include "timer.h"
-#include "../timer.h"
-#include "../timercontainer.h"
-#include "../../../flat.h"
+#include "lua/timer/lua/timer.h"
+#include "lua/timer/timer.h"
+#include "lua/timer/timercontainer.h"
+
+#include "flat.h"
 
 namespace flat
 {

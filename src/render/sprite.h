@@ -1,7 +1,7 @@
 #ifndef FLAT_RENDER_SPRITE_H
 #define FLAT_RENDER_SPRITE_H
 
-#include "basesprite.h"
+#include "render/basesprite.h"
 
 namespace flat
 {

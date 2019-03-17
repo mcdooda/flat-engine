@@ -1,11 +1,12 @@
-#ifndef FLAT_VIDEO_FONT_H
-#define FLAT_VIDEO_FONT_H
+#ifndef FLAT_VIDEO_FONT_FONT_H
+#define FLAT_VIDEO_FONT_FONT_H
 
 #include <array>
 #include <string>
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
-#include "../../misc/vector.h"
+
+#include "misc/vector.h"
 
 namespace flat
 {
@@ -66,6 +67,6 @@ class Font
 } // video
 } // flat
 
-#endif // FLAT_VIDEO_FONT_H
+#endif // FLAT_VIDEO_FONT_FONT_H
 
 

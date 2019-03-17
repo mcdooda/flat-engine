@@ -1,10 +1,11 @@
-#include "profiler.h"
+#ifdef FLAT_PROFILER_ENABLED
 
-#include "binarywriter.h"
-#include "profilersection.h"
+#include "profiler/profiler.h"
+#include "profiler/binarywriter.h"
+#include "profiler/profilersection.h"
 
-#include "../debug/assert.h"
-#include "../memory/memory.h"
+#include "debug/assert.h"
+#include "memory/memory.h"
 
 namespace flat
 {
@@ -65,4 +66,4 @@ void Profiler::popStartedSections()
 } // profiler
 } // flat
 
-
+#endif // FLAT_PROFILER_ENABLED

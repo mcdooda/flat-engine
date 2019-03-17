@@ -6,6 +6,7 @@ local TransitionNode = InnerGraphNode:inherit 'Transition'
 local constantPinsCount = 1
 
 function TransitionNode:init()
+    print 'TransitionNode'
     InnerGraphNode.init(self)
     self.innerGraph.nodeType = 'script'
 end

@@ -1,14 +1,14 @@
-#include "canvaswidget.h"
-#include "rootwidget.h"
-#include "textinputwidget.h"
-#include "numberinputwidget.h"
-#include "textwidget.h"
-#include "widgetfactory.h"
-#include "../../flat/game.h"
+#include "sharp/ui/widgetfactory.h"
+#include "sharp/ui/canvaswidget.h"
+#include "sharp/ui/rootwidget.h"
+#include "sharp/ui/textinputwidget.h"
+#include "sharp/ui/numberinputwidget.h"
+#include "sharp/ui/textwidget.h"
+#include "sharp/ui/layouts/fixedlayout.h"
+#include "sharp/ui/layouts/lineflowlayout.h"
+#include "sharp/ui/layouts/columnflowlayout.h"
 
-#include "layouts/fixedlayout.h"
-#include "layouts/lineflowlayout.h"
-#include "layouts/columnflowlayout.h"
+#include "flat/game.h"
 
 namespace flat
 {

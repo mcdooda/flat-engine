@@ -1,8 +1,9 @@
-#include "types.h"
-#include "debug.h"
-#include "lua.h"
-#include "../debug/assert.h"
-#include "../flat.h"
+#include "lua/types.h"
+#include "lua/debug.h"
+#include "lua/lua.h"
+
+#include "flat.h"
+#include "debug/assert.h"
 
 namespace flat
 {
@@ -44,17 +45,17 @@ int open(lua_State* L)
 void registerNativeType(lua_State* L, int type, const char* typeName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	// the flat.types table is supposed to be at the top of the stack
+	luaL_checktype(L, -1, LUA_TTABLE); // the flat.types table is supposed to be at the top of the stack
 	lua_pushinteger(L, type);
 	lua_setfield(L, -2, typeName);
 }
 
-void registerType(lua_State* L, int type, const char* typeName)
+void registerType(lua_State* L, size_t newTypeHash, const char* typeName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	lua_getglobal(L, "flat");
 	lua_getfield(L, -1, "types");
-	lua_pushinteger(L, type);
+	lua_pushinteger(L, newTypeHash);
 	lua_setfield(L, -2, typeName);
 	lua_pop(L, 2);
 }
@@ -75,17 +76,23 @@ int l_flat_type(lua_State* L)
 
 int l_flat_typetostring(lua_State* L)
 {
-	int type = static_cast<int>(luaL_checkinteger(L, 1));
+	size_t type = static_cast<size_t>(luaL_checkinteger(L, 1));
 	if (type >= 0 && type < LUA_NUMTAGS)
 	{
-		const char* typeName = lua_typename(L, type);
+		const char* typeName = lua_typename(L, static_cast<int>(type));
 		lua_pushstring(L, typeName);
 		return 1;
 	}
 	Flat& flat = lua::getFlat(L);
 	const char* typeName = flat.lua->getTypeName(type);
-	FLAT_ASSERT(typeName != nullptr);
-	lua_pushstring(L, typeName);
+	if (typeName != nullptr)
+	{
+		lua_pushstring(L, typeName);
+	}
+	else
+	{
+		lua_pushfstring(L, "(Unknown type %d)", type);
+	}
 	return 1;
 }
 

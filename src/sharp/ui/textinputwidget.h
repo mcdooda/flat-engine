@@ -1,10 +1,10 @@
 #ifndef FLAT_SHARP_UI_TEXTINPUTWIDGET_H
 #define FLAT_SHARP_UI_TEXTINPUTWIDGET_H
 
-#include "focusablewidget.h"
-#include "textwidget.h"
+#include "sharp/ui/focusablewidget.h"
+#include "sharp/ui/textwidget.h"
 
-#include "../../input/context/inputcontext.h"
+#include "input/context/inputcontext.h"
 
 #pragma warning(disable: 4250)
 

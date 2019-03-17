@@ -7,7 +7,6 @@
 #define KMOD(k) KMOD_##k
 #define C(c) SDLK_##c
 
-
 namespace flat
 {
 namespace input

@@ -1,11 +1,11 @@
 #include <cctype>
-
-#include "numberinputwidget.h"
-
-#include "../../flat.h"
+#include <cmath>
 #include <limits>
 #include <sstream>
-#include <cmath>
+
+#include "sharp/ui/numberinputwidget.h"
+
+#include "flat.h"
 
 namespace flat
 {

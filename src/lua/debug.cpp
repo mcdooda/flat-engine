@@ -2,9 +2,11 @@
 
 #include <iostream>
 #include <lua5.3/lua.hpp>
-#include "debug.h"
-#include "lua.h"
-#include "../debug/assert.h"
+
+#include "lua/debug.h"
+#include "lua/lua.h"
+
+#include "debug/assert.h"
 
 namespace flat
 {
