@@ -85,8 +85,8 @@ bool TextInputWidget::onMouseDown(Widget* widget, bool& eventHandled)
 		unselect();
 	}
 	auto& mouse = m_flat.input->mouse;
-	const float mouseX = getRelativePosition(mouse->getPosition()).x;
-	moveCursorAt(getCursorIndexFromPosition(mouseX));
+	const flat::Vector2 pos = getRelativePosition(mouse->getPosition());
+	moveCursorAt(getCursorIndexFromPosition(pos));
 	if (mouse->isJustDoubleClicked(M(LEFT)))
 	{
 		moveCursorAt(nextWordFrom(m_cursorIndex));
@@ -101,8 +101,8 @@ bool TextInputWidget::onMouseMove(Widget* widget, bool& eventHandled)
 	if (hasFocus() && mouse->isPressed(M(LEFT)))
 	{
 		eventHandled = true;
-		const float mouseX = getRelativePosition(mouse->getPosition()).x;
-		m_cursorIndex = getCursorIndexFromPosition(mouseX);
+		const flat::Vector2 pos = getRelativePosition(mouse->getPosition());
+		m_cursorIndex = getCursorIndexFromPosition(pos);
 		selectTo(m_selectionIndex);
 	}
 	return true;
@@ -166,8 +166,15 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 	}
 	else if (character == C(RETURN) || character == C(KP_ENTER))
 	{
-		unselect();
-		submit(this);
+		if (shiftPressed)
+		{
+			changeSelectedText("\n");
+		}
+		else
+		{
+			unselect();
+			submit(this);
+		}
 	}
 	else
 	{
@@ -204,6 +211,25 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 			}
 		}
 		else if (character == C(RIGHT))
+		{
+			if (ctrlPressed)
+			{
+				moveCursorAt(nextWordFrom(m_cursorIndex));
+			}
+			else
+			{
+				if (hasSelectedText() && !shiftPressed)
+				{
+					m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
+					unselect();
+				}
+				else
+				{
+					moveCursor(1);
+				}
+			}
+		}
+		else if (character == C(DOWN))
 		{
 			if (ctrlPressed)
 			{
@@ -269,8 +295,8 @@ void TextInputWidget::selectTo(CursorIndex to)
 	FLAT_ASSERT(to >= 0 && to <= getText().size())
 	m_selectionIndex = to;
 	setColor(0u, static_cast<unsigned int>(getText().size()), getTextColor());
-	unsigned int first = static_cast<unsigned int>(std::min(m_selectionIndex, m_cursorIndex));
-	unsigned int last = static_cast<unsigned int>(std::max(m_selectionIndex, m_cursorIndex));
+	const unsigned int first = static_cast<unsigned int>(std::min(m_selectionIndex, m_cursorIndex));
+	const unsigned int last = static_cast<unsigned int>(std::max(m_selectionIndex, m_cursorIndex));
 	setColor(first, last, video::Color::WHITE);
 }
 
@@ -316,14 +342,14 @@ std::string TextInputWidget::getSelectedText() const
 TextInputWidget::CursorIndex TextInputWidget::nextWordFrom(CursorIndex index) const
 {
 	const std::string& text = getText();
-	CursorIndex nextSpaceIndex = text.find_first_of(" ", index);
-	if (nextSpaceIndex == index)
+	CursorIndex nextWordIndex = text.find_first_of(" \n", index);
+	if (nextWordIndex == index)
 	{
 		return index + 1;
 	}
-	else if (nextSpaceIndex != std::string::npos)
+	else if (nextWordIndex != std::string::npos)
 	{
-		return nextSpaceIndex;
+		return nextWordIndex;
 	}
 	else
 	{
@@ -335,7 +361,7 @@ TextInputWidget::CursorIndex TextInputWidget::previousWordFrom(CursorIndex index
 {
 	if (index > 0)
 	{
-		CursorIndex previousSpaceIndex = getText().find_last_of(" ", index - 1) + 1;
+		CursorIndex previousSpaceIndex = getText().find_last_of(" \n", index - 1) + 1;
 		if (previousSpaceIndex > 0 && previousSpaceIndex == index)
 		{
 			return index - 1;
@@ -353,65 +379,96 @@ bool TextInputWidget::hasSelectedText()
 	return m_cursorIndex != m_selectionIndex;
 }
 
-float TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
+flat::Vector2 TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
 {
-	const size_t textLength = getText().size();
+	const std::string& text = getText();
+	const size_t textLength = text.size();
 	FLAT_ASSERT_MSG(0 <= cursorIndex && cursorIndex <= textLength, "the cursor index is out of the string's range");
+	if (text.size() == 0)
+		return { 0, String::getComputedSize().y};
+	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
+	const float characterHeight = getFont()->getAtlasSize().y;
 	const std::vector<CharacterVertex>& vertices = getVertices();
-	if (cursorIndex == 0)
-	{
-		return 0.f;
-	}
-	else
-	{
-		return vertices[(cursorIndex - 1) * 6 + 1].x;
-	}
+	return { vertices[(cursorIndex - nbLines) * 6].x, vertices[(cursorIndex - nbLines) * 6].y};
 }
 
-TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(float x) const
+flat::Vector2 TextInputWidget::getCursorEndingFromIndex(CursorIndex cursorIndex) const
 {
-	const size_t textLength = getText().size();
+	const std::string& text = getText();
+	const size_t textLength = text.size();
+	FLAT_ASSERT_MSG(0 <= cursorIndex && cursorIndex <= textLength, "the cursor index is out of the string's range");
+	if (cursorIndex == textLength)
+		cursorIndex--;
+	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
+	const float characterHeight = getFont()->getAtlasSize().y;
+	const std::vector<CharacterVertex>& vertices = getVertices();
+	return { vertices[(cursorIndex - nbLines) * 6 + 1].x, vertices[(cursorIndex - nbLines) * 6].y };
+}
+
+TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(flat::Vector2 pos) const
+{
+	const std::string& text = getText();
+	const size_t textLength = text.size();
+	const std::vector<CharacterVertex>& vertices = getVertices();
+	CursorIndex result = 0;
 	if (textLength == 0)
 	{
-		return 0;
+		return result;
 	}
 
-	const std::vector<CharacterVertex>& vertices = getVertices();
-	if (x < vertices[0].x)
+	int y = (String::getComputedSize().y - pos.y) / getFont()->getAtlasSize().y;
+	if (y < 0)
+		y = 0;
+	size_t startX = 0;
+	size_t endX = 0;
+	while (y > 0)
 	{
-		return 0;
+		int next = text.find('\n', startX + 1);
+		if (next != std::string::npos)
+			startX = next;
+		y--;
 	}
-	else if (x > vertices[vertices.size() - 1].x)
+
+	endX = text.find('\n', startX + 1);
+	if (endX == std::string::npos)
+		endX = textLength;
+
+	if (pos.x < getCursorPositionFromIndex(startX).x)
+	{ 
+		result = startX;
+	}
+	else if (pos.x > String::getComputedSize().x)
 	{
-		return textLength;
+		result = endX;
 	}
 	else
 	{
-		CursorIndex minIndex = 0;
-		CursorIndex maxIndex = textLength;
-		while (minIndex + 1 < maxIndex)
+		size_t minXIndex = startX;
+		size_t maxXIndex = endX;
+		while (minXIndex + 1 < maxXIndex)
 		{
-			CursorIndex centerIndex = (minIndex + maxIndex) / 2;
-			float centerCharacterPositionX = getCursorPositionFromIndex(centerIndex);
-			if (x < centerCharacterPositionX)
+			size_t centerIndex = (minXIndex + maxXIndex) / 2;
+			float centerCharacterPositionX = getCursorPositionFromIndex(centerIndex).x;
+			if (pos.x < centerCharacterPositionX)
 			{
-				maxIndex = centerIndex;
+				maxXIndex = centerIndex;
 			}
 			else
 			{
-				minIndex = centerIndex;
+				minXIndex = centerIndex;
 			}
 		}
 
-		if (x - getCursorPositionFromIndex(minIndex) < getCursorPositionFromIndex(maxIndex) - x)
+		if (pos.x - getCursorPositionFromIndex(minXIndex).x < getCursorPositionFromIndex(maxXIndex).x - pos.x)
 		{
-			return minIndex;
+			return minXIndex;
 		}
 		else
 		{
-			return maxIndex;
+			return maxXIndex;
 		}
 	}
+	return result;
 }
 
 void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, CursorIndex cursorIndex) const
@@ -430,11 +487,11 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 	FLAT_ASSERT(font != nullptr);
 
 	const float characterHeight = font->getAtlasSize().y;
-	const float cursorX = getCursorPositionFromIndex(cursorIndex);
+	const flat::Vector2 cursorPos = getCursorPositionFromIndex(cursorIndex);
 
 	std::array<String::CharacterVertex, 2> cursorVertices = {
-		String::CharacterVertex(cursorX, 0.f),
-		String::CharacterVertex(cursorX, characterHeight)
+		String::CharacterVertex(cursorPos.x, cursorPos.y),
+		String::CharacterVertex(cursorPos.x, cursorPos.y - characterHeight)
 	};
 
 	glLineWidth(1);
@@ -448,6 +505,15 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 	if (!hasFocus() || first == last)
 		return;
 
+	if (first > last)
+	{
+		CursorIndex tmp = first;
+		first = last;
+		last = tmp;
+	}
+
+	last--;
+
 	renderSettings.modelMatrixUniform.set(m_transform);
 
 	renderSettings.colorUniform.set(video::Color(uint32_t(0x4286f4FF)));
@@ -458,20 +524,41 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 	const video::font::Font* font = getFont().get();
 	FLAT_ASSERT(font != nullptr);
 
+	const std::string& text = getText();
 	const float characterHeight = font->getAtlasSize().y;
-	const float firstX = getCursorPositionFromIndex(first);
-	const float lastX = getCursorPositionFromIndex(last);
 
-	std::array<String::CharacterVertex, 6> cursorVertices = {
-		String::CharacterVertex(firstX, 0.f),
-		String::CharacterVertex(lastX, 0.f),
-		String::CharacterVertex(firstX, characterHeight),
-		String::CharacterVertex(firstX, characterHeight),
-		String::CharacterVertex(lastX, 0.f),
-		String::CharacterVertex(lastX, characterHeight)
-	};
+	Vector2 firstPos = getCursorPositionFromIndex(first);
+	Vector2 lastPos = getCursorEndingFromIndex(last);
 
 	glLineWidth(1);
+	const std::vector<String::CharacterVertex>& vertices = getVertices();
+	while (firstPos.y != lastPos.y)
+	{
+		size_t pos = text.find('\n', first);
+		Vector2 lineEnding = getCursorEndingFromIndex(pos - 1);
+		std::array<String::CharacterVertex, 6> cursorVertices = {
+			String::CharacterVertex(firstPos.x, firstPos.y),
+			String::CharacterVertex(lineEnding.x + 3, firstPos.y),
+			String::CharacterVertex(firstPos.x, firstPos.y - characterHeight),
+			String::CharacterVertex(firstPos.x, firstPos.y - characterHeight),
+			String::CharacterVertex(lineEnding.x + 3, firstPos.y),
+			String::CharacterVertex(lineEnding.x + 3, firstPos.y - characterHeight)
+		};
+		first = pos + 1;
+		firstPos = getCursorPositionFromIndex(first);
+
+		glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
+		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cursorVertices.size()));
+	}
+	
+	std::array<String::CharacterVertex, 6> cursorVertices = {
+		String::CharacterVertex(firstPos.x, firstPos.y),
+		String::CharacterVertex(lastPos.x, lastPos.y),
+		String::CharacterVertex(firstPos.x, firstPos.y - characterHeight),
+		String::CharacterVertex(firstPos.x, firstPos.y - characterHeight),
+		String::CharacterVertex(lastPos.x, lastPos.y),
+		String::CharacterVertex(lastPos.x, firstPos.y - characterHeight)
+	};
 
 	glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
 	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cursorVertices.size()));

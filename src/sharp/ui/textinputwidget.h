@@ -62,8 +62,9 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		CursorIndex nextWordFrom(CursorIndex index) const;
 		CursorIndex previousWordFrom(CursorIndex index) const;
 
-		float getCursorPositionFromIndex(CursorIndex cursorIndex) const;
-		CursorIndex getCursorIndexFromPosition(float x) const;
+		flat::Vector2 getCursorPositionFromIndex(CursorIndex cursorIndex) const;
+		flat::Vector2 getCursorEndingFromIndex(CursorIndex cursorIndex) const;
+		CursorIndex getCursorIndexFromPosition(flat::Vector2 pos) const;
 		void drawCursor(const render::RenderSettings& renderSettings, CursorIndex cursorIndex) const;
 		void drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const;
 

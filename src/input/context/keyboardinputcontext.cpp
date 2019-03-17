@@ -37,9 +37,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 	case SDL_KEYDOWN:
 		if ((!event.key.repeat || m_enableKeyRepeat) && m_justPressedKeys.isInRange(event.key.keysym.scancode))
 		{
-			//FLAT_ASSERT(!m_pressedKeys[event.key.keysym.scancode]);
 			m_pressedKeys[event.key.keysym.scancode] = true;
-			FLAT_ASSERT(!m_justPressedKeys[event.key.keysym.scancode]);
 			m_justPressedKeys[event.key.keysym.scancode] = true;
 			keyJustPressed(event.key.keysym.scancode);
 		}
@@ -48,9 +46,7 @@ void KeyboardInputContext::addEvent(const SDL_Event& event)
 	case SDL_KEYUP:
 		if (m_justReleasedKeys.isInRange(event.key.keysym.scancode))
 		{
-			FLAT_ASSERT(m_pressedKeys[event.key.keysym.scancode] == true);
 			m_pressedKeys[event.key.keysym.scancode] = false;
-			FLAT_ASSERT(!m_justReleasedKeys[event.key.keysym.scancode]);
 			m_justReleasedKeys[event.key.keysym.scancode] = true;
 			keyJustReleased(event.key.keysym.scancode);
 		}
