@@ -41,8 +41,8 @@ class InputContext
 		inline const WindowInputContext& getWindowInputContext() const { return m_windowInputContext; }
 
 		inline int getNumGamepadInputContexts() const { return static_cast<int>(m_gamepadInputContexts.size()); }
-		inline GamepadInputContext& getGamepadInputContext(GamepadIndex index) { return m_gamepadInputContexts[index]; }
-		inline const GamepadInputContext& getGamepadInputContext(GamepadIndex index) const { return m_gamepadInputContexts[index]; }
+		inline GamepadInputContext* getGamepadInputContext(GamepadIndex index) { return index < m_gamepadInputContexts.size() ? &m_gamepadInputContexts[index] : nullptr; }
+		inline const GamepadInputContext* getGamepadInputContext(GamepadIndex index) const { return index < m_gamepadInputContexts.size() ? &m_gamepadInputContexts[index] : nullptr; }
 
 	private:
 		void initGamepads();
