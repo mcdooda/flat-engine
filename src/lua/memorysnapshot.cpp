@@ -22,9 +22,11 @@ int open(Lua& lua)
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 
 	static const luaL_Reg flat_lua_snapshot_lib_s[] = {
-		{"snapshot", l_flat_lua_snapshot_snapshot},
-		{"diff",     l_flat_lua_snapshot_diff},
-		{"monitor",  l_flat_lua_monitor},
+		{"snapshot",   l_flat_lua_snapshot_snapshot},
+		{"diff",       l_flat_lua_snapshot_diff},
+		{"references", l_flat_lua_snapshot_references},
+
+		{"monitor",    l_flat_lua_monitor},
 
 		{nullptr, nullptr}
 	};
@@ -56,6 +58,18 @@ int l_flat_lua_snapshot_diff(lua_State* L)
 	MemorySnapshot diff(snapshot1, snapshot2);
 	diff.writeToFile(diffFile);
 	diff.writeDigestToFile(diffFile);
+	return 0;
+}
+
+
+int l_flat_lua_snapshot_references(lua_State* L)
+{
+	const void* object = lua_topointer(L, 1);
+	const char* referencesFile = luaL_checkstring(L, 2);
+	MemorySnapshot snapshot(L);
+	MemorySnapshot references(snapshot, object);
+	references.writeToFile(referencesFile);
+	references.writeDigestToFile(referencesFile);
 	return 0;
 }
 
@@ -126,22 +140,40 @@ MemorySnapshot::MemorySnapshot(const MemorySnapshot& first, const MemorySnapshot
 	}
 }
 
+
+MemorySnapshot::MemorySnapshot(const MemorySnapshot& snapshot, const void* object)
+{
+	MarkedMap::const_iterator it = snapshot.m_markedMap.find(object);
+
+	if (it != snapshot.m_markedMap.end())
+	{
+		m_markedMap.insert(*it);
+	}
+}
+
 void MemorySnapshot::writeToFile(const std::string& fileName) const
 {
+	if (m_markedMap.empty())
+		return;
+
 	std::fstream f(fileName + ".lualeak", std::ios_base::out);
 
 	for (const std::pair<const void*, ObjectDescription>& markedObject : m_markedMap)
 	{
+		f << markedObject.second.value << " (" << markedObject.second.definition << "):\n";
 		for (const MarkSource& markSource : markedObject.second.sources)
 		{
-			f << '\t' << markSource.description;
+			f << "\t- " << markSource.description << '\n';
 		}
-		f << " = " << markedObject.second.value << " (" << markedObject.second.definition << ")\n";
+		f << "\n";
 	}
 }
 
 void MemorySnapshot::writeDigestToFile(const std::string& fileName) const
 {
+	if (m_markedMap.empty())
+		return;
+
 	std::unordered_map<std::string, std::pair<const void*, int>> digest;
 
 	for (const std::pair<const void*, ObjectDescription>& markedObject : m_markedMap)
@@ -214,7 +246,7 @@ bool MemorySnapshot::markPointer(lua_State* L, int index, MarkSource markSource)
 			typeName = lua_typename(L, type);
 		}
 		description.sources.push_back(markSource);
-		description.definition = std::string("(unknown definition for ") + typeName + ")";
+		description.definition = std::string("unknown definition for ") + typeName;
 		return false;
 	}
 }
