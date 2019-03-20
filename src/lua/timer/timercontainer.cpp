@@ -46,23 +46,37 @@ Timer* TimerContainer::add()
 
 bool TimerContainer::stop(Timer* timer)
 {
-	std::deque<Timer*>::iterator it = std::find(m_timers.begin(), m_timers.end(), timer);
-	if (it != m_timers.end())
+	if (!timer->getOnUpdate().isEmpty())
 	{
-		m_timerPool.destroy(*it);
-		*it = nullptr;
-		return true;
-	}
-	else
-	{
-		std::vector<Timer*>::iterator it = std::find(m_pendingTimers.begin(), m_pendingTimers.end(), timer);
-		if (it != m_pendingTimers.end())
+		std::vector<Timer*>::iterator it = std::find(m_frameTimers.begin(), m_frameTimers.end(), timer);
+		if (it != m_frameTimers.end())
 		{
 			m_timerPool.destroy(*it);
-			m_pendingTimers.erase(it);
+			*it = nullptr;
 			return true;
 		}
 		return false;
+	}
+	else
+	{
+		std::deque<Timer*>::iterator it = std::find(m_timers.begin(), m_timers.end(), timer);
+		if (it != m_timers.end())
+		{
+			m_timerPool.destroy(*it);
+			*it = nullptr;
+			return true;
+		}
+		else
+		{
+			std::vector<Timer*>::iterator it = std::find(m_pendingTimers.begin(), m_pendingTimers.end(), timer);
+			if (it != m_pendingTimers.end())
+			{
+				m_timerPool.destroy(*it);
+				m_pendingTimers.erase(it);
+				return true;
+			}
+			return false;
+		}
 	}
 }
 
@@ -137,27 +151,34 @@ void TimerContainer::updateTimers(lua_State* L)
 	for (std::vector<Timer*>::iterator it = m_frameTimers.begin(); it != m_frameTimers.end();)
 	{
 		Timer* timer = *it;
-		const float timeOut = timer->getTimeOut();
-		if (time >= timeOut)
+		if (timer != nullptr)
 		{
-			// update one last time before dying
-			callTimerUpdate(L, timer);
-			if (timer->getLoop())
+			const float timeOut = timer->getTimeOut();
+			if (time >= timeOut)
 			{
-				timer->setBeginTime(time);
-				it++;
+				// update one last time before dying
+				callTimerUpdate(L, timer);
+				if (timer->getLoop())
+				{
+					timer->setBeginTime(time);
+					it++;
+				}
+				else
+				{
+					callTimerEnd(L, timer);
+					m_timerPool.destroy(timer);
+					it = m_frameTimers.erase(it);
+				}
 			}
 			else
 			{
-				callTimerEnd(L, timer);
-				m_timerPool.destroy(timer);
-				it = m_frameTimers.erase(it);
+				callTimerUpdate(L, timer);
+				it++;
 			}
 		}
 		else
 		{
-			callTimerUpdate(L, timer);
-			it++;
+			it = m_frameTimers.erase(it);
 		}
 	}
 }
@@ -180,7 +201,7 @@ void TimerContainer::clearTimers()
 			m_timerPool.destroy(timer);
 		}
 	}
-	m_timers.clear();
+	m_frameTimers.clear();
 
 	for (Timer* timer : m_pendingTimers)
 	{
