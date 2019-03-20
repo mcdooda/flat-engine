@@ -206,11 +206,8 @@ void TimerContainer::callTimerUpdate(lua_State* L, Timer* timer)
 	const flat::lua::SharedLuaReference<LUA_TFUNCTION>& onUpdate = timer->getOnUpdate();
 	if (!onUpdate.isEmpty())
 	{
-		onUpdate.push(L);
-		timer::lua::pushTimer(L, timer);
 		const float elapsedTime = std::min(timer->getElapsedTime(), timer->getDuration());
-		lua_pushnumber(L, elapsedTime);
-		lua_call(L, 2, 0);
+		onUpdate.call(timer, elapsedTime);
 	}
 }
 
@@ -222,9 +219,7 @@ void TimerContainer::callTimerEnd(lua_State* L, Timer* timer)
 	const flat::lua::SharedLuaReference<LUA_TFUNCTION>& onEnd = timer->getOnEnd();
 	if (!onEnd.isEmpty())
 	{
-		onEnd.push(L);
-		timer::lua::pushTimer(L, timer);
-		lua_call(L, 1, 0);
+		onEnd.call(timer);
 	}
 }
 
