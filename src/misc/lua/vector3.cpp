@@ -31,10 +31,12 @@ int openVector3(Lua& lua)
 		{"__sub",         l_Vector3_sub},
 
 		{"__mul",         l_Vector3_mul},
+		{"__div",         l_Vector3_div},
 
 		{"reflect",       l_Vector3_reflect},
+		{"dot",           l_Vector3_dot},
 
-		{"__tostring",   l_Vector3_tostring},
+		{"__tostring",    l_Vector3_tostring},
 
 		{nullptr, nullptr}
 	};
@@ -152,11 +154,27 @@ int l_Vector3_mul(lua_State* L)
 	return 1;
 }
 
+int l_Vector3_div(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	float div = static_cast<float>(luaL_checknumber(L, 2));
+	pushVector3(L, vector3 / div);
+	return 1;
+}
+
 int l_Vector3_reflect(lua_State* L)
 {
 	Vector3& incident = getVector3(L, 1);
 	Vector3& normal = getVector3(L, 2);
 	pushVector3(L, flat::reflect(incident, normal));
+	return 1;
+}
+
+int l_Vector3_dot(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	Vector3& other = getVector3(L, 2);
+	lua_pushnumber(L, dot(vector3, other));
 	return 1;
 }
 

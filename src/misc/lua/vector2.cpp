@@ -30,8 +30,10 @@ int openVector2(Lua& lua)
 		{"__sub",         l_Vector2_sub},
 
 		{"__mul",         l_Vector2_mul},
+		{"__div",         l_Vector2_div},
 
 		{"reflect",       l_Vector2_reflect},
+		{"dot",           l_Vector2_dot},
 
 		{"__tostring",    l_Vector2_tostring},
 
@@ -136,11 +138,27 @@ int l_Vector2_mul(lua_State* L)
 	return 1;
 }
 
+int l_Vector2_div(lua_State* L)
+{
+	Vector2& vector2 = getVector2(L, 1);
+	float div = static_cast<float>(luaL_checknumber(L, 2));
+	pushVector2(L, vector2 / div);
+	return 1;
+}
+
 int l_Vector2_reflect(lua_State* L)
 {
 	Vector2& incident = getVector2(L, 1);
 	Vector2& normal = getVector2(L, 2);
 	pushVector2(L, flat::reflect(incident, normal));
+	return 1;
+}
+
+int l_Vector2_dot(lua_State* L)
+{
+	Vector2& vector2 = getVector2(L, 1);
+	Vector2& other = getVector2(L, 2);
+	lua_pushnumber(L, dot(vector2, other));
 	return 1;
 }
 
