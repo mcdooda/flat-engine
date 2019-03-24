@@ -17,6 +17,8 @@ int open(Lua& lua);
 
 int l_flat_lua_snapshot_snapshot(lua_State* L);
 int l_flat_lua_snapshot_diff(lua_State* L);
+int l_flat_lua_snapshot_references(lua_State* L);
+
 int l_flat_lua_monitor(lua_State* L);
 
 class MemorySnapshot
@@ -74,6 +76,7 @@ class MemorySnapshot
 		MemorySnapshot(lua_State* L);
 
 		MemorySnapshot(const MemorySnapshot& first, const MemorySnapshot& second);
+		MemorySnapshot(const MemorySnapshot& snapshot, const void* object);
 
 		void writeToFile(const std::string& fileName) const;
 		void writeDigestToFile(const std::string& fileName) const;

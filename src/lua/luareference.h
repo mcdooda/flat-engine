@@ -1,6 +1,7 @@
 #ifndef FLAT_LUA_LUAREFERENCE_H
 #define FLAT_LUA_LUAREFERENCE_H
 
+#include <iostream>
 #include <lua5.3/lua.hpp>
 
 #include "lua/debug.h"

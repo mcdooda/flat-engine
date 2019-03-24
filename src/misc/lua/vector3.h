@@ -32,8 +32,10 @@ int l_Vector3_add(lua_State* L);
 int l_Vector3_sub(lua_State* L);
 
 int l_Vector3_mul(lua_State* L);
+int l_Vector3_div(lua_State* L);
 
 int l_Vector3_reflect(lua_State* L);
+int l_Vector3_dot(lua_State* L);
 
 int l_Vector3_tostring(lua_State* L);
 

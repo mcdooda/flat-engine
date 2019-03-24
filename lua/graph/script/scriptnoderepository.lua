@@ -25,6 +25,7 @@ return {
     'math/vector2/vector2add',
     'math/vector2/vector2numbermultiply',
     'math/vector2/vector2length',
+    'math/vector2/vector2split',
 
     -- vector3
     'math/vector3/vector3reflect',
