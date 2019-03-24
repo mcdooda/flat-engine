@@ -18,6 +18,10 @@ using Vector2 = glm::vec2;
 using Vector3 = glm::vec3;
 using Vector4 = glm::vec4;
 
+using Vector2i = glm::ivec2;
+using Vector3i = glm::ivec3;
+using Vector4i = glm::ivec4;
+
 inline float vector2_angle(const Vector2& vector2)
 {
 	FLAT_ASSERT(vector2.x != 0 || vector2.y != 0);
@@ -35,6 +39,8 @@ inline T normalize(const T& vector)
 
 using glm::length;
 using glm::length2;
+using glm::distance;
+using glm::distance2;
 using glm::dot;
 using glm::cross;
 using glm::reflect;
