@@ -62,6 +62,18 @@ inline std::ostream& operator<<(std::ostream& out, const flat::Vector4& v)
 	return out << "Vector4(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
 }
 
+namespace std
+{
+	template <>
+	struct hash<flat::Vector2i>
+	{
+		size_t operator()(const flat::Vector2i& k) const
+		{
+			return k.x * 0x9e3779b9 + k.y;
+		}
+	};
+}
+
 #endif // FLAT_MISC_VECTOR_H
 
 
