@@ -386,7 +386,7 @@ flat::Vector2 TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorInde
 
 	const size_t textLength = text.size();
 	FLAT_ASSERT_MSG(0 <= cursorIndex && cursorIndex <= textLength, "the cursor index is out of the string's range");
-	if (cursorIndex == textLength || text[cursorIndex] == '\n')
+	if ((cursorIndex != 0 && cursorIndex == textLength) || text[cursorIndex] == '\n')
 		return getCursorEndingFromIndex(cursorIndex - 1);
 
 	if (text.size() == 0)
