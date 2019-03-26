@@ -22,7 +22,6 @@ NumberInputWidget::NumberInputWidget(Flat& flat, const std::shared_ptr<const vid
 	m_oldValue(m_min),
 	m_precision(1)
 {
-	Widget::setAllowScrollY(true);
 	mouseEnter.on(this, &NumberInputWidget::mouseEntered);
 	mouseLeave.on(this, &NumberInputWidget::mouseLeft);
 }
@@ -189,7 +188,7 @@ float NumberInputWidget::getValue() const
 	return value;
 }
 
-float NumberInputWidget::constraintValue(float f)
+float NumberInputWidget::constraintValue(float f) const
 {
 	float fixed = f;
 	if (fixed < m_min)

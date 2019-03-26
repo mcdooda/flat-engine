@@ -38,7 +38,7 @@ class NumberInputWidget : public TextInputWidget
 		static size_t getPrecision(float f);
 		static size_t getPrecision(const std::string& s);
 		static float computeSmallestStep(const std::string& text);
-		float constraintValue(float f);
+		float constraintValue(float f) const;
 		void submitFixedValue();
 		bool keyJustPressed(input::Key key) override;
 		bool textEdited(const std::string& text) override;

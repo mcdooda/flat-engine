@@ -86,6 +86,7 @@ bool TextInputWidget::onMouseDown(Widget* widget, bool& eventHandled)
 	}
 	auto& mouse = m_flat.input->mouse;
 	const flat::Vector2 pos = getRelativePosition(mouse->getPosition());
+	size_t i = getCursorIndexFromPosition(pos);
 	moveCursorAt(getCursorIndexFromPosition(pos));
 	if (mouse->isJustDoubleClicked(M(LEFT)))
 	{
@@ -382,8 +383,12 @@ bool TextInputWidget::hasSelectedText()
 flat::Vector2 TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
 {
 	const std::string& text = getText();
+
 	const size_t textLength = text.size();
 	FLAT_ASSERT_MSG(0 <= cursorIndex && cursorIndex <= textLength, "the cursor index is out of the string's range");
+	if (cursorIndex == textLength || text[cursorIndex] == '\n')
+		return getCursorEndingFromIndex(cursorIndex - 1);
+
 	if (text.size() == 0)
 		return { 0, String::getComputedSize().y};
 	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
@@ -423,21 +428,20 @@ TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(flat::V
 	size_t endX = 0;
 	while (y > 0)
 	{
-		int next = text.find('\n', startX + 1);
+		int next = text.find('\n', startX);
 		if (next != std::string::npos)
-			startX = next;
+			startX = next + 1;
 		y--;
 	}
 
 	endX = text.find('\n', startX + 1);
 	if (endX == std::string::npos)
 		endX = textLength;
-
 	if (pos.x < getCursorPositionFromIndex(startX).x)
-	{ 
+	{
 		result = startX;
 	}
-	else if (pos.x > String::getComputedSize().x)
+	else if (pos.x > getCursorPositionFromIndex(endX).x)
 	{
 		result = endX;
 	}
@@ -488,7 +492,6 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 
 	const float characterHeight = font->getAtlasSize().y;
 	const flat::Vector2 cursorPos = getCursorPositionFromIndex(cursorIndex);
-
 	std::array<String::CharacterVertex, 2> cursorVertices = {
 		String::CharacterVertex(cursorPos.x, cursorPos.y),
 		String::CharacterVertex(cursorPos.x, cursorPos.y - characterHeight)
@@ -512,8 +515,6 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 		last = tmp;
 	}
 
-	last--;
-
 	renderSettings.modelMatrixUniform.set(m_transform);
 
 	renderSettings.colorUniform.set(video::Color(uint32_t(0x4286f4FF)));
@@ -526,9 +527,8 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 
 	const std::string& text = getText();
 	const float characterHeight = font->getAtlasSize().y;
-
 	Vector2 firstPos = getCursorPositionFromIndex(first);
-	Vector2 lastPos = getCursorEndingFromIndex(last);
+	Vector2 lastPos = getCursorPositionFromIndex(last);
 
 	glLineWidth(1);
 	const std::vector<String::CharacterVertex>& vertices = getVertices();
