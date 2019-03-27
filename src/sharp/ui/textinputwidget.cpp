@@ -421,14 +421,14 @@ TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(flat::V
 		return result;
 	}
 
-	int y = (String::getComputedSize().y - pos.y) / getFont()->getAtlasSize().y;
+	int y = static_cast<int>((String::getComputedSize().y - pos.y) / getFont()->getAtlasSize().y);
 	if (y < 0)
 		y = 0;
 	size_t startX = 0;
 	size_t endX = 0;
 	while (y > 0)
 	{
-		int next = text.find('\n', startX);
+		size_t next = text.find('\n', startX);
 		if (next != std::string::npos)
 			startX = next + 1;
 		y--;
