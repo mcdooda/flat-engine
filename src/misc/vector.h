@@ -18,6 +18,10 @@ using Vector2 = glm::vec2;
 using Vector3 = glm::vec3;
 using Vector4 = glm::vec4;
 
+using Vector2i = glm::ivec2;
+using Vector3i = glm::ivec3;
+using Vector4i = glm::ivec4;
+
 inline float vector2_angle(const Vector2& vector2)
 {
 	FLAT_ASSERT(vector2.x != 0 || vector2.y != 0);
@@ -35,6 +39,8 @@ inline T normalize(const T& vector)
 
 using glm::length;
 using glm::length2;
+using glm::distance;
+using glm::distance2;
 using glm::dot;
 using glm::cross;
 using glm::reflect;
@@ -54,6 +60,18 @@ inline std::ostream& operator<<(std::ostream& out, const flat::Vector3& v)
 inline std::ostream& operator<<(std::ostream& out, const flat::Vector4& v)
 {
 	return out << "Vector4(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+}
+
+namespace std
+{
+	template <>
+	struct hash<flat::Vector2i>
+	{
+		size_t operator()(const flat::Vector2i& k) const
+		{
+			return k.x * 0x9e3779b9 + k.y;
+		}
+	};
 }
 
 #endif // FLAT_MISC_VECTOR_H

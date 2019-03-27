@@ -1,6 +1,10 @@
 #ifndef FLAT_GEOMETRY_QUADTREE_H
 #define FLAT_GEOMETRY_QUADTREE_H
 
+#ifdef FLAT_DEBUG
+#include <set>
+#endif
+
 #include "misc/aabb2.h"
 #include "debug/helpers.h"
 
@@ -211,6 +215,10 @@ class QuadTree
 		static_assert(sizeof(T*) == sizeof(CellData), "");
 		std::vector<CellData> m_cellData;
 		std::int32_t m_firstFreeCellDataIndex;
+
+#ifdef FLAT_DEBUG
+		std::set<T*> m_objects;
+#endif
 };
 
 template <class T, int depth, void (*GetAABB)(T*, AABB2&)>
@@ -224,6 +232,8 @@ template <class T, int depth, void (*GetAABB)(T*, AABB2&)>
 inline int QuadTree<T, depth, GetAABB>::addObject(T* object)
 {
 	FLAT_ASSERT(object != nullptr);
+	FLAT_ASSERT(m_objects.find(object) == m_objects.end());
+	FLAT_DEBUG_ONLY(m_objects.insert(object);)
 	AABB2 aabb;
 	GetAABB(object, aabb);
 	FLAT_ASSERT_MSG(getRootCell().contains(aabb), "AABB is outside of the quad tree's root cell");
@@ -236,6 +246,7 @@ template <class T, int depth, void (*GetAABB)(T*, AABB2&)>
 inline int QuadTree<T, depth, GetAABB>::updateObject(T* object, int previousCellIndex)
 {
 	FLAT_ASSERT(object != nullptr);
+	FLAT_ASSERT(m_objects.find(object) != m_objects.end());
 	Cell& previousCell = m_cells[previousCellIndex];
 	AABB2 aabb;
 	GetAABB(object, aabb);
@@ -252,6 +263,8 @@ template <class T, int depth, void (*GetAABB)(T*, AABB2&)>
 inline void QuadTree<T, depth, GetAABB>::removeObject(T* object)
 {
 	FLAT_ASSERT(object != nullptr);
+	FLAT_ASSERT(m_objects.find(object) != m_objects.end());
+	FLAT_DEBUG_ONLY(m_objects.erase(object);)
 	AABB2 aabb;
 	GetAABB(object, aabb);
 	Cell& cell = findChildCellForAABB(getRootCell(), aabb);
@@ -262,12 +275,15 @@ template <class T, int depth, void (*GetAABB)(T*, AABB2&)>
 inline void QuadTree<T, depth, GetAABB>::removeObject(T* object, int cellIndex)
 {
 	FLAT_ASSERT(object != nullptr);
+	FLAT_ASSERT(m_objects.find(object) != m_objects.end());
+	FLAT_DEBUG_ONLY(m_objects.erase(object);)
 	removeObjectInCell(m_cells[cellIndex], object);
 }
 
 template <class T, int depth, void (*GetAABB)(T*, AABB2&)>
 inline void QuadTree<T, depth, GetAABB>::clear()
 {
+	FLAT_DEBUG_ONLY(m_objects.clear();)
 	for (Cell<T>& cell : m_cells)
 	{
 		cell.m_cellDataIndex = CellIndex::INVALID;
