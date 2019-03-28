@@ -86,7 +86,6 @@ bool TextInputWidget::onMouseDown(Widget* widget, bool& eventHandled)
 	}
 	auto& mouse = m_flat.input->mouse;
 	const flat::Vector2 pos = getRelativePosition(mouse->getPosition());
-	size_t i = getCursorIndexFromPosition(pos);
 	moveCursorAt(getCursorIndexFromPosition(pos));
 	if (mouse->isJustDoubleClicked(M(LEFT)))
 	{
@@ -232,22 +231,19 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		}
 		else if (character == C(DOWN))
 		{
-			if (ctrlPressed)
+			if (!shiftPressed)
 			{
-				moveCursorAt(nextWordFrom(m_cursorIndex));
+				unselect();
 			}
-			else
+			moveCursorAt(nextLineFrom(m_cursorIndex));
+		}
+		else if (character == C(UP))
+		{
+			if (!shiftPressed)
 			{
-				if (hasSelectedText() && !shiftPressed)
-				{
-					m_cursorIndex = std::max(m_cursorIndex, m_selectionIndex);
-					unselect();
-				}
-				else
-				{
-					moveCursor(1);
-				}
+				unselect();
 			}
+			moveCursorAt(previousLineFrom(m_cursorIndex));
 		}
 		if (shiftPressed)
 		{
@@ -375,6 +371,20 @@ TextInputWidget::CursorIndex TextInputWidget::previousWordFrom(CursorIndex index
 	return 0;
 }
 
+TextInputWidget::CursorIndex TextInputWidget::nextLineFrom(CursorIndex index) const
+{
+	Vector2 pos = getCursorPositionFromIndex(index);
+	pos.y -= getLineHeight();
+	return getCursorIndexFromPosition(pos);
+}
+
+TextInputWidget::CursorIndex TextInputWidget::previousLineFrom(CursorIndex index) const
+{
+	Vector2 pos = getCursorPositionFromIndex(index);
+	pos.y += getLineHeight();
+	return getCursorIndexFromPosition(pos);
+}
+
 bool TextInputWidget::hasSelectedText()
 {
 	return m_cursorIndex != m_selectionIndex;
@@ -392,7 +402,7 @@ flat::Vector2 TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorInde
 	if (text.size() == 0)
 		return { 0, String::getComputedSize().y};
 	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
-	const float characterHeight = getFont()->getAtlasSize().y;
+	const float characterHeight = getLineHeight();
 	const std::vector<CharacterVertex>& vertices = getVertices();
 	return { vertices[(cursorIndex - nbLines) * 6].x, vertices[(cursorIndex - nbLines) * 6].y};
 }
@@ -405,7 +415,7 @@ flat::Vector2 TextInputWidget::getCursorEndingFromIndex(CursorIndex cursorIndex)
 	if (cursorIndex == textLength)
 		cursorIndex--;
 	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
-	const float characterHeight = getFont()->getAtlasSize().y;
+	const float characterHeight = getLineHeight();
 	const std::vector<CharacterVertex>& vertices = getVertices();
 	return { vertices[(cursorIndex - nbLines) * 6 + 1].x, vertices[(cursorIndex - nbLines) * 6].y };
 }
@@ -421,7 +431,7 @@ TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(flat::V
 		return result;
 	}
 
-	int y = (String::getComputedSize().y - pos.y) / getFont()->getAtlasSize().y;
+	int y = (String::getComputedSize().y - pos.y) / getLineHeight();
 	if (y < 0)
 		y = 0;
 	size_t startX = 0;

@@ -61,6 +61,8 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		std::string getSelectedText() const;
 		CursorIndex nextWordFrom(CursorIndex index) const;
 		CursorIndex previousWordFrom(CursorIndex index) const;
+		CursorIndex nextLineFrom(CursorIndex index) const;
+		CursorIndex previousLineFrom(CursorIndex index) const;
 
 		flat::Vector2 getCursorPositionFromIndex(CursorIndex cursorIndex) const;
 		flat::Vector2 getCursorEndingFromIndex(CursorIndex cursorIndex) const;
