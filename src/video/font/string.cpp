@@ -78,8 +78,8 @@ void String::setColor(unsigned int from, unsigned int to, const Color& color)
 	FLAT_ASSERT(to >= 0 && to <= m_text.size());
 	FLAT_ASSERT(from <= to);
 
-	const int nbLinesFrom = std::count(getText().begin(), getText().begin() + from, '\n');
-	const int nbLinesTo = std::count(getText().begin() + from, getText().begin() + to, '\n');
+	const unsigned int nbLinesFrom = static_cast<unsigned int>(std::count(getText().begin(), getText().begin() + from, '\n'));
+	const unsigned int nbLinesTo = static_cast<unsigned int>(std::count(getText().begin() + from, getText().begin() + to, '\n'));
 	from -= nbLinesFrom;
 	to -= nbLinesFrom + nbLinesTo;
 	for (unsigned int i = from; i < to; i++)
