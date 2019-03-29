@@ -180,6 +180,10 @@ class Widget : public util::Convertible<Widget>
 		inline void hide() { setVisible(false); }
 		inline void show() { setVisible(true); }
 
+		inline void setFocusable(bool focusable) { m_focusable = focusable;  }
+		inline bool isFocusable() const { return m_focusable; }
+		inline bool hasFocus() const { return m_hasFocus; }
+
 		void setAllowScrollX(bool allowScrollX);
 		inline bool getAllowScrollX() const { return m_allowScrollX; }
 		void setAllowScrollY(bool allowScrollY);
@@ -237,8 +241,6 @@ class Widget : public util::Convertible<Widget>
 		virtual void setDirty();
 		virtual void clearDirty();
 
-		virtual bool canBeFocused() const;
-
 		bool isAncestor(Widget* ancestorWidget) const;
 		static Widget* getCommonAncestor(Widget* a, Widget* b);
 
@@ -253,6 +255,8 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*> dragged;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;
+		Slot<Widget*> enterFocus;
+		Slot<Widget*> leaveFocus;
 		Slot<Widget*> layoutFinished; 
 		Slot<Widget*, std::string&> copy;
 		Slot<Widget*, const std::string&> paste;
@@ -302,6 +306,7 @@ class Widget : public util::Convertible<Widget>
 		PositionPolicy m_positionPolicy;
 
 		bool m_visible : 1;
+		bool m_focusable : 1;
 		bool m_allowScrollX : 1;
 		bool m_allowScrollY : 1;
 		bool m_allowDragScrolling : 1;

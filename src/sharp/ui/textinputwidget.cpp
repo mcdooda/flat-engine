@@ -16,6 +16,7 @@ TextInputWidget::TextInputWidget(Flat& flat, const std::shared_ptr<const video::
 	m_cursorIndex(0),
 	m_selectionIndex(0)
 {
+	setFocusable(true);
 	enterFocus.on(this, &TextInputWidget::enteredFocus);
 	leaveFocus.on(this, &TextInputWidget::leftFocus);
 	mouseDown.on(this, &TextInputWidget::onMouseDown);

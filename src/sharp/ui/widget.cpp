@@ -32,6 +32,7 @@ Widget::Widget() :
 	m_sizePolicy(SizePolicy::FIXED),
 	m_positionPolicy(PositionPolicy::TOP_LEFT),
 	m_visible(true),
+	m_focusable(false),
 	m_allowScrollX(false),
 	m_allowScrollY(false),
 	m_allowDragScrolling(false),
@@ -46,7 +47,11 @@ Widget::Widget() :
 
 Widget::~Widget()
 {
-
+	if (m_hasFocus)
+	{
+		m_hasFocus = false;
+		leaveFocus(this);
+	}
 }
 
 void Widget::setSizePolicy(SizePolicy sizePolicy)
@@ -576,11 +581,6 @@ void Widget::clearDirty()
 	{
 		rootWidget->removeDirtyWidget(getWeakPtr());
 	}
-}
-
-bool Widget::canBeFocused() const
-{
-	return false;
 }
 
 bool Widget::isAncestor(Widget* ancestorWidget) const

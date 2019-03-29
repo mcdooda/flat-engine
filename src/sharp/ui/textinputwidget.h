@@ -1,7 +1,6 @@
 #ifndef FLAT_SHARP_UI_TEXTINPUTWIDGET_H
 #define FLAT_SHARP_UI_TEXTINPUTWIDGET_H
 
-#include "sharp/ui/focusablewidget.h"
 #include "sharp/ui/textwidget.h"
 
 #include "input/context/inputcontext.h"
@@ -16,7 +15,7 @@ namespace ui
 {
 class Widget;
 
-class TextInputWidget : public FocusableWidget, public TextWidget
+class TextInputWidget : public TextWidget
 {
 	using Widget = ui::Widget;
 	public:
