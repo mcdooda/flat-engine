@@ -479,16 +479,19 @@ inline void QuadTree<T, depth, GetAABB>::getObjectsInCell(const Cell& cell, cons
 {
 	if (cell.isInside(point))
 	{
-		std::vector<CellData>::const_iterator it = m_cellData.begin() + cell.m_cellDataIndex;
-		std::vector<CellData>::const_iterator itEnd = it + cell.m_cellDataCount;
-		for (; it != itEnd; ++it)
+		if (cell.m_cellDataIndex != CellIndex::INVALID)
 		{
-			T* object = it->getObject();
-			AABB2 objectAABB;
-			GetAABB(object, objectAABB);
-			if (objectAABB.isInside(point))
+			std::vector<CellData>::const_iterator it = m_cellData.begin() + cell.m_cellDataIndex;
+			std::vector<CellData>::const_iterator itEnd = it + cell.m_cellDataCount;
+			for (; it != itEnd; ++it)
 			{
-				objects.push_back(object);
+				T* object = it->getObject();
+				AABB2 objectAABB;
+				GetAABB(object, objectAABB);
+				if (objectAABB.isInside(point))
+				{
+					objects.push_back(object);
+				}
 			}
 		}
 
