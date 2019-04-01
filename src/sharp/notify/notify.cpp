@@ -37,22 +37,22 @@ void Notify::reset()
 	}
 }
 
-void Notify::success(const std::string& message)
+void Notify::success(const std::string& message) const
 {
 	m_success.call(message);
 }
 
-void Notify::warn(const std::string& message)
+void Notify::warn(const std::string& message) const
 {
 	m_warn.call(message);
 }
 
-void Notify::error(const std::string& message)
+void Notify::error(const std::string& message) const
 {
 	m_error.call(message);
 }
 
-void Notify::info(const std::string& message)
+void Notify::info(const std::string& message) const
 {
 	m_info.call(message);
 }

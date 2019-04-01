@@ -1,7 +1,6 @@
 #ifndef FLAT_LUA_THREAD_H
 #define FLAT_LUA_THREAD_H
 
-#include "lua/sharedluareference.h"
 #include "lua/uniqueluareference.h"
 
 namespace flat
@@ -17,7 +16,7 @@ class Thread
 		void set(lua_State* L, int index);
 
 		bool start(int numArgs);
-		void update();
+		int update(int numResults = 0);
 
 		void stop();
 
@@ -28,7 +27,7 @@ class Thread
 		FLAT_DEBUG_ONLY(const flat::lua::UniqueLuaReference<LUA_TTHREAD>& getThread() const { return m_thread; })
 
 	protected:
-		flat::lua::SharedLuaReference<LUA_TFUNCTION> m_function;
+		flat::lua::UniqueLuaReference<LUA_TFUNCTION> m_function;
 		flat::lua::UniqueLuaReference<LUA_TTHREAD> m_thread;
 		int m_status;
 };
