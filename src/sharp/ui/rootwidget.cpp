@@ -187,6 +187,19 @@ void RootWidget::updateInput(bool updateMouseOver)
 	{
 		handlePaste();
 	}
+	else if (keyboard->isJustPressed(K(Z)) && (keyboard->isPressed(K(LSHIFT)) || keyboard->isPressed(K(RSHIFT)))
+		&& (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	{
+		handleRedo();
+	}
+	else if (keyboard->isJustPressed(K(Z)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	{
+		handleUndo();
+	}
+	else if (keyboard->isJustPressed(K(Y)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	{
+		handleRedo();
+	}
 
 	const bool mouseMoved = mouse->justMoved();
 	if (updateMouseOver || mouseMoved)
@@ -503,6 +516,24 @@ void RootWidget::handleCopy()
 		std::string copied;
 		focused->copy(focused, copied);
 		SDL_SetClipboardText(copied.c_str());
+	}
+}
+
+void RootWidget::handleUndo()
+{
+	Widget* focused = m_focusWidget.lock().get();
+	if (focused != nullptr)
+	{
+		focused->undo(focused);
+	}
+}
+
+void RootWidget::handleRedo()
+{
+	Widget* focused = m_focusWidget.lock().get();
+	if (focused != nullptr)
+	{
+		focused->redo(focused);
 	}
 }
 

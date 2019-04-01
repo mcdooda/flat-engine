@@ -100,6 +100,8 @@ int open(Flat& flat, flat::lua::Lua& lua)
 
 		{"copy",                  l_Widget_copy},
 		{"paste",                 l_Widget_paste},
+		{"undo",                  l_Widget_undo},
+		{"redo",                  l_Widget_redo},
 
 		{"click",                 l_Widget_click},
 		{"rightClick",            l_Widget_rightClick},
@@ -721,6 +723,16 @@ int l_Widget_copy(lua_State* L)
 int l_Widget_paste(lua_State* L)
 {
 	return addWidgetCallback<Widget, const std::string&>(L, &Widget::paste);
+}
+
+int l_Widget_undo(lua_State* L)
+{
+	return addWidgetCallback(L, &Widget::undo);
+}
+
+int l_Widget_redo(lua_State* L)
+{
+	return addWidgetCallback<Widget>(L, &Widget::redo);
 }
 
 int l_Widget_click(lua_State* L)

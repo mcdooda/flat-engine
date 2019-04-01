@@ -102,6 +102,8 @@ int l_Widget_getScrollPosition(lua_State* L);
 
 int l_Widget_copy(lua_State* L);
 int l_Widget_paste(lua_State* L);
+int l_Widget_undo(lua_State* L);
+int l_Widget_redo(lua_State* L);
 int l_Widget_click(lua_State* L);
 int l_Widget_rightClick(lua_State* L);
 int l_Widget_mouseDown(lua_State* L);

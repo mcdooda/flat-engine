@@ -73,6 +73,8 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleTabButtonPressed();
 		void handleCopy();
 		void handlePaste();
+		void handleUndo();
+		void handleRedo();
 
 		Widget* getFocusableChildren(Widget* widget);
 		Widget* getNextFocusable(Widget* widget);

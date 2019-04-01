@@ -260,6 +260,8 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*> layoutFinished; 
 		Slot<Widget*, std::string&> copy;
 		Slot<Widget*, const std::string&> paste;
+		Slot<Widget*> undo;
+		Slot<Widget*> redo;
 		
 	protected:
 		static bool intersect(const ScissorRectangle& a, const ScissorRectangle& b);
