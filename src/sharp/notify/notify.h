@@ -18,10 +18,10 @@ class Notify
 
 		void reset();
 
-		void success(const std::string& message);
-		void warn(const std::string& message);
-		void error(const std::string& message);
-		void info(const std::string& message);
+		void success(const std::string& message) const;
+		void warn(const std::string& message) const;
+		void error(const std::string& message) const;
+		void info(const std::string& message) const;
 
 	private:
 		Flat& m_flat;
@@ -36,6 +36,6 @@ class Notify
 } // sharp
 } // flat
 
-#endif // FLAT_SHARP_NOTIFY_NOTIFY_H
+#endif // FLAT_SHARP_NOTITY_NOTIFY_H
 
 

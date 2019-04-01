@@ -88,6 +88,7 @@ void Game::loop()
 
 		{
 			FLAT_PROFILE("Lua end frame");
+			message->update();
 			lua->endFrame();
 		}
 

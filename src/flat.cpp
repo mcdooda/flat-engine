@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+
 #include "flat.h"
 
 #include "time/time.h"
@@ -23,6 +24,7 @@ Flat::Flat(const std::string& luaPath, const std::string& assetsPath)
 	lua = std::make_unique<lua::Lua>(*this, luaPath, assetsPath);
 	ui = std::make_unique<sharp::ui::Ui>(*this);
 	notify = std::make_unique<sharp::notify::Notify>(*this);
+	message = std::make_unique<sharp::message::Message>(*this);
 }
 
 Flat::~Flat()

@@ -81,6 +81,8 @@
 #include "sharp/ui/lua/ui.h"
 // notify
 #include "sharp/notify/notify.h"
+// message
+#include "sharp/message/message.h"
 
 // misc
 #include "misc/std.h"
@@ -117,6 +119,7 @@ class Flat
 		std::unique_ptr<lua::Lua> lua;
 		std::unique_ptr<sharp::ui::Ui> ui;
 		std::unique_ptr<sharp::notify::Notify> notify;
+		std::unique_ptr<sharp::message::Message> message;
 };
 
 } // flat

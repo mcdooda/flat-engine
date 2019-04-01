@@ -5,6 +5,7 @@ local function choice(message, choices, defaultValue)
     content:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
 
     local returnValue
+    local choiceIndex
     do
         local choiceInputBorder = Widget.makeExpand()
         choiceInputBorder:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
@@ -27,6 +28,7 @@ local function choice(message, choices, defaultValue)
                     choiceFields[selectedItemIndex]:setBackgroundColor(0)
                 end
                 returnValue = choices[itemIndex]
+                choiceIndex = itemIndex
                 choiceFields[itemIndex]:setBackgroundColor(0x3498DBFF)
                 selectedItemIndex = itemIndex
             end
@@ -99,7 +101,7 @@ local function choice(message, choices, defaultValue)
 
     if okButtonClicked then
         messageWindow:close()
-        return returnValue
+        return returnValue, choiceIndex
     else
         if not windowClosed then
             messageWindow:close()
