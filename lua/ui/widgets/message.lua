@@ -12,7 +12,6 @@ local function message(messageString, messageContent, buttons)
     window:setSize(300, 125)
     window:setPositionPolicy(Widget.PositionPolicy.CENTER)
     window:setPosition(0, 0)
-    window:setResizable(false)
 
     local content = Widget.makeExpand()
     content:setMargin(5)
@@ -27,12 +26,12 @@ local function message(messageString, messageContent, buttons)
     end
 
     if messageContent then
-        contentContainer:addChild(messageContent)
-    end
+    contentContainer:addChild(messageContent)
+end
 
-    do
-        local spacer = Widget.makeExpand()
-        contentContainer:addChild(spacer)
+do
+    local spacer = Widget.makeExpand()
+    contentContainer:addChild(spacer)
     end
 
     if buttons then
