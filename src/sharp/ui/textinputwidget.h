@@ -1,7 +1,6 @@
 #ifndef FLAT_SHARP_UI_TEXTINPUTWIDGET_H
 #define FLAT_SHARP_UI_TEXTINPUTWIDGET_H
 
-#include "sharp/ui/focusablewidget.h"
 #include "sharp/ui/textwidget.h"
 
 #include "input/context/inputcontext.h"
@@ -16,7 +15,7 @@ namespace ui
 {
 class Widget;
 
-class TextInputWidget : public FocusableWidget, public TextWidget
+class TextInputWidget : public TextWidget
 {
 	using Widget = ui::Widget;
 	public:
@@ -61,6 +60,8 @@ class TextInputWidget : public FocusableWidget, public TextWidget
 		std::string getSelectedText() const;
 		CursorIndex nextWordFrom(CursorIndex index) const;
 		CursorIndex previousWordFrom(CursorIndex index) const;
+		CursorIndex nextLineFrom(CursorIndex index) const;
+		CursorIndex previousLineFrom(CursorIndex index) const;
 
 		flat::Vector2 getCursorPositionFromIndex(CursorIndex cursorIndex) const;
 		flat::Vector2 getCursorEndingFromIndex(CursorIndex cursorIndex) const;

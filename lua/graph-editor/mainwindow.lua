@@ -73,6 +73,7 @@ function MainWindow:build()
         content:setAllowScroll(true, true)
         content:setAllowDragScrolling(true)
         content:setRestrictScroll(false, false)
+        content:setFocusable(true)
 
         local function scroll()
             self:closeAllRightClickMenus()
@@ -112,12 +113,24 @@ function MainWindow:build()
             self:openNodeListMenu(x, y)
         end
 
+        local function paste(widget, text)
+            print 'pasting'
+            print(text)
+        end
+
+        local function copy(widget)
+            print 'copying'
+            return "copied text"
+        end
+
         content:scroll(scroll)
         content:draw(draw)
         content:mouseMove(mouseMove)
         content:mouseUp(mouseUp)
         content:mouseDown(leftClick)
         content:rightClick(rightClick)
+        content:paste(paste)
+        content:copy(copy)
         self:setContent(content)
     end
 end

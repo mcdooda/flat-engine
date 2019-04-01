@@ -1,6 +1,5 @@
 #include "sharp/ui/lua/ui.h"
 #include "sharp/ui/canvaswidget.h"
-#include "sharp/ui/focusablewidget.h"
 #include "sharp/ui/textinputwidget.h"
 #include "sharp/ui/numberinputwidget.h"
 #include "sharp/ui/textwidget.h"
@@ -77,6 +76,8 @@ int open(Flat& flat, flat::lua::Lua& lua)
 		{"getVisible",            l_Widget_getVisible},
 		{"hide",                  l_Widget_hide},
 		{"show",                  l_Widget_show},
+
+		{"setFocusable",          l_Widget_setFocusable},
 
 		{"setAllowScrollX",       l_Widget_setAllowScrollX},
 		{"getAllowScrollX",       l_Widget_getAllowScrollX},
@@ -584,6 +585,14 @@ int l_Widget_show(lua_State* L)
 	return 0;
 }
 
+int l_Widget_setFocusable(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	bool focusable = lua_toboolean(L, 2) == 1;
+	widget.setFocusable(focusable);
+	return 0;
+}
+
 int l_Widget_setAllowScrollX(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
@@ -706,7 +715,7 @@ int l_Widget_getScrollPosition(lua_State* L)
 
 int l_Widget_copy(lua_State* L)
 {
-	return addWidgetCallback<Widget>(L, &Widget::copy);
+	return addCopyWidgetCallback(L, &Widget::copy);
 }
 
 int l_Widget_paste(lua_State* L)
@@ -867,12 +876,12 @@ int l_NumberInputWidget_setRange(lua_State* L)
 
 int l_FocusableWidget_focus(lua_State* L)
 {
-	return addWidgetCallback<FocusableWidget>(L, &FocusableWidget::enterFocus);
+	return addWidgetCallback<Widget>(L, &Widget::enterFocus);
 }
 
 int l_FocusableWidget_blur(lua_State* L)
 {
-	return addWidgetCallback<FocusableWidget>(L, &FocusableWidget::leaveFocus);
+	return addWidgetCallback<Widget>(L, &Widget::leaveFocus);
 }
 
 int l_CanvasWidget_draw(lua_State * L)
@@ -948,7 +957,7 @@ int l_Widget_getRoot(lua_State* L)
 
 int l_Widget_focus(lua_State * L)
 {
-	FocusableWidget* focusableWidget = nullptr;
+	Widget* focusableWidget = nullptr;
 	if (!lua_isnil(L, 1))
 	{
 		focusableWidget = &getFocusableWidget(L, 1);
@@ -1060,29 +1069,22 @@ Widget& getWidget(lua_State* L, int index)
 	return LuaWidget::get(L, index);
 }
 
-FocusableWidget& getFocusableWidget(lua_State* L, int index)
+Widget& getFocusableWidget(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
 	Widget& widget = getWidget(L, index);
-	if (!widget.canBeFocused())
+	if (!widget.isFocusable())
 	{
-		luaL_error(L, "FocusableWidget required, Widget given");
+		luaL_error(L, "Widget not focusable");
 	}
-	FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(&widget);
-	FLAT_ASSERT(focusableWidget != nullptr);
-	return *focusableWidget;
+	FLAT_ASSERT(widget.isFocusable());
+	return widget;
 }
 
 template <>
 Widget& getWidgetOfType(lua_State* L, int index)
 {
 	return getWidget(L, index);
-}
-
-template<>
-FocusableWidget& getWidgetOfType(lua_State* L, int index)
-{
-	return getFocusableWidget(L, index);
 }
 
 template <class T>
@@ -1115,8 +1117,8 @@ int addWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot)
 	return 0;
 }
 
-template <class T>
-int addCopyWidgetCallback(lua_State* L, Slot <Widget*> T::* slot)
+template <class T, class... Args>
+int addCopyWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot)
 {
 	T& widget = getWidgetOfType<T>(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
@@ -1128,8 +1130,11 @@ int addCopyWidgetCallback(lua_State* L, Slot <Widget*> T::* slot)
 			callback.callFunction(
 				[w](lua_State* L)
 				{
-					//TODO
 					pushWidget(L, w->getSharedPtr());
+				}, 
+				1,
+				[&copied](lua_State* L)
+				{
 					copied = luaL_checkstring(L, 1);
 				}
 			);

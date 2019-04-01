@@ -1,5 +1,4 @@
 #include "sharp/ui/rootwidget.h"
-#include "sharp/ui/focusablewidget.h"
 
 #include "flat.h"
 #include "video/window.h"
@@ -24,7 +23,7 @@ RootWidget::~RootWidget()
 	// avoid calling leave focus as all the widgets are being destroyed
 	if (!m_focusWidget.expired())
 	{
-		FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(m_focusWidget.lock().get());
+		Widget* focusableWidget = m_focusWidget.lock().get();
 		FLAT_ASSERT(focusableWidget != nullptr);
 		focusableWidget->m_hasFocus = false;
 	}
@@ -266,36 +265,31 @@ void RootWidget::drop(Widget* widget)
 
 void RootWidget::focus(Widget* widget)
 {
-	Widget* previousFocusWidget = m_focusWidget.lock().get();
-	Widget* newFocusWidget = widget != nullptr && widget->canBeFocused() ? widget : nullptr;
+	Widget* previouslyFocusedWidget = m_focusWidget.lock().get();
+	Widget* newlyFocusedWidget = widget != nullptr && widget->isFocusable() ? widget : nullptr;
 
-	FLAT_ASSERT(previousFocusWidget == nullptr || previousFocusWidget->canBeFocused());
-	FLAT_ASSERT(newFocusWidget == nullptr || newFocusWidget->canBeFocused());
+	FLAT_ASSERT(previouslyFocusedWidget == nullptr || previouslyFocusedWidget->isFocusable());
+	FLAT_ASSERT(newlyFocusedWidget == nullptr || newlyFocusedWidget->isFocusable());
 
-	if (previousFocusWidget != newFocusWidget)
+	if (previouslyFocusedWidget != newlyFocusedWidget)
 	{
-		if (previousFocusWidget != nullptr)
+		if (previouslyFocusedWidget != nullptr)
 		{
-			FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(previousFocusWidget);
-			FLAT_ASSERT(focusableWidget != nullptr);
-			focusableWidget->m_hasFocus = false;
-			focusableWidget->leaveFocus(previousFocusWidget);
+			previouslyFocusedWidget->m_hasFocus = false;
+			previouslyFocusedWidget->leaveFocus(previouslyFocusedWidget);
 		}
 
-		if (newFocusWidget != nullptr)
+		if (newlyFocusedWidget != nullptr)
 		{
-			FocusableWidget* focusableWidget = dynamic_cast<FocusableWidget*>(newFocusWidget);
-			FLAT_ASSERT(focusableWidget != nullptr);
-			focusableWidget->m_hasFocus = true;
-			focusableWidget->enterFocus(newFocusWidget);
+			newlyFocusedWidget->m_hasFocus = true;
+			newlyFocusedWidget->enterFocus(newlyFocusedWidget);
 
-			m_focusWidget = newFocusWidget->getWeakPtr();
+			m_focusWidget = newlyFocusedWidget->getWeakPtr();
 		}
 		else
 		{
 			m_focusWidget.reset();
 		}
-
 	}
 }
 
@@ -309,7 +303,7 @@ void RootWidget::handleLeftMouseButtonDown()
 	// find a focusable widget if possible
 	{
 		Widget* widget = m_mouseOverWidget.lock().get();
-		while (widget != nullptr && !widget->canBeFocused())
+		while (widget != nullptr && !widget->isFocusable())
 		{
 			widget = widget->getParent().lock().get();
 		}
@@ -455,7 +449,7 @@ void RootWidget::handleMouseWheel()
 
 Widget* RootWidget::getFocusableChildren(Widget* widget)
 {
-	if (widget->canBeFocused())
+	if (widget->isFocusable())
 		return widget;
 
 	Widget* child = nullptr;

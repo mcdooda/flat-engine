@@ -79,6 +79,8 @@ int l_Widget_getVisible(lua_State* L);
 int l_Widget_hide(lua_State* L);
 int l_Widget_show(lua_State* L);
 
+int l_Widget_setFocusable(lua_State* L);
+
 int l_Widget_setAllowScrollX(lua_State* L);
 int l_Widget_getAllowScrollX(lua_State* L);
 int l_Widget_setAllowScrollY(lua_State* L);
@@ -160,12 +162,14 @@ int l_Widget_makeCanvas(lua_State* L);
 
 // private
 Widget& getWidget(lua_State* L, int index);
-FocusableWidget& getFocusableWidget(lua_State* L, int index);
+Widget& getFocusableWidget(lua_State* L, int index);
 
 template <class T>
 T& getWidgetOfType(lua_State* L, int index);
 template <class T, class... Args>
-int addWidgetCallback(lua_State* L, Slot<Widget*, Args...> T::* slot);
+int addWidgetCallback(lua_State* L, Slot<Widget*, Args...> T::* slot); 
+template <class T, class... Args>
+int addCopyWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot);
 template <class T>
 int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
 int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot);

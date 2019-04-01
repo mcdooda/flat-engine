@@ -47,6 +47,8 @@ class String
 		inline const std::vector<Font::CharInfoUv>& getUv() const { return m_uv; }
 		
 		inline const std::shared_ptr<const Font>& getFont() const { return m_font; }
+
+		inline const float getLineHeight() const { return m_font->getAtlasSize().y; }
 		
 		inline const Vector2& getComputedSize() const { return m_size; }
 
