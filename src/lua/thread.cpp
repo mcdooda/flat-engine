@@ -17,6 +17,14 @@ void Thread::set(lua_State* L, int index)
 	m_function.set(L, index);
 }
 
+
+void Thread::reset()
+{
+	m_function.reset();
+	m_thread.reset();
+	m_status = LUA_OK;
+}
+
 bool Thread::start(int numArgs)
 {
 	FLAT_ASSERT(isEmpty());
@@ -96,8 +104,7 @@ int Thread::update(int numResults)
 
 void Thread::stop()
 {
-	m_thread.reset();
-	m_status = LUA_OK;
+	reset();
 }
 
 } // lua
