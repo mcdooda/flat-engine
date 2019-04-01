@@ -114,6 +114,16 @@ local function sortedPairs(t)
     end
 end
 
+local function stackPop(t, num)
+    num = num or 1
+    assert(tableIsArray(t))
+    for i = #t, #t - num, -1 do
+        t[i] = nil
+    end
+end
+
+local stackPush = arrayAdd
+
 flat.tableLength = tableLength
 flat.tableFindValueKey = tableFindValueKey
 flat.tableMaxIntKey = tableMaxIntKey
@@ -128,3 +138,6 @@ flat.arrayRemoveIndexCyclic = arrayRemoveIndexCyclic
 flat.arrayRemoveValueCyclic = arrayRemoveValueCyclic
 
 flat.sortedPairs = sortedPairs
+
+flat.stackPop = stackPop
+flat.stackPush = stackPush

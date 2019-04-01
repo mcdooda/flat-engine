@@ -2,6 +2,9 @@ local Graph = flat.require 'graph/graph'
 local NodeWidget = flat.require 'graph-editor/nodewidget'
 local PinTypes = flat.require 'graph/pintypes'
 
+local CommandHistory = flat.require 'history/commandhistory'
+local InsertNodeCommand = flat.require 'graph-editor/commands/insertnodecommand'
+
 local MainWindow = {}
 MainWindow.__index = MainWindow
 setmetatable(MainWindow, { __index = flat.ui.Window })
@@ -120,7 +123,15 @@ function MainWindow:build()
 
         local function copy(widget)
             print 'copying'
-            return "copied text"
+            return 'copied text'
+        end
+
+        local function undo(widget)
+            self.currentGraphInfo.history:undo()
+        end
+
+        local function redo(widget)
+            self.currentGraphInfo.history:redo()
         end
 
         content:scroll(scroll)
@@ -131,6 +142,8 @@ function MainWindow:build()
         content:rightClick(rightClick)
         content:paste(paste)
         content:copy(copy)
+        content:undo(undo)
+        content:redo(redo)
         self:setContent(content)
     end
 end
@@ -174,7 +187,8 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
         nodeWidgets = {},
         selectedNodeWidgets = {},
         parentGraphInfo = nil,
-        subGraphId = nil
+        subGraphId = nil,
+        history = CommandHistory:new()
     }
     graphInfos[graphInfo.index] = graphInfo
     self:setCurrentGraphInfo(graphInfo)
@@ -267,7 +281,8 @@ function MainWindow:openSubGraph(graph, subGraphId, parentGraphInfo)
         nodeWidgets = {},
         selectedNodeWidgets = {},
         parentGraphInfo = parentGraphInfo,
-        subGraphId = subGraphId
+        subGraphId = subGraphId,
+        history = CommandHistory:new()
     }
     graphInfos[graphInfo.index] = graphInfo
     self:setCurrentGraphInfo(graphInfo)
@@ -884,36 +899,8 @@ function MainWindow:openNodeListMenu(x, y)
     end
 
     local function insertNode(nodeEntry)
-        assert(self:layoutSanityCheck())
-        local foldedNodes = self:getFoldedNodes() -- this must be called before adding the new node to the graph!
-        local content = self:getContent()
-        local graphInfo = self.currentGraphInfo
-        local graph = graphInfo.graph
-        local node
-        if nodeEntry.nodeName then
-            node = graph:addNode(nodeClasses[nodeEntry.nodeName])
-        else
-            assert(nodeEntry.compoundPath)
-            node = graph:addNode(nodeClasses['compound'], false)
-            if node:load(nodeEntry.compoundPath) then
-                node:buildPins()
-            else
-                flat.ui.error('Cound not load compound ' .. compoundPath)
-                return
-            end
-        end
-        local nodeIndex = graph:findNodeIndex(node)
-        local contentSizeX, contentSizeY = content:getComputedSize()
-        local scrollX, scrollY = content:getScrollPosition()
-        local nodeWidgetX = x + scrollX
-        local nodeWidgetY = y + scrollY - contentSizeY -- move the relative position from bottom left to top left
-        assert(not graphInfo.layout[nodeIndex])
-        graphInfo.layout[nodeIndex] = {nodeWidgetX, nodeWidgetY}
-        local nodeWidget = self:makeNodeWidget(node, foldedNodes)
-        nodeWidget:setVisiblePosition(nodeWidgetX, nodeWidgetY)
-        content:addChild(nodeWidget:getContainer())
+        self:executeCommand(InsertNodeCommand, self, nodeEntry, x, y)
         self:closeNodeListMenu()
-        assert(self:layoutSanityCheck())
     end
 
     local function submitInsertNode()
@@ -1242,6 +1229,11 @@ end
 
 function MainWindow:getCurrentGraphNodeWidgets()
     return self.currentGraphInfo.nodeWidgets
+end
+
+function MainWindow:executeCommand(commandClass, ...)
+    local command = commandClass:new(...)
+    self.currentGraphInfo.history:push(command)
 end
 
 function MainWindow:setCurrentGraphInfo(graphInfo)
