@@ -136,6 +136,7 @@ class QuadTree
 		Cell& updateObjectCell(Cell& cell, const AABB2& aabb);
 
 		void addObjectInCell(Cell& cell, T object, const AABB2& objectAABB);
+		void updateObjectInCell(Cell& cell, T object, const AABB2& objectAABB);
 		void removeObjectInCell(Cell& cell, T object);
 
 #ifdef FLAT_DEBUG
@@ -197,6 +198,14 @@ class QuadTree
 					FLAT_ASSERT(!isAvailable());
 					FLAT_ASSERT(m_objectAABB.isValid());
 					return m_objectAABB;
+				}
+
+				inline void updateAABB(const AABB2& objectAABB)
+				{
+					FLAT_ASSERT(!isAvailable());
+					FLAT_ASSERT(m_objectAABB.isValid());
+					FLAT_ASSERT(objectAABB.isValid());
+					m_objectAABB = objectAABB;
 				}
 
 				inline void setAvailable(std::uint32_t nextFreeCellDataIndex)
@@ -284,6 +293,10 @@ inline int QuadTree<T, depth, GetAABB>::updateObject(T object, int previousCellI
 	{
 		removeObjectInCell(previousCell, object);
 		addObjectInCell(newCell, object, objectAABB);
+	}
+	else
+	{
+		updateObjectInCell(previousCell, object, objectAABB);
 	}
 	return getCellIndex(newCell);
 }
@@ -476,12 +489,12 @@ inline void QuadTree<T, depth, GetAABB>::getObjectsInCell(const Cell& cell, cons
 	{
 		if (cell.m_cellDataCount > 0)
 		{
+			FLAT_ASSERT(cell.m_cellDataIndex != CellIndex::INVALID);
 			std::vector<CellData>::const_iterator it = m_cellData.begin() + cell.m_cellDataIndex;
 			std::vector<CellData>::const_iterator end = it + cell.m_cellDataCount;
 			for (; it != end; ++it)
 			{
-				const AABB2& objectAABB = it->getObjectAABB();
-				if (AABB2::overlap(aabb, objectAABB))
+				if (AABB2::overlap(aabb, it->getObjectAABB()))
 				{
 					objects.push_back(it->getObject());
 				}
@@ -511,14 +524,14 @@ inline void QuadTree<T, depth, GetAABB>::getObjectsInCell(const Cell& cell, cons
 {
 	if (cell.isInside(point))
 	{
-		if (cell.m_cellDataIndex != CellIndex::INVALID)
+		if (cell.m_cellDataCount > 0)
 		{
+			FLAT_ASSERT(cell.m_cellDataIndex != CellIndex::INVALID);
 			std::vector<CellData>::const_iterator it = m_cellData.begin() + cell.m_cellDataIndex;
-			std::vector<CellData>::const_iterator itEnd = it + cell.m_cellDataCount;
-			for (; it != itEnd; ++it)
+			std::vector<CellData>::const_iterator end = it + cell.m_cellDataCount;
+			for (; it != end; ++it)
 			{
-				const AABB2& objectAABB = it->getObjectAABB();
-				if (objectAABB.isInside(point))
+				if (it->getObjectAABB().isInside(point))
 				{
 					objects.push_back(it->getObject());
 				}
@@ -550,12 +563,12 @@ inline void QuadTree<T, depth, GetAABB>::eachObjectInCell(const Cell& cell, cons
 	{
 		if (cell.m_cellDataCount > 0)
 		{
+			FLAT_ASSERT(cell.m_cellDataIndex != CellIndex::INVALID);
 			std::vector<CellData>::const_iterator it = m_cellData.begin() + cell.m_cellDataIndex;
 			std::vector<CellData>::const_iterator end = it + cell.m_cellDataCount;
 			for (; it != end; ++it)
 			{
-				const AABB2& objectAABB = it->getObjectAABB();
-				if (AABB2::overlap(aabb, objectAABB))
+				if (AABB2::overlap(aabb, it->getObjectAABB()))
 				{
 					func(it->getObject());
 				}
@@ -585,14 +598,17 @@ inline void QuadTree<T, depth, GetAABB>::eachObjectInCell(const Cell& cell, cons
 {
 	if (cell.isInside(point))
 	{
-		std::vector<CellData>::iterator it = m_cellData.begin() + cell.m_cellDataIndex;
-		std::vector<CellData>::iterator itEnd = it + cell.m_cellDataCount;
-		for (; it != itEnd; ++it)
+		if (cell.m_cellDataCount > 0)
 		{
-			const AABB2& objectAABB = it->getObjectAABB();
-			if (objectAABB.isInside(point))
+			FLAT_ASSERT(cell.m_cellDataIndex != CellIndex::INVALID);
+			std::vector<CellData>::const_iterator it = m_cellData.begin() + cell.m_cellDataIndex;
+			std::vector<CellData>::const_iterator itEnd = it + cell.m_cellDataCount;
+			for (; it != end; ++it)
 			{
-				func(it->getObject());
+				if (it->getObjectAABB().isInside(point))
+				{
+					func(it->getObject());
+				}
 			}
 		}
 
@@ -729,6 +745,26 @@ void QuadTree<T, depth, GetAABB>::addObjectInCell(Cell& cell, T object, const AA
 			}
 		}
 	}
+}
+
+template <class T, int depth, void(*GetAABB)(T, AABB2&)>
+void flat::geometry::QuadTree<T, depth, GetAABB>::updateObjectInCell(Cell& cell, T object, const AABB2& objectAABB)
+{
+	FLAT_ASSERT(cell.m_cellDataCount > 0);
+	FLAT_ASSERT(cell.m_cellDataIndex != CellIndex::INVALID);
+
+	std::vector<CellData>::iterator it = m_cellData.begin() + cell.m_cellDataIndex;
+	std::vector<CellData>::iterator end = it + cell.m_cellDataCount;
+	for (; it != end; ++it)
+	{
+		if (it->getObject() == object)
+		{
+			it->updateAABB(objectAABB);
+			return;
+		}
+	}
+
+	FLAT_ASSERT_MSG(false, "object not found in cell");
 }
 
 template <class T, int depth, void (*GetAABB)(T, AABB2&)>
