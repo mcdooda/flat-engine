@@ -34,7 +34,7 @@ class TextInputWidget : public TextWidget
 		CursorType getCursorType() const override;
 
 	public:
-		Slot<Widget*> valueChanged;
+		Slot<Widget*, std::string> valueChanged;
 		Slot<Widget*> submit;
 
 	protected:

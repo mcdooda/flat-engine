@@ -213,7 +213,7 @@ void NumberInputWidget::setValue(float value)
 	if (getText() != text)
 	{
 		replaceText(text);
-		valueChanged(this);
+		valueChanged(this, text);
 	}
 }
 
