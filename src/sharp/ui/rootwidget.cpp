@@ -179,24 +179,24 @@ void RootWidget::updateInput(bool updateMouseOver)
 	{
 		handleTabButtonPressed();
 	}
-	else if (keyboard->isJustPressed(K(C)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	else if (keyboard->isJustPressed(C(c)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
 	{
 		handleCopy();
 	}
-	else if (keyboard->isJustPressed(K(V)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	else if (keyboard->isJustPressed(C(v)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
 	{
 		handlePaste();
 	}
-	else if (keyboard->isJustPressed(K(Z)) && (keyboard->isPressed(K(LSHIFT)) || keyboard->isPressed(K(RSHIFT)))
+	else if (keyboard->isJustPressed(C(z)) && (keyboard->isPressed(K(LSHIFT)) || keyboard->isPressed(K(RSHIFT)))
 		&& (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
 	{
 		handleRedo();
 	}
-	else if (keyboard->isJustPressed(K(Z)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	else if (keyboard->isJustPressed(C(z)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
 	{
 		handleUndo();
 	}
-	else if (keyboard->isJustPressed(K(Y)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
+	else if (keyboard->isJustPressed(C(y)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
 	{
 		handleRedo();
 	}

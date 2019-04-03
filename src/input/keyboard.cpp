@@ -27,6 +27,11 @@ bool Keyboard::isJustPressed(Key key) const
 	return m_globalInputContext->getKeyboardInputContext().isJustPressed(key);
 }
 
+bool Keyboard::isJustPressed(Character character) const
+{
+	return isJustPressed(getKey(character));
+}
+
 bool Keyboard::isJustReleased(Key key) const
 {
 	return m_globalInputContext->getKeyboardInputContext().isJustReleased(key);

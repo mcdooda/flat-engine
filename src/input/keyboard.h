@@ -27,6 +27,7 @@ class Keyboard
 		bool isPressed(Key key) const;
 		bool isPressed(Character character) const;
 		bool isJustPressed(Key key) const;
+		bool isJustPressed(Character character) const;
 		bool isJustReleased(Key key) const;
 
 		void getPressedKeys(std::vector<Key>& pressedKeys) const;
