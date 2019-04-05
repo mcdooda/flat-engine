@@ -13,13 +13,15 @@ return {
     'math/divide',
     'math/add',
     'math/substract',
+    'math/formula',
+    'math/randomint',
+
     'math/lessthan',
     'math/greaterthan',
     'math/equal',
-    'math/formula',
     'math/and',
     'math/or',
-    'math/randomint',
+    'math/not',
 
     -- vector2
     'math/vector2/vector2add',
