@@ -133,7 +133,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		if (hasSelectedText())
 		{
 			changeSelectedText("");
-			valueChanged(this);
+			valueChanged(this, text);
 		}
 		else if(m_cursorIndex > 0)
 		{
@@ -143,7 +143,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 			{
 				moveCursor(-1);
 				setText(text);
-				valueChanged(this);
+				valueChanged(this, text);
 			}
 		}
 	}
@@ -153,7 +153,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		{
 			changeSelectedText("");
 			unselect();
-			valueChanged(this);
+			valueChanged(this, text);
 		}
 		else if (m_cursorIndex < text.size())
 		{
@@ -161,7 +161,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 			if (text != getText())
 			{
 				setText(text);
-				valueChanged(this);
+				valueChanged(this, text);
 			}
 		}
 	}
@@ -259,7 +259,7 @@ bool TextInputWidget::textEdited(const std::string& text)
 	if (!text.empty())
 	{
 		changeSelectedText(text);
-		valueChanged(this);
+		valueChanged(this, getText());
 	}
 	return true;
 }
