@@ -41,12 +41,18 @@ void SpriteBatch::add(const BaseSprite& sprite)
 	const float depth = sprite.getDepth();
 	const BaseSprite::VertexPositions& vertexPositions = sprite.getVertexPositions();
 	const BaseSprite::VertexUvs& vertexUvs = sprite.getVertexUvs();
+	Vector4 pos2d(0.f, 0.f, 0.f, 1.f);
+	Vector4 pos(0.f, 0.f, 0.f, 1.f);
 	for (int i = 0; i < BaseSprite::NUM_VERTICES; ++i)
 	{
 		FLAT_ASSERT(m_numVertices + 1 > 0);
 		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
 		FLAT_ASSERT(m_numVertices > 0);
-		spriteBatchVertex.pos = Vector2(transform * Vector4(vertexPositions[i], 0.f, 1.f));
+		pos2d.x = vertexPositions[i].x;
+		pos2d.y = vertexPositions[i].y;
+		pos = transform * pos2d;
+		spriteBatchVertex.pos.x = pos.x;
+		spriteBatchVertex.pos.y = pos.y;
 		spriteBatchVertex.uv = vertexUvs[i];
 		spriteBatchVertex.color = color;
 		spriteBatchVertex.normal = normal;
