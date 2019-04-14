@@ -1,6 +1,7 @@
 #ifndef FLAT_INPUT_CONTEXT_KEYBOARDINPUTCONTEXT_H
 #define FLAT_INPUT_CONTEXT_KEYBOARDINPUTCONTEXT_H
 
+#include <string>
 #include <vector>
 
 #include "input/key.h"
