@@ -119,8 +119,21 @@ function MainWindow:build()
         end
 
         local function copy(widget)
-            print 'copying'
-            return "copied text"
+            local selectedNodes = self:getSelectedNodes()
+            local clipboardNodes = {}
+            for nodeIndex, node in pairs(selectedNodes) do
+                clipboardNodes[nodeIndex] = { node:getLoadArguments() }
+            end
+
+            local selectedNodesLayout = self:getLayoutForNodes(selectedNodes)
+            
+            local clipboardContent = {
+                nodes = clipboardNodes,
+                layout = selectedNodesLayout
+            }
+            local clipboardText = flat.dumpToString(clipboardContent)
+            print(clipboardText)
+            return clipboardText
         end
 
         content:scroll(scroll)
@@ -1079,6 +1092,36 @@ function MainWindow:deleteSelectedNodes()
     graphInfo.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()
     self:drawLinks()
+end
+
+function MainWindow:getSelectedNodes()
+    local graphInfo = self.currentGraphInfo
+    local selectedNodeWidgets = graphInfo.selectedNodeWidgets
+    local selection = {}
+    for nodeWidget, _ in pairs(selectedNodeWidgets) do
+        selection[nodeWidget.node] = true
+    end
+
+    local graph = graphInfo.graph
+
+    local selectedNodes = {}
+    for i = 1, #graph.nodeInstances do
+        local node = graph.nodeInstances[i]
+        if selection[node] then
+            selectedNodes[i] = node
+        end
+    end
+
+    return selectedNodes
+end
+
+function MainWindow:getLayoutForNodes(nodes)
+    local layout = self.currentGraphInfo.layout
+    local nodesLayout = {}
+    for nodeIndex, node in pairs(nodes) do
+        nodesLayout[nodeIndex] = layout[nodeIndex]
+    end
+    return nodesLayout
 end
 
 function MainWindow:deleteNode(node)
