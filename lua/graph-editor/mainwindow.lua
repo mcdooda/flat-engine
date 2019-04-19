@@ -191,6 +191,17 @@ function MainWindow:build()
                 end
 
                 self:drawLinks(true)
+
+                self:clearSelectedWidgets()
+                for nodeIndex in pairs(nodes) do
+                    local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
+                    local nodeWidget = graphInfo.nodeWidgets[node]
+                    if nodeWidget then
+                        self:selectNode(nodeWidget)
+                    else
+                        assert(node:isConstant(), 'No node widget for non constant node: ' .. node:getName())
+                    end
+                end
             end)
             if not ok then
                 print(err)
