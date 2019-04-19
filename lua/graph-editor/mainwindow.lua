@@ -114,8 +114,79 @@ function MainWindow:build()
         end
 
         local function paste(widget, text)
-            print 'pasting'
-            print(text)
+            local graphInfo = self.currentGraphInfo
+            local graph = graphInfo.graph
+            local foldedNodes = self:getFoldedNodes() -- this must be called before adding the new node to the graph!
+
+            local clipboardContent
+            local ok, err = pcall(function()
+                clipboardContent = assert(load('return ' .. text, 'clipboard', 't', {}))()
+            end)
+            if not ok then
+                print(err)
+                return
+            end
+            ok, err = pcall(function()
+                -- node type
+                local nodeType = assert(clipboardContent.nodeType, 'Clipboard has no node type')
+                local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
+
+                -- nodes
+                local nodes = assert(clipboardContent.nodes, 'Clipboard has no nodes')
+                local clipboardNodeIndexToGraphNode = {}
+                for nodeIndex, node in pairs(nodes) do
+                    local node = nodes[nodeIndex]
+                    local nodeName = node.name
+                    local nodeClass = assert(nodeClasses[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
+                    local nodeInstance = graph:addNode(nodeClass, false)
+                    local loadArguments = node.loadArguments
+                    if loadArguments then
+                        nodeInstance:load(table.unpack(loadArguments))
+                    else
+                        nodeInstance:load()
+                    end
+                    nodeInstance:buildPins()
+                    clipboardNodeIndexToGraphNode[nodeIndex] = nodeInstance
+                end
+
+                -- links
+                local links = assert(clipboardContent.links, 'Clipboard has no links')
+                for i = 1, #links do
+                    local link = links[i]
+            
+                    local outputNode = assert(clipboardNodeIndexToGraphNode[link[1]], 'No node in clipboard for index ' .. tostring(link[1]))
+                    local outputPinIndex = link[2]
+                    local outputPin = assert(outputNode:getOutputPin(outputPinIndex), 'No output pin #' .. tostring(outputPinIndex) .. ' in node #' .. tostring(link[1]))
+            
+                    local inputNode = assert(clipboardNodeIndexToGraphNode[link[3]], 'No node in clipboard for index ' .. tostring(link[3]))
+                    local inputPinIndex = link[4]
+                    local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. tostring(link[3]))
+            
+                    outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
+                end
+
+                -- layout
+                local layout = assert(clipboardContent.layout, 'Clipboard has no layout')
+
+                for nodeIndex in pairs(nodes) do
+                    local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
+                    local nodePosition = assert(layout[nodeIndex])
+                    if nodePosition then
+                        local graphNodeIndex = graph:findNodeIndex(node)
+                        graphInfo.layout[graphNodeIndex] = nodePosition
+                        local nodeWidget = self:makeNodeWidget(node, foldedNodes)
+                        nodeWidget:setVisiblePosition(table.unpack(nodePosition))
+                        content:addChild(nodeWidget:getContainer())
+                    else
+                        assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
+                    end
+                end
+
+                self:drawLinks(true)
+            end)
+            if not ok then
+                print(err)
+            end
         end
 
         local function copy(widget)
@@ -162,9 +233,7 @@ function MainWindow:build()
                 links = links,
                 layout = layout
             }
-            local clipboardText = flat.dumpToString(clipboardContent)
-            print(clipboardText)
-            return clipboardText
+            return flat.dumpToString(clipboardContent)
         end
 
         content:scroll(scroll)
