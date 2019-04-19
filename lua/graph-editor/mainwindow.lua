@@ -119,17 +119,48 @@ function MainWindow:build()
         end
 
         local function copy(widget)
+            -- nodes
             local selectedNodes = self:getSelectedNodes()
-            local clipboardNodes = {}
+            local nodes = {}
             for nodeIndex, node in pairs(selectedNodes) do
-                clipboardNodes[nodeIndex] = { node:getLoadArguments() }
+                local clipboardNode = {
+                    name = node.path
+                }
+                local loadArguments = { node:getLoadArguments() }
+                if #loadArguments > 0 then
+                    clipboardNode.loadArguments = loadArguments
+                end
+                nodes[nodeIndex] = clipboardNode
             end
 
-            local selectedNodesLayout = self:getLayoutForNodes(selectedNodes)
+            -- links
+            local graph = self:getCurrentGraph()
+            local links = {}
+            for nodeIndex, node in pairs(selectedNodes) do
+                for outputPinIndex = 1, #node.outputPins do
+                    local outputPin = node.outputPins[outputPinIndex]
+                    for i = 1, #outputPin.pluggedInputPins do
+                        local pluggedInputPin = outputPin.pluggedInputPins[i]
+                        local inputPin = pluggedInputPin.inputPin
+                        local inputNode = pluggedInputPin.node
+                        local inputNodeIndex = graph:findNodeIndex(inputNode)
+                        if nodes[inputNodeIndex] then
+                            local inputPinIndex = inputNode:findInputPinIndex(inputPin)
+                            local linkDescription = {nodeIndex, outputPinIndex, inputNodeIndex, inputPinIndex}
+                            flat.arrayAdd(links, linkDescription)
+                        end
+                    end
+                end
+            end
+
+            -- layout
+            local layout = self:getLayoutForNodes(selectedNodes)
             
             local clipboardContent = {
-                nodes = clipboardNodes,
-                layout = selectedNodesLayout
+                nodeType = self:getCurrentGraph().nodeType,
+                nodes = nodes,
+                links = links,
+                layout = layout
             }
             local clipboardText = flat.dumpToString(clipboardContent)
             print(clipboardText)
@@ -1122,6 +1153,14 @@ function MainWindow:getLayoutForNodes(nodes)
         nodesLayout[nodeIndex] = layout[nodeIndex]
     end
     return nodesLayout
+end
+
+function MainWindow:getLinksBetweenNodes(nodes)
+    local links = {}
+    for nodeIndex, node in pairs(nodes) do
+        -- todo: iterate over output pins and check if the input node is in the node list
+    end
+    return links
 end
 
 function MainWindow:deleteNode(node)
