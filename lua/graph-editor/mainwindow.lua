@@ -168,17 +168,25 @@ function MainWindow:build()
                 -- layout
                 local layout = assert(clipboardContent.layout, 'Clipboard has no layout')
 
+                -- update newly added folded nodes
                 for nodeIndex in pairs(nodes) do
                     local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
-                    local nodePosition = assert(layout[nodeIndex])
+                    local nodePosition = layout[nodeIndex]
+                    if not nodePosition then
+                        assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
+                        foldedNodes[node] = true
+                    end
+                end
+
+                for nodeIndex in pairs(nodes) do
+                    local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
+                    local nodePosition = layout[nodeIndex]
                     if nodePosition then
                         local graphNodeIndex = graph:findNodeIndex(node)
                         graphInfo.layout[graphNodeIndex] = nodePosition
                         local nodeWidget = self:makeNodeWidget(node, foldedNodes)
                         nodeWidget:setVisiblePosition(table.unpack(nodePosition))
                         content:addChild(nodeWidget:getContainer())
-                    else
-                        assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
                     end
                 end
 
@@ -1203,12 +1211,24 @@ function MainWindow:getSelectedNodes()
     end
 
     local graph = graphInfo.graph
+    local layout = graphInfo.layout
 
     local selectedNodes = {}
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]
         if selection[node] then
             selectedNodes[i] = node
+            for inputPinIndex = 1, #node.inputPins do
+                local inputPin = node:getInputPin(inputPinIndex)
+                if inputPin.pluggedOutputPin then
+                    local inputNode = inputPin.pluggedOutputPin.node
+                    local inputNodeIndex = graph:findNodeIndex(inputNode)
+                    if not layout[inputNodeIndex] then
+                        assert(inputNode:isConstant(), 'No layout for a non constant node')
+                        selectedNodes[inputNodeIndex] = inputNode
+                    end
+                end
+            end
         end
     end
 
