@@ -126,6 +126,9 @@ function MainWindow:build()
                 print(err)
                 return
             end
+            if type(clipboardContent) ~= 'table' then
+                return
+            end
             ok, err = pcall(function()
                 -- node type
                 local nodeType = assert(clipboardContent.nodeType, 'Clipboard has no node type')
@@ -167,6 +170,8 @@ function MainWindow:build()
 
                 -- layout
                 local layout = assert(clipboardContent.layout, 'Clipboard has no layout')
+                local mouseX, mouseY = self:getMousePositionOnContentWithScrolling()
+                local _, contentHeight = self:getContent():getComputedSize()
 
                 -- update newly added folded nodes
                 for nodeIndex in pairs(nodes) do
@@ -182,10 +187,11 @@ function MainWindow:build()
                     local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
                     local nodePosition = layout[nodeIndex]
                     if nodePosition then
+                        local nodeLayout = { nodePosition[1] + mouseX, nodePosition[2] + mouseY - contentHeight }
                         local graphNodeIndex = graph:findNodeIndex(node)
-                        graphInfo.layout[graphNodeIndex] = nodePosition
+                        graphInfo.layout[graphNodeIndex] = nodeLayout
                         local nodeWidget = self:makeNodeWidget(node, foldedNodes)
-                        nodeWidget:setVisiblePosition(table.unpack(nodePosition))
+                        nodeWidget:setVisiblePosition(nodeLayout[1], nodeLayout[2])
                         content:addChild(nodeWidget:getContainer())
                     end
                 end
@@ -206,6 +212,7 @@ function MainWindow:build()
             if not ok then
                 print(err)
             end
+            assert(self:layoutSanityCheck())
         end
 
         local function copy(widget)
@@ -245,6 +252,28 @@ function MainWindow:build()
 
             -- layout
             local layout = self:getLayoutForNodes(selectedNodes)
+            local bottomLeft = {math.huge, math.huge}
+            local topRight = {-math.huge, -math.huge}
+            for nodeIndex, nodeLayout in pairs(layout) do
+                if nodeLayout[1] < bottomLeft[1] then
+                    bottomLeft[1] = nodeLayout[1]
+                end
+                if nodeLayout[1] > topRight[1] then
+                    topRight[1] = nodeLayout[1]
+                end
+
+                if nodeLayout[2] < bottomLeft[2] then
+                    bottomLeft[2] = nodeLayout[2]
+                end
+                if nodeLayout[2] > topRight[2] then
+                    topRight[2] = nodeLayout[2]
+                end
+            end
+            local center = { (topRight[1] + bottomLeft[1]) / 2, (topRight[2] + bottomLeft[2]) / 2 }
+            for nodeIndex, nodeLayout in pairs(layout) do
+                nodeLayout[1] = nodeLayout[1] - center[1]
+                nodeLayout[2] = nodeLayout[2] - center[2]
+            end
             
             local clipboardContent = {
                 nodeType = self:getCurrentGraph().nodeType,
@@ -1250,7 +1279,8 @@ function MainWindow:getLayoutForNodes(nodes)
     local layout = self.currentGraphInfo.layout
     local nodesLayout = {}
     for nodeIndex, node in pairs(nodes) do
-        nodesLayout[nodeIndex] = layout[nodeIndex]
+        local nodeLayout = layout[nodeIndex]
+        nodesLayout[nodeIndex] = { nodeLayout[1], nodeLayout[2] }
     end
     return nodesLayout
 end
