@@ -15,7 +15,9 @@ class DynamicPool
 public:
 	DynamicPool() :
 		m_buffer(nullptr),
-		m_head(nullptr)
+		m_head(nullptr),
+		m_size(0),
+		m_objectSize(0)
 #ifdef FLAT_DEBUG
 		, m_numAllocatedObjects(0)
 #endif
@@ -51,7 +53,7 @@ public:
 		for (unsigned int i = 0; i < size - 1; ++i)
 		{
 			void* entry = reinterpret_cast<void*>(reinterpret_cast<unsigned char*>(m_buffer) + i * objectSize);
-			void* next = reinterpret_cast<void*>(reinterpret_cast<unsigned char*>(m_buffer) + (i + 1) * objectSize);
+			void* next = reinterpret_cast<void*>(reinterpret_cast<unsigned char*>(m_buffer) + (static_cast<size_t>(i) + 1) * objectSize);
 			setNext(entry, next);
 		}
 		*reinterpret_cast<void**>(last()) = nullptr;

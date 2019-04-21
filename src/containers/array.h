@@ -126,6 +126,7 @@ class Array<bool>
 		{
 			size_t bytesSize = getBytesSize();
 			m_buffer = static_cast<char*>(malloc(bytesSize));
+			FLAT_ASSERT(m_buffer != nullptr);
 			memcpy(m_buffer, array.m_buffer, bytesSize);
 		}
 		
@@ -138,6 +139,7 @@ class Array<bool>
 				
 			size_t numBytes = getBytesSize();
 			m_buffer = static_cast<char*>(malloc(numBytes));
+			FLAT_ASSERT(m_buffer != nullptr);
 			memcpy(m_buffer, array.m_buffer, numBytes);
 		}
 		
@@ -150,7 +152,9 @@ class Array<bool>
 		void resize(unsigned int size)
 		{
 			m_size = size;
-			m_buffer = static_cast<char*>(realloc(m_buffer, getBytesSize()));
+			char* newBuffer = static_cast<char*>(realloc(m_buffer, getBytesSize()));
+			FLAT_ASSERT(newBuffer != nullptr);
+			m_buffer = newBuffer;
 		}
 		
 		bool isInRange(unsigned int index) const

@@ -8,6 +8,7 @@ namespace render
 {
 
 SpriteBatch::SpriteBatch() :
+	m_numVertices(0),
 	m_texture(nullptr)
 {
 
@@ -29,7 +30,7 @@ void SpriteBatch::add(const BaseSprite& sprite)
 #ifdef FLAT_DEBUG
 	else
 	{
-		FLAT_ASSERT(m_numVertices > 0 && m_numVertices + BaseSprite::NUM_VERTICES < m_vertices.size());
+		FLAT_ASSERT(m_numVertices > 0 && static_cast<size_t>(m_numVertices) + BaseSprite::NUM_VERTICES < m_vertices.size());
 		FLAT_ASSERT(m_texture == sprite.getTexture().get());
 	}
 #endif
