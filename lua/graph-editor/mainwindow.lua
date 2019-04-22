@@ -114,13 +114,174 @@ function MainWindow:build()
         end
 
         local function paste(widget, text)
-            print 'pasting'
-            print(text)
+            local graphInfo = self.currentGraphInfo
+            local graph = graphInfo.graph
+            local foldedNodes = self:getFoldedNodes() -- this must be called before adding the new node to the graph!
+
+            local clipboardContent
+            local ok, err = pcall(function()
+                clipboardContent = assert(load('return ' .. text, 'clipboard', 't', {}))()
+            end)
+            if not ok then
+                print(err)
+                return
+            end
+            if type(clipboardContent) ~= 'table' then
+                return
+            end
+            ok, err = pcall(function()
+                -- node type
+                local nodeType = assert(clipboardContent.nodeType, 'Clipboard has no node type')
+                local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
+
+                -- nodes
+                local nodes = assert(clipboardContent.nodes, 'Clipboard has no nodes')
+                local clipboardNodeIndexToGraphNode = {}
+                for nodeIndex, node in pairs(nodes) do
+                    local node = nodes[nodeIndex]
+                    local nodeName = node.name
+                    local nodeClass = assert(nodeClasses[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
+                    local nodeInstance = graph:addNode(nodeClass, false)
+                    local loadArguments = node.loadArguments
+                    if loadArguments then
+                        nodeInstance:load(table.unpack(loadArguments))
+                    else
+                        nodeInstance:load()
+                    end
+                    nodeInstance:buildPins()
+                    clipboardNodeIndexToGraphNode[nodeIndex] = nodeInstance
+                end
+
+                -- links
+                local links = assert(clipboardContent.links, 'Clipboard has no links')
+                for i = 1, #links do
+                    local link = links[i]
+            
+                    local outputNode = assert(clipboardNodeIndexToGraphNode[link[1]], 'No node in clipboard for index ' .. tostring(link[1]))
+                    local outputPinIndex = link[2]
+                    local outputPin = assert(outputNode:getOutputPin(outputPinIndex), 'No output pin #' .. tostring(outputPinIndex) .. ' in node #' .. tostring(link[1]))
+            
+                    local inputNode = assert(clipboardNodeIndexToGraphNode[link[3]], 'No node in clipboard for index ' .. tostring(link[3]))
+                    local inputPinIndex = link[4]
+                    local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. tostring(link[3]))
+            
+                    outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
+                end
+
+                -- layout
+                local layout = assert(clipboardContent.layout, 'Clipboard has no layout')
+                local mouseX, mouseY = self:getMousePositionOnContentWithScrolling()
+                local _, contentHeight = self:getContent():getComputedSize()
+
+                -- update newly added folded nodes
+                for nodeIndex in pairs(nodes) do
+                    local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
+                    local nodePosition = layout[nodeIndex]
+                    if not nodePosition then
+                        assert(node:isConstant(), 'No position for non constant node: ' .. node:getName())
+                        foldedNodes[node] = true
+                    end
+                end
+
+                for nodeIndex in pairs(nodes) do
+                    local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
+                    local nodePosition = layout[nodeIndex]
+                    if nodePosition then
+                        local nodeLayout = { nodePosition[1] + mouseX, nodePosition[2] + mouseY - contentHeight }
+                        local graphNodeIndex = graph:findNodeIndex(node)
+                        graphInfo.layout[graphNodeIndex] = nodeLayout
+                        local nodeWidget = self:makeNodeWidget(node, foldedNodes)
+                        nodeWidget:setVisiblePosition(nodeLayout[1], nodeLayout[2])
+                        content:addChild(nodeWidget:getContainer())
+                    end
+                end
+
+                self:drawLinks(true)
+
+                self:clearSelectedWidgets()
+                for nodeIndex in pairs(nodes) do
+                    local node = assert(clipboardNodeIndexToGraphNode[nodeIndex])
+                    local nodeWidget = graphInfo.nodeWidgets[node]
+                    if nodeWidget then
+                        self:selectNode(nodeWidget)
+                    else
+                        assert(node:isConstant(), 'No node widget for non constant node: ' .. node:getName())
+                    end
+                end
+            end)
+            if not ok then
+                print(err)
+            end
+            assert(self:layoutSanityCheck())
         end
 
         local function copy(widget)
-            print 'copying'
-            return "copied text"
+            -- nodes
+            local selectedNodes = self:getSelectedNodes()
+            local nodes = {}
+            for nodeIndex, node in pairs(selectedNodes) do
+                local clipboardNode = {
+                    name = node.path
+                }
+                local loadArguments = { node:getLoadArguments() }
+                if #loadArguments > 0 then
+                    clipboardNode.loadArguments = loadArguments
+                end
+                nodes[nodeIndex] = clipboardNode
+            end
+
+            -- links
+            local graph = self:getCurrentGraph()
+            local links = {}
+            for nodeIndex, node in pairs(selectedNodes) do
+                for outputPinIndex = 1, #node.outputPins do
+                    local outputPin = node.outputPins[outputPinIndex]
+                    for i = 1, #outputPin.pluggedInputPins do
+                        local pluggedInputPin = outputPin.pluggedInputPins[i]
+                        local inputPin = pluggedInputPin.inputPin
+                        local inputNode = pluggedInputPin.node
+                        local inputNodeIndex = graph:findNodeIndex(inputNode)
+                        if nodes[inputNodeIndex] then
+                            local inputPinIndex = inputNode:findInputPinIndex(inputPin)
+                            local linkDescription = {nodeIndex, outputPinIndex, inputNodeIndex, inputPinIndex}
+                            flat.arrayAdd(links, linkDescription)
+                        end
+                    end
+                end
+            end
+
+            -- layout
+            local layout = self:getLayoutForNodes(selectedNodes)
+            local bottomLeft = {math.huge, math.huge}
+            local topRight = {-math.huge, -math.huge}
+            for nodeIndex, nodeLayout in pairs(layout) do
+                if nodeLayout[1] < bottomLeft[1] then
+                    bottomLeft[1] = nodeLayout[1]
+                end
+                if nodeLayout[1] > topRight[1] then
+                    topRight[1] = nodeLayout[1]
+                end
+
+                if nodeLayout[2] < bottomLeft[2] then
+                    bottomLeft[2] = nodeLayout[2]
+                end
+                if nodeLayout[2] > topRight[2] then
+                    topRight[2] = nodeLayout[2]
+                end
+            end
+            local center = { (topRight[1] + bottomLeft[1]) / 2, (topRight[2] + bottomLeft[2]) / 2 }
+            for nodeIndex, nodeLayout in pairs(layout) do
+                nodeLayout[1] = nodeLayout[1] - center[1]
+                nodeLayout[2] = nodeLayout[2] - center[2]
+            end
+            
+            local clipboardContent = {
+                nodeType = self:getCurrentGraph().nodeType,
+                nodes = nodes,
+                links = links,
+                layout = layout
+            }
+            return flat.dumpToString(clipboardContent)
         end
 
         content:scroll(scroll)
@@ -1079,6 +1240,57 @@ function MainWindow:deleteSelectedNodes()
     graphInfo.selectedNodeWidgets = {}
     self:updateAllNodesPinSocketWidgets()
     self:drawLinks()
+end
+
+function MainWindow:getSelectedNodes()
+    local graphInfo = self.currentGraphInfo
+    local selectedNodeWidgets = graphInfo.selectedNodeWidgets
+    local selection = {}
+    for nodeWidget, _ in pairs(selectedNodeWidgets) do
+        selection[nodeWidget.node] = true
+    end
+
+    local graph = graphInfo.graph
+    local layout = graphInfo.layout
+
+    local selectedNodes = {}
+    for i = 1, #graph.nodeInstances do
+        local node = graph.nodeInstances[i]
+        if selection[node] then
+            selectedNodes[i] = node
+            for inputPinIndex = 1, #node.inputPins do
+                local inputPin = node:getInputPin(inputPinIndex)
+                if inputPin.pluggedOutputPin then
+                    local inputNode = inputPin.pluggedOutputPin.node
+                    local inputNodeIndex = graph:findNodeIndex(inputNode)
+                    if not layout[inputNodeIndex] then
+                        assert(inputNode:isConstant(), 'No layout for a non constant node')
+                        selectedNodes[inputNodeIndex] = inputNode
+                    end
+                end
+            end
+        end
+    end
+
+    return selectedNodes
+end
+
+function MainWindow:getLayoutForNodes(nodes)
+    local layout = self.currentGraphInfo.layout
+    local nodesLayout = {}
+    for nodeIndex, node in pairs(nodes) do
+        local nodeLayout = layout[nodeIndex]
+        nodesLayout[nodeIndex] = { nodeLayout[1], nodeLayout[2] }
+    end
+    return nodesLayout
+end
+
+function MainWindow:getLinksBetweenNodes(nodes)
+    local links = {}
+    for nodeIndex, node in pairs(nodes) do
+        -- todo: iterate over output pins and check if the input node is in the node list
+    end
+    return links
 end
 
 function MainWindow:deleteNode(node)
