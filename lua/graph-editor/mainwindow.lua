@@ -1280,7 +1280,9 @@ function MainWindow:getLayoutForNodes(nodes)
     local nodesLayout = {}
     for nodeIndex, node in pairs(nodes) do
         local nodeLayout = layout[nodeIndex]
-        nodesLayout[nodeIndex] = { nodeLayout[1], nodeLayout[2] }
+        if nodeLayout then
+            nodesLayout[nodeIndex] = { nodeLayout[1], nodeLayout[2] }
+        end
     end
     return nodesLayout
 end
