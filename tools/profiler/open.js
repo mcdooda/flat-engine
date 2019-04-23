@@ -231,6 +231,7 @@ window.onload = function() {
                 fileLoadingElement.style.width = (message.data.loading * 100) + '%';
             }
         };
+        document.title = fileElement.files[0].name;
         worker.postMessage(fileElement.files[0]);
     });
 }

@@ -138,25 +138,13 @@ function Graph:load(graphDescription)
 
         local outputNodeIndex = link[1]
         local outputPinIndex = link[2]
-        local outputNode = self.nodeInstances[outputNodeIndex]
-        if not outputNode then
-            error('No node #' .. tostring(outputPinIndex) .. ' in graph')
-        end
-        local outputPin = outputNode:getOutputPin(outputPinIndex)
-        if not outputPin then
-            error('No output pin #' .. tostring(outputPinIndex) .. ' in node #' .. outputNodeIndex)
-        end
+        local outputNode = assert(self.nodeInstances[outputNodeIndex], 'No node #' .. tostring(outputNodeIndex) .. ' in graph')
+        local outputPin = assert(outputNode:getOutputPin(outputPinIndex), 'No output pin #' .. tostring(outputPinIndex) .. ' in node #' .. outputNodeIndex)
 
         local inputNodeIndex = link[3]
         local inputPinIndex = link[4]
-        local inputNode = self.nodeInstances[inputNodeIndex]
-        if not inputNode then
-            error('No node #' .. tostring(inputNodeIndex) .. ' in graph')
-        end
-        local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'no input pin for index ' .. tostring(inputPinIndex))
-        if not inputPin then
-            error('No input pin #' .. tostring(intputPinIndex) .. ' in node #' .. inputNodeIndex)
-        end
+        local inputNode = assert(self.nodeInstances[inputNodeIndex], 'No node #' .. tostring(inputNodeIndex) .. ' in graph')
+        local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. inputNodeIndex)
 
         outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
     end

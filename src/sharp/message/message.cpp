@@ -31,6 +31,8 @@ void Message::reset()
 		m_flat.lua->pushVariable({"flat", "ui", "prompt"});
 		m_prompt.set(L, -1);
 
+		m_messageThread.reset();
+
 		lua_pop(L, 3);
 	}
 }

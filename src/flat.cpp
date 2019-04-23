@@ -21,6 +21,7 @@ Flat::Flat(const std::string& luaPath, const std::string& assetsPath)
 	audio = std::make_unique<audio::Audio>();
 	input = std::make_unique<input::Input>(*this);
 	random = std::make_unique<random::Random>();
+
 	lua = std::make_unique<lua::Lua>(*this, luaPath, assetsPath);
 	ui = std::make_unique<sharp::ui::Ui>(*this);
 	notify = std::make_unique<sharp::notify::Notify>(*this);
@@ -30,6 +31,10 @@ Flat::Flat(const std::string& luaPath, const std::string& assetsPath)
 Flat::~Flat()
 {
 	SDL_Quit();
+
+	ui = nullptr;
+	notify = nullptr;
+	message = nullptr;
 }
 
 } // flat

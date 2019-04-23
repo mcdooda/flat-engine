@@ -69,7 +69,7 @@ namespace std
 	{
 		size_t operator()(const flat::Vector2i& k) const
 		{
-			return k.x * 0x9e3779b9 + k.y;
+			return static_cast<size_t>(k.x) * 0x9e3779b9 + k.y;
 		}
 	};
 }

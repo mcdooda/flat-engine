@@ -14,6 +14,7 @@ class Thread
 		Thread();
 
 		void set(lua_State* L, int index);
+		void reset();
 
 		bool start(int numArgs);
 		int update(int numResults = 0);

@@ -39,13 +39,17 @@ function StateMachineNodeRuntime:cacheScriptRuntimes(contextData)
     -- compile rules
     local runtimesByState = {}
     for stateName, state in pairs(self.stateMachineDescription:getStates()) do
-        local scriptRuntime = ScriptRuntime:new(state.graph)
+        local stateGraph = state.graph:clone()
+        stateGraph:resolveCompounds()
+        local scriptRuntime = ScriptRuntime:new(stateGraph)
         scriptRuntime:setContext(contextData.context)
 
         local ruleScriptRuntimes = {}
         for i = 1, #state.outRules do
             local rule = state.outRules[i]
-            local ruleScriptRuntime = ScriptRuntime:new(rule.graph)
+            local ruleGraph = rule.graph:clone()
+            ruleGraph:resolveCompounds()
+            local ruleScriptRuntime = ScriptRuntime:new(ruleGraph)
             ruleScriptRuntime:setContext(contextData.context)
             ruleScriptRuntimes[rule] = ruleScriptRuntime
         end

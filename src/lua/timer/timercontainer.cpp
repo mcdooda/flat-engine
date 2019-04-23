@@ -212,10 +212,10 @@ void TimerContainer::clearTimers()
 
 bool TimerContainer::compareTimersByTimeout(const Timer* a, const Timer* b)
 {
-	if (a == nullptr)
-		return true;
 	if (b == nullptr)
 		return false;
+	if (a == nullptr)
+		return true;
 	return a->getTimeOut() < b->getTimeOut();
 }
 

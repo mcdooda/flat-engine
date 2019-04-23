@@ -82,8 +82,9 @@ int l_Gamepads_isPressed(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
 	GamepadButton gamepadButton = static_cast<GamepadButton>(luaL_checkinteger(L, 2));
-	lua_pushboolean(L, gamepads.isPressed(gamepadIndex, gamepadButton));
+	lua_pushboolean(L, gamepads.isPressed(gamepadIndex - 1, gamepadButton));
 	return 1;
 }
 
@@ -91,8 +92,9 @@ int l_Gamepads_isJustPressed(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
 	GamepadButton gamepadButton = static_cast<GamepadButton>(luaL_checkinteger(L, 2));
-	lua_pushboolean(L, gamepads.isJustPressed(gamepadIndex, gamepadButton));
+	lua_pushboolean(L, gamepads.isJustPressed(gamepadIndex - 1, gamepadButton));
 	return 1;
 }
 
@@ -100,8 +102,9 @@ int l_Gamepads_isJustReleased(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
 	GamepadButton gamepadButton = static_cast<GamepadButton>(luaL_checkinteger(L, 2));
-	lua_pushboolean(L, gamepads.isJustReleased(gamepadIndex, gamepadButton));
+	lua_pushboolean(L, gamepads.isJustReleased(gamepadIndex - 1, gamepadButton));
 	return 1;
 }
 
@@ -109,8 +112,9 @@ int l_Gamepads_hasAxisJustMoved(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
 	GamepadAxis gamepadAxis = static_cast<GamepadAxis>(luaL_checkinteger(L, 2));
-	lua_pushboolean(L, gamepads.hasAxisJustMoved(gamepadIndex, gamepadAxis));
+	lua_pushboolean(L, gamepads.hasAxisJustMoved(gamepadIndex - 1, gamepadAxis));
 	return 1;
 }
 
@@ -118,8 +122,9 @@ int l_Gamepads_getAxisValue(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
 	GamepadAxis gamepadAxis = static_cast<GamepadAxis>(luaL_checkinteger(L, 2));
-	lua_pushnumber(L, gamepads.getAxisValue(gamepadIndex, gamepadAxis));
+	lua_pushnumber(L, gamepads.getAxisValue(gamepadIndex - 1, gamepadAxis));
 	return 1;
 }
 
@@ -128,7 +133,8 @@ int l_Gamepads_getLeftStickValue(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
-	flat::Vector2 leftStickValue = gamepads.getLeftStickValue(gamepadIndex);
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
+	flat::Vector2 leftStickValue = gamepads.getLeftStickValue(gamepadIndex - 1);
 	lua_pushnumber(L, leftStickValue.x);
 	lua_pushnumber(L, leftStickValue.y);
 	return 2;
@@ -138,7 +144,8 @@ int l_Gamepads_getRightStickValue(lua_State* L)
 {
 	const flat::input::Gamepads& gamepads = *flat::lua::getFlat(L).input->gamepads;
 	GamepadIndex gamepadIndex = static_cast<GamepadIndex>(luaL_checkinteger(L, 1));
-	flat::Vector2 rightStickValue = gamepads.getRightStickValue(gamepadIndex);
+	luaL_argcheck(L, gamepadIndex >= 1, 1, "invalid gamepad index");
+	flat::Vector2 rightStickValue = gamepads.getRightStickValue(gamepadIndex - 1);
 	lua_pushnumber(L, rightStickValue.x);
 	lua_pushnumber(L, rightStickValue.y);
 	return 2;

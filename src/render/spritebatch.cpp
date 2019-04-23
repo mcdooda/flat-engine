@@ -8,6 +8,7 @@ namespace render
 {
 
 SpriteBatch::SpriteBatch() :
+	m_numVertices(0),
 	m_texture(nullptr)
 {
 
@@ -29,7 +30,7 @@ void SpriteBatch::add(const BaseSprite& sprite)
 #ifdef FLAT_DEBUG
 	else
 	{
-		FLAT_ASSERT(m_numVertices > 0 && m_numVertices + BaseSprite::NUM_VERTICES < m_vertices.size());
+		FLAT_ASSERT(m_numVertices > 0 && static_cast<size_t>(m_numVertices) + BaseSprite::NUM_VERTICES < m_vertices.size());
 		FLAT_ASSERT(m_texture == sprite.getTexture().get());
 	}
 #endif
@@ -41,12 +42,18 @@ void SpriteBatch::add(const BaseSprite& sprite)
 	const float depth = sprite.getDepth();
 	const BaseSprite::VertexPositions& vertexPositions = sprite.getVertexPositions();
 	const BaseSprite::VertexUvs& vertexUvs = sprite.getVertexUvs();
+	Vector4 pos2d(0.f, 0.f, 0.f, 1.f);
+	Vector4 pos(0.f, 0.f, 0.f, 1.f);
 	for (int i = 0; i < BaseSprite::NUM_VERTICES; ++i)
 	{
 		FLAT_ASSERT(m_numVertices + 1 > 0);
 		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
 		FLAT_ASSERT(m_numVertices > 0);
-		spriteBatchVertex.pos = Vector2(transform * Vector4(vertexPositions[i], 0.f, 1.f));
+		pos2d.x = vertexPositions[i].x;
+		pos2d.y = vertexPositions[i].y;
+		pos = transform * pos2d;
+		spriteBatchVertex.pos.x = pos.x;
+		spriteBatchVertex.pos.y = pos.y;
 		spriteBatchVertex.uv = vertexUvs[i];
 		spriteBatchVertex.color = color;
 		spriteBatchVertex.normal = normal;

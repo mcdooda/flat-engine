@@ -35,6 +35,8 @@ public:
 		video::Color color;
 		Vector3 normal;
 		float depth;
+
+		Vertex() : depth(0.f) {}
 	};
 
 private:
