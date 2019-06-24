@@ -84,6 +84,7 @@ class QuadTree
 		void removeObject(T object);
 		void removeObject(T object, const AABB2& objectAABB);
 		void removeObject(T object, int cellIndex);
+		void replaceObject(T originalObject, T newObject, int cellIndex);
 		void clear();
 
 		template <class Container>
@@ -138,6 +139,7 @@ class QuadTree
 		void addObjectInCell(Cell& cell, T object, const AABB2& objectAABB);
 		void updateObjectInCell(Cell& cell, T object, const AABB2& objectAABB);
 		void removeObjectInCell(Cell& cell, T object);
+		void replaceObjectInCell(Cell& cell, T originalObject, T newObject);
 
 #ifdef FLAT_DEBUG
 		void checkFreeCellDataListIntegrity();
@@ -185,6 +187,12 @@ class QuadTree
 					m_object = object;
 					m_objectAABB = objectAABB;
 					FLAT_ASSERT(!isAvailable());
+				}
+
+				inline void replaceObject(T newObject)
+				{
+					FLAT_ASSERT(!isAvailable());
+					m_object = newObject;
 				}
 
 				inline T getObject() const
@@ -325,6 +333,16 @@ inline void QuadTree<T, depth, GetAABB>::removeObject(T object, int cellIndex)
 	FLAT_ASSERT(m_objects.find(object) != m_objects.end());
 	FLAT_DEBUG_ONLY(m_objects.erase(object);)
 	removeObjectInCell(m_cells[cellIndex], object);
+}
+
+template <class T, int depth, void(*GetAABB)(T, AABB2&)>
+void flat::geometry::QuadTree<T, depth, GetAABB>::replaceObject(T originalObject, T newObject, int cellIndex)
+{
+	FLAT_ASSERT(m_objects.find(originalObject) != m_objects.end());
+	FLAT_ASSERT(m_objects.find(newObject) == m_objects.end());
+	FLAT_DEBUG_ONLY(m_objects.erase(originalObject);)
+	FLAT_DEBUG_ONLY(m_objects.insert(newObject);)
+	replaceObjectInCell(m_cells[cellIndex], originalObject, newObject);
 }
 
 template <class T, int depth, void (*GetAABB)(T, AABB2&)>
@@ -798,6 +816,20 @@ void QuadTree<T, depth, GetAABB>::removeObjectInCell(Cell& cell, T object)
 	}
 
 	FLAT_ASSERT(m_firstFreeCellDataIndex == CellIndex::INVALID || m_cellData[m_firstFreeCellDataIndex].isAvailable());
+}
+
+template <class T, int depth, void(*GetAABB)(T, AABB2&)>
+void flat::geometry::QuadTree<T, depth, GetAABB>::replaceObjectInCell(Cell& cell, T originalObject, T newObject)
+{
+	FLAT_ASSERT(cell.m_cellDataCount > 0);
+	FLAT_ASSERT(cell.m_cellDataIndex != CellIndex::INVALID);
+
+	// find object in cell
+	std::vector<CellData>::iterator it = m_cellData.begin() + cell.m_cellDataIndex;  
+	std::vector<CellData>::iterator end = it + cell.m_cellDataCount;
+	it = std::find(it, end, originalObject);
+	FLAT_ASSERT(it != end);
+	it->replaceObject(newObject);
 }
 
 #ifdef FLAT_DEBUG

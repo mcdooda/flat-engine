@@ -151,6 +151,18 @@ const char* Lua::getTypeName(size_t type) const
 	return nullptr;
 }
 
+void Lua::setGarbageCollectorEnabled(bool enabled)
+{
+	if (enabled)
+	{
+		lua_gc(state, LUA_GCRESTART, 0);
+	}
+	else
+	{
+		lua_gc(state, LUA_GCSTOP, 0);
+	}
+}
+
 void Lua::collectGarbage() const
 {
 	lua_gc(state, LUA_GCCOLLECT, 0);

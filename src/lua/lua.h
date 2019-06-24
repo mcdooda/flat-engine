@@ -48,6 +48,7 @@ class Lua
 
 		const char* getTypeName(size_t type) const;
 
+		void setGarbageCollectorEnabled(bool enabled);
 		void collectGarbage() const;
 
 		template <class T, typename... Args>
