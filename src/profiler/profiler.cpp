@@ -34,14 +34,14 @@ void Profiler::endSection(const ProfilerSection* profilerSection)
 
 void Profiler::startRecording()
 {
-	m_binaryWriter = new BinaryWriter("profile.fp");
+	m_binaryWriter = std::make_unique<BinaryWriter>("profile.fp");
 	pushStartedSections();
 }
 
 void Profiler::stopRecording()
 {
 	popStartedSections();
-	FLAT_DELETE(m_binaryWriter);
+	m_binaryWriter.reset();
 }
 
 void Profiler::pushStartedSections()

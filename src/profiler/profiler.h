@@ -42,7 +42,7 @@ class Profiler : public flat::util::Singleton<Profiler>
 	private:
 		std::vector<const ProfilerSection*> m_currentSections;
 
-		BinaryWriter* m_binaryWriter;
+		std::unique_ptr<BinaryWriter> m_binaryWriter;
 };
 
 } // profiler
