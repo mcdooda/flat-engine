@@ -29,7 +29,7 @@ class BinaryWriter
 		BinaryWriter(const std::string& fileName);
 		BinaryWriter(const BinaryWriter&) = delete;
 		BinaryWriter(BinaryWriter&&) = delete;
-		~BinaryWriter();
+		~BinaryWriter() = default;
 
 		void operator=(const BinaryWriter&) = delete;
 		void operator=(const BinaryWriter&&) = delete;
@@ -37,10 +37,10 @@ class BinaryWriter
 		void pushSection(const char* name, Profiler::TimePoint startTime);
 		void popSection(Profiler::TimePoint endTime);
 
+		void writeSectionNames();
+
 	private:
 		SectionId getSectionId(const char* name);
-
-		void writeSectionNames();
 
 		template <class T>
 		inline void write(T value);

@@ -15,11 +15,6 @@ BinaryWriter::BinaryWriter(const std::string& fileName) :
 	FLAT_ASSERT(m_file.is_open());
 }
 
-BinaryWriter::~BinaryWriter()
-{
-	writeSectionNames();
-}
-
 void BinaryWriter::pushSection(const char* name, Profiler::TimePoint startTime)
 {
 	write(Code::PUSH_SECTION);

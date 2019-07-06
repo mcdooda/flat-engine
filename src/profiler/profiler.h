@@ -36,13 +36,12 @@ class Profiler : public flat::util::Singleton<Profiler>
 		void stopRecording();
 
 	private:
-		void pushStartedSections();
 		void popStartedSections();
 
 	private:
 		std::vector<const ProfilerSection*> m_currentSections;
-
-		std::unique_ptr<BinaryWriter> m_binaryWriter;
+		BinaryWriter* m_binaryWriter;
+		bool m_shouldWrite; // do not write anything until the initially started sections are finished
 };
 
 } // profiler

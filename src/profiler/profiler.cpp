@@ -15,7 +15,7 @@ namespace profiler
 void Profiler::startSection(const ProfilerSection* profilerSection)
 {
 	m_currentSections.push_back(profilerSection);
-	if (m_binaryWriter != nullptr)
+	if (m_binaryWriter != nullptr && m_shouldWrite)
 	{
 		m_binaryWriter->pushSection(profilerSection->m_name, profilerSection->m_startTime);
 	}
@@ -27,30 +27,29 @@ void Profiler::endSection(const ProfilerSection* profilerSection)
 	m_currentSections.pop_back();
 	if (m_binaryWriter != nullptr)
 	{
-		std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
-		m_binaryWriter->popSection(end);
+		if (m_shouldWrite)
+		{
+			std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+			m_binaryWriter->popSection(end);
+		}
+		else if (m_currentSections.size() == 0)
+		{
+			m_shouldWrite = true;
+		}
 	}
 }
 
 void Profiler::startRecording()
 {
-	m_binaryWriter = std::make_unique<BinaryWriter>("profile.fp");
-	pushStartedSections();
+	m_shouldWrite = false;
+	m_binaryWriter = new BinaryWriter("profile.fp");
 }
 
 void Profiler::stopRecording()
 {
 	popStartedSections();
-	m_binaryWriter.reset();
-}
-
-void Profiler::pushStartedSections()
-{
-	FLAT_ASSERT(m_binaryWriter != nullptr);
-	for (const ProfilerSection* profilerSection : m_currentSections)
-	{
-		m_binaryWriter->pushSection(profilerSection->m_name, profilerSection->m_startTime);
-	}
+	m_binaryWriter->writeSectionNames();
+	FLAT_DELETE(m_binaryWriter);
 }
 
 void Profiler::popStartedSections()
