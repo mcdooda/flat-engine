@@ -18,6 +18,7 @@ return {
 
     'math/lessthan',
     'math/greaterthan',
+    'math/isinrange',
     'math/equal',
     'math/and',
     'math/or',
