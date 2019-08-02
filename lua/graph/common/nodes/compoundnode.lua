@@ -205,11 +205,11 @@ function CompoundNode:resolve(parentGraph)
                 local subGraphInputNodeOutputPin = subGraphInputNodeOutputPins[i]
                 local pluggedInputPins = subGraphInputNodeOutputPin.pluggedInputPins
                 for j = 1, #pluggedInputPins do
-                    local pluggedInputPin = pluggedInputPins[j]
+                    local pluggedInputPin = assert(pluggedInputPins[j], 'No pin #' .. j)
 
                     -- clone from the compound
-                    local inputNode = assert(clones[pluggedInputPin.node])
-                    local inputPinIndex = assert(pluggedInputPin.node:findInputPinIndex(pluggedInputPin.inputPin))
+                    local inputNode = assert(clones[pluggedInputPin.node], 'Cannot find clone for node ' .. pluggedInputPin.node:getName() .. '(' .. tostring(pluggedInputPin.node) .. ')')
+                    local inputPinIndex = assert(pluggedInputPin.node:findInputPinIndex(pluggedInputPin.inputPin), 'Cannot find pin ' .. tostring(pluggedInputPin.pinName) .. ' in node ' .. pluggedInputPin.node:getName())
                     local inputPin = assert(inputNode.inputPins[inputPinIndex])
 
                     -- plug the original parent graph node to the clone
