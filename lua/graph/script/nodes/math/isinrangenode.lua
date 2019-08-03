@@ -19,9 +19,6 @@ function IsInRangeNode:execute(runtime)
     local operand1 = runtime:readPin(self.operand1InPin)
     local operand2 = runtime:readPin(self.operand2InPin)
     local operand3 = runtime:readPin(self.operand3InPin)
-    print(operand1)
-    print(operand2)
-    print(operand3)
 
     local result = self.compute(operand1, operand2, operand3)
 
