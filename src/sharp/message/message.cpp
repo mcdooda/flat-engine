@@ -44,7 +44,7 @@ void Message::update()
 		lua_State* L = m_flat.lua->state;
 		{
 			FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-			int status = m_messageThread.update(2);
+			int status = m_messageThread.resume(0, 2);
 			switch (status)
 			{
 			case LUA_YIELD:
@@ -85,7 +85,7 @@ bool Message::confirm(const std::string& message, std::function<void(bool)> call
 
 		lua_pushstring(L, message.c_str());
 
-		m_messageThread.start(1);
+		m_messageThread.resume(1, 0);
 
 		lua_pop(L, 1);
 	}
@@ -128,7 +128,7 @@ bool Message::choice(const std::string& message, const std::vector<std::string>&
 			lua_pushnil(L);
 		}
 
-		m_messageThread.start(2);
+		m_messageThread.resume(2, 0);
 
 		lua_pop(L, 1);
 	}
@@ -157,7 +157,7 @@ bool Message::prompt(const std::string& message, const std::string& defaultValue
 
 		lua_pushstring(L, defaultValue.c_str());
 
-		m_messageThread.start(2);
+		m_messageThread.resume(2, 0);
 
 		lua_pop(L, 1);
 	}

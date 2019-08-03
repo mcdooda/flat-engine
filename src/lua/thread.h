@@ -16,14 +16,14 @@ class Thread
 		void set(lua_State* L, int index);
 		void reset();
 
-		bool start(int numArgs);
-		int update(int numResults);
+		int resume(int numArgs, int numResults);
 
 		void stop();
 
 		inline bool isRunning() const { return m_status == LUA_YIELD; }
 		inline bool isFinished() const { return m_status == LUA_OK; }
 		inline bool isEmpty() const { return m_thread.isEmpty(); }
+		inline bool hasFunction() const { return !m_function.isEmpty(); }
 
 		FLAT_DEBUG_ONLY(const flat::lua::UniqueLuaReference<LUA_TTHREAD>& getThread() const { return m_thread; })
 

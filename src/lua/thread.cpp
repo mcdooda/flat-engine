@@ -27,65 +27,46 @@ void Thread::reset()
 	FLAT_DEBUG_ONLY(sanityCheck();)
 }
 
-bool Thread::start(int numArgs)
+int Thread::resume(int numArgs, int numResults)
 {
 	FLAT_DEBUG_ONLY(sanityCheck();)
-	FLAT_ASSERT(isEmpty());
 
 	lua_State* L = m_function.getLuaState();
 	{
-		FLAT_LUA_EXPECT_STACK_GROWTH(L, -numArgs);
+		FLAT_LUA_EXPECT_STACK_GROWTH(L, numResults - numArgs);
 
-		lua_State* L1 = lua_newthread(L);
-		m_thread.set(L, -1);
+		const int firstParamIndex = lua_absindex(L, -numArgs);
 
-		m_function.push(L);
-		
-		int firstParamIndex = lua_absindex(L, -2 - numArgs);
-		for (int i = 0; i < numArgs; ++i)
+		lua_State* L1 = nullptr;
+		if (!isRunning())
 		{
-			int index = firstParamIndex + i; 
-			lua_pushvalue(L, index);
+			// create new thread
+			L1 = lua_newthread(L);
+			m_thread.set(L, -1);
+
+			lua_pop(L, 1);
+
+			m_function.push(L1);
 		}
-		lua_xmove(L, L1, numArgs + 1);
+		else
+		{
+			// push existing thread
+			m_thread.push(L);
+			L1 = lua_tothread(L, -1);
 
-		m_status = lua_resume(L1, nullptr, numArgs);
-		if (m_status == LUA_OK)
-		{
-			stop();
-		}
-		else if (m_status != LUA_YIELD)
-		{
-			FLAT_LUA_IGNORE_ALL_STACK_GROWTH();
-			lua_error(L1);
-			return false;
+			lua_pop(L, 1);
 		}
 
-		lua_pop(L, numArgs + 1);
-	}
-
-	FLAT_DEBUG_ONLY(sanityCheck();)
-	return true;
-}
-
-int Thread::update(int numResults)
-{
-	FLAT_DEBUG_ONLY(sanityCheck();)
-	FLAT_ASSERT(isRunning());
-
-	lua_State* L = m_function.getLuaState();
-	{
-		FLAT_LUA_EXPECT_STACK_GROWTH(L, numResults);
-
-		m_thread.push(L);
-		lua_State* L1 = lua_tothread(L, -1);
 		FLAT_ASSERT(L1 != nullptr);
 
-		m_status = lua_resume(L1, nullptr, 0);
+		lua_xmove(L, L1, numArgs);
+
+		m_status = lua_resume(L1, nullptr, numArgs);
 
 		if (numResults > 0)
 		{
 			lua_settop(L1, numResults);
+			lua_xmove(L1, L, numResults);
 		}
 
 		if (m_status == LUA_OK)
@@ -96,15 +77,6 @@ int Thread::update(int numResults)
 		{
 			lua_error(L1);
 		}
-
-		lua_pop(L, 1);
-
-		if (numResults > 0)
-		{
-			lua_xmove(L1, L, numResults);
-		}
-
-		FLAT_DEBUG_ONLY(sanityCheck();)
 	}
 
 	FLAT_DEBUG_ONLY(sanityCheck();)
