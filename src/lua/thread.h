@@ -17,7 +17,7 @@ class Thread
 		void reset();
 
 		bool start(int numArgs);
-		int update(int numResults = 0);
+		int update(int numResults);
 
 		void stop();
 
@@ -28,6 +28,10 @@ class Thread
 		FLAT_DEBUG_ONLY(const flat::lua::UniqueLuaReference<LUA_TTHREAD>& getThread() const { return m_thread; })
 
 	protected:
+		FLAT_DEBUG_ONLY(void sanityCheck();)
+
+	protected:
+
 		flat::lua::UniqueLuaReference<LUA_TFUNCTION> m_function;
 		flat::lua::UniqueLuaReference<LUA_TTHREAD> m_thread;
 		int m_status;

@@ -9,24 +9,27 @@ namespace lua
 Thread::Thread() :
 	m_status(LUA_OK)
 {
-
+	FLAT_DEBUG_ONLY(sanityCheck();)
 }
 
 void Thread::set(lua_State* L, int index)
 {
+	FLAT_DEBUG_ONLY(sanityCheck();)
 	m_function.set(L, index);
+	FLAT_DEBUG_ONLY(sanityCheck();)
 }
-
 
 void Thread::reset()
 {
 	m_function.reset();
 	m_thread.reset();
 	m_status = LUA_OK;
+	FLAT_DEBUG_ONLY(sanityCheck();)
 }
 
 bool Thread::start(int numArgs)
 {
+	FLAT_DEBUG_ONLY(sanityCheck();)
 	FLAT_ASSERT(isEmpty());
 
 	lua_State* L = m_function.getLuaState();
@@ -49,7 +52,7 @@ bool Thread::start(int numArgs)
 		m_status = lua_resume(L1, nullptr, numArgs);
 		if (m_status == LUA_OK)
 		{
-			m_thread.reset();
+			stop();
 		}
 		else if (m_status != LUA_YIELD)
 		{
@@ -60,11 +63,14 @@ bool Thread::start(int numArgs)
 
 		lua_pop(L, numArgs + 1);
 	}
+
+	FLAT_DEBUG_ONLY(sanityCheck();)
 	return true;
 }
 
 int Thread::update(int numResults)
 {
+	FLAT_DEBUG_ONLY(sanityCheck();)
 	FLAT_ASSERT(isRunning());
 
 	lua_State* L = m_function.getLuaState();
@@ -97,8 +103,11 @@ int Thread::update(int numResults)
 		{
 			lua_xmove(L1, L, numResults);
 		}
+
+		FLAT_DEBUG_ONLY(sanityCheck();)
 	}
 
+	FLAT_DEBUG_ONLY(sanityCheck();)
 	return m_status;
 }
 
@@ -106,6 +115,28 @@ void Thread::stop()
 {
 	reset();
 }
+
+#ifdef FLAT_DEBUG
+void Thread::sanityCheck()
+{
+	if (!m_function.isEmpty())
+	{
+		if (!m_thread.isEmpty())
+		{
+			FLAT_ASSERT(m_status == LUA_YIELD);
+		}
+		else
+		{
+			FLAT_ASSERT(m_status == LUA_OK);
+		}
+	}
+	else
+	{
+		FLAT_ASSERT(m_thread.isEmpty());
+		FLAT_ASSERT(m_status == LUA_OK);
+	}
+}
+#endif // FLAT_DEBUG
 
 } // lua
 } // flat
