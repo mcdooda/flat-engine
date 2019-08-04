@@ -26,16 +26,17 @@ return {
 
     -- vector2
     'math/vector2/vector2add',
-    'math/vector2/vector2numbermultiply',
     'math/vector2/vector2length',
+    'math/vector2/vector2numbermultiply',
     'math/vector2/vector2split',
 
     -- vector3
-    'math/vector3/vector3reflect',
-    'math/vector3/vector3numbermultiply',
     'math/vector3/vector3add',
     'math/vector3/vector3length',
+    'math/vector3/vector3numbermultiply',
+    'math/vector3/vector3reflect',
     'math/vector3/vector3split',
+    'math/vector3/vector3tovector2',
 
     'print',
 

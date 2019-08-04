@@ -25,7 +25,7 @@ function ScriptNodeRuntime:init()
 end
 
 function ScriptNodeRuntime:readPin(inputPin)
-    assert(inputPin)
+    assert(inputPin, 'Input pin does not exist')
     local value = self:readOptionalPin(inputPin)
     if value == nil then
         local msg = 'Cannot read nil from pin ' .. self.node:getName() .. '->' .. inputPin.pinName .. ' of type ' .. self.node:pinTypeToString(inputPin.pinType)
@@ -40,7 +40,7 @@ function ScriptNodeRuntime:readPin(inputPin)
 end
 
 function ScriptNodeRuntime:readOptionalPin(inputPin, defaultValue)
-    assert(inputPin)
+    assert(inputPin, 'Input pin does not exist')
     local pinValue = self.inputPinValues[inputPin]
     if pinValue then
         local pluggedOutputPin = inputPin.pluggedOutputPin
@@ -69,8 +69,7 @@ function ScriptNodeRuntime:tryReadFromOutputPin(outputPin)
 end
 
 function ScriptNodeRuntime:writePin(outputPin, value)
-    assert(outputPin)
-    assert(type(outputPin) == 'table')
+    assert(outputPin, 'Output pin does not exist')
     assert(
         value ~= nil,
         'Cannot write nil to pin ' .. self.node:getName() .. '->' .. outputPin.pinName .. ' of type ' .. self.node:pinTypeToString(outputPin.pinType)
