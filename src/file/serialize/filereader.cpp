@@ -23,6 +23,11 @@ bool FileReader::isWriting() const
 	return false;
 }
 
+void FileReader::process(bool& value)
+{
+	read(value);
+}
+
 void FileReader::process(std::int8_t& value)
 {
 	read(value);

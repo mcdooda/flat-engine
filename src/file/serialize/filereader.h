@@ -21,6 +21,8 @@ class FileReader : public Processor
 
 		bool isWriting() const override;
 
+		void process(bool& value) override;
+
 		void process(std::int8_t& value) override;
 		void process(std::int16_t& value) override;
 		void process(std::int32_t& value) override;

@@ -43,6 +43,9 @@
 // file
 #include "file/directory.h"
 #include "file/regularfile.h"
+#include "file/serialize/filereader.h"
+#include "file/serialize/filewriter.h"
+#include "file/serialize/serializable.h"
 
 // lua
 #include "lua/lua.h"

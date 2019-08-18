@@ -23,6 +23,11 @@ bool FileWriter::isWriting() const
 	return true;
 }
 
+void FileWriter::process(bool& value)
+{
+	write(value);
+}
+
 void FileWriter::process(std::int8_t& value)
 {
 	write(value);

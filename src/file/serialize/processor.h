@@ -20,6 +20,8 @@ class Processor
 
 		void process(Serializable& serializable);
 
+		virtual void process(bool& value) = 0;
+
 		virtual void process(std::int8_t& value) = 0;
 		virtual void process(std::int16_t& value) = 0;
 		virtual void process(std::int32_t& value) = 0;
@@ -32,16 +34,16 @@ class Processor
 
 		virtual void process(std::string& value) = 0;
 
-		template <class T>
+		template <typename SizeType = std::uint32_t, class T>
 		void process(std::vector<T>& value);
 };
 
-template <class T>
+template <typename SizeType, class T>
 void Processor::process(std::vector<T>& value)
 {
 	if (isWriting())
 	{
-		std::uint32_t size = static_cast<std::uint32_t>(value.size());
+		SizeType size = static_cast<SizeType>(value.size());
 		process(size);
 		for (T& item : value)
 		{
@@ -50,10 +52,10 @@ void Processor::process(std::vector<T>& value)
 	}
 	else
 	{
-		std::uint32_t size = 0;
+		SizeType size = 0;
 		process(size);
 		value.resize(size);
-		for (std::uint32_t i = 0; i < size; ++i)
+		for (SizeType i = 0; i < size; ++i)
 		{
 			process(value[i]);
 		}
