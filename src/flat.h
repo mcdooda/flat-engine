@@ -30,6 +30,7 @@
 #include "geometry/rectangle.h"
 #include "geometry/grid.h"
 #include "geometry/bezier.h"
+#include "geometry/intersection.h"
 
 // video
 #include "video/pass.h"

@@ -50,8 +50,7 @@ class SlotProxy
 
 		int addCallback(lua_State* L, int index)
 		{
-			m_callbacks.emplace_back();
-			m_callbacks.back().set(L, index);
+			m_callbacks.emplace_back().set(L, index);
 			return static_cast<int>(m_callbacks.size()) - 1;
 		}
 

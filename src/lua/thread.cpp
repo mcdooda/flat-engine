@@ -61,7 +61,7 @@ int Thread::resume(int numArgs, int numResults)
 
 		lua_xmove(L, L1, numArgs);
 
-		m_status = lua_resume(L1, nullptr, numArgs);
+		m_status = lua_resume(L1, L, numArgs);
 
 		if (numResults > 0)
 		{
@@ -75,6 +75,7 @@ int Thread::resume(int numArgs, int numResults)
 		}
 		else if (m_status != LUA_YIELD)
 		{
+			FLAT_LUA_IGNORE_ALL_STACK_GROWTH();
 			lua_error(L1);
 		}
 	}
