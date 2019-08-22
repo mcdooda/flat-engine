@@ -113,7 +113,7 @@ class HybridArray
 			if (const std::vector<T>* vector = m_vector.get())
 			{
 				FLAT_ASSERT(m_arrayCount == StaticSize);
-				return StaticSize + vector->size();
+				return StaticSize + static_cast<unsigned int>(vector->size());
 			}
 			return m_arrayCount;
 		}
@@ -135,7 +135,7 @@ class HybridArray
 			FLAT_ASSERT(isInRange(index));
 			if (index < m_arrayCount)
 			{
-				return *(static_cast<T*>(&m_buffer[0]) + index);
+				return *(reinterpret_cast<T*>(&m_buffer[0]) + index);
 			}
 			FLAT_ASSERT(m_arrayCount == StaticSize);
 			FLAT_ASSERT(m_vector != nullptr);
