@@ -5,9 +5,13 @@ namespace flat
 {
 
 constexpr float PI = 3.14159265358979323846264338327950288f;
-constexpr float PI2 = PI * 2.f;
+constexpr float PI_2 = PI * 2.f;
 
-constexpr float SQRT2 = 1.41421356237f;
+constexpr float PI_DIV_2 = PI / 2.f;
+constexpr float PI_DIV_4 = PI / 4.f;
+
+constexpr float SQRT_2 = 1.41421356237f;
+constexpr float SQRT_2_DIV_2 = SQRT_2 / 2.f;
 
 constexpr float EPSILON = 0.00001f;
 
@@ -19,24 +23,24 @@ int8_t sign(T number)
 
 inline float angle_clamp_pi(float angle)
 {
-	angle = fmodf(angle, flat::PI2);
+	angle = fmodf(angle, flat::PI_2);
 	if (angle < -flat::PI)
 	{
-		angle += flat::PI2;
+		angle += flat::PI_2;
 	}
 	else if (angle > flat::PI)
 	{
-		angle -= flat::PI2;
+		angle -= flat::PI_2;
 	}
 	return angle;
 }
 
 inline float angle_clamp_0_2pi(float angle)
 {
-	angle = fmodf(angle, flat::PI2);
+	angle = fmodf(angle, flat::PI_2);
 
 	if (angle < 0.f)
-		angle += flat::PI2;
+		angle += flat::PI_2;
 
 	return angle;
 }
