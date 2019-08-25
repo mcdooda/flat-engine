@@ -45,6 +45,18 @@ inline float angle_clamp_0_2pi(float angle)
 	return angle;
 }
 
+template <class T>
+inline bool isInRange(T value, T min, T max)
+{
+	return min <= value && value <= max;
+}
+
+template <class T>
+inline bool areValuesClose(T value, T other, T epsilon)
+{
+	return isInRange(value, other - epsilon, other + epsilon);
+}
+
 } // flat
 
 #endif // FLAT_MISC_MATH_H
