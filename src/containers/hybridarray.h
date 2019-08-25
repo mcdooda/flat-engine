@@ -66,7 +66,7 @@ class HybridArray
 		HybridArray() :
 			m_arrayCount(0)
 		{
-			FLAT_DEBUG_ONLY(std::memset(&m_buffer[0], FLAT_INIT_VALUE, BufferSize);)
+			FLAT_INIT_MEMORY(&m_buffer[0], BufferSize);
 		}
 
 		~HybridArray()
@@ -77,7 +77,7 @@ class HybridArray
 				object->~T();
 			}
 
-			FLAT_DEBUG_ONLY(std::memset(&m_buffer[0], FLAT_WIPE_VALUE, BufferSize);)
+			FLAT_WIPE_MEMORY(&m_buffer[0], BufferSize);
 		}
 		
 		bool isInRange(unsigned int index) const
@@ -172,8 +172,7 @@ class HybridArray
 				vector = m_vector.get();
 				vector->reserve(StaticSize / 2);
 			}
-			vector->push_back(constructorArgs...);
-			return vector->back();
+			return vector->emplace_back(constructorArgs...);
 		}
 
 		template <typename... ConstructorArgs>

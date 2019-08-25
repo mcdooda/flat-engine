@@ -46,7 +46,7 @@ class SharedCppValue
 		{
 			ValueType* value = &get(L, 1);
 			value->~ValueType();
-			FLAT_DEBUG_ONLY(memset(value, FLAT_WIPE_VALUE, sizeof(ValueType)));
+			FLAT_WIPE_MEMORY(value, sizeof(ValueType));
 			return 0;
 		}
 
