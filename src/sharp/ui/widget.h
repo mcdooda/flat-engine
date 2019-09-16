@@ -113,7 +113,7 @@ class Widget : public util::Convertible<Widget>
 
 		using ScrollPosition = Vector2;
 
-		static constexpr float SCROLL_SPEED = 20.f;
+		static constexpr float SCROLL_SPEED = 80.f;
 
 	protected:
 		struct ScissorRectangle
