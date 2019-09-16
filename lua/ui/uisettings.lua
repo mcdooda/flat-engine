@@ -69,5 +69,10 @@ flat.ui.settings.theme = {
             SMALL_LINE_COLOR = 0xE1E5E6FF,
             SMALL_LINE_WIDTH = 1
         }
+    },
+    tooltip = {
+        BACKGROUND_COLOR = 0xBBBBBBFF,
+        TEXT_COLOR       = 0x111111FF,
+        FONT             = flat.ui.settings.defaultFont
     }
 }
