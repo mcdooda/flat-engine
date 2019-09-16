@@ -73,6 +73,7 @@ void Input::pushContext(const std::shared_ptr<context::InputContext>& inputConte
 
 void Input::popContext(const std::shared_ptr<context::InputContext>& inputContext)
 {
+	// Happens when moving the cursor while typping simultaneously
 	FLAT_ASSERT(inputContext != nullptr && inputContext == m_inputContexts.back().lock());
 	inputContext->clearAllEvents();
 	m_inputContexts.pop_back();
