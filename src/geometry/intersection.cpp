@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "intersection.h"
 
 namespace flat
@@ -83,8 +85,13 @@ float rectangleToRectangleDistance(const flat::AABB2& a, const flat::AABB2& b, f
 	return flat::length(difference);
 }
 
-flat::Vector2 closestPointOnRectangle(const flat::AABB2& rectangle, const flat::Vector2& point)
+flat::Vector2 closestPointOnRectangle(const flat::AABB2& rectangle, const flat::Vector2& point, bool* isInside)
 {
+	if (isInside != nullptr)
+	{
+		*isInside = false;
+	}
+
 	if (point.x < rectangle.min.x)
 	{
 		if (point.y < rectangle.min.y)
@@ -127,20 +134,45 @@ flat::Vector2 closestPointOnRectangle(const flat::AABB2& rectangle, const flat::
 		}
 		else
 		{
-			return point;
+			if (isInside != nullptr)
+			{
+				*isInside = true;
+			}
+			const float dx = std::min(point.x - rectangle.min.x, rectangle.max.x - point.x);
+			const float dy = std::min(point.y - rectangle.min.y, rectangle.max.y - point.y);
+			if (dx < dy)
+			{
+				const float x = point.x - rectangle.min.x < rectangle.max.x - point.x ? rectangle.min.x : rectangle.max.x;
+				return flat::Vector2(x, point.y);
+			}
+			else
+			{
+				const float y = point.y - rectangle.min.y < rectangle.max.y - point.y ? rectangle.min.y : rectangle.max.y;
+				return flat::Vector2(point.x, y);
+			}
 		}
 	}
 }
 
 float circleToRectangleDistance(const flat::AABB2& rectangle, const flat::Vector2& circleCenter, float circleRadius, flat::Vector2* direction)
 {
-	const flat::Vector2 closestPoint = closestPointOnRectangle(rectangle, circleCenter);
+	bool isInside;
+	const flat::Vector2 closestPoint = closestPointOnRectangle(rectangle, circleCenter, &isInside);
 	const flat::Vector2 difference = circleCenter - closestPoint;
 	if (direction != nullptr)
 	{
 		*direction = flat::normalize(difference);
+		if (isInside)
+		{
+			*direction *= -1.f;
+		}
 	}
-	return flat::length(difference) - circleRadius;
+	float length = flat::length(difference);
+	if (isInside)
+	{
+		length *= -1.f;
+	}
+	return length - circleRadius;
 }
 
 } // intersection
