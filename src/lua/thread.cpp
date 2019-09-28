@@ -63,20 +63,24 @@ int Thread::resume(int numArgs, int numResults)
 
 		m_status = lua_resume(L1, L, numArgs);
 
-		if (numResults > 0)
+		if (m_status == LUA_OK || m_status == LUA_YIELD)
 		{
-			lua_settop(L1, numResults);
-			lua_xmove(L1, L, numResults);
-		}
+			if (numResults > 0)
+			{
+				lua_settop(L1, numResults);
+				lua_xmove(L1, L, numResults);
+			}
 
-		if (m_status == LUA_OK)
-		{
-			stop();
+			if (m_status == LUA_OK)
+			{
+				stop();
+			}
 		}
-		else if (m_status != LUA_YIELD)
+		else
 		{
+			printStack(L1);
 			FLAT_LUA_IGNORE_ALL_STACK_GROWTH();
-			lua_error(L1);
+			stop();
 		}
 	}
 
