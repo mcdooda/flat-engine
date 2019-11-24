@@ -47,6 +47,7 @@ CursorType TextInputWidget::getCursorType() const
 void TextInputWidget::replaceText(const std::string& text)
 {
 	setText(text);
+	m_cursorIndex = std::min(m_cursorIndex, text.size());
 	unselect();
 }
 
