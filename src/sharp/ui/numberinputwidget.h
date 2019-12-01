@@ -47,7 +47,7 @@ class NumberInputWidget : public TextInputWidget
 		bool mouseLeft(Widget*);
 		void stepUp();
 		void stepDown();
-		
+
 	private:
 		float m_step;
 		float m_min;

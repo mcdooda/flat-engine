@@ -131,7 +131,7 @@ void Widget::setAllowScrollX(bool allowScrollX)
 			mouseWheelMove.off(this);
 		}
 	}
-	m_allowScrollX = allowScrollX; 
+	m_allowScrollX = allowScrollX;
 }
 
 void Widget::setAllowScrollY(bool allowScrollY)
@@ -146,7 +146,7 @@ void Widget::setAllowScrollY(bool allowScrollY)
 		{
 			mouseWheelMove.off(this);
 		}
-	}	
+	}
 	m_allowScrollY = allowScrollY;
 }
 
@@ -326,7 +326,7 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 	{
 		return;
 	}
-		
+
 	const video::Texture* background = m_background.get();
 	if (background != nullptr || m_backgroundColor.a > 0.f)
 	{
@@ -341,7 +341,7 @@ void Widget::draw(const render::RenderSettings& renderSettings, const ScissorRec
 		}
 		renderSettings.modelMatrixUniform.set(m_transform);
 		renderSettings.vertexColorGivenUniform.set(false);
-		
+
 		renderSettings.colorUniform.set(m_backgroundColor);
 
 		renderSettings.secondaryColorUniform.set(video::Color::BLACK);

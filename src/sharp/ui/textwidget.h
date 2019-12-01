@@ -22,11 +22,11 @@ class TextWidget : public virtual WidgetImpl<FixedLayout>, public video::font::S
 		TextWidget(TextWidget&&) = delete;
 		TextWidget(const std::shared_ptr<const video::font::Font>& font);
 		~TextWidget() = default;
-		
+
 		void setText(const std::string& text);
 		void setTextColor(const video::Color& textColor);
 		inline const video::Color& getTextColor() const { return m_textColor; }
-		
+
 		void draw(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const override;
 
 	private:

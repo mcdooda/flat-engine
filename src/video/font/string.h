@@ -26,7 +26,7 @@ class String
 			CharacterVertex(float x, float y) : x(x), y(y), color(Color::WHITE) {}
 			CharacterVertex(float x, float y, const Color& color) : x(x), y(y), color(color){}
 		};
-	
+
 	public:
 		String() = delete;
 		String(const String&) = delete;
@@ -34,22 +34,22 @@ class String
 		String(const std::shared_ptr<const Font>& font);
 		~String() = default;
 		String& operator=(const String&) = delete;
-		
+
 		inline void setWrapLength(int wrapLength) { m_wrapLength = wrapLength; }
 		inline void setNoWrap() { setWrapLength(0); }
-		
+
 		void setText(const std::string& text, const Color& color = Color::WHITE);
 		inline const std::string& getText() const { return m_text; }
 
 		void setColor(unsigned int from, unsigned int to, const Color& style);
-		
+
 		inline const std::vector<CharacterVertex>& getVertices() const { return m_vertices; }
 		inline const std::vector<Font::CharInfoUv>& getUv() const { return m_uv; }
-		
+
 		inline const std::shared_ptr<const Font>& getFont() const { return m_font; }
 
 		inline const float getLineHeight() const { return m_font->getAtlasSize().y; }
-		
+
 		inline const Vector2& getComputedSize() const { return m_size; }
 
 	private:

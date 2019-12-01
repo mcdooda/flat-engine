@@ -14,34 +14,36 @@ String::String(const std::shared_ptr<const Font>& font) :
 	m_font(font),
 	m_wrapLength(0)
 {
-	
+
 }
 
 void String::setText(const std::string& text, const Color& color)
 {
 	size_t textLength = text.size();
 	m_text = text;
-	
+
 	m_vertices.clear();
 	m_vertices.reserve(textLength * 6);
-	
+
 	m_uv.clear();
 	m_uv.reserve(textLength * 6);
-	
+
 	const Font* font = m_font.get();
 	FLAT_ASSERT(font != nullptr);
 	const float characterHeight = font->getAtlasSize().y;
 	const size_t nbLines = std::count(text.begin(), text.end(), '\n') + 1;
 	m_size.y = nbLines * characterHeight;
 
+	float maxX = 0.f;
 	float x = 0.f;
 	float y = m_size.y;
 	for (size_t i = 0; i < textLength; ++i)
 	{
 		char c = text[i];
-		
 		if (c == '\n')
 		{
+			if(x > maxX)
+				maxX = x;
 			x = 0.f;
 			y -= characterHeight;
 		}
@@ -58,7 +60,7 @@ void String::setText(const std::string& text, const Color& color)
 				m_vertices.emplace_back(fx0, fy0, color);
 				m_vertices.emplace_back(fx1, fy0, color);
 				m_vertices.emplace_back(fx0, fy1, color);
-		
+
 				m_vertices.emplace_back(fx1, fy1, color);
 				m_vertices.emplace_back(fx0, fy1, color);
 				m_vertices.emplace_back(fx1, fy0, color);
@@ -69,7 +71,7 @@ void String::setText(const std::string& text, const Color& color)
 			}
 		}
 	}
-	m_size.x = x;
+	m_size.x = std::max(maxX, x);
 }
 
 void String::setColor(unsigned int from, unsigned int to, const Color& color)

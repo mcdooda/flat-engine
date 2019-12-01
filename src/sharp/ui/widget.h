@@ -45,30 +45,30 @@ class Widget : public util::Convertible<Widget>
 			COMPRESS_X = (1 << 0),
 			EXPAND_X   = (1 << 1),
 			FIXED_X    = (1 << 2),
-			
+
 			COMPRESS_Y = (1 << 3),
 			EXPAND_Y   = (1 << 4),
 			FIXED_Y    = (1 << 5),
-			
+
 			COMPRESS = COMPRESS_X | COMPRESS_Y,
 			EXPAND   = EXPAND_X | EXPAND_Y,
 			FIXED    = FIXED_X | FIXED_Y
 		};
-		
+
 		using Size = Vector2;
-		
+
 		enum PositionPolicy : unsigned char
 		{
 			LEFT     = (1 << 0),
 			CENTER_X = (1 << 1),
 			RIGHT    = (1 << 2),
 			FLOW_X   = (1 << 3),
-			
+
 			TOP      = (1 << 4),
 			CENTER_Y = (1 << 5),
 			BOTTOM   = (1 << 6),
 			FLOW_Y   = (1 << 7),
-			
+
 			TOP_LEFT     = LEFT     | TOP,
 			TOP_RIGHT    = RIGHT    | TOP,
 			BOTTOM_LEFT  = LEFT     | BOTTOM,
@@ -77,9 +77,9 @@ class Widget : public util::Convertible<Widget>
 			COLUMN_FLOW  = CENTER_X | FLOW_Y,
 			LINE_FLOW    = FLOW_X   | CENTER_Y
 		};
-		
+
 		using Position = Vector2;
-		
+
 		struct Margin
 		{
 			Margin(float margin) :
@@ -88,15 +88,14 @@ class Widget : public util::Convertible<Widget>
 				bottom(margin),
 				left(margin)
 			{
-				
 			}
-			
+
 			float top;
 			float right;
 			float bottom;
 			float left;
 		};
-		
+
 		using Padding = Margin;
 
 		using Rotation = Vector3;
@@ -123,7 +122,7 @@ class Widget : public util::Convertible<Widget>
 			GLsizei width;
 			GLsizei height;
 		};
-		
+
 	public:
 		Widget();
 		Widget(const Widget&) = delete;
@@ -134,13 +133,13 @@ class Widget : public util::Convertible<Widget>
 		inline void setWeakPtr(const std::weak_ptr<Widget>& self) { m_self = self; }
 		inline const std::weak_ptr<Widget>& getWeakPtr() { return m_self; }
 		inline std::shared_ptr<Widget> getSharedPtr() const { return m_self.lock(); }
-		
+
 		inline void setMargin(const Margin& margin) { m_margin = margin; }
 		inline const Margin& getMargin() const { return m_margin; }
 
 		inline void setPadding(const Padding& padding) { m_padding = padding; }
 		inline const Padding& getPadding() const { return m_padding; }
-		
+
 		void setSizePolicy(SizePolicy sizePolicy);
 		void setSizePolicyX(SizePolicy sizePolicyX);
 		void setSizePolicyY(SizePolicy sizePolicyY);
@@ -148,7 +147,7 @@ class Widget : public util::Convertible<Widget>
 		void setSize(const Size& size);
 		inline const Size& getSize() const { return m_size; }
 		inline const Size& getComputedSize() const { return m_computedSize; }
-		
+
 		void setPositionPolicy(PositionPolicy positionPolicy);
 		inline PositionPolicy getPositionPolicy() const { return m_positionPolicy; }
 		void setPosition(const Position& position);
@@ -160,7 +159,7 @@ class Widget : public util::Convertible<Widget>
 		inline void setRotation(const Rotation& rotation) { m_rotation = rotation; }
 		inline void setRotationZ(float rotationZ) { m_rotation.z = rotationZ; }
 		inline const Rotation& getRotation() const { return m_rotation; }
-		
+
 		void setBackground(const std::shared_ptr<const video::Texture>& background);
 
 		inline void setBackgroundRepeat(BackgroundRepeat backgroundRepeat) { m_backgroundRepeat = backgroundRepeat; }
@@ -174,7 +173,7 @@ class Widget : public util::Convertible<Widget>
 
 		inline void setBackgroundColor(const flat::video::Color& backgroundColor) { m_backgroundColor = backgroundColor; }
 		inline const flat::video::Color& getBackgroundColor() const { return m_backgroundColor; }
-		
+
 		inline void setVisible(bool visible) { m_visible = visible; }
 		inline bool getVisible() const { return m_visible; }
 		inline void hide() { setVisible(false); }
@@ -209,7 +208,7 @@ class Widget : public util::Convertible<Widget>
 
 		void drag();
 		void drop();
-		
+
 		void addChild(const std::shared_ptr<Widget>& widget);
 		void removeChild(const std::shared_ptr<Widget>& widget);
 		void removeChildAtIndex(int index);
@@ -257,12 +256,12 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*> mouseLeave;
 		Slot<Widget*> enterFocus;
 		Slot<Widget*> leaveFocus;
-		Slot<Widget*> layoutFinished; 
+		Slot<Widget*> layoutFinished;
 		Slot<Widget*, std::string&> copy;
 		Slot<Widget*, const std::string&> paste;
 		Slot<Widget*> undo;
 		Slot<Widget*> redo;
-		
+
 	protected:
 		static bool intersect(const ScissorRectangle& a, const ScissorRectangle& b);
 		static void computeParentScissorIntersection(ScissorRectangle& scissor, const ScissorRectangle& parentScissor);
@@ -270,10 +269,10 @@ class Widget : public util::Convertible<Widget>
 		bool computeAndApplyScissor(ScissorRectangle& scissor, const ScissorRectangle& parentScissor) const;
 		void drawChildren(const render::RenderSettings& renderSettings, const ScissorRectangle& parentScissor) const;
 		void drawScrollbars(const render::RenderSettings& renderSettings, const ScissorRectangle& scissor) const;
-		
+
 		float getInnerWidth() const { return m_computedSize.x - m_padding.left - m_padding.right; }
 		void setInnerWidth(float innerWidth) { m_computedSize.x = innerWidth + m_padding.left + m_padding.right; }
-		
+
 		float getInnerHeight() const { return m_computedSize.y - m_padding.top - m_padding.bottom; }
 		void setInnerHeight(float innerHeight) { m_computedSize.y = innerHeight + m_padding.top + m_padding.bottom; }
 
@@ -289,7 +288,7 @@ class Widget : public util::Convertible<Widget>
 		bool hasFixedSize() const;
 
 		void resetScrollPosition();
-		
+
 	protected:
 		// Widget settings
 		Margin m_margin;
@@ -303,7 +302,7 @@ class Widget : public util::Convertible<Widget>
 		BackgroundSize m_backgroundSize;
 		BackgroundRepeat m_backgroundRepeat;
 		flat::video::Color m_backgroundColor;
-		
+
 		SizePolicy m_sizePolicy;
 		PositionPolicy m_positionPolicy;
 
@@ -324,7 +323,7 @@ class Widget : public util::Convertible<Widget>
 		Size m_computedSize;
 		ScrollPosition m_scrollPosition;
 		ScrollPosition m_minScrollPosition;
-		
+
 		std::weak_ptr<Widget> m_self;
 		std::weak_ptr<Widget> m_parent;
 		std::vector<std::shared_ptr<Widget>> m_children;

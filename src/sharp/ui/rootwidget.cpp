@@ -99,13 +99,7 @@ bool RootWidget::updateDirtyWidgets()
 	}
 	else if (!m_dirtyWidgets.empty())
 	{
-		for (std::weak_ptr<Widget>& widget : m_dirtyWidgets)
-		{
-			if (!widget.expired())
-			{
-				widget.lock()->fullLayout();
-			}
-		}
+		fullLayout();
 		m_dirtyWidgets.clear();
 		return true;
 	}
