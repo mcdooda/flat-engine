@@ -177,7 +177,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 	auto& keyboard = m_flat.input->keyboard;
 	if (keyboard->isJustPressed(K(TAB)))
 	{
-		handleTabButtonPressed();
+		handleTabButtonPressed(keyboard->isPressed(K(LSHIFT)));
 	}
 	else if (keyboard->isJustPressed(K(C)) && (keyboard->isPressed(K(LCTRL)) || keyboard->isPressed(K(RCTRL))))
 	{
@@ -375,7 +375,6 @@ void RootWidget::handleRightMouseButtonUp()
 		m_dragScrollingWidget.reset();
 		m_flat.ui->resetCursorOverride();
 	}
-	
 	if (!m_dragScrolled)
 	{
 		propagateEvent(m_mouseOverWidget.lock().get(), &Widget::rightClick);
@@ -460,49 +459,64 @@ void RootWidget::handleMouseWheel()
 	}
 }
 
-Widget* RootWidget::getFocusableChildren(Widget* widget)
-{
-	if (widget->isFocusable())
-		return widget;
-
-	Widget* child = nullptr;
+std::vector<Widget*> getFocusableChildren(Widget* widget) {
+	std::vector<Widget*> result;
+	if(widget->isFocusable())
+		result.push_back(widget);
 	const auto& children = widget->getChildren();
-	for (auto& iter = children.begin(); iter != children.end() && !child; iter++)
-	{
-		child = getFocusableChildren(iter->get());
+	for(const auto& child: children) {
+		const auto& focusables = getFocusableChildren(child.get());
+		result.insert(result.end(), focusables.begin(), focusables.end());
 	}
-	return child;
+	// sort by Y position then by X
+	std::sort(result.begin(), result.end(), [](Widget* a, Widget* b) -> bool
+	{
+		flat::Vector2 positionA = a->getAbsolutePosition();
+		flat::Vector2 positionB = b->getAbsolutePosition();
+		return positionA.y > positionB.y || (positionA.y == positionB.y && positionA.x > positionB.x);
+	});
+	return result;
+}
+
+template<class Iterator>
+Widget* getClosestFocusable(Widget* widget, Iterator begin, Iterator end)
+{
+	auto iter = std::find_if(begin, end, [widget](Widget* a) -> bool
+	{
+		return a == widget;
+	});
+
+	if (++iter < end) {
+		return *iter;
+	}
+	if (begin != end) {
+		return *begin;
+	}
+	return nullptr;
 }
 
 Widget* RootWidget::getNextFocusable(Widget* widget)
 {
-	if (widget == this)
-	{
-		return getFocusableChildren(widget);
-	}
-
-	Widget* focusable = nullptr;
-	Widget* parent = widget->getParent().lock().get();
-	if (parent != nullptr)
-	{
-		const auto& children = parent->getChildren();
-		auto iter = std::find_if(children.begin(), children.end(),
-			[widget](const std::shared_ptr<Widget>& a) -> bool { return a.get() == widget; });
-		while(++iter != children.end() && focusable == nullptr)
-			focusable = getFocusableChildren(iter->get());
-
-		if (focusable == nullptr)
-			return getNextFocusable(parent);
-	}
-	return focusable;
+	std::vector<Widget*> focusables = getFocusableChildren(this);
+	return getClosestFocusable(widget, focusables.begin(), focusables.end());
 }
 
-void RootWidget::handleTabButtonPressed()
+Widget* RootWidget::getPreviousFocusable(Widget* widget)
+{
+	std::vector<Widget*> focusables = getFocusableChildren(this);
+	return getClosestFocusable(widget, focusables.rbegin(), focusables.rend());
+}
+
+void RootWidget::handleTabButtonPressed(bool shiftPressed)
 {
 	Widget* focused = m_focusWidget.lock().get();
 	if (focused != nullptr)
 	{
-		Widget* next = getNextFocusable(focused);
+		Widget* next;
+		if (shiftPressed)
+			next = getPreviousFocusable(focused);
+		else
+			next = getNextFocusable(focused);
 		if (next != nullptr)
 			focus(next);
 	}

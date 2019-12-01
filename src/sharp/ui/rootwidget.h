@@ -70,21 +70,21 @@ class RootWidget : public WidgetImpl<RootLayout>
 		void handleMouseEnter(Widget* previousMouseOverWidget);
 		void handleMouseLeave(Widget* nextMouseOverWidget);
 		void handleMouseWheel();
-		void handleTabButtonPressed();
+		void handleTabButtonPressed(bool shiftPressed);
 		void handleCopy();
 		void handlePaste();
 		void handleUndo();
 		void handleRedo();
 
-		Widget* getFocusableChildren(Widget* widget);
 		Widget* getNextFocusable(Widget* widget);
+		Widget* getPreviousFocusable(Widget* widget);
 
 		bool focusChildren(Widget* widget);
 		void focusNext(Widget* widget);
 
 		template <class... Args>
 		static bool propagateEvent(Widget* widget, Slot<Widget*, bool&, Args...> Widget::* slot, Args... args);
-		
+
 	private:
 		Flat& m_flat;
 		std::weak_ptr<Widget> m_mouseOverWidget;
