@@ -16,8 +16,8 @@ local function dumpString(write, str)
 		['\r'] = '\\\r',
 		['\t'] = '\\\t',
 		['\v'] = '\\\v',
-		['\''] = '\\\'',
-		['\\'] = '\\\\'
+		['\n'] = '\\n',
+		['\''] = '\\\''
 	}
 	for pattern, replacement in pairs(escape) do
 		str = str:gsub(pattern, replacement)

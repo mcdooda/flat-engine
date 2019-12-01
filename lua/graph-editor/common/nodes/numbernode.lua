@@ -25,8 +25,7 @@ function NumberNodeEditor:build(numberNode, nodeWidget, pinsWidget)
 
     numberInputWidget:valueChanged(submitValue)
     numberInputWidget:submit(submitValue)
-    numberInputWidget:setValue(numberNode:getValue())
-    
+
     inputContainer:addChild(numberInputWidget)
     pinsWidget:addChild(inputContainer)
     return true, inputContainer

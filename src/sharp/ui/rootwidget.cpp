@@ -462,13 +462,6 @@ std::vector<Widget*> getFocusableChildren(Widget* widget) {
 		const auto& focusables = getFocusableChildren(child.get());
 		result.insert(result.end(), focusables.begin(), focusables.end());
 	}
-	// sort by Y position then by X
-	std::sort(result.begin(), result.end(), [](Widget* a, Widget* b) -> bool
-	{
-		flat::Vector2 positionA = a->getAbsolutePosition();
-		flat::Vector2 positionB = b->getAbsolutePosition();
-		return positionA.y > positionB.y || (positionA.y == positionB.y && positionA.x > positionB.x);
-	});
 	return result;
 }
 
