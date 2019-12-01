@@ -64,7 +64,7 @@ std::string NumberInputWidget::floatToString(float f)
 std::string NumberInputWidget::floatToString(float f, size_t precision)
 {
 	std::stringstream ss;
-	ss << std::fixed << std::setprecision(precision) << f;
+	ss << std::setprecision(precision) << f;
 	return ss.str();
 }
 
