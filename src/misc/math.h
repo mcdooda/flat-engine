@@ -13,6 +13,8 @@ constexpr float PI_DIV_4 = PI / 4.f;
 constexpr float SQRT_2 = 1.41421356237f;
 constexpr float SQRT_2_DIV_2 = SQRT_2 / 2.f;
 
+constexpr float SQRT_2_INV = 1.f / SQRT_2;
+
 constexpr float EPSILON = 0.00001f;
 
 template <typename T>

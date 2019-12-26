@@ -349,7 +349,8 @@ template <class T, int depth, void (*GetAABB)(T, AABB2&)>
 inline void QuadTree<T, depth, GetAABB>::clear()
 {
 	FLAT_DEBUG_ONLY(m_objects.clear();)
-	for (Cell<T>& cell : m_cells)
+	m_firstFreeCellDataIndex = CellIndex::INVALID;
+	for (Cell& cell : m_cells)
 	{
 		cell.m_cellDataIndex = CellIndex::INVALID;
 		cell.m_cellDataCount = 0;
