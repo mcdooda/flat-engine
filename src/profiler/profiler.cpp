@@ -29,7 +29,7 @@ void Profiler::endSection(const ProfilerSection* profilerSection)
 	{
 		if (m_shouldWrite)
 		{
-			std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+			TimePoint end = getCurrentTime();
 			m_binaryWriter->popSection(end);
 		}
 		else if (m_currentSections.size() == 0)
@@ -50,12 +50,18 @@ void Profiler::stopRecording()
 	popStartedSections();
 	m_binaryWriter->writeSectionNames();
 	FLAT_DELETE(m_binaryWriter);
+	m_savedSectionNames.clear();
+}
+
+void Profiler::saveSectionName(const std::shared_ptr<std::string>& sectionName)
+{
+	m_savedSectionNames.push_back(sectionName);
 }
 
 void Profiler::popStartedSections()
 {
 	FLAT_ASSERT(m_binaryWriter != nullptr);
-	std::chrono::time_point<std::chrono::high_resolution_clock> interruptedTime = std::chrono::high_resolution_clock::now();
+	TimePoint interruptedTime = getCurrentTime();
 	for (int i = 0; i < m_currentSections.size(); ++i)
 	{
 		m_binaryWriter->popSection(interruptedTime);

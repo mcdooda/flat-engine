@@ -2,8 +2,11 @@
 #define FLAT_RESOURCE_STRONGRESOURCEMANAGER_H
 
 #include <memory>
+#include <array>
+#include <chrono>
 
 #include "resource/resourcemanager.h"
+#include "profiler/resourceprofilersection.h"
 
 namespace flat
 {
@@ -26,6 +29,7 @@ inline std::shared_ptr<const T> StrongResourceManager<T, U...>::getResource(cons
 		if (std::shared_ptr<const T> sharedResource = it->second)
 			return sharedResource;
 
+	FLAT_PROFILE_RESOURCE_LOADING(std::get<0>(initializersTuple).c_str(), std::chrono::milliseconds(5));
 	std::shared_ptr<const T> sharedResource = std::make_shared<const T>(initializers...);
 	m_loadedResources[initializersTuple] = CacheValueType(sharedResource);
 	return sharedResource;
