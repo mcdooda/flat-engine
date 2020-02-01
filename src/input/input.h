@@ -32,6 +32,7 @@ class Input
 		
 		void pollEvents();
 		void clearFrameEvents();
+		void clearAllEvents();
 
 		void pushContext(const std::shared_ptr<context::InputContext>& inputContext);
 		void popContext(const std::shared_ptr<context::InputContext>& inputContext);

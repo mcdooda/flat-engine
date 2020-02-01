@@ -59,6 +59,21 @@ void Input::clearFrameEvents()
 	}
 }
 
+void Input::clearAllEvents()
+{
+	SDL_Event e;
+	while (SDL_PollEvent(&e));
+
+	for (std::weak_ptr<context::InputContext>& inputContextWeakPtr : m_inputContexts)
+	{
+		context::InputContext* inputContext = inputContextWeakPtr.lock().get();
+		if (inputContext != nullptr)
+		{
+			inputContext->clearAllEvents();
+		}
+	}
+}
+
 void Input::pushContext(const std::shared_ptr<context::InputContext>& inputContext)
 {
 	FLAT_ASSERT(inputContext != nullptr);
