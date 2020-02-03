@@ -101,6 +101,7 @@
 // profiler
 #include "profiler/profiler.h"
 #include "profiler/profilersection.h"
+#include "profiler/resourceprofilersection.h"
 
 namespace flat
 {

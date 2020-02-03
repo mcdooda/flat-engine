@@ -8,6 +8,7 @@ return {
     'script/scriptoutput',
     'script/impulseall',
     'script/holdvalue',
+    'script/luavariable',
 
     'math/multiply',
     'math/divide',

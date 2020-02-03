@@ -405,6 +405,7 @@ void printStack(lua_State* L)
 
 void printValue(lua_State* L, int index, std::ostream& out)
 {
+	const char* str = nullptr;
 	switch (lua_type(L, index))
 	{
 		case LUA_TLIGHTUSERDATA:
@@ -412,7 +413,9 @@ void printValue(lua_State* L, int index, std::ostream& out)
 			break;
 
 		case LUA_TUSERDATA:
-			out << "userdata ____ : " << lua_touserdata(L, index);
+			str = luaL_tolstring(L, index, nullptr);
+			out << "userdata ____ : " << lua_touserdata(L, index) << ": " << str;
+			lua_pop(L, 1);
 			break;
 
 		case LUA_TTABLE:
