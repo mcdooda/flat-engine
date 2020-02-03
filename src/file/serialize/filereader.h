@@ -33,6 +33,11 @@ class FileReader : public Processor
 		void process(float& value) override;
 		void process(double& value) override;
 
+		void process(flat::Vector2& value) override;
+		void process(flat::Vector2i& value) override;
+		void process(flat::Vector3& value) override;
+		void process(flat::Vector3i& value) override;
+
 		void process(std::string& value) override;
 
 	private:
