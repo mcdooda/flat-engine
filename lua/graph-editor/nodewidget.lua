@@ -483,16 +483,16 @@ local pinColors = {
 
     [flat.types['flat.Vector2']] = 0xF17A88FF,
     [flat.types['flat.Vector3']] = 0xF17A00FF,
-    [flat.types['CG.Entity']]    = 0x006600FF, -- TODO: get this out of flat
+    --[flat.types['CG.Entity']]    = 0x006600FF, -- TODO: get this out of flat
 }
 
 function NodeWidget:getPinColorByType(pinType)
     local color = pinColors[pinType]
-    assert(
+    --[[assert(
         color,
         'no color for pin type ' .. self.node:pinTypeToString(pinType)
-    )
-    return color
+    )]]
+    return color or 0x006600FF
 end
 
 function NodeWidget:getInputPinPlugWidget(pin)
