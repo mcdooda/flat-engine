@@ -266,8 +266,10 @@ void RootWidget::drop(Widget* widget)
 			return std::get<0>(draggedWidget).lock().get() == widget;
 		}
 	);
-	FLAT_ASSERT(it != m_draggedWidgets.end());
-	m_draggedWidgets.erase(it);
+	if (it != m_draggedWidgets.end())
+	{
+		m_draggedWidgets.erase(it);
+	}
 }
 
 void RootWidget::focus(Widget* widget)
