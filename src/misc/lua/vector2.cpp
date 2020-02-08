@@ -2,13 +2,12 @@
 #include "misc/lua/vector3.h"
 
 #include "lua/sharedcppreference.h"
+#include "lua/lua.h"
 
 namespace flat
 {
 namespace lua
 {
-
-using LuaVector2 = flat::lua::SharedCppValue<Vector2>;
 
 int openVector2(Lua& lua)
 {
@@ -179,5 +178,7 @@ void pushVector2(lua_State* L, const Vector2& vector2)
 	LuaVector2::pushNew(L, vector2);
 }
 
+//FLAT_LUA_PUSHABLE_TYPE(Vector2, pushVector2(L, value))
+
 } // lua
-} // game
+} // flat

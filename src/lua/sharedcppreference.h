@@ -7,7 +7,6 @@
 
 #include "lua/debug.h"
 
-#include "flat.h"
 #include "memory/memory.h"
 
 namespace flat
