@@ -1,7 +1,7 @@
 #ifndef FLAT_MISC_AABB2_H
 #define FLAT_MISC_AABB2_H
 
-#include "misc/vector.h"
+#include "misc/aabb3.h"
 
 namespace flat
 {
@@ -18,6 +18,13 @@ class AABB2
 			min(min),
 			max(max)
 		{}
+
+		AABB2(const AABB3& aabb3) :
+			min(aabb3.min),
+			max(aabb3.max)
+		{
+
+		}
 
 		inline bool operator==(const AABB2& other) const { return min == other.min && max == other.max; }
 

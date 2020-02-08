@@ -82,8 +82,8 @@ function Node:clone()
 end
 
 function Node:addInputPin(pinType, pinName, onPlugged, onUnplugged)
-    assert(pinType, 'no pin type for pin ' .. tostring(pinName))
-    assert(pinName, 'no pin name')
+    assert(pinName, 'No pin name in node ' .. self:getName())
+    assert(pinType, 'No pin type for pin ' .. tostring(pinName) .. ' in node ' .. self:getName())
     local inputPin = {
         pinType = pinType,
         pinName = pinName,
@@ -150,7 +150,7 @@ function Node:clearPins()
 end
 
 function Node:buildPins()
-    error('pure virtual function')
+    error('Node:buildPins is a pure virtual function')
 end
 
 function Node:rebuildPins()
@@ -168,7 +168,7 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
     assert(inputNode:findInputPinIndex(inputPin), 'input pin ' .. inputPin.pinName .. ' is not from node ' .. inputNode:getName())
 
     if outputPin.pinType == PinTypes.ANY then
-        assert(inputPin.pinType ~= PinTypes.ANY)
+        assert(inputPin.pinType ~= PinTypes.ANY or self.isMissingNode or inputNode.isMissingNode)
         outputPin.pinType = inputPin.pinType
     elseif inputPin.pinType == PinTypes.ANY then
         inputPin.pinType = outputPin.pinType

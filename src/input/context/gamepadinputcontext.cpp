@@ -28,16 +28,12 @@ bool GamepadInputContext::addEvent(const SDL_Event& event)
 	switch (event.type)
 	{
 	case SDL_CONTROLLERBUTTONDOWN:
-		//FLAT_ASSERT(!m_pressedButtons[event.cbutton.button]);
 		m_pressedButtons[event.cbutton.button] = true;
-		FLAT_ASSERT(!m_justPressedButtons[event.cbutton.button]);
 		m_justPressedButtons[event.cbutton.button] = true;
 		return true;
 
 	case SDL_CONTROLLERBUTTONUP:
-		//FLAT_ASSERT(m_pressedButtons[event.cbutton.button]);
 		m_pressedButtons[event.cbutton.button] = false;
-		//FLAT_ASSERT(!m_justReleasedButtons[event.cbutton.button]);
 		m_justReleasedButtons[event.cbutton.button] = true;
 		return true;
 

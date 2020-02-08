@@ -14,11 +14,11 @@ class ProfilerSection
 {
 	friend class Profiler;
 	public:
-		ProfilerSection() = delete;
+		ProfilerSection();
 		ProfilerSection(const char* name);
 		ProfilerSection(const ProfilerSection&) = delete;
 		ProfilerSection(ProfilerSection&&) = delete;
-		~ProfilerSection();
+		virtual ~ProfilerSection();
 
 		void operator=(const ProfilerSection&) = delete;
 		void operator=(ProfilerSection&&) = delete;

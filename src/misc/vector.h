@@ -37,6 +37,18 @@ inline T normalize(const T& vector)
 	return glm::normalize(vector);
 }
 
+template <class T>
+bool isNaN(T value)
+{
+	return glm::any(glm::isnan(value));
+}
+
+#ifdef FLAT_DEBUG
+#define FLAT_CHECK_FLOAT(x) FLAT_ASSERT(!flat::isNaN(x))
+#else
+#define FLAT_CHECK_FLOAT(x)
+#endif
+
 using glm::length;
 using glm::length2;
 using glm::distance;

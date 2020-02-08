@@ -1,4 +1,5 @@
 local PinTypes = flat.require 'graph/pintypes'
+local MissingNode = flat.require 'graph/missingnode'
 
 local max = math.max
 
@@ -31,6 +32,14 @@ end
 function Graph:addNodeInstance(node)
     flat.arrayAdd(self.nodeInstances, node)
     node:addedToGraph(self)
+end
+
+function Graph:addMissingNode(nodeName)
+    -- special node type when a node class cannot be found
+    local node = MissingNode:new()
+    flat.arrayAdd(self.nodeInstances, node)
+    node:addedToGraph(self)
+    return node
 end
 
 function Graph:removeNode(node)
@@ -82,46 +91,42 @@ function Graph:addCompound(node)
 end
 
 function Graph:loadGraphFromFile(graphPath)
-    local ok, err = pcall(function()
-        local graphDescription = dofile(graphPath)
-        assert(graphDescription, 'no return value!')
-        self:load(graphDescription)
-    end)
-    if not ok then
-        ok, err = pcall(function()
-            -- fallback to the old format
-            local env = { PinTypes = PinTypes }
-            function env.__index(env, nodeType)
-                return function(graphDescription)
-                    graphDescription.nodeType = nodeType
-                    self:load(graphDescription)
-                end
-            end
-        
-            setmetatable(env, env)
-        
-            assert(loadfile(graphPath, 'bt', env))()
-        end)
-        if not ok then
-            error('Could not load graph ' .. graphPath .. '\n' .. err)
-        end
+    local graphFile = io.open(graphPath, 'r')
+    if not graphFile then
+        return false
     end
+    local graphFileAsString = graphFile:read '*all'
+    graphFile:close()
+    local graphDescription = load(graphFileAsString)()
+    local graphErrors = self:load(graphDescription)
+    return graphErrors
 end
 
 function Graph:load(graphDescription)
-    assert(graphDescription, 'Trying to load a nil graph')
+    assert(graphDescription, 'Trying to load a nil graph description')
     local nodeType = assert(graphDescription.nodeType, 'Graph has no type')
     local nodeClasses = assert(flat.graph.getNodeClasses(nodeType))
 
     self.nodeType = nodeType
+
+    local errors = {}
+    local function addError(message)
+        flat.arrayAdd(errors, message)
+    end
 
     -- build nodes
     local nodes = graphDescription.nodes
     for i = 1, #nodes do
         local node = nodes[i]
         local nodeName = node.name
-        local nodeClass = assert(nodeClasses[nodeName], 'Node ' .. nodeName .. ' does not exist or is not registered')
-        local nodeInstance = self:addNode(nodeClass, false)
+        local nodeInstance
+        local nodeClass = nodeClasses[nodeName]
+        if nodeClass then
+            nodeInstance = self:addNode(nodeClass, false)
+        else
+            addError('Node ' .. nodeName .. ' does not exist or is not registered')
+            nodeInstance = self:addMissingNode()
+        end
         local loadArguments = node.loadArguments
         if loadArguments then
             nodeInstance:load(table.unpack(loadArguments))
@@ -144,10 +149,12 @@ function Graph:load(graphDescription)
         local inputNodeIndex = link[3]
         local inputPinIndex = link[4]
         local inputNode = assert(self.nodeInstances[inputNodeIndex], 'No node #' .. tostring(inputNodeIndex) .. ' in graph')
-        local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. inputNodeIndex)
+        local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. inputNodeIndex .. ' (' .. inputNode:getName() .. ')')
 
         outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
     end
+
+    return errors
 end
 
 function Graph:resolveCompounds()

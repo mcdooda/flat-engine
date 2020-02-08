@@ -123,7 +123,7 @@ function MainWindow:build()
                 clipboardContent = assert(load('return ' .. text, 'clipboard', 't', {}))()
             end)
             if not ok then
-                print(err)
+                print('Error:', err)
                 return
             end
             if type(clipboardContent) ~= 'table' then
@@ -163,7 +163,7 @@ function MainWindow:build()
             
                     local inputNode = assert(clipboardNodeIndexToGraphNode[link[3]], 'No node in clipboard for index ' .. tostring(link[3]))
                     local inputPinIndex = link[4]
-                    local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. tostring(link[3]))
+                    local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. tostring(link[3]) .. ' (' .. link[3]:getName() .. ')')
             
                     outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
                 end
@@ -210,7 +210,7 @@ function MainWindow:build()
                 end
             end)
             if not ok then
-                print(err)
+                print('Error:', err)
             end
             assert(self:layoutSanityCheck())
         end
@@ -326,7 +326,19 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
         end
     end
 
-    local graph = self:loadGraphFromFile(graphPath)
+    local graph, graphErrors
+    local ok, err = pcall(function()
+        graph, graphErrors = self:loadGraphFromFile(graphPath)
+    end)
+
+    if not ok then
+        flat.ui.error('Cannot open graph ' .. graphPath .. ': ' .. err)
+        return false
+    end
+
+    for i = 1, #graphErrors do
+        flat.ui.warn(graphErrors[i])
+    end
 
     local graphInfo = {
         graph = graph,
@@ -527,11 +539,12 @@ end
 function MainWindow:loadGraphFromFile(graphPath)
     assert(graphPath)
     local graph = Graph:new()
-    pcall(function()
-        -- if the file does not exist, we want to create a new graph
-        graph:loadGraphFromFile(graphPath .. '.graph.lua')
-    end)
-    return graph
+
+    -- returns false if the file does not exist, the graph stays empty in this case
+    -- note that the graph can be loaded but still contain errors
+    local loaded, errors = graph:loadGraphFromFile(graphPath .. '.graph.lua')
+
+    return graph, loaded, errors
 end
 
 function MainWindow:saveGraphToFile()

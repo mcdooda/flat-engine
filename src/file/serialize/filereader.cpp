@@ -68,6 +68,32 @@ void FileReader::process(double& value)
 	read(value);
 }
 
+void FileReader::process(flat::Vector2& value)
+{
+	read(value.x);
+	read(value.y);
+}
+
+void FileReader::process(flat::Vector2i& value)
+{
+	read(value.x);
+	read(value.y);
+}
+
+void FileReader::process(flat::Vector3& value)
+{
+	read(value.x);
+	read(value.y);
+	read(value.z);
+}
+
+void FileReader::process(flat::Vector3i& value)
+{
+	read(value.x);
+	read(value.y);
+	read(value.z);
+}
+
 void FileReader::process(std::string& value)
 {
 	uint16_t size;

@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "misc/vector.h"
+
 namespace flat
 {
 namespace file
@@ -31,6 +33,11 @@ class Processor
 
 		virtual void process(float& value) = 0;
 		virtual void process(double& value) = 0;
+
+		virtual void process(flat::Vector2& value) = 0;
+		virtual void process(flat::Vector2i& value) = 0;
+		virtual void process(flat::Vector3& value) = 0;
+		virtual void process(flat::Vector3i& value) = 0;
 
 		virtual void process(std::string& value) = 0;
 

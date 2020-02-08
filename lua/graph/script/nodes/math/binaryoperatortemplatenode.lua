@@ -21,7 +21,7 @@ return function(name, op1Type, op1Name, op2Type, op2Name, resType, resName)
     end
 
     function BinaryOperatorTemplateNode.compute(operand1, operand2)
-        error('pure virtual function')
+        error('BinaryOperatorTemplateNode.compute is a pure virtual function')
     end
 
     return BinaryOperatorTemplateNode

@@ -8,7 +8,7 @@ function ScriptNode:getRuntimeType()
 end
 
 function ScriptNode:execute(runtime)
-    error('pure virtual function')
+    error('ScriptNode:execute is a pure virtual function')
 end
 
 function ScriptNode:prepareReadPin(runtime, outputPin)

@@ -68,6 +68,32 @@ void FileWriter::process(double& value)
 	write(value);
 }
 
+void FileWriter::process(flat::Vector2& value)
+{
+	write(value.x);
+	write(value.y);
+}
+
+void FileWriter::process(flat::Vector2i& value)
+{
+	write(value.x);
+	write(value.y);
+}
+
+void FileWriter::process(flat::Vector3& value)
+{
+	write(value.x);
+	write(value.y);
+	write(value.z);
+}
+
+void FileWriter::process(flat::Vector3i& value)
+{
+	write(value.x);
+	write(value.y);
+	write(value.z);
+}
+
 void FileWriter::process(std::string& value)
 {
 	std::uint16_t size = static_cast<std::uint16_t>(value.size());

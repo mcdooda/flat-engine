@@ -8,11 +8,16 @@ namespace flat
 namespace profiler
 {
 
-ProfilerSection::ProfilerSection(const char* name) :
-	m_name(name)
+ProfilerSection::ProfilerSection() :
+	m_name(nullptr)
 {
 	m_startTime = std::chrono::high_resolution_clock::now();
 	Profiler::getInstance().startSection(this);
+}
+
+ProfilerSection::ProfilerSection(const char* name) : ProfilerSection()
+{
+	m_name = name;
 }
 
 ProfilerSection::~ProfilerSection()

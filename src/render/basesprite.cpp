@@ -128,7 +128,7 @@ void BaseSprite::getPixel(const Vector2& point, video::Color& color) const
 
 bool BaseSprite::requiresAlphaBlending() const
 {
-	return m_texture->requiresAlphaBlending();
+	return m_texture->requiresAlphaBlending() || m_color.a < 1.f;
 }
 
 } // render
