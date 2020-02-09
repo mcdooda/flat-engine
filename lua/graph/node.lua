@@ -239,6 +239,10 @@ function Node:unplugOutputPin(outputPin)
     end
 end
 
+function Node:isOutputPinPlugged(outputPin)
+    return #outputPin.pluggedInputPins > 0
+end
+
 function Node:unplugAllPins()
     self:unplugAllInputPins()
     self:unplugAllOutputPins()
