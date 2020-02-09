@@ -2,6 +2,7 @@
 #include "misc/lua/vector2.h"
 
 #include "lua/sharedcppreference.h"
+#include "lua/lua.h"
 
 namespace flat
 {

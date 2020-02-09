@@ -4,6 +4,7 @@
 #include "misc/vector.h"
 
 #include "lua/push.h"
+#include "lua/sharedcppreference.h"
 
 struct lua_State;
 
@@ -41,10 +42,13 @@ int l_Vector2_tostring(lua_State* L);
 Vector2& getVector2(lua_State* L, int index);
 void pushVector2(lua_State* L, const Vector2& vector2);
 
+using LuaVector2 = SharedCppValue<flat::Vector2>;
+
 } // lua
 } // flat
 
 FLAT_LUA_PUSHABLE_TYPE(const flat::Vector2&, flat::lua::pushVector2(L, value))
+FLAT_LUA_GETABLE_TYPE(flat::Vector2, flat::lua::LuaVector2::get(L, arg))
 
 #endif // FLAT_MISC_LUA_VECTOR2_H
 

@@ -71,7 +71,7 @@ class IgnoreStackGrowth
 	}
 
 #define FLAT_LUA_EXPECT_STACK_GROWTH(L, n) \
-	flat::lua::debug::ExpectStackGrowth expectStackGrowth(L, n, FLAT_PRETTY_FUNCTION, __FILE__, __LINE__);
+	flat::lua::debug::ExpectStackGrowth expectStackGrowth(L, n, __FUNCTION__, __FILE__, __LINE__);
 
 #define FLAT_LUA_IGNORE_ALL_STACK_GROWTH() \
 	flat::lua::debug::ExpectStackGrowth::setIgnoreAll();
