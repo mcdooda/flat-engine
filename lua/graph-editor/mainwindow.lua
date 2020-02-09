@@ -159,11 +159,11 @@ function MainWindow:build()
             
                     local outputNode = assert(clipboardNodeIndexToGraphNode[link[1]], 'No node in clipboard for index ' .. tostring(link[1]))
                     local outputPinIndex = link[2]
-                    local outputPin = assert(outputNode:getOutputPin(outputPinIndex), 'No output pin #' .. tostring(outputPinIndex) .. ' in node #' .. tostring(link[1]))
+                    local outputPin = assert(outputNode:getOutputPin(outputPinIndex), 'No output pin #' .. tostring(outputPinIndex) .. ' in node #' .. tostring(link[1]) .. ' (' .. outputNode:getName() .. ')')
             
                     local inputNode = assert(clipboardNodeIndexToGraphNode[link[3]], 'No node in clipboard for index ' .. tostring(link[3]))
                     local inputPinIndex = link[4]
-                    local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. tostring(link[3]) .. ' (' .. link[3]:getName() .. ')')
+                    local inputPin = assert(inputNode:getInputPin(inputPinIndex), 'No input pin #' .. tostring(inputPinIndex) .. ' in node #' .. tostring(link[3]) .. ' (' .. inputNode:getName() .. ')')
             
                     outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
                 end
