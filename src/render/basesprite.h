@@ -77,6 +77,8 @@ class BaseSprite
 		void updateModelMatrix() const;
 		inline const Matrix4& getModelMatrix() const { updateModelMatrix(); return m_modelMatrix; }
 
+		void setModelMatrix(const Matrix4& modelMatrix);
+
 		void getAABB(AABB2& aabb) const;
 
 		void getPixel(const Vector2& point, video::Color& color) const;

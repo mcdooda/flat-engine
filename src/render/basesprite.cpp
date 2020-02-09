@@ -79,6 +79,16 @@ void BaseSprite::updateModelMatrix() const
 	}
 }
 
+void BaseSprite::setModelMatrix(const Matrix4& modelMatrix)
+{
+	// TODO: do better than this
+	m_modelMatrixIsDirty = false;
+	m_modelMatrix = modelMatrix;
+	m_position = flat::Vector2(m_modelMatrix[3]);
+	m_rotation = flat::Vector3();
+	m_scale = flat::Vector2();
+}
+
 void BaseSprite::getAABB(AABB2& aabb) const
 {
 	const Matrix4& aMatrix = getModelMatrix();
