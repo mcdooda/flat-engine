@@ -209,7 +209,7 @@ void NumberInputWidget::setValue(float value)
 		m_oldValue = getValue();
 	}
 	value = constraintValue(value);
-	std::string text = floatToString(value, m_precision);
+	std::string text = floatToString(value);
 	if (getText() != text)
 	{
 		replaceText(text);
