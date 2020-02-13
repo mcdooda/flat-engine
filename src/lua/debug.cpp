@@ -42,7 +42,7 @@ ExpectStackGrowth::~ExpectStackGrowth()
 	}
 	else
 	{
-		lua_settop(m_L, m_expectedTop);
+		//lua_settop(m_L, m_expectedTop);
 	}
 }
 

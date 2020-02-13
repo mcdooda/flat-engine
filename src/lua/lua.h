@@ -52,10 +52,10 @@ class Lua
 		void collectGarbage() const;
 
 		template <class T, typename... Args>
-		int protectedCall(T* object, void (T::*callbackMethod)(Args...), Args&&... args);
+		int protectedCall(T* object, void (T::*callbackMethod)(lua_State*, Args...), Args&&... args);
 
 		template <class T, typename... Args>
-		int protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args);
+		int protectedCall(const T* object, void (T::*callbackMethod)(lua_State*, Args...) const, Args&&... args);
 
 		void pushVariable(std::initializer_list<const char*> variableNames) const;
 
@@ -139,22 +139,22 @@ inline void Lua::registerClass(const char* metatableName, const luaL_Reg* method
 }
 
 template<class T, typename ...Args>
-inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(Args...), Args&&... args)
+inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(lua_State*, Args...), Args&&... args)
 {
 	FLAT_LUA_IGNORE_STACK_GROWTH(state);
-	using ProtectCallBlock = std::function<void()>;
-	ProtectCallBlock protectedCall = [object, callbackMethod, &args...]()
+	using ProtectCallBlock = std::function<void(lua_State*)>;
+	ProtectCallBlock protectedCallBlock = [object, callbackMethod, &args...](lua_State* L)
 	{
-		(object->*callbackMethod)(std::forward<Args>(args)...);
+		(object->*callbackMethod)(L, std::forward<Args>(args)...);
 	};
 	auto caller = [](lua_State* L)
 	{
-		ProtectCallBlock& protectedCall = *static_cast<ProtectCallBlock*>(lua_touserdata(L, 1));
-		protectedCall();
+		ProtectCallBlock& protectedCallBlock = *static_cast<ProtectCallBlock*>(lua_touserdata(L, 1));
+		protectedCallBlock(L);
 		return 0;
 	};
 	lua_pushcfunction(state, caller);
-	lua_pushlightuserdata(state, &protectedCall);
+	lua_pushlightuserdata(state, &protectedCallBlock);
 	int code = lua_pcall(state, 1, 0, 0);
 	if (code != LUA_OK)
 	{
@@ -165,22 +165,22 @@ inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(Args...), Arg
 }
 
 template <class T, typename... Args>
-inline int Lua::protectedCall(const T* object, void (T::*callbackMethod)(Args...) const, Args&&... args)
+inline int Lua::protectedCall(const T* object, void (T::*callbackMethod)(lua_State*, Args...) const, Args&&... args)
 {
 	FLAT_LUA_IGNORE_STACK_GROWTH(state);
-	using ProtectCallBlock = std::function<void()>;
-	ProtectCallBlock protectedCall = [object, callbackMethod, &args...]()
+	using ProtectCallBlock = std::function<void(lua_State*)>;
+	ProtectCallBlock protectedCallBlock = [object, callbackMethod, &args...](lua_State* L)
 	{
-		(object->*callbackMethod)(std::forward<Args>(args)...);
+		(object->*callbackMethod)(L, std::forward<Args>(args)...);
 	};
 	auto caller = [](lua_State* L)
 	{
-		ProtectCallBlock& protectedCall = *static_cast<ProtectCallBlock*>(lua_touserdata(L, 1));
-		protectedCall();
+		ProtectCallBlock& protectedCallBlock = *static_cast<ProtectCallBlock*>(lua_touserdata(L, 1));
+		protectedCallBlock(L);
 		return 0;
 	};
 	lua_pushcfunction(state, caller);
-	lua_pushlightuserdata(state, &protectedCall);
+	lua_pushlightuserdata(state, &protectedCallBlock);
 	int code = lua_pcall(state, 1, 0, 0);
 	if (code != LUA_OK)
 	{
