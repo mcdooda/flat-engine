@@ -321,8 +321,7 @@ void Lua::updateTimerContainers()
 void doFile(lua_State* L, const std::string& fileName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	luaL_loadfile(L, fileName.c_str());
-	lua_call(L, 0, 0);
+	luaL_dofile(L, fileName.c_str());
 }
 
 void loadFile(lua_State* L, const std::string& fileName)
