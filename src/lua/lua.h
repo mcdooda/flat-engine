@@ -13,6 +13,8 @@
 #include "lua/types.h"
 #include "lua/timer/timercontainer.h"
 
+#include "console/console.h"
+
 namespace flat
 {
 class Flat;
@@ -141,7 +143,6 @@ inline void Lua::registerClass(const char* metatableName, const luaL_Reg* method
 template<class T, typename ...Args>
 inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(lua_State*, Args...), Args&&... args)
 {
-	FLAT_LUA_IGNORE_STACK_GROWTH(state);
 	using ProtectCallBlock = std::function<void(lua_State*)>;
 	ProtectCallBlock protectedCallBlock = [object, callbackMethod, &args...](lua_State* L)
 	{
@@ -158,8 +159,15 @@ inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(lua_State*, A
 	int code = lua_pcall(state, 1, 0, 0);
 	if (code != LUA_OK)
 	{
-		std::cerr << "Lua protected section error: " << luaL_checkstring(state, -1) << std::endl;
+		const std::string errorMessage = luaL_checkstring(state, -1);
+		lua_pop(state, 1);
+
+		{
+			FLAT_CONSOLE_COLOR(LIGHT_RED);
+			std::cerr << errorMessage << std::endl;
+		}
 		printStack(state);
+		std::cerr << std::endl;
 	}
 	return code;
 }
@@ -167,7 +175,6 @@ inline int Lua::protectedCall(T* object, void (T::*callbackMethod)(lua_State*, A
 template <class T, typename... Args>
 inline int Lua::protectedCall(const T* object, void (T::*callbackMethod)(lua_State*, Args...) const, Args&&... args)
 {
-	FLAT_LUA_IGNORE_STACK_GROWTH(state);
 	using ProtectCallBlock = std::function<void(lua_State*)>;
 	ProtectCallBlock protectedCallBlock = [object, callbackMethod, &args...](lua_State* L)
 	{
@@ -184,8 +191,15 @@ inline int Lua::protectedCall(const T* object, void (T::*callbackMethod)(lua_Sta
 	int code = lua_pcall(state, 1, 0, 0);
 	if (code != LUA_OK)
 	{
-		std::cerr << "Lua protected section error: " << luaL_checkstring(state, -1) << std::endl;
+		const std::string errorMessage = luaL_checkstring(state, -1);
+		lua_pop(state, 1);
+
+		{
+			FLAT_CONSOLE_COLOR(LIGHT_RED);
+			std::cerr << errorMessage << std::endl;
+		}
 		printStack(state);
+		std::cerr << std::endl;
 	}
 	return code;
 }

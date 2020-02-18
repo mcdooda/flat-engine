@@ -40,10 +40,7 @@ ExpectStackGrowth::~ExpectStackGrowth()
 			FLAT_BREAK();
 		}
 	}
-	else
-	{
-		//lua_settop(m_L, m_expectedTop);
-	}
+	ignoreAll = false;
 }
 
 void ExpectStackGrowth::setIgnoreAll()

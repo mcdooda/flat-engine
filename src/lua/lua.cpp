@@ -46,6 +46,14 @@ Lua::~Lua()
 void Lua::endFrame()
 {
 	updateTimerContainers();
+
+#ifdef FLAT_DEBUG
+	if (lua_gettop(state) != 0)
+	{
+		flat::lua::printStack(state);
+		FLAT_ASSERT_MSG(false, "Please keep the stack clean!");
+	}
+#endif
 }
 
 void Lua::reset(Flat& flat)
@@ -368,16 +376,18 @@ lua_State* getMainThread(lua_State* L)
 
 void printStack(lua_State* L)
 {
-	std::cout << "--- Lua Debug (" << L << ") ==========" << std::endl;
-	const char* error = lua_tostring(L, -1);
-	std::cout << "Error: " << (error ? error : "???") << std::endl;
-	
+	{
+		FLAT_CONSOLE_COLOR(RED);
+		std::cout << "--- Lua Debug (" << L << ") ==========" << std::endl;
+	}
 	lua_Debug debug;
-	std::cout << "\tCALL STACK" << std::endl;
+	std::cout << "  CALL STACK" << std::endl;
+	bool callStackIsEmpty = true;
 	for (int level = 0; lua_getstack(L, level, &debug); ++level)
 	{
+		callStackIsEmpty = false;
 		lua_getinfo(L, "Snl", &debug);
-		std::cout << "\t\t" << debug.short_src << ':' << debug.currentline;
+		std::cout << "    " << debug.short_src << ':' << debug.currentline;
 		if (debug.name != nullptr)
 		{
 			std::cout << " in ";
@@ -389,17 +399,33 @@ void printStack(lua_State* L)
 		}
 		std::cout << std::endl;
 	}
+	if (callStackIsEmpty)
+	{
+		std::cout << "    <callstack is empty>" << std::endl;
+	}
 	
 	int top = lua_gettop(L);
-	std::cout << "\tLUA STACK" << std::endl;
+	std::cout << "  LUA STACK" << std::endl;
 	
 	for (int i = top; i >= 1; --i)
 	{
-		std::cout << "\t\t#" << i << "/-" << top - i + 1 << "\t : ";
+		std::cout << "    #" << i << "/-" << top - i + 1 << "\t : ";
 		printValue(L, i);
 		std::cout << std::endl;
 	}
-	std::cout << "--- Lua Debug ======" << std::endl;
+	if (top == 0)
+	{
+		std::cout << "    <lua stack is empty>" << std::endl;
+	}
+	else if (top < 0)
+	{
+		std::cout << "    <lua stack is broken: top = " << top << ">" << std::endl;
+	}
+
+	{
+		FLAT_CONSOLE_COLOR(RED);
+		std::cout << "--- Lua Debug ======" << std::endl;
+	}
 }
 
 void printValue(lua_State* L, int index, std::ostream& out)

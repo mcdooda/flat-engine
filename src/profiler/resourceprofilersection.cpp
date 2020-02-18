@@ -1,7 +1,10 @@
 #ifdef FLAT_PROFILER_ENABLED
 
-#include "profiler/resourceprofilersection.h"
 #include <iostream>
+
+#include "profiler/resourceprofilersection.h"
+
+#include "console/console.h"
 
 namespace flat
 {
@@ -22,6 +25,7 @@ ResourceProfilerSection::~ResourceProfilerSection()
 	Profiler::Duration duration = endTime - m_startTime;
 	if (duration > m_durationForWarning)
 	{
+		FLAT_CONSOLE_COLOR(LIGHT_BLUE);
 		std::cerr << "Resource '" << m_name << "' took " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms to load" << std::endl;
 	}
 }

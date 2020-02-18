@@ -103,6 +103,9 @@
 #include "profiler/profilersection.h"
 #include "profiler/resourceprofilersection.h"
 
+// console
+#include "console/console.h"
+
 namespace flat
 {
 

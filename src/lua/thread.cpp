@@ -78,8 +78,14 @@ int Thread::resume(int numArgs, int numResults)
 		}
 		else
 		{
-			printStack(L1);
-			FLAT_LUA_IGNORE_ALL_STACK_GROWTH();
+			const std::string errorMessage = luaL_checkstring(L1, -1);
+			lua_pop(L1, 3); // TODO: why is the error message twice at the top of the stack, followed by the original error object?
+
+			{
+				FLAT_CONSOLE_COLOR(LIGHT_RED);
+				std::cerr << "Lua thread error:\n" << errorMessage << std::endl;
+			}
+			flat::lua::printStack(L1);
 			stop();
 		}
 	}
