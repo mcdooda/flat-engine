@@ -175,6 +175,24 @@ float circleToRectangleDistance(const flat::AABB2& rectangle, const flat::Vector
 	return length - circleRadius;
 }
 
+bool twoLineSegments(const flat::Vector2& start1, const flat::Vector2& end1, const flat::Vector2& start2, const flat::Vector2& end2, flat::Vector2& intersection)
+{
+	const float d = (end2.y - start2.y) * (end1.x - start1.x) - (end2.x - start2.x) * (end1.y - start1.y);
+	if (d != 0)
+	{
+		const float ua = ((end2.x - start2.x) * (start1.y - start2.y) - (end2.y - start2.y) * (start1.x - start2.x)) / d;
+		const float ub = ((end1.x - start1.x) * (start1.y - start2.y) - (end1.y - start1.y) * (start1.x - start2.x)) / d;
+		if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
+		{
+			intersection.x = start1.x + ua * (end1.x - start1.x);
+			intersection.y = start1.y + ua * (end1.y - start1.y);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 } // intersection
 } // geometry
 } // flat
