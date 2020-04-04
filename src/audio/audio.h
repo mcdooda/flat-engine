@@ -19,8 +19,7 @@ class Audio
 
 		void setVolume(float volumeLevel) const;
 
-		inline std::shared_ptr<const Chunk> getChunk(const std::string& fileName) const {
-			return m_chunkManager.getResource(fileName); }
+		inline std::shared_ptr<const Chunk> getChunk(const std::string& fileName) const { return m_chunkManager.getResource(fileName); }
 
 	private:
 		resource::WeakResourceManager<Chunk, std::string> m_chunkManager;
