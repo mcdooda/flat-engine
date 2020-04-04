@@ -117,7 +117,7 @@ class Flat
 		Flat(Flat&&) = delete;
 		virtual ~Flat();
 		Flat& operator=(const Flat&) = delete;
-		
+
 	public:
 		std::unique_ptr<time::Time> time;
 		std::unique_ptr<video::Video> video;
