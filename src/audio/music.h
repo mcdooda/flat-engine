@@ -20,7 +20,7 @@ class Music
 	public:
 		Music(const std::string& filename);
 		~Music();
-		
+
 		void play(int loops = -1) const;
 		void stop() const;
 
@@ -34,12 +34,10 @@ class Music
 		void resume();
 		bool isPaused() const;
 		void togglePause();
-		
+
 	private:
 		Mix_Music* m_music;
 		std::shared_ptr<time::Clock> m_clock;
-
-		static const Music* currentMusic;
 };
 
 } // audio

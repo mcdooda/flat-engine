@@ -9,8 +9,6 @@ namespace flat
 namespace audio
 {
 
-const Music* Music::currentMusic = nullptr;
-
 Music::Music(const std::string& filename)
 {
 	m_music = Mix_LoadMUS(filename.c_str());
@@ -27,15 +25,12 @@ void Music::play(int loops) const
 {
 	Mix_PlayMusic(m_music, loops);
 	m_clock->restart();
-	currentMusic = this;
 }
 
 void Music::stop() const
 {
-	FLAT_ASSERT(currentMusic == this);
 	Mix_HaltMusic();
 	m_clock->pause();
-	currentMusic = nullptr;
 }
 
 float Music::getPosition() const
@@ -90,21 +85,18 @@ bool Music::setPosition(double position)
 
 void Music::rewind()
 {
-	FLAT_ASSERT(currentMusic == this);
 	Mix_RewindMusic();
 	m_clock->pause();
 }
 
 void Music::pause()
 {
-	FLAT_ASSERT(currentMusic == this);
 	Mix_PauseMusic();
 	m_clock->pause();
 }
 
 void Music::resume()
 {
-	FLAT_ASSERT(currentMusic == this);
 	Mix_ResumeMusic();
 	m_clock->resume();
 }

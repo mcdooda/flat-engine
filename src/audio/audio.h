@@ -4,10 +4,11 @@
 #include <string>
 
 #include "audio/music.h"
+#include "audio/sample.h"
+#include "audio/chunk.h"
+#include "resource/weakresourcemanager.h"
 
-namespace flat
-{
-namespace audio
+namespace flat::audio
 {
 
 class Audio
@@ -15,13 +16,17 @@ class Audio
 	public:
 		Audio();
 		~Audio();
-		
-		Music* loadMusic(const std::string& filename);
+
+		void setVolume(float volumeLevel) const;
+
+		inline std::shared_ptr<const Chunk> getChunk(const std::string& fileName) const {
+			return m_chunkManager.getResource(fileName); }
+
+	private:
+		resource::WeakResourceManager<Chunk, std::string> m_chunkManager;
+		static const Music* currentMusic;
 };
 
-} // audio
-} // flat
+} // flat::audio
 
 #endif // FLAT_AUDIO_AUDIO_H
-
-
