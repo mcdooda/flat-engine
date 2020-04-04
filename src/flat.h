@@ -106,6 +106,9 @@
 // console
 #include "console/console.h"
 
+// tool
+#include "tool/assetrepository.h"
+
 namespace flat
 {
 
@@ -119,15 +122,25 @@ class Flat
 		Flat& operator=(const Flat&) = delete;
 		
 	public:
+		// low level
 		std::unique_ptr<time::Time> time;
 		std::unique_ptr<video::Video> video;
 		std::unique_ptr<audio::Audio> audio;
 		std::unique_ptr<input::Input> input;
 		std::unique_ptr<random::Random> random;
+
+		// high level
 		std::unique_ptr<lua::Lua> lua;
+
+		// tool
+		std::unique_ptr<tool::AssetRepository> assetRepository;
+
+		// ui
 		std::unique_ptr<sharp::ui::Ui> ui;
 		std::unique_ptr<sharp::notify::Notify> notify;
 		std::unique_ptr<sharp::message::Message> message;
+
+
 };
 
 } // flat

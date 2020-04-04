@@ -23,6 +23,9 @@ Flat::Flat(const std::string& luaPath, const std::string& assetsPath)
 	random = std::make_unique<random::Random>();
 
 	lua = std::make_unique<lua::Lua>(*this, luaPath, assetsPath);
+
+	assetRepository = std::make_unique<tool::AssetRepository>(*this);
+
 	ui = std::make_unique<sharp::ui::Ui>(*this);
 	notify = std::make_unique<sharp::notify::Notify>(*this);
 	message = std::make_unique<sharp::message::Message>(*this);
