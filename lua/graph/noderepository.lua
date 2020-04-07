@@ -7,9 +7,6 @@ function NodeRepository:new(nodeType)
         nodeClasses = {},
         compounds = {}
     }, self)
-    -- all repositories include the common nodes
-    o:loadNodes('common', nodeType, flat.require)
-    o:loadNodes(nodeType, nodeType, flat.require)
     return o
 end
 
@@ -18,16 +15,19 @@ function NodeRepository:loadNodes(nodeTypeRepository, nodeType, require)
     if nodePaths then
         for i = 1, #nodePaths do
             local nodePath = nodePaths[i]
-            local nodeClass = flat.safeRequire(require, 'graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node')
+            local graphSpecificNodePath = 'graph/' .. nodeType .. '/nodes/' .. nodePath .. 'node'
+            local commonNodePath = 'graph/common/nodes/' .. nodePath .. 'node'
+            local nodeClass = flat.safeRequire(require, graphSpecificNodePath)
+
             if not nodeClass then
-                nodeClass = flat.safeRequire(require, 'graph/common/nodes/' .. nodePath .. 'node')
+                nodeClass = flat.safeRequire(require, commonNodePath)
             end
             if nodeClass then
                 nodeClass.path = nodePath
                 nodeClass.require = require
                 self.nodeClasses[nodePath] = nodeClass
             else
-                flat.ui.error('Node ' .. nodePath .. ' from ' .. nodeTypeRepository .. ' does not exist')
+                flat.ui.error('Node ' .. nodePath .. ' from ' .. nodeTypeRepository .. ' does not exist (tried ' .. graphSpecificNodePath .. ' and ' .. commonNodePath .. ')')
             end
         end
     end
@@ -50,6 +50,7 @@ function NodeRepository:loadCompounds(nodeType, root)
 end
 
 function NodeRepository:getNodeClasses()
+    assert(next(self.nodeClasses), 'No node loaded for \'' .. self.nodeType .. '\' graphs')
     return self.nodeClasses
 end
 

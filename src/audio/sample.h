@@ -19,6 +19,7 @@ public:
     void pause();
     void resume();
     bool isPaused() const;
+    bool isPlaying() const;
 
     void setPosition(const flat::Vector2& position) const;
 

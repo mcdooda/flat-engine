@@ -12,6 +12,7 @@
 #include "input/lua/mouse.h"
 #include "input/lua/gamepads.h"
 #include "video/lua/image.h"
+#include "audio/lua/audio.h"
 #include "sharp/ui/lua/ui.h"
 #include "misc/lua/vector2.h"
 #include "misc/lua/vector3.h"
@@ -104,6 +105,7 @@ void Lua::reset(Flat& flat)
 		input::lua::mouse::open(L);
 		input::lua::gamepads::open(L);
 		video::lua::image::open(L);
+		audio::lua::open(*this);
 		sharp::ui::lua::open(flat, *this);
 
 		snapshot::open(*this);

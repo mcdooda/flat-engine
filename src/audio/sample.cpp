@@ -38,6 +38,11 @@ bool Sample::isPaused() const
     return Mix_Paused(m_channel);
 }
 
+bool Sample::isPlaying() const
+{
+    return Mix_Playing(m_channel);
+}
+
 void Sample::setPosition(const flat::Vector2& position) const
 {
     const float angle = atan2(position.x, position.y);

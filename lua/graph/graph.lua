@@ -36,7 +36,7 @@ end
 
 function Graph:addMissingNode(nodeName)
     -- special node type when a node class cannot be found
-    local node = MissingNode:new()
+    local node = MissingNode:new(nodeName)
     flat.arrayAdd(self.nodeInstances, node)
     node:addedToGraph(self)
     return node
@@ -125,7 +125,7 @@ function Graph:load(graphDescription)
             nodeInstance = self:addNode(nodeClass, false)
         else
             addError('Node ' .. nodeName .. ' does not exist or is not registered')
-            nodeInstance = self:addMissingNode()
+            nodeInstance = self:addMissingNode(nodeName)
         end
         local loadArguments = node.loadArguments
         if loadArguments then
@@ -154,7 +154,15 @@ function Graph:load(graphDescription)
         outputNode:plugPins(outputPin, inputNode, inputPin, nil, true)
     end
 
+    self:postLoad()
+
     return errors
+end
+
+function Graph:postLoad()
+    for i = 1, #self.nodeInstances do
+        self.nodeInstances[i]:postLoad()
+    end
 end
 
 function Graph:resolveCompounds()

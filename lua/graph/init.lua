@@ -29,12 +29,16 @@ local function requireFromRoot(root)
 end
 
 function flat.graph.loadNodeClasses(nodeType, root)
-    -- loads flat nodes
     local repository = getNodeRepository(nodeType)
 
+    -- loads flat nodes
+    repository:loadNodes('common', nodeType, flat.require)
+    repository:loadNodes(nodeType, nodeType, flat.require)
+
     -- loads project specific nodes
-    repository:loadNodes('common', nodeType, requireFromRoot(root))
-    repository:loadNodes(nodeType, nodeType, requireFromRoot(root))
+    local require = requireFromRoot(root)
+    repository:loadNodes('common', nodeType, require)
+    repository:loadNodes(nodeType, nodeType, require)
 end
 
 function flat.graph.loadCompounds(nodeType, root)
@@ -43,3 +47,4 @@ function flat.graph.loadCompounds(nodeType, root)
 end
 
 flat.dofile 'graph/script/init.lua'
+flat.dofile 'graph/sound/init.lua'
