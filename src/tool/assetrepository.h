@@ -11,8 +11,26 @@ struct lua_State;
 namespace flat::tool
 {
 
+enum AssetDirectoryIndex
+{
+	INVALID_ASSET_DIRECTORY = 0xFFFFFFFF
+};
+
+inline bool isValidAssetDirectory(AssetDirectoryIndex assetDirectoryIndex)
+{
+	return assetDirectoryIndex != AssetDirectoryIndex::INVALID_ASSET_DIRECTORY;
+}
+
 class AssetRepository final
 {
+	private:
+		struct Directory
+		{
+			std::filesystem::path path;
+			std::vector<AssetDirectoryIndex> directories;
+			std::vector<int> assets;
+		};
+
 	public:
 		AssetRepository() = delete;
 		AssetRepository(const AssetRepository&) = delete;
@@ -20,23 +38,34 @@ class AssetRepository final
 		AssetRepository(Flat& flat);
 		~AssetRepository() = default;
 
-		void addAssetFolder(const std::filesystem::path& assetFolder);
+		void addAssetDirectory(const std::filesystem::path& assetDirectory);
 		void scanAllAssets();
 
-		const Asset* findAssetFromName(const Asset::Type& type, const std::string name) const;
+		const Asset* findAssetFromName(const Asset::Type& type, const Asset::Name& name) const;
+
+		std::vector<std::string> getDirectories(const std::string& path) const;
+		std::vector<const Asset*> getAssets(const std::string& path) const;
 
 	private:
+		static bool isValidDirectory(const std::filesystem::path& path);
+
 		void clearCache();
-		void addAssetToCache(const std::filesystem::path& path);
+		void scanDirectoryRecursive(AssetDirectoryIndex parentDirectoryIndex, const std::filesystem::path& assetDirectory);
+		void addAssetToCache(AssetDirectoryIndex parentDirectoryIndex, const std::filesystem::path& path);
+		AssetDirectoryIndex addDirectoryToCache(const std::filesystem::path& path);
+		AssetDirectoryIndex addSubDirectoryToCache(AssetDirectoryIndex parentDirectoryIndex, const std::filesystem::path& path);
 
 	private:
 		Flat& m_flat;
 
-		std::vector<std::filesystem::path> m_assetFolders;
+		std::vector<std::filesystem::path> m_assetDirectories;
 
 		std::vector<Asset> m_cachedAssets;
-		std::unordered_map<std::string, Asset*> m_cachedAssetsByPath;
-		std::unordered_map<Asset::Type, std::vector<Asset*>> m_cachedAssetsByType;
+		std::unordered_map<std::string, int> m_cachedAssetsByPath;
+		std::unordered_map<Asset::Type, std::vector<int>> m_cachedAssetsByType;
+
+		std::vector<Directory> m_cachedDirectories;
+		std::unordered_map<std::string, AssetDirectoryIndex> m_cachedDirectoriesByPath;
 };
 
 } // flat::tool

@@ -8,7 +8,8 @@ namespace flat::lua::table
 {
 
 template <typename ValueType>
-inline std::vector<ValueType> getArray(lua_State* L, int arg) {
+inline std::vector<ValueType> getArray(lua_State* L, int arg)
+{
 	luaL_checktype(L, arg, LUA_TTABLE);
 	size_t numControlPoints = lua_rawlen(L, arg);
 	std::vector<ValueType> array;

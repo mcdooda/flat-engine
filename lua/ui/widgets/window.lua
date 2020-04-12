@@ -201,6 +201,7 @@ end
 function Window:setSize(width, height)
     self.window:setSize(width, height)
 end
+
 function Window:setIcon(icon)
     self.iconContainer:setSize(18, 16)
     self.iconContainer:setMargin(1, 2, 0, 0)
