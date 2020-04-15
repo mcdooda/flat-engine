@@ -30,7 +30,8 @@ function AssetBrowser:openDirectory(path)
     do
         local directory = Asset.getParentDirectory(path);
         if directory then
-            local directoryLabel = Widget.makeText('..', table.unpack(flat.ui.settings.defaultFont))
+            local directoryLabel = Widget.makeText('[D] ..', table.unpack(flat.ui.settings.defaultFont))
+            directoryLabel:setMargin(2)
             directoryLabel:setTextColor(0x111111FF)
             directoryLabel:click(function()
                 self:openDirectory(directory)
@@ -42,7 +43,8 @@ function AssetBrowser:openDirectory(path)
     -- sub directories
     for i = 1, #directories do
         local directory = directories[i]
-        local directoryLabel = Widget.makeText(directory, table.unpack(flat.ui.settings.defaultFont))
+        local directoryLabel = Widget.makeText('[D] ' .. directory, table.unpack(flat.ui.settings.defaultFont))
+        directoryLabel:setMargin(2)
         directoryLabel:setTextColor(0x111111FF)
         directoryLabel:click(function()
             self:openDirectory(directory)
@@ -53,10 +55,13 @@ function AssetBrowser:openDirectory(path)
     -- assets
     for i = 1, #assets do
         local asset = assets[i]
-        local assetLabel = Widget.makeText(asset:getName(), table.unpack(flat.ui.settings.defaultFont))
+        local assetLabel = Widget.makeText('[A-' .. asset:getType() .. '] ' .. asset:getName(), table.unpack(flat.ui.settings.defaultFont))
+        assetLabel:setMargin(2)
         assetLabel:setTextColor(0x111111FF)
         assetLabel:click(function()
             print('Opening asset ' .. asset:getPath())
+            local assetData = flat.tool.asset.getAssetTypeData(asset:getType())
+            flat.dump(assetData)
         end)
         content:addChild(assetLabel)
     end
