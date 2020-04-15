@@ -11,6 +11,11 @@ struct lua_State;
 namespace flat::tool
 {
 
+enum AssetIndex
+{
+
+};
+
 enum AssetDirectoryIndex
 {
 	INVALID_ASSET_DIRECTORY = 0xFFFFFFFF
@@ -27,8 +32,9 @@ class AssetRepository final
 		struct Directory
 		{
 			std::filesystem::path path;
-			std::vector<AssetDirectoryIndex> directories;
-			std::vector<int> assets;
+			AssetDirectoryIndex parentDirectoryIndex = AssetDirectoryIndex::INVALID_ASSET_DIRECTORY;
+			std::vector<AssetDirectoryIndex> directoryIndices;
+			std::vector<AssetIndex> assetIndices;
 		};
 
 	public:
@@ -43,8 +49,10 @@ class AssetRepository final
 
 		const Asset* findAssetFromName(const Asset::Type& type, const Asset::Name& name) const;
 
+		// lua api
 		std::vector<std::string> getDirectories(const std::string& path) const;
 		std::vector<const Asset*> getAssets(const std::string& path) const;
+		bool getParentDirectory(const std::string& path, std::string& parentPath) const;
 
 	private:
 		static bool isValidDirectory(const std::filesystem::path& path);
@@ -61,8 +69,8 @@ class AssetRepository final
 		std::vector<std::filesystem::path> m_assetDirectories;
 
 		std::vector<Asset> m_cachedAssets;
-		std::unordered_map<std::string, int> m_cachedAssetsByPath;
-		std::unordered_map<Asset::Type, std::vector<int>> m_cachedAssetsByType;
+		std::unordered_map<std::string, AssetIndex> m_cachedAssetsByPath;
+		std::unordered_map<Asset::Type, std::vector<AssetIndex>> m_cachedAssetsByType;
 
 		std::vector<Directory> m_cachedDirectories;
 		std::unordered_map<std::string, AssetDirectoryIndex> m_cachedDirectoriesByPath;

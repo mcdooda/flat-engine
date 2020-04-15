@@ -67,18 +67,18 @@ void AssetRepository::scanDirectoryRecursive(AssetDirectoryIndex parentDirectory
 
 void AssetRepository::addAssetToCache(AssetDirectoryIndex parentDirectoryIndex, const std::filesystem::path& path)
 {
-	const int assetIndex = static_cast<int>(m_cachedAssets.size());
+	const AssetIndex assetIndex = static_cast<AssetIndex>(m_cachedAssets.size());
 
 	Asset& asset = m_cachedAssets.emplace_back(path);
 	asset.loadDetails(m_flat.lua->state);
 
 	m_cachedAssetsByPath[asset.getPath().string()] = assetIndex;
 
-	std::pair<std::unordered_map<Asset::Type, std::vector<int>>::iterator, bool> cachedAssetsByType = m_cachedAssetsByType.emplace(asset.getType(), std::vector<int>());
+	std::pair<std::unordered_map<Asset::Type, std::vector<AssetIndex>>::iterator, bool> cachedAssetsByType = m_cachedAssetsByType.emplace(asset.getType(), std::vector<AssetIndex>());
 	cachedAssetsByType.first->second.push_back(assetIndex);
 
 	Directory& parentDirectory = m_cachedDirectories.at(parentDirectoryIndex);
-	parentDirectory.assets.push_back(assetIndex);
+	parentDirectory.assetIndices.push_back(assetIndex);
 }
 
 AssetDirectoryIndex AssetRepository::addDirectoryToCache(const std::filesystem::path& path)
@@ -125,7 +125,9 @@ AssetDirectoryIndex AssetRepository::addSubDirectoryToCache(AssetDirectoryIndex 
 	if (isValidAssetDirectory(parentDirectoryIndex))
 	{
 		Directory& parentDirectory = m_cachedDirectories.at(parentDirectoryIndex);
-		parentDirectory.directories.push_back(directoryIndex);
+		parentDirectory.directoryIndices.push_back(directoryIndex);
+
+		directory.parentDirectoryIndex = parentDirectoryIndex;
 	}
 
 	return directoryIndex;
@@ -133,13 +135,13 @@ AssetDirectoryIndex AssetRepository::addSubDirectoryToCache(AssetDirectoryIndex 
 
 const Asset* AssetRepository::findAssetFromName(const Asset::Type& type, const Asset::Name& name) const
 {
-	std::unordered_map<Asset::Type, std::vector<int>>::const_iterator it = m_cachedAssetsByType.find(type);
+	std::unordered_map<Asset::Type, std::vector<AssetIndex>>::const_iterator it = m_cachedAssetsByType.find(type);
 	if (it == m_cachedAssetsByType.cend())
 	{
 		return nullptr;
 	}
 
-	for (int assetIndex : it->second)
+	for (AssetIndex assetIndex : it->second)
 	{
 		const Asset* asset = &m_cachedAssets.at(assetIndex);
 		if (asset->getName() == name)
@@ -154,7 +156,7 @@ const Asset* AssetRepository::findAssetFromName(const Asset::Type& type, const A
 std::vector<std::string> AssetRepository::getDirectories(const std::string& path) const
 {
 	const AssetDirectoryIndex directoryIndex = m_cachedDirectoriesByPath.at(path);
-	const std::vector<AssetDirectoryIndex>& subDirectoryIndices = m_cachedDirectories.at(directoryIndex).directories;
+	const std::vector<AssetDirectoryIndex>& subDirectoryIndices = m_cachedDirectories.at(directoryIndex).directoryIndices;
 	std::vector<std::string> subDirectoryPaths;
 	subDirectoryPaths.reserve(subDirectoryIndices.size());
 	for (AssetDirectoryIndex subDirectoryIndex : subDirectoryIndices)
@@ -168,15 +170,30 @@ std::vector<std::string> AssetRepository::getDirectories(const std::string& path
 std::vector<const Asset*> AssetRepository::getAssets(const std::string& path) const
 {
 	const AssetDirectoryIndex directoryIndex = m_cachedDirectoriesByPath.at(path);
-	const std::vector<int>& assetIndices = m_cachedDirectories.at(directoryIndex).assets;
+	const std::vector<AssetIndex>& assetIndices = m_cachedDirectories.at(directoryIndex).assetIndices;
 	std::vector<const Asset*> assets;
 	assets.reserve(assetIndices.size());
-	for (int assetIndex : assetIndices)
+	for (AssetIndex assetIndex : assetIndices)
 	{
 		const Asset& asset = m_cachedAssets.at(assetIndex);
 		assets.push_back(&asset);
 	}
 	return assets;
+}
+
+bool AssetRepository::getParentDirectory(const std::string& path, std::string& parentPath) const
+{
+	const AssetDirectoryIndex directoryIndex = m_cachedDirectoriesByPath.at(path);
+	const AssetDirectoryIndex parentDirectoryIndex = m_cachedDirectories[directoryIndex].parentDirectoryIndex;
+	if (isValidAssetDirectory(parentDirectoryIndex))
+	{
+		parentPath = m_cachedDirectories[parentDirectoryIndex].path.string();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 } // flat::tool

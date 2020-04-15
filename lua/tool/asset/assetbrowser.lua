@@ -1,3 +1,5 @@
+local UiSettings = require 'data/scripts/ui/uisettings'
+
 local AssetBrowser = {}
 AssetBrowser.__index = AssetBrowser
 setmetatable(AssetBrowser, { __index = flat.ui.Window })
@@ -16,17 +18,50 @@ function AssetBrowser:build()
 end
 
 function AssetBrowser:openDirectory(path)
+    print('Opening ' .. path)
     self.path = path
 
     local directories = Asset.getDirectories(path)
-    print 'directories='
-    flat.dumpFlat(directories)
-
     local assets = Asset.getAssets(path)
-    print 'assets='
-    flat.dumpFlat(assets)
 
-    print(self:getContent())
+    local content = Widget.makeColumnFlow()
+
+    -- parent directory
+    do
+        local directory = Asset.getParentDirectory(path);
+        if directory then
+            local directoryLabel = Widget.makeText('..', table.unpack(flat.ui.settings.defaultFont))
+            directoryLabel:setTextColor(0x111111FF)
+            directoryLabel:click(function()
+                self:openDirectory(directory)
+            end)
+            content:addChild(directoryLabel)
+        end
+    end
+
+    -- sub directories
+    for i = 1, #directories do
+        local directory = directories[i]
+        local directoryLabel = Widget.makeText(directory, table.unpack(flat.ui.settings.defaultFont))
+        directoryLabel:setTextColor(0x111111FF)
+        directoryLabel:click(function()
+            self:openDirectory(directory)
+        end)
+        content:addChild(directoryLabel)
+    end
+
+    -- assets
+    for i = 1, #assets do
+        local asset = assets[i]
+        local assetLabel = Widget.makeText(asset:getName(), table.unpack(flat.ui.settings.defaultFont))
+        assetLabel:setTextColor(0x111111FF)
+        assetLabel:click(function()
+            print('Opening asset ' .. asset:getPath())
+        end)
+        content:addChild(assetLabel)
+    end
+
+    self:setContent(content)
 end
 
 return AssetBrowser
