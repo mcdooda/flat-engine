@@ -50,7 +50,7 @@ bool Music::setPosition(double position)
 	time::Clock* clock = m_clock.get();
 	const float currentPosition = clock->getTime();
 
-	switch (musicType)
+	/*switch (musicType)
 	{
 	case MUS_MP3:
 	case MUS_MP3_MAD:
@@ -73,7 +73,7 @@ bool Music::setPosition(double position)
 		break;
 	default:
 		break;
-	}
+	}*/
 
 	if (moved)
 	{

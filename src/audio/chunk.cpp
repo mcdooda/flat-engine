@@ -1,5 +1,6 @@
 #include "chunk.h"
 #include "debug/assert.h"
+#include <iostream>
 
 namespace flat::audio
 {
@@ -7,11 +8,11 @@ namespace flat::audio
 Chunk::Chunk(const std::string& filename)
 {
     m_chunk = Mix_LoadWAV(filename.c_str());
-    FLAT_ASSERT(m_chunk != nullptr);
 //TODO error checking
-//    if(!m_chunk) {
-//        std::cout <<"Mix_LoadWAV: " << Mix_GetError() << std::endl;
-//    }
+    if(!m_chunk) {
+        std::cout <<"Mix_LoadWAV error: " << Mix_GetError() << std::endl;
+    }
+    FLAT_ASSERT(m_chunk != nullptr);
 }
 
 Chunk::~Chunk()
