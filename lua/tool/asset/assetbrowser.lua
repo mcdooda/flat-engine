@@ -61,7 +61,8 @@ function AssetBrowser:openDirectory(path)
         assetLabel:click(function()
             print('Opening asset ' .. asset:getPath())
             local assetData = flat.tool.asset.getAssetTypeData(asset:getType())
-            flat.dump(assetData)
+            assetData.click(asset)
+            return true
         end)
         content:addChild(assetLabel)
     end

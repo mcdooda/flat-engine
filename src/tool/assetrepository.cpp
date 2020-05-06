@@ -39,9 +39,11 @@ bool AssetRepository::isValidDirectory(const std::filesystem::path& path)
 
 void AssetRepository::clearCache()
 {
+	m_cachedAssets.clear();
 	m_cachedAssetsByPath.clear();
 	m_cachedAssetsByType.clear();
-	m_cachedAssets.clear();
+	m_cachedDirectories.clear();
+	m_cachedDirectoriesByPath.clear();
 }
 
 void AssetRepository::scanDirectoryRecursive(AssetDirectoryIndex parentDirectoryIndex, const std::filesystem::path& assetDirectory)
@@ -90,8 +92,6 @@ AssetDirectoryIndex AssetRepository::addDirectoryToCache(const std::filesystem::
 	Directory& directory = m_cachedDirectories.emplace_back();
 	directory.path = path;
 
-	std::cout << path << std::endl;
-
 	std::pair<std::unordered_map<std::string, AssetDirectoryIndex>::iterator, bool> pair;
 	pair = m_cachedDirectoriesByPath.emplace(
 		std::piecewise_construct,
@@ -111,8 +111,6 @@ AssetDirectoryIndex AssetRepository::addSubDirectoryToCache(AssetDirectoryIndex 
 
 	Directory& directory = m_cachedDirectories.emplace_back();
 	directory.path = path;
-
-	std::cout << path << std::endl;
 
 	std::pair<std::unordered_map<std::string, AssetDirectoryIndex>::iterator, bool> pair;
 	pair = m_cachedDirectoriesByPath.emplace(
