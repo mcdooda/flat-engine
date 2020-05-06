@@ -86,6 +86,7 @@ std::string SharedCppValue<T>::metatableName;
 template <class T>
 class SharedCppReference : public SharedCppValue<std::shared_ptr<T>>
 {
+	using ValueType = std::shared_ptr<T>;
 	using Super = SharedCppValue<std::shared_ptr<T>>;
 	public:
 		static T& get(lua_State* L, int index)
@@ -93,6 +94,11 @@ class SharedCppReference : public SharedCppValue<std::shared_ptr<T>>
 			ValueType& sharedPointer = Super::get(L, index);
 			FLAT_ASSERT(sharedPointer != nullptr);
 			return *sharedPointer.get();
+		}
+
+		static ValueType& getSharedPointer(lua_State* L, int index)
+		{
+			return Super::get(L, index);
 		}
 };
 

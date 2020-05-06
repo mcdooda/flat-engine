@@ -62,6 +62,10 @@ function Node:load(...)
     -- overidden when needed, called after deserialization
 end
 
+function Node:postLoad(...)
+    -- overidden when needed, called after the whole graph has been loaded
+end
+
 function Node:getLoadArguments()
     -- overriden when needed, should return the arguments to pass to load(...)
 end
@@ -239,6 +243,10 @@ function Node:unplugOutputPin(outputPin)
     end
 end
 
+function Node:isInputPinPlugged(inputPin)
+    return inputPin.pluggedOutputPin ~= nil
+end
+
 function Node:isOutputPinPlugged(outputPin)
     return #outputPin.pluggedInputPins > 0
 end
@@ -277,6 +285,16 @@ function Node:makePinNameFromType(pinType)
     local pinName = self:pinTypeToString(pinType)
     pinName = pinName:gsub('^(.+)%.(.+)$', '%2')
     return pinName:sub(1, 1):upper() .. pinName:sub(2):lower()
+end
+
+function Node:tryReadConstantPin(inputPin)
+    assert(inputPin, 'Input pin does not exist')
+    if self:isInputPinPlugged(inputPin) then
+        local inputNode = inputPin.pluggedOutputPin.node
+        if inputNode:isConstant() then
+            return inputNode:getValue()
+        end
+    end
 end
 
 return Node

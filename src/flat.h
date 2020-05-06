@@ -120,7 +120,7 @@ class Flat
 		Flat(Flat&&) = delete;
 		virtual ~Flat();
 		Flat& operator=(const Flat&) = delete;
-		
+
 	public:
 		// low level
 		std::unique_ptr<time::Time> time;

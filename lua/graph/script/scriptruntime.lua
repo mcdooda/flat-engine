@@ -57,6 +57,12 @@ function ScriptRuntime:new(graph)
     return setmetatable(o, self)
 end
 
+function ScriptRuntime:inherit()
+    local runtimeType = {}
+    runtimeType.__index = runtimeType
+    return setmetatable(runtimeType, { __index = self })
+end
+
 function ScriptRuntime:setContext(context)
     local contextNodes = self.graph:getContextNodes()
     for i = 1, #contextNodes do
@@ -94,12 +100,13 @@ function ScriptRuntime:readOutputPins()
 
     local outputNodeRuntime = self.nodeRuntimes[outputNode]
     local outputValues = {}
-    local numOutputs = #outputNode.inputPins - 1 -- do not read the last pin
-    for i = 1, numOutputs do
-        local inputPin = outputNode.inputPins[i]
+    local pinsToRead = outputNode:getPinsToRead()
+    for i = 1, #pinsToRead do
+        local inputPin = pinsToRead[i]
         assert(inputPin)
         outputValues[i] = outputNodeRuntime:readPin(inputPin)
     end
+
     return table.unpack(outputValues)
 end
 

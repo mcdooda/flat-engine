@@ -28,18 +28,22 @@ end
 
 local function success(message)
     notify('ok-circle', message, themeNotify.SUCCESS_BACKGROUND_COLOR, 3)
+    print('Success:', message)
 end
 
 local function warn(message)
     notify('warning-sign', message, themeNotify.WARNING_BACKGROUND_COLOR, math.huge)
+    print('Warning:', message)
 end
 
 local function error(message)
     notify('remove-circle', message, themeNotify.ERROR_BACKGROUND_COLOR, math.huge)
+    print('Error:', message)
 end
 
 local function info(message)
     notify('alert-circle', message, themeNotify.INFO_BACKGROUND_COLOR, 3)
+    print('Info:', message)
 end
 
 

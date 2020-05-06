@@ -7,6 +7,15 @@ function ScriptOutputNode:addedToGraph(graph)
     graph.outputNode = self
 end
 
+function ScriptOutputNode:getPinsToRead()
+    local pinsToRead = {}
+    for i = 1, #self.inputPins - 1 do
+        local inputPin = self.inputPins[i]
+        flat.arrayAdd(pinsToRead, inputPin)
+    end
+    return pinsToRead
+end
+
 function ScriptOutputNode:buildPins()
     if self.pinsData then
         for i = 1, #self.pinsData do

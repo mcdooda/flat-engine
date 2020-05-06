@@ -97,6 +97,11 @@ void Game::loop()
 			video->endFrame();
 		}
 
+		{
+			FLAT_PROFILE("Audio end frame");
+			audio->endFrame();
+		}
+
 		time->endFrame();
 
 		running = !input->window->isClosed() && !m_stop;

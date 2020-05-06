@@ -1,0 +1,1 @@
+return flat.require 'graph/script/nodes/vector3node'
