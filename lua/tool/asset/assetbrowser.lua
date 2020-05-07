@@ -25,6 +25,8 @@ function AssetBrowser:openDirectory(path)
     local assets = Asset.getAssets(path)
 
     local content = Widget.makeColumnFlow()
+    content:setSizePolicy(Widget.SizePolicy.EXPAND)
+    content:setAllowScrollY(true)
 
     -- parent directory
     do
