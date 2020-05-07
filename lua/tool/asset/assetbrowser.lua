@@ -43,7 +43,8 @@ function AssetBrowser:openDirectory(path)
     -- sub directories
     for i = 1, #directories do
         local directory = directories[i]
-        local directoryLabel = Widget.makeText('[D] ' .. directory, table.unpack(flat.ui.settings.defaultFont))
+        local directoryName = directory:gsub('^.+[/\\](.+)$', '%1')
+        local directoryLabel = Widget.makeText('[D] ' .. directoryName, table.unpack(flat.ui.settings.defaultFont))
         directoryLabel:setMargin(2)
         directoryLabel:setTextColor(0x111111FF)
         directoryLabel:click(function()
