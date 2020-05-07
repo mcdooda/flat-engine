@@ -14,7 +14,7 @@ Audio::Audio()
 {
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
 	Mix_AllocateChannels(10);
-	Mix_Volume(1, MIX_MAX_VOLUME/2);
+	Mix_Volume(1, MIX_MAX_VOLUME / 2);
 }
 
 Audio::~Audio()
@@ -24,7 +24,7 @@ Audio::~Audio()
 
 void Audio::setVolume(float volume) const
 {
-	Mix_Volume(-1, volume * 128);
+	Mix_Volume(-1, static_cast<int>(volume * 128.f));
 }
 
 std::shared_ptr<flat::audio::Sample> Audio::playChunk(std::shared_ptr<const Chunk> chunk)
