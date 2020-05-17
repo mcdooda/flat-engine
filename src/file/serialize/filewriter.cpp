@@ -96,9 +96,20 @@ void FileWriter::process(flat::Vector3i& value)
 
 void FileWriter::process(std::string& value)
 {
-	std::uint16_t size = static_cast<std::uint16_t>(value.size());
+	const std::uint16_t size = static_cast<std::uint16_t>(value.size());
 	write<std::uint16_t>(size);
 	m_file.write(value.data(), size);
+}
+
+void FileWriter::process(std::filesystem::path& value)
+{
+	std::string pathAsString = value.string();
+	constexpr char separator = std::filesystem::path::preferred_separator;
+	if constexpr (separator != '/')
+	{
+		std::replace(pathAsString.begin(), pathAsString.end(), separator, '/');
+	}
+	process(pathAsString);
 }
 
 } // serialize

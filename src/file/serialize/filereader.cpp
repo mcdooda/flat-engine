@@ -102,6 +102,14 @@ void FileReader::process(std::string& value)
 	m_file.read(&value[0], size);
 }
 
+void FileReader::process(std::filesystem::path& value)
+{
+	std::string pathAsString;
+	process(pathAsString);
+	value = pathAsString;
+	value.make_preferred();
+}
+
 } // serialize
 } // file
 } // flat
