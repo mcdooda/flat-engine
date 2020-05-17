@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include <filesystem>
 
 #include "video/window.h"
 #include "video/color.h"
@@ -29,8 +30,8 @@ class Video
 		void clear();
 		void setClearColor(const Color& color);
 
-		inline std::shared_ptr<const FileTexture> getTexture(const std::string& fileName) const { return m_textureManager.getResource(fileName); }
-		inline std::shared_ptr<const font::Font> getFont(const std::string& fileName, int size) const { return m_fontManager.getResource(fileName, size); }
+		inline std::shared_ptr<const FileTexture> getTexture(const std::filesystem::path& fileName) const { return m_textureManager.getResource(fileName.string()); }
+		inline std::shared_ptr<const font::Font> getFont(const std::filesystem::path& fileName, int size) const { return m_fontManager.getResource(fileName.string(), size); }
 
 	public:
 		Window* window;

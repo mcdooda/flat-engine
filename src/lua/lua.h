@@ -7,6 +7,7 @@
 #include <vector>
 #include <unordered_map>
 #include <type_traits>
+#include <filesystem>
 #include <lua5.3/lua.hpp>
 
 #include "lua/debug.h"
@@ -95,9 +96,9 @@ class Lua
 
 void close(lua_State* L);
 
-void doFile(lua_State* L, const std::string& fileName);
-void loadFile(lua_State* L, const std::string& fileName);
-void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName);
+void doFile(lua_State* L, const std::filesystem::path& fileName);
+void loadFile(lua_State* L, const std::filesystem::path& fileName);
+void loadLib(lua_State* L, const std::filesystem::path& fileName, const std::string& globalName);
 
 void clearLoadedPackages(lua_State* L);
 

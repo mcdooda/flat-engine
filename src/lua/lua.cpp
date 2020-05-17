@@ -328,16 +328,16 @@ void Lua::updateTimerContainers()
 	}
 }
 
-void doFile(lua_State* L, const std::string& fileName)
+void doFile(lua_State* L, const std::filesystem::path& fileName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	luaL_dofile(L, fileName.c_str());
+	luaL_dofile(L, fileName.string().c_str());
 }
 
-void loadFile(lua_State* L, const std::string& fileName)
+void loadFile(lua_State* L, const std::filesystem::path& fileName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 1);
-	int code = luaL_loadfile(L, fileName.c_str());
+	int code = luaL_loadfile(L, fileName.string().c_str());
 	if (code == LUA_ERRFILE)
 	{
 		lua_pop(L, 1);
@@ -349,10 +349,10 @@ void loadFile(lua_State* L, const std::string& fileName)
 	}
 }
 
-void loadLib(lua_State* L, const std::string& fileName, const std::string& globalName)
+void loadLib(lua_State* L, const std::filesystem::path& fileName, const std::string& globalName)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
-	luaL_loadfile(L, fileName.c_str());
+	luaL_loadfile(L, fileName.string().c_str());
 	lua_call(L, 0, 1);
 	lua_setglobal(L, globalName.c_str());
 }
