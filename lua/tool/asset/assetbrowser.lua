@@ -1,36 +1,26 @@
-local UiSettings = require 'data/scripts/ui/uisettings'
-
 local AssetBrowser = {}
 AssetBrowser.__index = AssetBrowser
-setmetatable(AssetBrowser, { __index = flat.ui.Window })
 
 local iconSize = 98
 local iconPerLine = 8
 
 function AssetBrowser:new(parent, path, options)
-    local o = flat.ui.Window:new(parent)
-    setmetatable(o, self)
-    o.path = path
-    o.options = options or {}
-    o:build()
+    local o = setmetatable({
+        parent  = parent,
+        path    = path,
+        options = options or {}
+    }, self)
+    o:openDirectory(path)
     return o
 end
 
-function AssetBrowser:build()
-    self:setTitle 'Asset Browser'
-    self:openDirectory(self.path)
-end
-
 function AssetBrowser:openDirectory(path)
-    print('Opening ' .. path)
     self.path = path
 
     local directories = Asset.getDirectories(path)
     local assets = Asset.getAssets(path)
 
-    local content = Widget.makeColumnFlow()
-    content:setSizePolicy(Widget.SizePolicy.EXPAND)
-    content:setAllowScrollY(true)
+    self.parent:removeAllChildren()
 
     -- parent directory
     do
@@ -42,7 +32,7 @@ function AssetBrowser:openDirectory(path)
             directoryLabel:click(function()
                 self:openDirectory(directory)
             end)
-            content:addChild(directoryLabel)
+            self.parent:addChild(directoryLabel)
         end
     end
 
@@ -56,7 +46,7 @@ function AssetBrowser:openDirectory(path)
         directoryLabel:click(function()
             self:openDirectory(directory)
         end)
-        content:addChild(directoryLabel)
+        self.parent:addChild(directoryLabel)
     end
 
     -- assets
@@ -76,12 +66,10 @@ function AssetBrowser:openDirectory(path)
 
         if not contentLine or contentLine:getChildrenCount() == iconPerLine then
             contentLine = Widget.makeLineFlow()
-            content:addChild(contentLine)
+            self.parent:addChild(contentLine)
         end
         contentLine:addChild(assetIcon.container)
     end
-
-    self:setContent(content)
 end
 
 return AssetBrowser

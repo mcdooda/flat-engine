@@ -24,6 +24,6 @@ function flat.tool.asset.getIcon(asset, size, allowSelection)
 end
 
 function flat.tool.asset.browser(browserContainer, path, options)
-    local AssetBrowser = flat.require 'tool/asset/assetbrowser'
-    AssetBrowser:new(browserContainer, path, options)
+    local AssetBrowserWindow = flat.require 'tool/asset/assetbrowserwindow'
+    AssetBrowserWindow:new(browserContainer, path, options)
 end
