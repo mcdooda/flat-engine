@@ -15,7 +15,7 @@ namespace serialize
 class FileWriter final : public Processor
 {
 	public:
-		FileWriter(const std::string& filename);
+		FileWriter(const std::filesystem::path& path);
 
 		bool canWrite() const;
 

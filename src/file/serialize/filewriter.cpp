@@ -7,8 +7,8 @@ namespace file
 namespace serialize
 {
 
-FileWriter::FileWriter(const std::string& fileName) :
-	m_file(fileName.c_str(), std::ofstream::binary)
+FileWriter::FileWriter(const std::filesystem::path& path) :
+	m_file(path.string().c_str(), std::ofstream::binary)
 {
 
 }

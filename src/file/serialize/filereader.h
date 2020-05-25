@@ -15,7 +15,7 @@ namespace serialize
 class FileReader final : public Processor
 {
 	public:
-		FileReader(const std::string& filename);
+		FileReader(const std::filesystem::path& path);
 
 		bool canRead() const;
 
