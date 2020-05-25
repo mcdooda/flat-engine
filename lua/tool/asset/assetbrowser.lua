@@ -4,10 +4,14 @@ local AssetBrowser = {}
 AssetBrowser.__index = AssetBrowser
 setmetatable(AssetBrowser, { __index = flat.ui.Window })
 
-function AssetBrowser:new(parent, path)
+local iconSize = 98
+local iconPerLine = 8
+
+function AssetBrowser:new(parent, path, options)
     local o = flat.ui.Window:new(parent)
     setmetatable(o, self)
     o.path = path
+    o.options = options or {}
     o:build()
     return o
 end
@@ -56,18 +60,25 @@ function AssetBrowser:openDirectory(path)
     end
 
     -- assets
+    local contentLine
+
     for i = 1, #assets do
         local asset = assets[i]
-        local assetLabel = Widget.makeText('[A-' .. asset:getType() .. '] ' .. asset:getName(), table.unpack(flat.ui.settings.defaultFont))
-        assetLabel:setMargin(2)
-        assetLabel:setTextColor(0x111111FF)
-        assetLabel:click(function()
-            print('Opening asset ' .. asset:getPath())
-            local assetData = flat.tool.asset.getAssetTypeData(asset:getType())
-            assetData.click(asset)
-            return true
-        end)
-        content:addChild(assetLabel)
+        local assetIcon = flat.tool.asset.getIcon(asset, iconSize, self.options.allowSelection)
+        if not self.options.allowSelection then
+            assetIcon.container:click(function()
+                print('Opening asset ' .. asset:getPath())
+                local assetData = flat.tool.asset.getAssetTypeData(asset:getType())
+                assetData.click(asset)
+                return true
+            end)
+        end
+
+        if not contentLine or contentLine:getChildrenCount() == iconPerLine then
+            contentLine = Widget.makeLineFlow()
+            content:addChild(contentLine)
+        end
+        contentLine:addChild(assetIcon.container)
     end
 
     self:setContent(content)
