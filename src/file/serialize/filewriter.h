@@ -12,7 +12,7 @@ namespace file
 namespace serialize
 {
 
-class FileWriter : public Processor
+class FileWriter final : public Processor
 {
 	public:
 		FileWriter(const std::string& filename);
@@ -39,6 +39,7 @@ class FileWriter : public Processor
 		void process(flat::Vector3i& value) override;
 
 		void process(std::string& value) override;
+		void process(std::filesystem::path& value) override;
 
 	private:
 		template <class T>

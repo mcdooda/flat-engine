@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include "misc/vector.h"
 
@@ -40,6 +41,7 @@ class Processor
 		virtual void process(flat::Vector3i& value) = 0;
 
 		virtual void process(std::string& value) = 0;
+		virtual void process(std::filesystem::path& value) = 0;
 
 		template <typename SizeType = std::uint32_t, class T>
 		void process(std::vector<T>& value);

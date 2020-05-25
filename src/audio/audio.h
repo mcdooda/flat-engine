@@ -2,6 +2,7 @@
 #define FLAT_AUDIO_AUDIO_H
 
 #include <string>
+#include <filesystem>
 
 #include "audio/music.h"
 #include "audio/sample.h"
@@ -21,12 +22,12 @@ class Audio
 
 		void setVolume(float volumeLevel) const;
 
-		inline std::shared_ptr<const Chunk> getChunk(const std::string& fileName) const { return m_chunkManager.getResource(fileName); }
+		inline std::shared_ptr<const Chunk> getChunk(const std::filesystem::path& fileName) const { return m_chunkManager.getResource(fileName.string()); }
 		std::shared_ptr<Sample> playChunk(std::shared_ptr<const Chunk> chunk);
 
 	private:
 		resource::WeakResourceManager<Chunk, std::string> m_chunkManager;
-		std::vector<std::shared_ptr<Sample>> m_activeSamples;
+		std::vector<std::shared_ptr<Sample>> m_activeSamples; 
 		static const Music* currentMusic;
 };
 

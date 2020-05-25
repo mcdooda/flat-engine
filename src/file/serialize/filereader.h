@@ -12,7 +12,7 @@ namespace file
 namespace serialize
 {
 
-class FileReader : public Processor
+class FileReader final : public Processor
 {
 	public:
 		FileReader(const std::string& filename);
@@ -39,6 +39,7 @@ class FileReader : public Processor
 		void process(flat::Vector3i& value) override;
 
 		void process(std::string& value) override;
+		void process(std::filesystem::path& value) override;
 
 	private:
 		template <class T>
