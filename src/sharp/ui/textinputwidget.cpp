@@ -517,6 +517,8 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 
 void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const
 {
+	return;
+
 	if (!hasFocus() || first == last)
 		return;
 

@@ -26,11 +26,11 @@ class Font
 		struct CharInfo
 		{
 			std::array<CharInfoUv, 6> uv;
-			int minX;
-			int maxX;
-			int minY;
-			int maxY;
-			int advance;
+			float minX;
+			float maxX;
+			float minY;
+			float maxY;
+			float advance;
 			bool visible;
 		};
 		
@@ -44,6 +44,13 @@ class Font
 		
 		GLint getAtlasId() const { return m_atlasId; }
 		const Vector2& getAtlasSize() const { return m_atlasSize; }
+
+		inline float getAscent() const { return m_ascent; }
+		inline float getDescent() const { return m_descent; }
+		inline float getLineSkip() const { return m_lineSkip; }
+		inline float getHeight() const { return m_height; }
+
+		inline TTF_Font* getSdlFont() const { return m_font; }
 		
 		static void open();
 		static void close();
@@ -52,6 +59,8 @@ class Font
 		bool isValidChar(char c) const;
 		
 	protected:
+		static int getClosestPowerOf2(int value);
+
 		CharInfo& getCharInfo(char c);
 		
 		enum { ATLAS_FIRST_CHAR = 32, ATLAS_LAST_CHAR = 126, ATLAS_NUM_CHARS = ATLAS_LAST_CHAR - ATLAS_FIRST_CHAR + 1 };
@@ -61,6 +70,10 @@ class Font
 		int m_fontSize;
 		GLuint m_atlasId;
 		Vector2 m_atlasSize;
+		float m_ascent;
+		float m_descent;
+		float m_lineSkip;
+		float m_height;
 };
 
 } // font

@@ -30,9 +30,18 @@ void String::setText(const std::string& text, const Color& color)
 
 	const Font* font = m_font.get();
 	FLAT_ASSERT(font != nullptr);
-	const float characterHeight = font->getAtlasSize().y;
+
+	if (textLength == 0)
+	{
+		m_size = flat::Vector2(0.f, font->getHeight());
+		return;
+	}
+
+	const float lineSkip = font->getLineSkip();
 	const size_t nbLines = std::count(text.begin(), text.end(), '\n') + 1;
-	m_size.y = nbLines * characterHeight;
+	m_size.y = (nbLines - 1) * lineSkip + font->getHeight();
+
+	const float ascent = font->getAscent();
 
 	float maxX = 0.f;
 	float x = 0.f;
@@ -45,17 +54,17 @@ void String::setText(const std::string& text, const Color& color)
 			if(x > maxX)
 				maxX = x;
 			x = 0.f;
-			y -= characterHeight;
+			y -= lineSkip;
 		}
 		else
 		{
 			const Font::CharInfo& ci = font->getCharInfo(c);
 			if (ci.visible)
 			{
-				float fx0 = x;
-				float fx1 = x + ci.advance;
-				float fy0 = y;
-				float fy1 = y - characterHeight;
+				const float fx0 = x + ci.minX;
+				const float fx1 = x + ci.maxX;
+				const float fy0 = y + ci.maxY - ascent;
+				const float fy1 = y + ci.minY - ascent;
 
 				m_vertices.emplace_back(fx0, fy0, color);
 				m_vertices.emplace_back(fx1, fy0, color);
@@ -67,8 +76,8 @@ void String::setText(const std::string& text, const Color& color)
 
 				std::copy(ci.uv.begin(), ci.uv.end(), std::back_inserter(m_uv));
 
-				x += ci.advance;
 			}
+			x += ci.advance;
 		}
 	}
 	m_size.x = std::max(maxX, x);
@@ -79,6 +88,15 @@ void String::setColor(unsigned int from, unsigned int to, const Color& color)
 	FLAT_ASSERT(from >= 0 && from <= m_text.size());
 	FLAT_ASSERT(to >= 0 && to <= m_text.size());
 	FLAT_ASSERT(from <= to);
+
+	if (from == 0 && to == m_text.size())
+	{
+		for (CharacterVertex& characterVertex : m_vertices)
+		{
+			characterVertex.color = color;
+		}
+		return;
+	}
 
 	const unsigned int nbLinesFrom = static_cast<unsigned int>(std::count(getText().begin(), getText().begin() + from, '\n'));
 	const unsigned int nbLinesTo = static_cast<unsigned int>(std::count(getText().begin() + from, getText().begin() + to, '\n'));
