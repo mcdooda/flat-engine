@@ -2,7 +2,7 @@ local AssetBrowser = {}
 AssetBrowser.__index = AssetBrowser
 
 local iconSize = 98
-local iconPerLine = 8
+local iconPerLine = 3
 
 function AssetBrowser:new(parent, path, options)
     local o = setmetatable({
