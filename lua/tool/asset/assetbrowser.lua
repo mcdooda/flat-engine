@@ -29,33 +29,51 @@ function AssetBrowser:openDirectory(path)
 
     self.parent:removeAllChildren()
 
+    local contentLine
+
+    local directoryEntries = {}
+
     -- parent directory
     do
         local directory = Asset.getParentDirectory(path);
         if directory then
-            local directoryLabel = Widget.makeText('[D] ..', table.unpack(flat.ui.settings.defaultFont))
-            directoryLabel:setMargin(2)
-            directoryLabel:click(function()
-                self:openDirectory(directory)
-            end)
-            self.parent:addChild(directoryLabel)
+            directoryEntries[#directoryEntries + 1] = {
+                name = '..',
+                path = directory
+            }
         end
     end
-
-    -- sub directories
     for i = 1, #directories do
         local directory = directories[i]
         local directoryName = directory:gsub('^.+[/\\](.+)$', '%1')
-        local directoryLabel = Widget.makeText('[D] ' .. directoryName, table.unpack(flat.ui.settings.defaultFont))
+        directoryEntries[#directoryEntries + 1] = {
+            name = directoryName,
+            path = directory
+        }
+    end
+
+    for i = 1, #directoryEntries do
+        local directoryEntry = directoryEntries[i]
+
+        local directoryIcon = Widget.makeFixedSize(iconSize, 0)
+        directoryIcon:setSizePolicy(Widget.SizePolicy.FIXED_X + Widget.SizePolicy.COMPRESS_Y)
+
+        local directoryLabel = Widget.makeText('[D] ' .. directoryEntry.name, table.unpack(flat.ui.settings.defaultFont))
         directoryLabel:setMargin(2)
         directoryLabel:click(function()
-            self:openDirectory(directory)
+            self:openDirectory(directoryEntry.path)
         end)
-        self.parent:addChild(directoryLabel)
+        directoryIcon:addChild(directoryLabel)
+
+        if not contentLine or contentLine:getChildrenCount() == iconPerLine then
+            contentLine = Widget.makeLineFlow()
+            self.parent:addChild(contentLine)
+        end
+        contentLine:addChild(directoryIcon)
     end
 
     -- assets
-    local contentLine
+    contentLine = nil
 
     for i = 1, #assets do
         local asset = assets[i]
