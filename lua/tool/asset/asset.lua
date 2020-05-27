@@ -5,7 +5,6 @@ local assetTypes = {}
 
 function flat.tool.asset.addAssetType(assetType, newAsset, assetIcon, click, actions)
     assert(not assetTypes[assetType], 'Asset type ' .. tostring(assetType) .. ' is already defined')
-    print('Defining asset type ' .. assetType)
     assetTypes[assetType] = {
         newAsset = newAsset,
         assetIcon = assetIcon,
@@ -25,10 +24,10 @@ end
 
 function flat.tool.asset.browser(browserContainer, path, options)
     local AssetBrowser = flat.require 'tool/asset/assetbrowser'
-    AssetBrowser:new(browserContainer, path, options)
+    return AssetBrowser:new(browserContainer, path, options)
 end
 
 function flat.tool.asset.openBrowserWindow(browserContainer, path, options)
     local AssetBrowserWindow = flat.require 'tool/asset/assetbrowserwindow'
-    AssetBrowserWindow:new(browserContainer, path, options)
+    return AssetBrowserWindow:new(browserContainer, path, options)
 end

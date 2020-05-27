@@ -30,8 +30,16 @@ void Machine::setState(std::unique_ptr<State>&& state)
 	{
 		m_currentState->exit(m_agent);
 	}
-	m_currentState = std::move(state);
-	m_currentState->enter(m_agent);
+
+	if (state != nullptr)
+	{
+		m_currentState = std::move(state);
+		m_currentState->enter(m_agent);
+	}
+	else
+	{
+		m_currentState = nullptr;
+	}
 }
 
 void Machine::setNextState(std::unique_ptr<State>&& state)
