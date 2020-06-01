@@ -16,6 +16,12 @@ RootWidget::RootWidget(Flat& flat) : Super(),
 	m_dragScrolled(false)
 {
 	setSizePolicy(Widget::SizePolicy::FIXED);
+
+	// initialize the root widget's size as soon as possible so it does not return 0 on first frame
+	flat::video::Window* window = flat.video->window;
+	setSize(window->getSize());
+	m_computedSize = getSize();
+	m_transform = Matrix4();
 }
 
 RootWidget::~RootWidget()
@@ -455,14 +461,18 @@ void RootWidget::handleMouseWheel()
 	}
 }
 
-std::vector<Widget*> getFocusableChildren(Widget* widget) {
+std::vector<Widget*> getFocusableChildren(Widget* widget)
+{
 	std::vector<Widget*> result;
-	if(widget->isFocusable())
+	if (widget->isFocusable())
+	{
 		result.push_back(widget);
-	const auto& children = widget->getChildren();
-	for(const auto& child: children) {
-		const auto& focusables = getFocusableChildren(child.get());
-		result.insert(result.end(), focusables.begin(), focusables.end());
+	}
+	const std::vector<std::shared_ptr<Widget>>& children = widget->getChildren();
+	for(const std::shared_ptr<Widget>& child : children)
+	{
+		const std::vector<Widget*>& focusableChildren = getFocusableChildren(child.get());
+		result.insert(result.end(), focusableChildren.begin(), focusableChildren.end());
 	}
 	return result;
 }
@@ -475,10 +485,12 @@ Widget* getClosestFocusable(Widget* widget, Iterator begin, Iterator end)
 		return a == widget;
 	});
 
-	if (++iter < end) {
+	if (++iter < end)
+	{
 		return *iter;
 	}
-	if (begin != end) {
+	if (begin != end)
+	{
 		return *begin;
 	}
 	return nullptr;
@@ -501,13 +513,21 @@ void RootWidget::handleTabButtonPressed(bool shiftPressed)
 	Widget* focused = m_focusWidget.lock().get();
 	if (focused != nullptr)
 	{
-		Widget* next;
+		Widget* next = nullptr;
+
 		if (shiftPressed)
+		{
 			next = getPreviousFocusable(focused);
+		}
 		else
+		{
 			next = getNextFocusable(focused);
+		}
+
 		if (next != nullptr)
+		{
 			focus(next);
+		}
 	}
 }
 

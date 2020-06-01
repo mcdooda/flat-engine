@@ -19,6 +19,8 @@
 #include "file/lua/file.h"
 #include "profiler/lua/profiler.h"
 
+#include "tool/lua/asset.h"
+
 namespace flat
 {
 namespace lua
@@ -120,6 +122,8 @@ void Lua::reset(Flat& flat)
 		openDofile(L);
 		openLoadfile(L);
 		openAssetPath(L);
+
+		tool::lua::asset::open(*this);
 
 		// dofile flat-engine/lua/init.lua
 		lua_pushstring(L, m_luaPath.c_str());

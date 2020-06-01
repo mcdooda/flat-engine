@@ -80,8 +80,10 @@ void Input::pushContext(const std::shared_ptr<context::InputContext>& inputConte
 	FLAT_ASSERT(m_inputContexts.size() > 0);
 	inputContext->clearAllEvents();
 	std::shared_ptr<context::InputContext> currentTopContext = m_inputContexts.back().lock();
-	FLAT_ASSERT(currentTopContext != nullptr);
-	inputContext->copyStateFrom(*currentTopContext.get());
+	if (currentTopContext != nullptr)
+	{
+		inputContext->copyStateFrom(*currentTopContext.get());
+	}
 	clearTopContext();
 	m_inputContexts.push_back(inputContext);
 }

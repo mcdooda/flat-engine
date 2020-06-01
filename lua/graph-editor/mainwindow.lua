@@ -542,9 +542,9 @@ function MainWindow:loadGraphFromFile(graphPath)
 
     -- returns false if the file does not exist, the graph stays empty in this case
     -- note that the graph can be loaded but still contain errors
-    local loaded, errors = graph:loadGraphFromFile(graphPath .. '.graph.lua')
+    local errors = graph:loadGraphFromFile(graphPath .. '.graph.lua')
 
-    return graph, loaded, errors
+    return graph, errors
 end
 
 function MainWindow:saveGraphToFile()

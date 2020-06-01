@@ -21,3 +21,7 @@ flat.dofile 'graph-editor/init.lua'
 flat.dofile 'texteditor.lua'
 
 flat.dofile 'easing.lua'
+
+-- tool
+flat.dofile 'tool/asset/asset.lua'
+flat.dofile 'tool/asset/assetbrowser.lua'

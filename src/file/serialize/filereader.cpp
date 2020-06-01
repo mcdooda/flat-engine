@@ -7,8 +7,8 @@ namespace file
 namespace serialize
 {
 
-FileReader::FileReader(const std::string& filename) :
-	m_file(filename.c_str(), std::ofstream::binary)
+FileReader::FileReader(const std::filesystem::path& path) :
+	m_file(path.string().c_str(), std::ofstream::binary)
 {
 
 }
