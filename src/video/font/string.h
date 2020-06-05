@@ -41,6 +41,8 @@ class String
 		void setText(const std::string& text, const Color& color = Color::WHITE);
 		inline const std::string& getText() const { return m_text; }
 
+		void addBackgroundRectangle();
+
 		void setColor(unsigned int from, unsigned int to, const Color& style);
 
 		inline const std::vector<CharacterVertex>& getVertices() const { return m_vertices; }

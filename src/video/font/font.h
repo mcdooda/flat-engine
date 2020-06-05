@@ -22,6 +22,8 @@ class Font
 		{
 			float x;
 			float y;
+			CharInfoUv() : x(0.f), y(0.f) {}
+			CharInfoUv(float x, float y) : x(x), y(y) {}
 		};
 		struct CharInfo
 		{
