@@ -83,6 +83,44 @@ void String::setText(const std::string& text, const Color& color)
 	m_size.x = std::max(maxX, x);
 }
 
+void String::addBackgroundRectangle()
+{
+	if (m_vertices.empty())
+	{
+		return;
+	}
+
+	const Color& color = m_vertices[0].color;
+
+	const float fx0 = m_vertices[0].x;
+	const float fx1 = fx0 + m_size.x;
+	const float fy0 = m_vertices[0].y - m_font->getAscent() + m_font->getLineSkip();
+	const float fy1 = fy0 - m_size.y;
+
+	m_vertices.insert(m_vertices.begin(), 6, CharacterVertex(0.f, 0.f, color));
+
+	m_vertices[0].x = fx0;
+	m_vertices[0].y = fy0;
+
+	m_vertices[1].x = fx1;
+	m_vertices[1].y = fy0;
+
+	m_vertices[2].x = fx0;
+	m_vertices[2].y = fy1;
+
+
+	m_vertices[3].x = fx1;
+	m_vertices[3].y = fy1;
+
+	m_vertices[4].x = fx0;
+	m_vertices[4].y = fy1;
+
+	m_vertices[5].x = fx1;
+	m_vertices[5].y = fy0;
+
+	m_uv.insert(m_uv.begin(), 6, Font::CharInfoUv(0.f, 0.f));
+}
+
 void String::setColor(unsigned int from, unsigned int to, const Color& color)
 {
 	FLAT_ASSERT(from >= 0 && from <= m_text.size());
