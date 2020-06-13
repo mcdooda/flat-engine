@@ -29,6 +29,7 @@ int open(flat::lua::Lua& lua)
 		{"getDirectories",     l_Asset_getDirectories},
 		{"getAssets",          l_Asset_getAssets},
 		{"getParentDirectory", l_Asset_getParentDirectory},
+		{"findFromName",       l_Asset_findFromName},
 
 		{nullptr, nullptr}
 	};
@@ -91,6 +92,15 @@ int l_Asset_getParentDirectory(lua_State* L)
 	return 1;
 }
 
+int l_Asset_findFromName(lua_State* L)
+{
+	const std::string type = luaL_checkstring(L, 1);
+	const std::string name = luaL_checkstring(L, 2);
+	const Asset* asset = flat::lua::getFlat(L).assetRepository->findAssetFromName(type, name);
+	pushAsset(L, asset);
+	return 1;
+}
+
 const Asset* getAsset(lua_State* L, int index)
 {
 	FLAT_LUA_EXPECT_STACK_GROWTH(L, 0);
@@ -99,7 +109,14 @@ const Asset* getAsset(lua_State* L, int index)
 
 void pushAsset(lua_State* L, const Asset* asset)
 {
-	LuaAsset::pushNew(L, asset);
+	if (asset != nullptr)
+	{
+		LuaAsset::pushNew(L, asset);
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
 }
 
 } // flat::tool::lua::asset

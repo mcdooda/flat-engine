@@ -336,8 +336,10 @@ function MainWindow:openGraphFromFile(graphPath, nodeType)
         return false
     end
 
-    for i = 1, #graphErrors do
-        flat.ui.warn(graphErrors[i])
+    if graphErrors then
+        for i = 1, #graphErrors do
+            flat.ui.warn(graphErrors[i])
+        end
     end
 
     local graphInfo = {
