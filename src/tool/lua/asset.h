@@ -21,6 +21,7 @@ int l_Asset_getType(lua_State* L);
 int l_Asset_getDirectories(lua_State* L);
 int l_Asset_getAssets(lua_State* L);
 int l_Asset_getParentDirectory(lua_State* L);
+int l_Asset_findFromName(lua_State* L);
 
 const Asset* getAsset(lua_State* L, int index);
 void pushAsset(lua_State* L, const Asset* asset);

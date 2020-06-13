@@ -135,7 +135,10 @@ void RootWidget::update()
 	updateDraggedWidgets();
 	updateDragScrollingWidget();
 
+	// call twice to mitigate one frame late widgets like tooltips, costs nothing if everything is up to date
 	bool updateMouseOver = updateDirtyWidgets();
+	updateMouseOver = updateDirtyWidgets() || updateMouseOver;
+
 	updateInput(updateMouseOver);
 
 	updateCursor();

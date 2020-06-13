@@ -10,7 +10,6 @@ function SampleNode:buildPins()
 end
 
 function SampleNode:execute(runtime)
-    print('SampleNode execute')
     if not self.sample then
         local sampleName = runtime:readPin(self.sampleNameInPin)
         self:loadSample(sampleName)
@@ -26,7 +25,6 @@ function SampleNode:postLoad()
 end
 
 function SampleNode:loadSample(sampleName)
-    print('SampleNode: ' .. sampleName)
     local samplePath = Mod.getFilePath('samples/' .. sampleName)
     self.sample = flat.audio.loadChunk(samplePath)
 end
