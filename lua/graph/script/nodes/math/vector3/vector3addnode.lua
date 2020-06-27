@@ -10,8 +10,8 @@ function Vector3NumberAddNode:buildPins()
 end
 
 function Vector3NumberAddNode:execute(runtime)
-    local vector3A = runtime:readPin(self.vector3InPin)
-    local vector3B = runtime:readPin(self.vector3InPin)
+    local vector3A = runtime:readPin(self.vector3AInPin)
+    local vector3B = runtime:readPin(self.vector3BInPin)
 
     local result = vector3A + vector3B
 
