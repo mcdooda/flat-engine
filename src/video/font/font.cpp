@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cctype>
 #include "video/font/font.h"
 #include "console/console.h"
 
