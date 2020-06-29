@@ -58,6 +58,7 @@ class MouseInputContext
 
 		Vector2 m_position;
 		Vector2 m_wheelMove;
+		Vector2 m_lastClickPosition;
 		bool m_moved : 1;
 		bool m_wheelMoved : 1;
 };

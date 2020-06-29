@@ -17,6 +17,8 @@ MouseInputContext::MouseInputContext(video::Window* videoWindow) :
 	clearAllEvents();
 }
 
+static constexpr int doubleClickThreeshold = 200;
+
 bool MouseInputContext::addEvent(const SDL_Event& event)
 {
 	switch (event.type)
@@ -28,10 +30,14 @@ bool MouseInputContext::addEvent(const SDL_Event& event)
 		m_justPressedButtons[event.button.button] = true;
 		if (event.button.clicks > 1)
 		{
-			m_justDoubleClickedButtons[event.button.button] = true;
+			const float squaredManhattan = (m_position.x - m_lastClickPosition.x) * (m_position.x - m_lastClickPosition.x)
+									 + (m_position.y - m_lastClickPosition.y) * (m_position.y - m_lastClickPosition.y);
+			if (squaredManhattan < doubleClickThreeshold) {
+				m_justDoubleClickedButtons[event.button.button] = true;
+			}
 		}
+		m_lastClickPosition = m_position;
 		return true;
-
 	case SDL_MOUSEBUTTONUP:
 		m_position.x = static_cast<float>(event.button.x);
 		m_position.y = m_videoWindow->getSize().y - event.button.y;
@@ -114,10 +120,7 @@ bool MouseInputContext::isJustDoubleClicked(int button) const
 	{
 		return m_justDoubleClickedButtons[button];
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 void MouseInputContext::copyStateFrom(const MouseInputContext& from)
