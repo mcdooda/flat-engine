@@ -459,8 +459,7 @@ TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(flat::V
 		while (minXIndex + 1 < maxXIndex)
 		{
 			size_t centerIndex = (minXIndex + maxXIndex) / 2;
-			float centerCharacterPositionX = getCursorPositionFromIndex(centerIndex).x;
-			if (pos.x < centerCharacterPositionX)
+			if (pos.x < getCursorPositionFromIndex(centerIndex).x)
 			{
 				maxXIndex = centerIndex;
 			}
