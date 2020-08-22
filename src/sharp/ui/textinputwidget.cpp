@@ -1,5 +1,5 @@
 #include <cctype>
-
+#include <limits>
 #include "sharp/ui/textinputwidget.h"
 
 #include "flat.h"
@@ -392,7 +392,7 @@ bool TextInputWidget::hasSelectedText()
 	return m_cursorIndex != m_selectionIndex;
 }
 
-flat::Vector2 TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
+flat::Vector2i TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorIndex) const
 {
 	const std::string& text = getText();
 
@@ -403,30 +403,25 @@ flat::Vector2 TextInputWidget::getCursorPositionFromIndex(CursorIndex cursorInde
 
 	if (text.size() == 0)
 		return { 0, String::getComputedSize().y};
-	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
-	const float characterHeight = getLineHeight();
-	const std::vector<CharacterVertex>& vertices = getVertices();
-	return { vertices[(cursorIndex - nbLines) * 6].x, vertices[(cursorIndex - nbLines) * 6].y};
+	const std::vector<CharMetrics>& infos = getCharMetrics();
+	return infos[cursorIndex].position;
 }
 
-flat::Vector2 TextInputWidget::getCursorEndingFromIndex(CursorIndex cursorIndex) const
+flat::Vector2i TextInputWidget::getCursorEndingFromIndex(CursorIndex cursorIndex) const
 {
 	const std::string& text = getText();
 	const size_t textLength = text.size();
 	FLAT_ASSERT_MSG(0 <= cursorIndex && cursorIndex <= textLength, "the cursor index is out of the string's range");
-	if (cursorIndex == textLength)
-		cursorIndex--;
-	size_t nbLines = std::count(text.begin(), text.begin() + cursorIndex, '\n');
-	const float characterHeight = getLineHeight();
-	const std::vector<CharacterVertex>& vertices = getVertices();
-	return { vertices[(cursorIndex - nbLines) * 6 + 1].x, vertices[(cursorIndex - nbLines) * 6].y };
+	const std::vector<CharMetrics>& infos = getCharMetrics();
+	flat::Vector2 result = infos[cursorIndex].position;
+	result.x += infos[cursorIndex].size.x;
+	return result;
 }
 
 TextInputWidget::CursorIndex TextInputWidget::getCursorIndexFromPosition(flat::Vector2 pos) const
 {
 	const std::string& text = getText();
 	const size_t textLength = text.size();
-	const std::vector<CharacterVertex>& vertices = getVertices();
 	CursorIndex result = 0;
 	if (textLength == 0)
 	{
@@ -505,8 +500,8 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 	const float characterHeight = font->getAtlasSize().y;
 	const flat::Vector2 cursorPos = getCursorPositionFromIndex(cursorIndex);
 	std::array<String::CharacterVertex, 2> cursorVertices = {
-		String::CharacterVertex(cursorPos.x, cursorPos.y),
-		String::CharacterVertex(cursorPos.x, cursorPos.y - characterHeight)
+		String::CharacterVertex(cursorPos.x + 1, cursorPos.y),
+		String::CharacterVertex(cursorPos.x + 1, cursorPos.y - characterHeight)
 	};
 
 	glLineWidth(1);
@@ -517,8 +512,6 @@ void TextInputWidget::drawCursor(const render::RenderSettings& renderSettings, C
 
 void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const
 {
-	return;
-
 	if (!hasFocus() || first == last)
 		return;
 
@@ -540,16 +533,15 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 	FLAT_ASSERT(font != nullptr);
 
 	const std::string& text = getText();
-	const float characterHeight = font->getAtlasSize().y;
+	const float characterHeight = getLineHeight();
 	Vector2 firstPos = getCursorPositionFromIndex(first);
 	Vector2 lastPos = getCursorPositionFromIndex(last);
 
 	glLineWidth(1);
-	const std::vector<String::CharacterVertex>& vertices = getVertices();
-	while (firstPos.y != lastPos.y)
+	size_t nextLineIndex = text.find('\n', first);
+	while (nextLineIndex < last)
 	{
-		size_t pos = text.find('\n', first);
-		Vector2 lineEnding = getCursorEndingFromIndex(pos - 1);
+		Vector2 lineEnding = getCursorEndingFromIndex(nextLineIndex - 1);
 		std::array<String::CharacterVertex, 6> cursorVertices = {
 			String::CharacterVertex(firstPos.x, firstPos.y),
 			String::CharacterVertex(lineEnding.x + 3, firstPos.y),
@@ -558,13 +550,14 @@ void TextInputWidget::drawSelection(const render::RenderSettings& renderSettings
 			String::CharacterVertex(lineEnding.x + 3, firstPos.y),
 			String::CharacterVertex(lineEnding.x + 3, firstPos.y - characterHeight)
 		};
-		first = pos + 1;
+		first = nextLineIndex + 1;
 		firstPos = getCursorPositionFromIndex(first);
 
 		glVertexAttribPointer(renderSettings.positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(CharacterVertex), reinterpret_cast<const float*>(&cursorVertices[0]));
 		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cursorVertices.size()));
+		nextLineIndex = text.find('\n', first + 1);
 	}
-	
+
 	std::array<String::CharacterVertex, 6> cursorVertices = {
 		String::CharacterVertex(firstPos.x, firstPos.y),
 		String::CharacterVertex(lastPos.x, lastPos.y),

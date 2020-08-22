@@ -30,9 +30,9 @@ bool MouseInputContext::addEvent(const SDL_Event& event)
 		m_justPressedButtons[event.button.button] = true;
 		if (event.button.clicks > 1)
 		{
-			const float squaredManhattan = (m_position.x - m_lastClickPosition.x) * (m_position.x - m_lastClickPosition.x)
-									 + (m_position.y - m_lastClickPosition.y) * (m_position.y - m_lastClickPosition.y);
-			if (squaredManhattan < doubleClickThreeshold) {
+			const float squaredLength = (m_position.x - m_lastClickPosition.x) * (m_position.x - m_lastClickPosition.x)
+									    + (m_position.y - m_lastClickPosition.y) * (m_position.y - m_lastClickPosition.y);
+			if (squaredLength < doubleClickThreeshold) {
 				m_justDoubleClickedButtons[event.button.button] = true;
 			}
 		}
