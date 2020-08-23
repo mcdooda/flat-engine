@@ -19,6 +19,7 @@ int open(lua_State* L)
 
 	static const luaL_Reg Mouse_lib_s[] = {
 		{"getPosition",      l_Mouse_getPosition},
+		{"isPressed",        l_Mouse_isPressed},
 
 		{"setCursor",        l_Mouse_setCursor},
 		{"setDefaultCursor", l_Mouse_setDefaultCursor},
@@ -47,6 +48,19 @@ int open(lua_State* L)
 	flat::lua::table::pushTable(L, cursorTypesTable);
 	lua_settable(L, -3);
 
+	lua_pushstring(L, "Button");
+	static const flat::lua::table::KeyValuePair<int> buttonsTable[] = {
+		{"LEFT",   M(LEFT)},
+		{"MIDDLE", M(MIDDLE)},
+		{"RIGHT",  M(RIGHT)},
+		{"X1",     M(X1)},
+		{"X2",     M(X2)},
+
+		{nullptr, 0},
+	};
+	flat::lua::table::pushTable(L, buttonsTable);
+	lua_settable(L, -3);
+
 	lua_setglobal(L, "Mouse");
 	
 	return 0;
@@ -58,6 +72,14 @@ int l_Mouse_getPosition(lua_State* L)
 	lua_pushnumber(L, position.x);
 	lua_pushnumber(L, position.y);
 	return 2;
+}
+
+int l_Mouse_isPressed(lua_State* L)
+{
+	int button = static_cast<int>(luaL_checkinteger(L, 1));
+	bool isPressed = flat::lua::getFlat(L).input->mouse->isPressed(button);
+	lua_pushboolean(L, isPressed);
+	return 1;
 }
 
 int l_Mouse_setCursor(lua_State* L)
