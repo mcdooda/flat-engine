@@ -94,11 +94,11 @@ void SpriteAnimator::setColumn(int column)
 {
 	FLAT_ASSERT(0 <= column && column < getAtlasWidth());
 	m_currentColumn = column;
-	
+
 	// update uv
 	float uvx0 = m_tileSizeRatio.x * column;
 	float uvx1 = m_tileSizeRatio.x * (column + 1);
-	
+
 	BaseSprite::VertexUvs& vertexUvs = m_sprite->getVertexUvs();
 	vertexUvs[0].x = uvx0;
 	vertexUvs[1].x = uvx1;
@@ -129,7 +129,7 @@ void SpriteAnimator::update(float currentTime)
 			m_animationStarted = true;
 			m_lastUpdateTime = currentTime;
 		}
-		
+
 		if (currentTime - m_lastUpdateTime > m_frameDuration)
 		{
 			int nextColumn = m_currentColumn + 1;

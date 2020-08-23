@@ -27,6 +27,11 @@ class String
 			CharacterVertex(float x, float y, const Color& color) : x(x), y(y), color(color){}
 		};
 
+		struct CharMetrics {
+			flat::Vector2 position;
+			flat::Vector2 size;
+		};
+
 	public:
 		String() = delete;
 		String(const String&) = delete;
@@ -50,7 +55,8 @@ class String
 
 		inline const std::shared_ptr<const Font>& getFont() const { return m_font; }
 
-		inline const float getLineHeight() const { return m_font->getAtlasSize().y; }
+		inline const float getLineHeight() const { return m_font->getLineSkip(); }
+		inline const std::vector<CharMetrics>& getCharMetrics() const { return m_charMetrics; }
 
 		inline const Vector2& getComputedSize() const { return m_size; }
 
@@ -59,6 +65,7 @@ class String
 		std::shared_ptr<const Font> m_font;
 		std::vector<CharacterVertex> m_vertices;
 		std::vector<Font::CharInfoUv> m_uv;
+		std::vector<CharMetrics> m_charMetrics;
 		Vector2 m_size;
 		int m_wrapLength;
 };

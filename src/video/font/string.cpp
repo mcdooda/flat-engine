@@ -1,5 +1,6 @@
 #include <iterator>
 #include <algorithm>
+#include <iostream>
 
 #include "video/font/string.h"
 
@@ -19,6 +20,7 @@ String::String(const std::shared_ptr<const Font>& font) :
 
 void String::setText(const std::string& text, const Color& color)
 {
+	m_charMetrics.clear();
 	size_t textLength = text.size();
 	m_text = text;
 
@@ -55,6 +57,11 @@ void String::setText(const std::string& text, const Color& color)
 				maxX = x;
 			x = 0.f;
 			y -= lineSkip;
+			CharMetrics metrics;
+			metrics.position = {x, y};
+			metrics.size = {0, 0};
+			m_charMetrics.push_back(metrics);
+
 		}
 		else
 		{
@@ -73,10 +80,12 @@ void String::setText(const std::string& text, const Color& color)
 				m_vertices.emplace_back(fx1, fy1, color);
 				m_vertices.emplace_back(fx0, fy1, color);
 				m_vertices.emplace_back(fx1, fy0, color);
-
 				std::copy(ci.uv.begin(), ci.uv.end(), std::back_inserter(m_uv));
-
 			}
+			CharMetrics metrics;
+			metrics.position = {x, y};
+			metrics.size = {ci.advance, ci.maxY - ci.minY};
+			m_charMetrics.push_back(metrics);
 			x += ci.advance;
 		}
 	}
@@ -138,8 +147,10 @@ void String::setColor(unsigned int from, unsigned int to, const Color& color)
 
 	const unsigned int nbLinesFrom = static_cast<unsigned int>(std::count(getText().begin(), getText().begin() + from, '\n'));
 	const unsigned int nbLinesTo = static_cast<unsigned int>(std::count(getText().begin() + from, getText().begin() + to, '\n'));
-	from -= nbLinesFrom;
-	to -= nbLinesFrom + nbLinesTo;
+	const unsigned int nbSpacesFrom = static_cast<unsigned int>(std::count(getText().begin(), getText().begin() + from, ' '));
+	const unsigned int nbSpacesTo = static_cast<unsigned int>(std::count(getText().begin() + from, getText().begin() + to, ' '));
+	from -= nbLinesFrom + nbSpacesFrom;
+	to -= nbLinesFrom + nbLinesTo + nbSpacesFrom + nbSpacesTo;
 	for (unsigned int i = from; i < to; i++)
 	{
 		for (unsigned int j = 0; j < 6; j++)

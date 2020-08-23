@@ -14,7 +14,7 @@ FileTexture::FileTexture(const std::string& fileName) :
 	m_fileName(fileName)
 {
 	m_surface = IMG_Load(fileName.c_str());
-	
+
 	if (m_surface != nullptr)
 	{
 		load();
@@ -29,7 +29,7 @@ FileTexture::FileTexture(const std::string& fileName) :
 
 FileTexture::FileTexture()
 {
-	
+
 }
 
 FileTexture::~FileTexture()

@@ -63,8 +63,8 @@ class TextInputWidget : public TextWidget
 		CursorIndex nextLineFrom(CursorIndex index) const;
 		CursorIndex previousLineFrom(CursorIndex index) const;
 
-		flat::Vector2 getCursorPositionFromIndex(CursorIndex cursorIndex) const;
-		flat::Vector2 getCursorEndingFromIndex(CursorIndex cursorIndex) const;
+		flat::Vector2i getCursorPositionFromIndex(CursorIndex cursorIndex) const;
+		flat::Vector2i getCursorEndingFromIndex(CursorIndex cursorIndex) const;
 		CursorIndex getCursorIndexFromPosition(flat::Vector2 pos) const;
 		void drawCursor(const render::RenderSettings& renderSettings, CursorIndex cursorIndex) const;
 		void drawSelection(const render::RenderSettings& renderSettings, CursorIndex first, CursorIndex last) const;
