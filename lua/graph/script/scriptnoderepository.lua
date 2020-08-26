@@ -16,6 +16,7 @@ return {
     'math/substract',
     'math/formula',
     'math/randomint',
+    'math/randomfloat',
 
     'math/lessthan',
     'math/greaterthan',
