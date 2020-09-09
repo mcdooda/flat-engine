@@ -20,7 +20,7 @@ Font::Font(const std::string& font, int size) :
 	m_ascent = static_cast<float>(TTF_FontAscent(m_font));
 	m_descent = static_cast<float>(TTF_FontDescent(m_font));
 	m_lineSkip = static_cast<float>(TTF_FontLineSkip(m_font));
-	m_height = static_cast<float>(TTF_FontHeight(m_font) + 1); // +1 as TTF_RenderUTF8_Blended can render characters up to this height for some reason
+	m_height = static_cast<float>(TTF_FontHeight(m_font));
 
 	constexpr float characterSpacing = 2.f;
 	
@@ -41,7 +41,7 @@ Font::Font(const std::string& font, int size) :
 	}
 
 	const float atlasWidth = static_cast<float>(getClosestPowerOf2(static_cast<int>(x)));
-	const float atlasHeight = static_cast<float>(getClosestPowerOf2(static_cast<int>(m_height)));
+	const float atlasHeight = static_cast<float>(getClosestPowerOf2(static_cast<int>(m_height) + 3)); // add some margin as TTF_RenderUTF8_Blended can render characters that are higher than this
 
 	m_atlasSize = flat::Vector2(atlasWidth, atlasHeight);
 	
@@ -68,7 +68,7 @@ Font::Font(const std::string& font, int size) :
 
 			if (glyphSurface != nullptr)
 			{
-				if (m_height >= glyphSurface->h)
+				if (atlasHeight >= glyphSurface->h)
 				{
 					glTexSubImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(x), 0, glyphSurface->w, glyphSurface->h, GL_RGBA, GL_UNSIGNED_BYTE, glyphSurface->pixels);
 					GLenum errorCode = glGetError();
