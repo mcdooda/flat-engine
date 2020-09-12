@@ -23,6 +23,11 @@ int8_t sign(T number)
 	return (T(0) < number) - (number < T(0));
 }
 
+inline bool checkFloat(float f)
+{
+	return !std::isnan(f) && !std::isinf(f);
+}
+
 inline float angle_clamp_pi(float angle)
 {
 	angle = fmodf(angle, flat::PI_2);
