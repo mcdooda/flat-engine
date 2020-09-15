@@ -30,6 +30,7 @@ int open(flat::lua::Lua& lua)
 		{"getAssets",          l_Asset_getAssets},
 		{"getParentDirectory", l_Asset_getParentDirectory},
 		{"findFromName",       l_Asset_findFromName},
+		{"searchAllFromName",  l_Asset_searchAllFromName},
 
 		{nullptr, nullptr}
 	};
@@ -98,6 +99,14 @@ int l_Asset_findFromName(lua_State* L)
 	const std::string name = luaL_checkstring(L, 2);
 	const Asset* asset = flat::lua::getFlat(L).assetRepository->findAssetFromName(type, name);
 	pushAsset(L, asset);
+	return 1;
+}
+
+int l_Asset_searchAllFromName(lua_State* L)
+{
+	const std::string name = luaL_checkstring(L, 1);
+	std::vector<const Asset*> assets = flat::lua::getFlat(L).assetRepository->searchAllFromName(name);
+	flat::lua::table::pushVector(L, assets);
 	return 1;
 }
 

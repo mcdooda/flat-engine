@@ -7,6 +7,7 @@ local iconPerLine = 3
 function AssetBrowser:new(parent, path, options)
     local o = setmetatable({
         parent               = parent,
+        iconsContainer       = Widget.makeColumnFlow(),
         path                 = path,
         options              = options or {},
 
@@ -16,33 +17,72 @@ function AssetBrowser:new(parent, path, options)
         selectionChanged     = flat.Slot:new(),
         selectionCleared     = flat.Slot:new()
     }, self)
+
     parent:setPadding(4)
-    o:openDirectory(path)
+
+    -- search field
+    do
+        local inputBackground = Widget.makeCompress()
+        inputBackground:setMargin(2)
+        inputBackground:setPadding(2)
+        inputBackground:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
+        inputBackground:setBackgroundColor(0xFFFFFFFF)
+
+        do
+            local textInputWidget = Widget.makeTextInput(table.unpack(flat.ui.settings.defaultFont))
+            textInputWidget:setTextColor(0x000000FF)
+            textInputWidget:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.FIXED_Y)
+            inputBackground:addChild(textInputWidget)
+
+            textInputWidget:valueChanged(function(widget, value)
+                o:searchChanged(value)
+            end)
+            Widget.focus(textInputWidget)
+        end
+
+        parent:addChild(inputBackground)
+    end
+
+    parent:addChild(o.iconsContainer)
+
+    o:showDirectory(path)
     return o
 end
 
-function AssetBrowser:openDirectory(path)
+function AssetBrowser:showDirectory(path)
     self.path = path
 
+    local parentDirectory = Asset.getParentDirectory(path)
     local directories = Asset.getDirectories(path)
     local assets = Asset.getAssets(path)
 
-    self.parent:removeAllChildren()
+    self:showIcons(parentDirectory, directories, assets)
+end
 
-    local contentLine
+function AssetBrowser:searchChanged(value)
+    if value == '' then
+        self:showDirectory(self.path)
+        return
+    end
+
+    local assets = Asset.searchAllFromName(value)
+
+    self:showIcons(nil, {}, assets)
+end
+
+function AssetBrowser:showIcons(parentDirectory, directories, assets)
+    self.iconsContainer:removeAllChildren()
 
     local directoryEntries = {}
-
+    
     -- parent directory
-    do
-        local directory = Asset.getParentDirectory(path);
-        if directory then
-            directoryEntries[#directoryEntries + 1] = {
-                name = '..',
-                path = directory
-            }
-        end
+    if parentDirectory then
+        directoryEntries[#directoryEntries + 1] = {
+            name = '..',
+            path = parentDirectory
+        }
     end
+    
     for i = 1, #directories do
         local directory = directories[i]
         local directoryName = directory:gsub('^.+[/\\](.+)$', '%1')
@@ -51,6 +91,8 @@ function AssetBrowser:openDirectory(path)
             path = directory
         }
     end
+
+    local contentLine
 
     for i = 1, #directoryEntries do
         local directoryEntry = directoryEntries[i]
@@ -61,13 +103,13 @@ function AssetBrowser:openDirectory(path)
         local directoryLabel = Widget.makeText('[D] ' .. directoryEntry.name, table.unpack(flat.ui.settings.defaultFont))
         directoryLabel:setMargin(2)
         directoryLabel:click(function()
-            self:openDirectory(directoryEntry.path)
+            self:showDirectory(directoryEntry.path)
         end)
         directoryIcon:addChild(directoryLabel)
 
         if not contentLine or contentLine:getChildrenCount() == iconPerLine then
             contentLine = Widget.makeLineFlow()
-            self.parent:addChild(contentLine)
+            self.iconsContainer:addChild(contentLine)
         end
         contentLine:addChild(directoryIcon)
     end
@@ -97,7 +139,7 @@ function AssetBrowser:openDirectory(path)
 
         if not contentLine or contentLine:getChildrenCount() == iconPerLine then
             contentLine = Widget.makeLineFlow()
-            self.parent:addChild(contentLine)
+            self.iconsContainer:addChild(contentLine)
         end
         contentLine:addChild(assetIcon.container)
     end

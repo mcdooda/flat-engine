@@ -151,6 +151,19 @@ const Asset* AssetRepository::findAssetFromName(const Asset::Type& type, const A
 	return nullptr;
 }
 
+std::vector<const Asset*> AssetRepository::searchAllFromName(const Asset::Name& name) const
+{
+	std::vector<const Asset*> assets;
+	for (const Asset& asset : m_cachedAssets)
+	{
+		if (asset.getName().find(name) != std::string::npos)
+		{
+			assets.push_back(&asset);
+		}
+	}
+	return assets;
+}
+
 std::vector<std::string> AssetRepository::getDirectories(const std::string& path) const
 {
 	const AssetDirectoryIndex directoryIndex = m_cachedDirectoriesByPath.at(path);

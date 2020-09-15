@@ -48,6 +48,7 @@ class AssetRepository final
 		void scanAllAssets();
 
 		const Asset* findAssetFromName(const Asset::Type& type, const Asset::Name& name) const;
+		std::vector<const Asset*> searchAllFromName(const Asset::Name& name) const;
 
 		// lua api
 		std::vector<std::string> getDirectories(const std::string& path) const;

@@ -134,7 +134,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		if (hasSelectedText())
 		{
 			changeSelectedText("");
-			valueChanged(this, text);
+			valueChanged(this, getText());
 		}
 		else if(m_cursorIndex > 0)
 		{
@@ -154,7 +154,7 @@ bool TextInputWidget::keyJustPressed(input::Key key)
 		{
 			changeSelectedText("");
 			unselect();
-			valueChanged(this, text);
+			valueChanged(this, getText());
 		}
 		else if (m_cursorIndex < text.size())
 		{
