@@ -28,6 +28,9 @@ function NodeRepository:loadNodes(nodeTypeRepository, nodeType, require)
                 self.nodeClasses[nodePath] = nodeClass
             else
                 flat.ui.error('Node ' .. nodePath .. ' from ' .. nodeTypeRepository .. ' does not exist (tried ' .. graphSpecificNodePath .. ' and ' .. commonNodePath .. ')')
+                if flat.debug then
+                    flat.debug.printstack()
+                end
             end
         end
     end
