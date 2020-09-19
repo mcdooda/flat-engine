@@ -43,7 +43,9 @@ int open(flat::lua::Lua& lua)
 int l_Asset_getPath(lua_State* L)
 {
 	const Asset* asset = getAsset(L, 1);
-	lua_pushstring(L, asset->getPath().string().c_str());
+	std::string path = asset->getPath().string();
+	flat::lua::formatPathToLua(path);
+	lua_pushstring(L, path.c_str());
 	return 1;
 }
 
@@ -63,15 +65,21 @@ int l_Asset_getType(lua_State* L)
 
 int l_Asset_getDirectories(lua_State* L)
 {
-	const std::string path = luaL_checkstring(L, 1);
+	std::string path = luaL_checkstring(L, 1);
+	flat::lua::formatPathFromLua(path);
 	std::vector<std::string> directories = flat::lua::getFlat(L).assetRepository->getDirectories(path);
+	for (std::string& directory : directories)
+	{
+		flat::lua::formatPathToLua(directory);
+	}
 	flat::lua::table::pushVector(L, directories);
 	return 1;
 }
 
 int l_Asset_getAssets(lua_State* L)
 {
-	const std::string path = luaL_checkstring(L, 1);
+	std::string path = luaL_checkstring(L, 1);
+	flat::lua::formatPathFromLua(path);
 	std::vector<const Asset*> assets = flat::lua::getFlat(L).assetRepository->getAssets(path);
 	flat::lua::table::pushVector(L, assets);
 	return 1;
@@ -79,11 +87,13 @@ int l_Asset_getAssets(lua_State* L)
 
 int l_Asset_getParentDirectory(lua_State* L)
 {
-	const std::string path = luaL_checkstring(L, 1);
+	std::string path = luaL_checkstring(L, 1);
+	flat::lua::formatPathFromLua(path);
 	std::string parentDirectoryPath;
 	const bool hasParent = flat::lua::getFlat(L).assetRepository->getParentDirectory(path, parentDirectoryPath);
 	if (hasParent)
 	{
+		flat::lua::formatPathToLua(parentDirectoryPath);
 		lua_pushstring(L, parentDirectoryPath.c_str());
 	}
 	else

@@ -6,7 +6,7 @@ local MainWindow = {}
 MainWindow.__index = MainWindow
 setmetatable(MainWindow, { __index = flat.ui.Window })
 
-function MainWindow:new(parent, metadata, onSave)
+function MainWindow:new(parent, metadata, onSave, getRunnerCode)
     local o = flat.ui.Window:new(parent)
     setmetatable(o, self)
 
@@ -28,6 +28,7 @@ function MainWindow:new(parent, metadata, onSave)
 
     o.metadata = metadata
     o.onSave = onSave
+    o.getRunnerCode = getRunnerCode
     o.isNew = false
     o.snap = nil
     o:build()
@@ -46,7 +47,9 @@ function MainWindow:build()
             saveButton:click(function()
                 self:saveGraphToFile()
                 self:saveGraphLayoutToFile()
-                self:saveLuaRunnerFile() -- TODO: only for components?
+                if self.getRunnerCode then
+                    self:saveLuaRunnerFile()
+                end
                 self:updateCustomNodeEditors()
                 if self.onSave then
                     self.onSave(self.isNew)
@@ -589,18 +592,19 @@ function MainWindow:saveGraphLayoutToFile()
     f:close()
 end
 
-function MainWindow:saveLuaRunnerFile()
-    local graphPath = self.currentGraphInfo.path
+function MainWindow:saveLuaRunnerFile(getRunnerCode)
+    local graphInfo = self:getCurrentRootGraphInfo()
+    local graphPath = graphInfo.path
     if graphPath then
-        local componentFilePath = graphPath .. '.lua'
-        if not io.open(componentFilePath, 'r') then
-            -- TODO: should depend on the node type
-            local runnerCode = ([[return flat.graph.script.run '%s']]):format(graphPath)
-
-            local f = io.open(componentFilePath, 'w')
-            assert(runnerCode)
-            f:write(runnerCode)
-            f:close()
+        local runnerCode = self.getRunnerCode(graphPath, graphInfo.graph.nodeType)
+        if runnerCode then
+            local componentFilePath = graphPath .. '.lua'
+            if not io.open(componentFilePath, 'r') then
+                local f = io.open(componentFilePath, 'w')
+                assert(runnerCode)
+                f:write(runnerCode)
+                f:close()
+            end
         end
     end
 end
