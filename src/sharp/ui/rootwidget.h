@@ -63,6 +63,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 	private:
 		void handleLeftMouseButtonDown();
+		void handleGamepadButtonPressed();
 		void handleLeftMouseButtonUp();
 		void handleRightMouseButtonDown();
 		void handleRightMouseButtonUp();
@@ -84,6 +85,9 @@ class RootWidget : public WidgetImpl<RootLayout>
 
 		template <class... Args>
 		static bool propagateEvent(Widget* widget, Slot<Widget*, bool&, Args...> Widget::* slot, Args... args);
+
+		template <class... Args>
+		void triggerGlobalEvent(Widget* widget, Slot<Widget*, Args...> Widget::* slot, Args... args);
 
 	private:
 		Flat& m_flat;
@@ -113,6 +117,17 @@ bool RootWidget::propagateEvent(Widget* widget, Slot<Widget*, bool&, Args...> Wi
 	}
 	return eventHandled;
 }
+
+template <class... Args>
+void RootWidget::triggerGlobalEvent(Widget* widget, Slot<Widget*, Args...> Widget::* slot, Args... args)
+{
+	(widget->*slot)(widget, args...);
+	for (const std::shared_ptr<Widget>& child : widget->m_children)
+	{
+		triggerGlobalEvent(child.get(), slot, args...);
+	}
+}
+
 } // ui
 } // sharp
 } // flat
