@@ -231,7 +231,7 @@ void RootWidget::updateInput(bool updateMouseOver)
 
 		handleMouseMove(mouseOverWidgetChanged || mouseMoved);
 	}
-
+	
 	if (mouse->isJustPressed(M(LEFT)))
 	{
 		handleLeftMouseButtonDown();
@@ -254,6 +254,8 @@ void RootWidget::updateInput(bool updateMouseOver)
 	{
 		handleMouseWheel();
 	}
+
+	handleGamepadButtonPressed();
 }
 
 void RootWidget::drag(Widget* widget)
@@ -308,6 +310,15 @@ void RootWidget::focus(Widget* widget)
 		{
 			m_focusWidget.reset();
 		}
+	}
+}
+
+void RootWidget::handleGamepadButtonPressed()
+{
+	const auto& gamepads = m_flat.input->gamepads;
+	if (gamepads->isJustPressed(0, B(X))) 
+	{
+		triggerGlobalEvent(this, &Widget::gamepadButtonDown, 0, B(X));
 	}
 }
 

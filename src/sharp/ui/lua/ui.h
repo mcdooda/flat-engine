@@ -7,6 +7,8 @@
 #include "misc/lua/vector2.h"
 #include "lua/push.h"
 
+#include "input/gamepadbuttons.h"
+
 struct lua_State;
 
 namespace flat
@@ -118,6 +120,8 @@ int l_Widget_dragged(lua_State* L);
 int l_Widget_drag(lua_State* L);
 int l_Widget_drop(lua_State* L);
 
+int l_Widget_gamepadButtonPressed(lua_State* L);
+
 // TextWidget only
 int l_TextWidget_setText(lua_State* L);
 int l_TextWidget_getText(lua_State* L);
@@ -175,6 +179,8 @@ int addCopyWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot);
 template <class T>
 int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
 int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot);
+
+int addGamepadButtonEventCallback(lua_State* L, Slot<Widget*, input::GamepadIndex, input::GamepadButton> Widget::* slot);
 
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);

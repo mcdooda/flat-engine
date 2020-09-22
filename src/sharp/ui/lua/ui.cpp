@@ -117,6 +117,8 @@ int open(Flat& flat, flat::lua::Lua& lua)
 		{"drag",                  l_Widget_drag},
 		{"drop",                  l_Widget_drop},
 
+		{"gamepadButtonPressed",  l_Widget_gamepadButtonPressed},
+		
 		{"setText",               l_TextWidget_setText},
 		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
@@ -750,6 +752,11 @@ int l_Widget_mouseDown(lua_State* L)
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseDown);
 }
 
+int l_Widget_gamepadButtonDown(lua_State* L)
+{
+	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseDown);
+}
+
 int l_Widget_mouseUp(lua_State* L)
 {
 	return addPropagatedMouseWidgetCallback<Widget>(L, &Widget::mouseUp);
@@ -797,6 +804,11 @@ int l_Widget_drop(lua_State * L)
 	Widget& widget = getWidget(L, 1);
 	widget.drop();
 	return 0;
+}
+
+int l_Widget_gamepadButtonPressed(lua_State * L)
+{
+	return addGamepadButtonEventCallback(L, &Widget::gamepadButtonDown);
 }
 
 int l_TextWidget_setText(lua_State* L)
@@ -1181,6 +1193,33 @@ int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slo
 					eventHandled = eventHandled || lua_toboolean(L, -1);
 				}
 			);
+			return true;
+		}
+	);
+	return 0;
+}
+
+int addGamepadButtonEventCallback(lua_State* L, Slot<Widget*, input::GamepadIndex, input::GamepadButton> Widget::* slot)
+{
+	Widget& widget = getWidget(L, 1);
+	input::GamepadButton expectedGamepadButton = static_cast<input::GamepadButton>(luaL_checkinteger(L, 2));
+	luaL_checktype(L, 3, LUA_TFUNCTION);
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 3);
+	const auto& gamepads = flat::lua::getFlat(L).input->gamepads;
+	(widget.*slot).on(
+		[L, expectedGamepadButton, callback, &gamepads](Widget* w, input::GamepadIndex gamepadIndex, input::GamepadButton gamepadButton)
+		{
+			if (expectedGamepadButton == gamepadButton) 
+			{
+				callback.callFunction(
+					[w, gamepadIndex, gamepadButton](lua_State* L)
+					{
+						pushWidget(L, w->getSharedPtr());
+						lua_pushinteger(L, gamepadIndex);
+						lua_pushinteger(L, gamepadButton);
+					}
+				);
+			}			
 			return true;
 		}
 	);
