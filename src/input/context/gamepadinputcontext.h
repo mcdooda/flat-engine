@@ -45,6 +45,28 @@ class GamepadInputContext
 
 		void copyStateFrom(const GamepadInputContext& from);
 
+		template<typename T>
+		void triggerPressedButtons(T callback)
+		{
+			for (size_t i = 0; i < m_justPressedButtons.size(); i++)
+			{
+				if (m_justPressedButtons[i]) {
+					callback(static_cast<SDL_GameControllerButton>(i));
+				}
+			}
+		}
+
+		template<typename T>
+		void triggerReleasedButtons(T callback)
+		{
+			for (size_t i = 0; i < m_justReleasedButtons.size(); i++)
+			{
+				if (m_justReleasedButtons[i]) {
+					callback(static_cast<SDL_GameControllerButton>(i));
+				}
+			}
+		}
+
 	private:
 		static void sanitizeStickValue(flat::Vector2& stickValue);
 

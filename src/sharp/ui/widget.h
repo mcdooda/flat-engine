@@ -259,6 +259,7 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*> leaveFocus;
 
 		Slot<Widget*, flat::input::GamepadIndex, flat::input::GamepadButton> gamepadButtonDown;
+		Slot<Widget*, flat::input::GamepadIndex, flat::input::GamepadButton> gamepadButtonUp;
 
 		Slot<Widget*> layoutFinished;
 

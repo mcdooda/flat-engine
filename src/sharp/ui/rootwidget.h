@@ -64,6 +64,7 @@ class RootWidget : public WidgetImpl<RootLayout>
 	private:
 		void handleLeftMouseButtonDown();
 		void handleGamepadButtonPressed();
+		void handleGamepadButtonReleased();
 		void handleLeftMouseButtonUp();
 		void handleRightMouseButtonDown();
 		void handleRightMouseButtonUp();
