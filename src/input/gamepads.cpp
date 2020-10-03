@@ -9,7 +9,6 @@ namespace input
 Gamepads::Gamepads(const std::shared_ptr<context::InputContext>& globalInputContext) :
 	m_globalInputContext(globalInputContext)
 {
-	
 }
 
 bool Gamepads::isPressed(GamepadIndex index, GamepadButton button) const
@@ -81,6 +80,7 @@ flat::Vector2 Gamepads::getRightStickValue(GamepadIndex index) const
 	}
 	return flat::Vector2(0.f, 0.f);
 }
+
 
 } // input
 } // flat

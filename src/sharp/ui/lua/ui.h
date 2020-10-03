@@ -121,6 +121,7 @@ int l_Widget_drag(lua_State* L);
 int l_Widget_drop(lua_State* L);
 
 int l_Widget_gamepadButtonPressed(lua_State* L);
+int l_Widget_gamepadButtonReleased(lua_State* L);
 
 // TextWidget only
 int l_TextWidget_setText(lua_State* L);

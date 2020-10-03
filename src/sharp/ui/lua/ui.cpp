@@ -118,7 +118,8 @@ int open(Flat& flat, flat::lua::Lua& lua)
 		{"drop",                  l_Widget_drop},
 
 		{"gamepadButtonPressed",  l_Widget_gamepadButtonPressed},
-		
+		{"gamepadButtonReleased", l_Widget_gamepadButtonReleased},
+
 		{"setText",               l_TextWidget_setText},
 		{"getText",               l_TextWidget_getText},
 		{"setTextColor",          l_TextWidget_setTextColor},
@@ -142,7 +143,7 @@ int open(Flat& flat, flat::lua::Lua& lua)
 		{"drawLine",              l_CanvasWidget_drawLine},
 		{"drawBezier",            l_CanvasWidget_drawBezier},
 		{"getBounds",             l_CanvasWidget_getBounds},
-		
+
 		{nullptr, nullptr}
 	};
 	lua.registerClass<LuaWidget>("flat.Widget", Widget_lib_m);
@@ -811,6 +812,11 @@ int l_Widget_gamepadButtonPressed(lua_State * L)
 	return addGamepadButtonEventCallback(L, &Widget::gamepadButtonDown);
 }
 
+int l_Widget_gamepadButtonReleased(lua_State * L)
+{
+	return addGamepadButtonEventCallback(L, &Widget::gamepadButtonUp);
+}
+
 int l_TextWidget_setText(lua_State* L)
 {
 	TextWidget& textWidget = getWidgetOfType<TextWidget>(L, 1);
@@ -1209,7 +1215,7 @@ int addGamepadButtonEventCallback(lua_State* L, Slot<Widget*, input::GamepadInde
 	(widget.*slot).on(
 		[L, expectedGamepadButton, callback, &gamepads](Widget* w, input::GamepadIndex gamepadIndex, input::GamepadButton gamepadButton)
 		{
-			if (expectedGamepadButton == gamepadButton) 
+			if (expectedGamepadButton == gamepadButton)
 			{
 				callback.callFunction(
 					[w, gamepadIndex, gamepadButton](lua_State* L)
@@ -1219,7 +1225,7 @@ int addGamepadButtonEventCallback(lua_State* L, Slot<Widget*, input::GamepadInde
 						lua_pushinteger(L, gamepadButton);
 					}
 				);
-			}			
+			}
 			return true;
 		}
 	);
