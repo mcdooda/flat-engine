@@ -98,6 +98,8 @@ int open(Flat& flat, flat::lua::Lua& lua)
 
 		{"getScrollPosition",     l_Widget_getScrollPosition},
 
+		{"scrollInDirection",     l_Widget_scrollInDirection},
+
 		{"copy",                  l_Widget_copy},
 		{"paste",                 l_Widget_paste},
 		{"undo",                  l_Widget_undo},
@@ -716,6 +718,18 @@ int l_Widget_getScrollPosition(lua_State* L)
 	lua_pushnumber(L, scrollPosition.x);
 	lua_pushnumber(L, scrollPosition.y);
 	return 2;
+}
+
+int l_Widget_scrollInDirection(lua_State* L)
+{
+	Widget& widget = getWidget(L, 1);
+	const int directionX = static_cast<int>(luaL_checkinteger(L, 2));
+	const int directionY = static_cast<int>(luaL_checkinteger(L, 3));
+	const float speed = static_cast<float>(luaL_optnumber(L, 4, 10.f));
+	const float dt = flat::lua::getFlat(L).time->defaultClock->getDT();
+	widget.scrollX(speed * dt * directionX);
+	widget.scrollY(speed * dt * directionY);
+	return 0;
 }
 
 int l_Widget_copy(lua_State* L)

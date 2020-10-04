@@ -91,6 +91,7 @@ function MainWindow:build()
             assert(not (self.currentLink and self.selectionWidget))
             if self.currentLink then
                 self:updateCurrentLink(x, y)
+                self:scrollWhileDragging()
             elseif self.selectionWidget then
                 self:updateSelectionWidget()
             end
@@ -621,6 +622,7 @@ function MainWindow:makeNodeWidget(node, foldedNodes)
         local x, y = nodeWidget:getVisiblePosition()
         nodeLayout[1] = x
         nodeLayout[2] = y
+        self:scrollWhileDragging()
     end)
     graphInfo.nodeWidgets[node] = nodeWidget
     return nodeWidget
@@ -1578,6 +1580,26 @@ function MainWindow:validSnap()
             self:linkReleasedOnInputPin(self.snap.inputNode, self.snap.inputPin)
         end
     end
+end
+
+function MainWindow:scrollWhileDragging()
+    local x, y = self:getMousePositionOnContent()
+    local content = self:getContent()
+    local contentSizeX, contentSizeY = content:getComputedSize()
+    local scrollTolerance = 50
+    local scrollDirectionX = 0
+    local scrollDirectionY = 0
+    if x < scrollTolerance then
+        scrollDirectionX = -1
+    elseif x > contentSizeX - scrollTolerance then
+        scrollDirectionX = 1
+    end
+    if y < scrollTolerance then
+        scrollDirectionY = -1
+    elseif y > contentSizeY - scrollTolerance then
+        scrollDirectionY = 1
+    end
+    content:scrollInDirection(scrollDirectionX, scrollDirectionY)
 end
 
 function MainWindow:layoutSanityCheck()

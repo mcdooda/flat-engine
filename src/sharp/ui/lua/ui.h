@@ -102,6 +102,8 @@ int l_Widget_getRestrictScroll(lua_State* L);
 
 int l_Widget_getScrollPosition(lua_State* L);
 
+int l_Widget_scrollInDirection(lua_State* L);
+
 int l_Widget_copy(lua_State* L);
 int l_Widget_paste(lua_State* L);
 int l_Widget_undo(lua_State* L);
