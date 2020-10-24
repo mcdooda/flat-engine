@@ -13,7 +13,9 @@ function Graph:new()
         contextNodes = {},
         contextType = PinTypes.ANY,
         compounds = {},
-        subGraphIds = {}
+        reroutes = {},
+        subGraphIds = {},
+        graphOrigin = debug.traceback()
     }
     return setmetatable(o, self)
 end
@@ -73,12 +75,12 @@ function Graph:getContextNodes()
     return self.contextNodes
 end
 
-function Graph:setContextType(contextType)
+function Graph:setContextType(contextType, isLoadingGraph)
     self.contextType = contextType
     local nodeInstances = self.nodeInstances
     for i = 1, #nodeInstances do
         local nodeInstance = nodeInstances[i]
-        nodeInstance:setContextType(contextType)
+        nodeInstance:setContextType(contextType, isLoadingGraph)
     end
 end
 
@@ -90,6 +92,10 @@ function Graph:addCompound(node)
     flat.arrayAdd(self.compounds, node)
 end
 
+function Graph:addReroute(node)
+    flat.arrayAdd(self.reroutes, node)
+end
+
 function Graph:loadGraphFromFile(graphPath)
     local graphFile = io.open(graphPath, 'r')
     if not graphFile then
@@ -99,6 +105,7 @@ function Graph:loadGraphFromFile(graphPath)
     graphFile:close()
     local graphDescription = load(graphFileAsString)()
     local graphErrors = self:load(graphDescription)
+    self.graphOrigin = 'File: ' .. graphPath
     return graphErrors
 end
 
@@ -165,15 +172,68 @@ function Graph:postLoad()
     end
 end
 
+function Graph:resolveCompoundsAndReroutes()
+    self:resolveCompounds()
+    self:resolveReroutes()
+end
+
 function Graph:resolveCompounds()
-    assert(self.compounds, 'Compounds already resolved!') -- can be empty for now (it will do nothing), but not nil
+    -- see CompoundNode:resolve() for the graph resolution logic
+
+    -- can be empty is there is no compound in the graph (it will do nothing), but not nil
+    assert(self.compounds, 'Compounds already resolved!')
+
     local compounds = self.compounds
     for i = 1, #compounds do
         local compound = compounds[i]
         compound:resolveSubCompounds()
         compound:resolve(self)
     end
-    self.compounds = nil -- avoid calling resolveCompounds again
+
+    -- avoid calling resolveCompounds again
+    self.compounds = nil
+end
+
+function Graph:resolveReroutes()
+    -- can be empty is there is no reroute in the graph (it will do nothing), but not nil
+    assert(self.reroutes, 'Reroutes already resolved!')
+
+    -- 1. unplug output links and plug them into the input pin's output pin instead
+    for i = 1, #self.reroutes do
+        local reroute = self.reroutes[i]
+        local outputPin = reroute.inPin.pluggedOutputPin
+        if outputPin then
+            reroute:unplugInputPin(reroute.inPin)
+            local pluggedInputPins = reroute.outPin.pluggedInputPins
+            local inputPinsToReplug = {}
+            -- copy the input pins array to iterate over it without worrying about the indices when they are unplugged
+            for j = 1, #pluggedInputPins do
+                local inputPin = pluggedInputPins[j]
+                inputPinsToReplug[j] = {
+                    inputPin = inputPin.inputPin,
+                    node = inputPin.node
+                }
+            end
+            for j = 1, #inputPinsToReplug do
+                local inputPin = inputPinsToReplug[j]
+                assert(inputPin.node:findInputPinIndex(inputPin.inputPin))
+                inputPin.node:unplugInputPin(inputPin.inputPin, true)
+                assert(inputPin.node:findInputPinIndex(inputPin.inputPin))
+                outputPin.node:plugPins(outputPin.outputPin, inputPin.node, inputPin.inputPin, true, true)
+            end
+        else
+            reroute:unplugAllOutputPins()
+        end
+    end
+
+    -- 2. remove the reroute nodes from the graph
+    for i = 1, #self.reroutes do
+        local reroute = self.reroutes[i]
+        self:removeNode(reroute)
+    end
+
+    -- avoid calling resolveReroutes again
+    self.reroutes = nil
 end
 
 function Graph:getDescription()
@@ -217,6 +277,7 @@ function Graph:clone()
     local graphDescription = self:getDescription()
     local clone = getmetatable(self):new()
     clone:load(graphDescription)
+    clone.graphOrigin = self.graphOrigin .. ' (clone)'
     assert(flat.dumpToString(graphDescription) == flat.dumpToString(clone:getDescription()))
     return clone
 end

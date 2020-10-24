@@ -8,8 +8,8 @@ function StateNode:init()
     self.innerGraph.nodeType = 'script'
 end
 
-function StateNode:setContextType(contextType)
-    self.innerGraph:setContextType(contextType)
+function StateNode:setContextType(contextType, isLoadingGraph)
+    self.innerGraph:setContextType(contextType, isLoadingGraph)
 end
 
 function StateNode:buildPins()

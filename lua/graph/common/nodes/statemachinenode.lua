@@ -9,6 +9,7 @@ local function getNodeName(node)
     if node.nameInPin then
         return node.nameInPin.pluggedOutputPin.node:getValue()
     end
+    return node:getName()
 end
 
 -- state machine description
@@ -17,6 +18,8 @@ local StateMachineDescription = {}
 StateMachineDescription.__index = StateMachineDescription
 
 function StateMachineDescription:new(graph)
+    assert(not graph.compounds)
+    assert(not graph.reroutes)
     local enterNode
     local statesByName = {}
     local statesByNode = {}
@@ -267,19 +270,22 @@ function StateMachineNode:buildPins()
     self.resultOutPin = self:addOutputPin(PinTypes.ANY, 'Result')
 end
 
-function StateMachineNode:contextPinPlugged(pin)
-    self.innerGraph:setContextType(pin.pinType)
+function StateMachineNode:contextPinPlugged(inputPin, outputPin, otherOutputPinUnplugged, isLoadingGraph)
+    self.innerGraph:setContextType(inputPin.pinType, isLoadingGraph)
     return true
 end
 
-function StateMachineNode:contextPinUnplugged(pin)
-    pin.pinType = PinTypes.ANY
-    self.innerGraph:setContextType(PinTypes.ANY)
+function StateMachineNode:contextPinUnplugged(pin, otherOutputPinPlugged)
+    self:setInputPinType(pin, PinTypes.ANY)
+    self.innerGraph:setContextType(PinTypes.ANY, otherOutputPinPlugged) -- assume that otherOutputPinPlugged almost equal to isLoadingGraph in that case
     return true
 end
 
 function StateMachineNode:getStateMachineDescription()
-    local stateMachineDescription = StateMachineDescription:new(self.innerGraph)
+    local innerGraph = self.innerGraph:clone()
+    innerGraph:resolveCompoundsAndReroutes()
+
+    local stateMachineDescription = StateMachineDescription:new(innerGraph)
 
     --stateMachineDescription:debugPrint()
 

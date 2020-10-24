@@ -10,7 +10,7 @@ function flat.graph.script.run(scriptPath, ...)
     if not loaded then
         error('Could not run graph, file does not exist: ' .. scriptPath)
     end
-    script:resolveCompounds()
+    script:resolveCompoundsAndReroutes()
 
     local scriptRuntime = ScriptRuntime:new(script)
     local runner = scriptRuntime:getRunner(...)

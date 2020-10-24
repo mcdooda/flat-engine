@@ -70,7 +70,7 @@ function Node:getLoadArguments()
     -- overriden when needed, should return the arguments to pass to load(...)
 end
 
-function Node:setContextType(contextType)
+function Node:setContextType(contextType, isLoadingGraph)
     -- overriden when needed, set the inner graph context type or something...
 end
 
@@ -94,6 +94,10 @@ function Node:addInputPin(pinType, pinName, onPlugged, onUnplugged)
         pluggedOutputPin = nil,
         onPlugged = onPlugged
     }
+
+    if pinType == PinTypes.ANY then
+        inputPin.isVariableType = true
+    end
 
     -- the editor always run with flat.debug
     if flat.debug then
@@ -126,6 +130,10 @@ function Node:addOutputPin(pinType, pinName, onPlugged, onUnplugged)
         pluggedInputPins = {},
         onPlugged = onPlugged
     }
+
+    if pinType == PinTypes.ANY then
+        outputPin.isVariableType = true
+    end
 
     -- the editor always run with flat.debug
     if flat.debug then
@@ -171,11 +179,29 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
     assert(self:findOutputPinIndex(outputPin), 'output pin ' .. outputPin.pinName .. ' is not from node ' .. self:getName())
     assert(inputNode:findInputPinIndex(inputPin), 'input pin ' .. inputPin.pinName .. ' is not from node ' .. inputNode:getName())
 
+    local updateOutputNode = false
+    local updateInputNode = false
+
+    if outputPin.pinType ~= inputPin.pinType then
+        if outputPin.isVariableType and inputPin.isVariableType then
     if outputPin.pinType == PinTypes.ANY then
-        assert(inputPin.pinType ~= PinTypes.ANY or self.isMissingNode or inputNode.isMissingNode)
-        outputPin.pinType = inputPin.pinType
+                self:setOutputPinType(outputPin, inputPin.pinType, isLoadingGraph)
+                updateOutputNode = true
     elseif inputPin.pinType == PinTypes.ANY then
-        inputPin.pinType = outputPin.pinType
+                self:setInputPinType(inputPin, outputPin.pinType, isLoadingGraph)
+                updateInputNode = true
+            else
+                error('Not sure what to do?')
+    end
+        elseif outputPin.isVariableType then
+            self:setOutputPinType(outputPin, inputPin.pinType, isLoadingGraph)
+            updateOutputNode = true
+        elseif inputPin.isVariableType then
+            self:setInputPinType(inputPin, outputPin.pinType, isLoadingGraph)
+            updateInputNode = true
+        else
+            error('Cannot plug pins!')
+        end
     end
 
     assert(
@@ -194,8 +220,6 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
         node = self
     }
 
-    local updateOutputNode = false
-    local updateInputNode = false
     if outputPin.onPlugged then
         updateOutputNode = outputPin.onPlugged(self, outputPin, inputPin, isLoadingGraph)
     end
@@ -207,6 +231,7 @@ end
 
 function Node:unplugInputPin(inputPin, otherOutputPinPlugged)
     assert(inputPin.pluggedOutputPin, 'the input pin is not plugged')
+    assert(self:findInputPinIndex(inputPin))
     
     local outputPin = inputPin.pluggedOutputPin.outputPin
     local numPluggedInputPins = #outputPin.pluggedInputPins
@@ -219,6 +244,7 @@ function Node:unplugInputPin(inputPin, otherOutputPinPlugged)
             outputPin.pluggedInputPins[numPluggedInputPins] = nil
             break
         end
+        assert(i ~= numPluggedInputPins)
     end
     local outputNode = inputPin.pluggedOutputPin.node
     inputPin.pluggedOutputPin = nil
@@ -231,6 +257,9 @@ function Node:unplugInputPin(inputPin, otherOutputPinPlugged)
     if inputPin.onUnplugged then
         updateInputNode = inputPin.onUnplugged(self, inputPin, otherOutputPinPlugged)
     end
+
+    assert(otherOutputPinPlugged or self:findInputPinIndex(inputPin))
+
     return updateOutputNode, updateInputNode
 end
 
@@ -293,6 +322,44 @@ function Node:tryReadConstantPin(inputPin)
         local inputNode = inputPin.pluggedOutputPin.node
         if inputNode:isConstant() then
             return inputNode:getValue()
+        end
+    end
+end
+
+function Node:setInputPinType(inputPin, pinType, isLoadingGraph)
+    assert(inputPin.isVariableType)
+    inputPin.pinType = pinType
+    if self:isInputPinPlugged(inputPin) then
+        local outputPin = assert(inputPin.pluggedOutputPin)
+        if outputPin.outputPin.pinType ~= pinType then
+            if outputPin.outputPin.isVariableType then
+                outputPin.node:setOutputPinType(outputPin.outputPin, pinType, isLoadingGraph)
+            elseif not isLoadingGraph then
+                outputPin.node:unplugOutputPin(outputPin.outputPin)
+            end
+        end
+    end
+end
+
+function Node:setOutputPinType(outputPin, pinType, isLoadingGraph)
+    assert(outputPin.isVariableType)
+    outputPin.pinType = pinType
+    if self:isOutputPinPlugged(outputPin) then
+        local inputPins = assert(outputPin.pluggedInputPins)
+        local inputPinsToUnplug = {}
+        for i = 1, #inputPins do
+            local inputPin = inputPins[i]
+            if inputPin.inputPin.pinType ~= pinType then
+                if inputPin.inputPin.isVariableType then
+                    inputPin.node:setInputPinType(inputPin.inputPin, pinType, isLoadingGraph)
+                elseif not isLoadingGraph then
+                    inputPinsToUnplug[#inputPinsToUnplug + 1] = inputPin
+                end
+            end
+        end
+        for i = 1, #inputPinsToUnplug do
+            local inputPin = inputPinsToUnplug[i]
+            inputPin.node:unplugInputPin(inputPin.inputPin)
         end
     end
 end

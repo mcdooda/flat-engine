@@ -125,7 +125,6 @@ function NodeWidget:build(foldedNodes)
     do
         local nodeNameContainer = Widget.makeExpand()
         nodeNameContainer:setSizePolicy(Widget.SizePolicy.EXPAND_X + Widget.SizePolicy.COMPRESS_Y)
-        nodeNameContainer:setBackgroundColor(Theme.TITLE_BACKGROUND_COLOR)
         local mouseMoved = false
         local mouseDown = false
         local selectedNode = false
@@ -160,12 +159,18 @@ function NodeWidget:build(foldedNodes)
             return true
         end)
 
-        do
-            local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))
-            nodeNameText:setTextColor(Theme.TITLE_TEXT_COLOR)
-            nodeNameText:setPositionPolicy(Widget.PositionPolicy.CENTER)
-            nodeNameText:setMargin(3)
-            nodeNameContainer:addChild(nodeNameText)
+        if self.customNodeEditor and self.customNodeEditor.buildNodeName then
+            local customNodeNameWidget = self.customNodeEditor.buildNodeName(node)
+            nodeNameContainer:addChild(customNodeNameWidget)
+        else
+            nodeNameContainer:setBackgroundColor(Theme.TITLE_BACKGROUND_COLOR)
+            do
+                local nodeNameText = Widget.makeText(node:getName(), table.unpack(flat.ui.settings.defaultFont))
+                nodeNameText:setTextColor(Theme.TITLE_TEXT_COLOR)
+                nodeNameText:setPositionPolicy(Widget.PositionPolicy.CENTER)
+                nodeNameText:setMargin(3)
+                nodeNameContainer:addChild(nodeNameText)
+            end
         end
 
         nodeWidget:addChild(nodeNameContainer)
@@ -275,7 +280,7 @@ function NodeWidget:drawLinkFromInputPin(node, pin)
             local updateOutputNodeWidget, updateInputNodeWidget = node:unplugInputPin(pin)
 
             if updateOutputNodeWidget then
-                outputNode:rebuild(self.mainWindow:getFoldedNodes())
+                outputNodeWidget:rebuild(self.mainWindow:getFoldedNodes())
             end
 
             if updateInputNodeWidget then

@@ -11,8 +11,8 @@ function TransitionNode:init()
     self.innerGraph.nodeType = 'script'
 end
 
-function TransitionNode:setContextType(contextType)
-    self.innerGraph:setContextType(contextType)
+function TransitionNode:setContextType(contextType, isLoadingGraph)
+    self.innerGraph:setContextType(contextType, isLoadingGraph)
 end
 
 function TransitionNode:buildPins()

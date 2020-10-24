@@ -31,6 +31,7 @@ function InnerGraphNode:load(subGraphId, savedGraph)
     local loaded, err = pcall(function()
         self.subGraphId = assert(subGraphId)
         innerGraph:load(savedGraph)
+        innerGraph.graphOrigin = 'Inner graph #' .. subGraphId
     end)
     if not loaded then
         flat.ui.error('Could not load inner graph in node ' .. self:getName() .. ': ' .. err)
@@ -38,6 +39,7 @@ function InnerGraphNode:load(subGraphId, savedGraph)
         self.innerGraph = Graph:new() -- clear the graph to avoid unexpected errors in the editor
         self.innerGraph.nodeType = innerGraph.nodeType
         self.innerGraph.parentNode = self
+        self.innerGraph.graphOrigin = 'Failed to load inner graph #' .. subGraphId
         return false
     end
     return true

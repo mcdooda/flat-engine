@@ -16,7 +16,7 @@ end
 
 function PrintNode:valuePinUnplugged(pin, otherOutputPinPlugged)
     if not otherOutputPinPlugged then
-        pin.pinType = PinTypes.ANY
+        self:setInputPinType(pin, PinTypes.ANY)
         return true
     end
 end

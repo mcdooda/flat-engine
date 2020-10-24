@@ -4,6 +4,9 @@ local ScriptRuntime = {}
 ScriptRuntime.__index = ScriptRuntime
 
 function ScriptRuntime:new(graph)
+    assert(not graph.compounds)
+    assert(not graph.reroutes)
+
     local outputPinValues = {}
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]

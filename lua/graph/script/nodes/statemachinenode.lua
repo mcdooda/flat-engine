@@ -14,25 +14,46 @@ local StateMachineNodeRuntime = ScriptNodeRuntime:inherit()
 function StateMachineNodeRuntime:init(node)
     self.perContextData = setmetatable({}, { __mode = 'k' })
     self.stateMachineDescription = node:getStateMachineDescription()
+    self.hasError = false
 end
 
 function StateMachineNodeRuntime:execute(node)
+    if self.hasError then
+        return
+    end
     local context = self:readPin(node.contextInPin)
     local contextId = flat.getUniqueObject(context)
     local contextData = self.perContextData[contextId]
-    if not contextData then
-        contextData = { context = context }
-        self:cacheScriptRuntimes(contextData)
-        self:enterState(contextData, self.stateMachineDescription.initState)
-        self.perContextData[contextId] = contextData
-    end
-    if contextData.currentStateThread then
-        self:updateCurrentState(contextData)
-        local newState = self:evaluateRules(contextData)
-        if newState then
-            self:enterState(contextData, newState)
+    xpcall(function()
+        if not contextData then
+            contextData = { context = context }
+            print('setting context data: ', context)
+            self:cacheScriptRuntimes(contextData)
+            self:enterState(contextData, self.stateMachineDescription.initState)
+            self.perContextData[contextId] = contextData
         end
-    end
+    end, function()
+        self.hasError = true
+        flat.ui.error('Could not load state machine')
+        if flat.debug then
+            flat.debug.printstack()
+        end
+    end)
+    xpcall(function()
+        if contextData.currentStateThread then
+            self:updateCurrentState(contextData)
+            local newState = self:evaluateRules(contextData)
+            if newState then
+                self:enterState(contextData, newState)
+            end
+        end
+    end, function()
+        self.hasError = true
+        flat.ui.error('Error while updating state machine')
+        if flat.debug then
+            flat.debug.printstack()
+        end
+    end)
 end
 
 function StateMachineNodeRuntime:cacheScriptRuntimes(contextData)
@@ -40,7 +61,7 @@ function StateMachineNodeRuntime:cacheScriptRuntimes(contextData)
     local runtimesByState = {}
     for stateName, state in pairs(self.stateMachineDescription:getStates()) do
         local stateGraph = state.graph:clone()
-        stateGraph:resolveCompounds()
+        stateGraph:resolveCompoundsAndReroutes()
         local scriptRuntime = ScriptRuntime:new(stateGraph)
         scriptRuntime:setContext(contextData.context)
 
@@ -48,7 +69,7 @@ function StateMachineNodeRuntime:cacheScriptRuntimes(contextData)
         for i = 1, #state.outRules do
             local rule = state.outRules[i]
             local ruleGraph = rule.graph:clone()
-            ruleGraph:resolveCompounds()
+            ruleGraph:resolveCompoundsAndReroutes()
             local ruleScriptRuntime = ScriptRuntime:new(ruleGraph)
             ruleScriptRuntime:setContext(contextData.context)
             ruleScriptRuntimes[rule] = ruleScriptRuntime

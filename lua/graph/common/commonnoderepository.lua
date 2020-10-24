@@ -1,6 +1,7 @@
 return {
     'compound',
     'statemachine',
+    'reroute',
 
     'boolean',
     'number',

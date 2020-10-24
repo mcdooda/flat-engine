@@ -50,6 +50,7 @@ local function arrayFindValueIndex(t, value)
             return i
         end
     end
+    return nil
 end
 
 local function arrayRemoveIndex(t, index)

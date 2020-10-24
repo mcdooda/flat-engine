@@ -34,6 +34,7 @@ function ScriptNodeRuntime:readPin(inputPin)
         else
             msg = msg .. ' (not plugged)'
         end
+        flat.ui.error(msg)
         error(msg)
     end
     return value

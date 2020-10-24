@@ -878,12 +878,9 @@ function MainWindow:canPlugPins(outputNode, outputPin, inputNode, inputPin)
             return false
         end
     end
-    if inputPin.pinType == PinTypes.ANY then
-        return outputPin.pinType ~= PinTypes.ANY
-    elseif outputPin.pinType == PinTypes.ANY then
-        return inputPin.pinType ~= PinTypes.ANY
-    end
-    return inputPin.pinType == outputPin.pinType
+    return inputPin.pinType == PinTypes.ANY
+        or outputPin.pinType == PinTypes.ANY
+        or inputPin.pinType == outputPin.pinType
 end
 
 function MainWindow:linkReleasedOnInputPin(inputNode, inputPin)

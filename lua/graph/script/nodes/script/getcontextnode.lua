@@ -15,17 +15,14 @@ function GetContextNode:addedToGraph(graph)
     graph:addContextNode(self)
     self.contextType = graph:getContextType()
     if self.contextOutPin then
-        self.contextOutPin.pinType = self.contextType
+        self:setOutputPinType(self.contextOutPin, self.contextType)
     end
 end
 
-function GetContextNode:setContextType(contextType)
+function GetContextNode:setContextType(contextType, isLoadingGraph)
     if self.contextType ~= contextType then
-        if self.contextType ~= PinTypes.ANY then -- do not unplug ANY pins as it's loading
-            self:unplugOutputPin(self.contextOutPin)
-        end
         self.contextType = contextType
-        self.contextOutPin.pinType = contextType
+        self:setOutputPinType(self.contextOutPin, contextType, isLoadingGraph)
     end
 end
 
