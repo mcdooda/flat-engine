@@ -27,7 +27,6 @@ function StateMachineNodeRuntime:execute(node)
     xpcall(function()
         if not contextData then
             contextData = { context = context }
-            print('setting context data: ', context)
             self:cacheScriptRuntimes(contextData)
             self:enterState(contextData, self.stateMachineDescription.initState)
             self.perContextData[contextId] = contextData

@@ -1,5 +1,6 @@
 return {
     'script/array',
+    'script/foreach',
     'script/condition',
     'script/init',
     'script/function',
