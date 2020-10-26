@@ -617,6 +617,20 @@ function MainWindow:makeNodeWidget(node, foldedNodes)
     local nodeWidget = NodeWidget:new(node, self, foldedNodes)
     local nodeIndex = assert(graphInfo.graph:findNodeIndex(node))
     local nodeLayout = assert(graphInfo.layout[nodeIndex])
+    nodeWidget:beforeDrag(function(widget, x, y)
+        if Keyboard.isKeyPressed(Keyboard.Key.LSHIFT) then
+            local marginLeft = 8
+            local widgetWidth, widgetHeight = widget:getComputedSize()
+            local gridSnap = 20
+            local content = self:getContent()
+            local contentWidth, contentHeight = content:getComputedSize()
+            local contentScrollPositionX, contentScrollPositionY = content:getScrollPosition()
+            local contentRelativePositionX, contentRelativePositionY = content:getRelativePosition(Widget.getRoot())
+            x = math.floor(math.floor(((x + contentRelativePositionX + contentScrollPositionX + marginLeft) / gridSnap) + 0.5) * gridSnap - contentRelativePositionX - contentScrollPositionX - marginLeft)
+            y = math.floor(math.floor(((y + contentRelativePositionY + contentScrollPositionY + widgetHeight - contentHeight) / gridSnap) + 0.5) * gridSnap - contentRelativePositionY - contentScrollPositionY - widgetHeight + contentHeight)
+        end
+        return x, y
+    end)
     nodeWidget:dragged(function()
         self:drawLinks()
         local x, y = nodeWidget:getVisiblePosition()
@@ -630,67 +644,8 @@ end
 
 function MainWindow:drawLinks(delayToNextFrame)
     local function draw()
-        local content = self:getContent()
+        self:drawGrid()
 
-        content:clear(0xECF0F1FF)
-
-        -- draw grid
-        do
-            local scrollX, scrollY = content:getScrollPosition()
-            local w, h = content:getComputedSize()
-
-            local gridTheme = flat.ui.settings.theme.graphEditor.grid
-
-            do
-                local firstSmallX = -scrollX % gridTheme.SMALL_STEP
-                local firstBigX = -scrollX % gridTheme.BIG_STEP
-                for x = firstSmallX, w, gridTheme.SMALL_STEP do
-                    if (x - firstBigX) % gridTheme.BIG_STEP > 0 then
-                        content:drawLine(
-                            gridTheme.SMALL_LINE_COLOR,
-                            gridTheme.SMALL_LINE_WIDTH,
-                            false,
-                            flat.Vector2(x, 0),
-                            flat.Vector2(x, h)
-                        )
-                    end
-                end
-                for x = firstBigX, w, gridTheme.BIG_STEP do
-                    content:drawLine(
-                        gridTheme.BIG_LINE_COLOR,
-                        gridTheme.BIG_LINE_WIDTH,
-                        false,
-                        flat.Vector2(x, 0),
-                        flat.Vector2(x, h)
-                    )
-                end
-            end
-
-            do
-                local firstSmallY = (scrollY % gridTheme.SMALL_STEP) - gridTheme.SMALL_STEP
-                local firstBigY = (scrollY % gridTheme.BIG_STEP) - gridTheme.BIG_STEP
-                for y = firstSmallY, h, gridTheme.SMALL_STEP do
-                    if (y - firstBigY) % gridTheme.BIG_STEP > 0 then
-                        content:drawLine(
-                            gridTheme.SMALL_LINE_COLOR,
-                            gridTheme.SMALL_LINE_WIDTH,
-                            false,
-                            flat.Vector2(0, h - y),
-                            flat.Vector2(w, h - y)
-                        )
-                    end
-                end
-                for y = firstBigY, h, gridTheme.BIG_STEP do
-                    content:drawLine(
-                        gridTheme.BIG_LINE_COLOR,
-                        gridTheme.BIG_LINE_WIDTH,
-                        false,
-                        flat.Vector2(0, h - y),
-                        flat.Vector2(w, h - y)
-                    )
-                end
-            end
-        end
         local currentLink = self.currentLink
 
         -- draw plugged links
@@ -749,6 +704,66 @@ function MainWindow:drawLinks(delayToNextFrame)
         timer:start(0.01)
     else
         draw()
+    end
+end
+
+function MainWindow:drawGrid()
+    local content = self:getContent()
+    content:clear(0xECF0F1FF)
+
+    local scrollX, scrollY = content:getScrollPosition()
+    local w, h = content:getComputedSize()
+
+    local gridTheme = flat.ui.settings.theme.graphEditor.grid
+
+    do
+        local firstSmallX = -scrollX % gridTheme.SMALL_STEP
+        local firstBigX = -scrollX % gridTheme.BIG_STEP
+        for x = firstSmallX, w, gridTheme.SMALL_STEP do
+            if (x - firstBigX) % gridTheme.BIG_STEP > 0 then
+                content:drawLine(
+                    gridTheme.SMALL_LINE_COLOR,
+                    gridTheme.SMALL_LINE_WIDTH,
+                    false,
+                    flat.Vector2(x, 0),
+                    flat.Vector2(x, h)
+                )
+            end
+        end
+        for x = firstBigX, w, gridTheme.BIG_STEP do
+            content:drawLine(
+                gridTheme.BIG_LINE_COLOR,
+                gridTheme.BIG_LINE_WIDTH,
+                false,
+                flat.Vector2(x, 0),
+                flat.Vector2(x, h)
+            )
+        end
+    end
+
+    do
+        local firstSmallY = (scrollY % gridTheme.SMALL_STEP) - gridTheme.SMALL_STEP
+        local firstBigY = (scrollY % gridTheme.BIG_STEP) - gridTheme.BIG_STEP
+        for y = firstSmallY, h, gridTheme.SMALL_STEP do
+            if (y - firstBigY) % gridTheme.BIG_STEP > 0 then
+                content:drawLine(
+                    gridTheme.SMALL_LINE_COLOR,
+                    gridTheme.SMALL_LINE_WIDTH,
+                    false,
+                    flat.Vector2(0, h - y),
+                    flat.Vector2(w, h - y)
+                )
+            end
+        end
+        for y = firstBigY, h, gridTheme.BIG_STEP do
+            content:drawLine(
+                gridTheme.BIG_LINE_COLOR,
+                gridTheme.BIG_LINE_WIDTH,
+                false,
+                flat.Vector2(0, h - y),
+                flat.Vector2(w, h - y)
+            )
+        end
     end
 end
 

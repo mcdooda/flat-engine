@@ -239,6 +239,10 @@ function NodeWidget:getVisiblePosition()
     return trueX + MAGNET_BARS_WIDTH, trueY
 end
 
+function NodeWidget:beforeDrag(callback)
+    self.container:beforeDrag(callback)
+end
+
 function NodeWidget:dragged(callback)
     self.container:dragged(callback)
 end

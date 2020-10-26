@@ -151,7 +151,9 @@ void RootWidget::updateDraggedWidgets()
 	{
 		Widget* widget = std::get<0>(draggedWidget).lock().get();
 		const Vector2& relativePosition = std::get<1>(draggedWidget);
-		widget->setAbsolutePosition(mouse->getPosition() - relativePosition);
+		Vector2 absolutePosition = mouse->getPosition() - relativePosition;
+		widget->beforeDrag(widget, absolutePosition);
+		widget->setAbsolutePosition(absolutePosition);
 		widget->m_dragged = true;
 	}
 }

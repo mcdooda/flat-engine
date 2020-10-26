@@ -252,6 +252,7 @@ class Widget : public util::Convertible<Widget>
 		Slot<Widget*, bool&> mouseMove;
 		Slot<Widget*, bool&, const Vector2&> mouseWheelMove;
 		Slot<Widget*> scroll;
+		Slot<Widget*, Vector2&> beforeDrag;
 		Slot<Widget*> dragged;
 		Slot<Widget*> mouseEnter;
 		Slot<Widget*> mouseLeave;

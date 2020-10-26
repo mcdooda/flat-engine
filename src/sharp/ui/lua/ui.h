@@ -117,6 +117,7 @@ int l_Widget_mouseWheel(lua_State* L);
 int l_Widget_mouseEnter(lua_State* L);
 int l_Widget_mouseLeave(lua_State* L);
 int l_Widget_scroll(lua_State* L);
+int l_Widget_beforeDrag(lua_State* L);
 int l_Widget_dragged(lua_State* L);
 
 int l_Widget_drag(lua_State* L);
@@ -175,15 +176,21 @@ Widget& getFocusableWidget(lua_State* L, int index);
 
 template <class T>
 T& getWidgetOfType(lua_State* L, int index);
+
 template <class T, class... Args>
-int addWidgetCallback(lua_State* L, Slot<Widget*, Args...> T::* slot); 
+int addWidgetCallback(lua_State* L, Slot<Widget*, Args...> T::* slot);
+
 template <class T, class... Args>
 int addCopyWidgetCallback(lua_State* L, Slot <Widget*, Args...> T::* slot);
+
 template <class T>
 int addPropagatedMouseWidgetCallback(lua_State* L, Slot<Widget*, bool&> T::* slot);
+
 int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, const Vector2&> Widget::* slot);
 
 int addGamepadButtonEventCallback(lua_State* L, Slot<Widget*, input::GamepadIndex, input::GamepadButton> Widget::* slot);
+
+int addBeforeDragWidgetCallback(lua_State* L, Slot<Widget*, Vector2&> Widget::* slot);
 
 void pushWidget(lua_State* L, const std::shared_ptr<Widget>& widget);
 WidgetFactory& getWidgetFactory(lua_State* L);

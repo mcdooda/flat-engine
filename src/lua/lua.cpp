@@ -9,6 +9,7 @@
 #include "flat.h"
 #include "flat/game.h"
 #include "time/lua/time.h"
+#include "input/lua/keyboard.h"
 #include "input/lua/mouse.h"
 #include "input/lua/gamepads.h"
 #include "video/lua/image.h"
@@ -104,6 +105,7 @@ void Lua::reset(Flat& flat)
 
 		timer::lua::open(*this);
 		time::lua::open(L);
+		input::lua::keyboard::open(L);
 		input::lua::mouse::open(L);
 		input::lua::gamepads::open(L);
 		video::lua::image::open(L);

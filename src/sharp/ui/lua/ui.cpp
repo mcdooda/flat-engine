@@ -114,6 +114,7 @@ int open(Flat& flat, flat::lua::Lua& lua)
 		{"mouseEnter",            l_Widget_mouseEnter},
 		{"mouseLeave",            l_Widget_mouseLeave},
 		{"scroll",                l_Widget_scroll},
+		{"beforeDrag",            l_Widget_beforeDrag},
 		{"dragged",               l_Widget_dragged},
 
 		{"drag",                  l_Widget_drag},
@@ -802,6 +803,11 @@ int l_Widget_scroll(lua_State* L)
 	return addWidgetCallback<Widget>(L, &Widget::scroll);
 }
 
+int l_Widget_beforeDrag(lua_State* L)
+{
+	return addBeforeDragWidgetCallback(L, &Widget::beforeDrag);
+}
+
 int l_Widget_dragged(lua_State* L)
 {
 	return addWidgetCallback<Widget>(L, &Widget::dragged);
@@ -1266,6 +1272,35 @@ int addPropagatedMouseWheelWidgetCallback(lua_State* L, Slot<Widget*, bool&, con
 				[&eventHandled](lua_State* L)
 				{
 					eventHandled = eventHandled || lua_toboolean(L, -1);
+				}
+			);
+			return true;
+		}
+	);
+	return 0;
+}
+
+int addBeforeDragWidgetCallback(lua_State* L, Slot<Widget*, Vector2&> Widget::* slot)
+{
+	Widget& widget = getWidget(L, 1);
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	//FLAT_ASSERT(L == flat::lua::getMainThread(L));
+	flat::lua::SharedLuaReference<LUA_TFUNCTION> callback(L, 2);
+	(widget.*slot).on(
+		[L, callback](Widget* w, Vector2& absolutePosition)
+		{
+			callback.callFunction(
+				[w, absolutePosition](lua_State* L)
+				{
+					pushWidget(L, w->getSharedPtr());
+					lua_pushnumber(L, absolutePosition.x);
+					lua_pushnumber(L, absolutePosition.y);
+				},
+				2,
+				[&absolutePosition](lua_State* L)
+				{
+					absolutePosition.x = static_cast<float>(luaL_checknumber(L, 1));
+					absolutePosition.y = static_cast<float>(luaL_checknumber(L, 2));
 				}
 			);
 			return true;
