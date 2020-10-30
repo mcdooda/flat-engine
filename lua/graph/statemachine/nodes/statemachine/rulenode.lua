@@ -50,4 +50,8 @@ function RuleNode:load(numRulesInPins, subGraphId, savedGraph)
     return InnerGraphNode.load(self, subGraphId, savedGraph)
 end
 
+function RuleNode:validate()
+    return self:validateInnerGraph()
+end
+
 return RuleNode

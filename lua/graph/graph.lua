@@ -295,6 +295,34 @@ function Graph:saveGraph(graphPath)
     f:close()
 end
 
+function Graph:validate()
+    local graphErrors = {}
+    for i = 1, #self.nodeInstances do
+        local nodeInstance = self.nodeInstances[i]
+        local nodeErrors = nodeInstance:validate()
+        for j = 1, #nodeErrors do
+            local nodeError = nodeErrors[j]
+            
+            if not nodeError.path then
+                nodeError.path = {
+                    {
+                        graph = self,
+                        nodeIndex = i
+                    }
+                }
+            else
+                table.insert(nodeError.path, 1, {
+                    graph = self,
+                    nodeIndex = i
+                })
+            end
+
+            graphErrors[#graphErrors + 1] = nodeError
+        end
+    end
+    return graphErrors
+end
+
 function Graph:makeNewSubGraphId()
     local highestSubGraphId = 0
     for subGraphId in pairs(self.subGraphIds) do

@@ -50,4 +50,8 @@ function StateNode:load(numStateInPins, subGraphId, savedGraph)
     return InnerGraphNode.load(self, subGraphId, savedGraph)
 end
 
+function StateNode:validate()
+    return self:validateInnerGraph()
+end
+
 return StateNode

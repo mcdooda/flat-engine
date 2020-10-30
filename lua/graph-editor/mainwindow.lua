@@ -59,6 +59,16 @@ function MainWindow:build()
                 flat.ui.success('Graph ' .. graphInfo.path .. ' saved')
             end)
         end
+
+        do
+            local validateButton = toolbar:addButton 'Validate'
+            validateButton:click(function()
+                if self:validateGraph() then
+                    local graphInfo = self:getCurrentRootGraphInfo()
+                    flat.ui.success('Graph ' .. graphInfo.path .. ' validated successfully (excluding compounds)')
+                end
+            end)
+        end
     end
 
     -- open graphs breadcrumb
@@ -608,6 +618,45 @@ function MainWindow:saveLuaRunnerFile(getRunnerCode)
             end
         end
     end
+end
+
+function MainWindow:makeErrorPathString(error)
+    local str = ''
+    for i = 1, #error.path do
+        local graph = error.path[i].graph
+        local nodeIndex = error.path[i].nodeIndex
+        local node = graph.nodeInstances[nodeIndex]
+        str = str .. 'Graph: ' .. graph.graphOrigin .. '\nNode: ' .. node:getName() .. '#' .. nodeIndex .. '\n'
+    end
+    if error.inputPinIndex then
+        local graph = error.path[#error.path].graph
+        local nodeIndex = error.path[#error.path].nodeIndex
+        local nodeInstance = graph.nodeInstances[nodeIndex]
+        local inputPin = nodeInstance.inputPins[error.inputPinIndex]
+        str = str .. 'Input Pin ' .. inputPin.pinName .. '#' .. error.inputPinIndex
+    end
+    return str
+end
+
+function MainWindow:validateGraph()
+    local graphInfo = self:getCurrentRootGraphInfo()
+    local graph = graphInfo.graph
+    local errors = graph:validate()
+    for i = 1, #errors do
+        local error = errors[i]
+        flat.ui.warn(
+            self:makeErrorPathString(error) .. ': ' .. error.message,
+            {
+                {
+                    'Go To Node',
+                    function()
+                        self:goToNode(error.path)
+                    end
+                }
+            }
+        )
+    end
+    return #errors == 0
 end
 
 function MainWindow:makeNodeWidget(node, foldedNodes)
@@ -1306,6 +1355,34 @@ function MainWindow:getSelectedNodes()
     end
 
     return selectedNodes
+end
+
+function MainWindow:goToNode(nodePath)
+    local currentRootGraphInfo = self:getCurrentRootGraphInfo()
+    assert(nodePath[1].graph == currentRootGraphInfo.graph)
+    self:setCurrentGraphInfo(currentRootGraphInfo)
+    for i = 2, #nodePath do
+        local graph = assert(nodePath[i].graph)
+        local subGraphId = assert(nodePath[i].subGraphId)
+        self:openSubGraph(graph, subGraphId, self.currentGraphInfo)
+        --local node = graph.nodeInstances[nodePath[i].nodeIndex]
+    end
+    local graph = assert(nodePath[#nodePath].graph)
+    local nodeIndex = assert(nodePath[#nodePath].nodeIndex)
+    local node = assert(graph.nodeInstances[nodeIndex])
+    self:focusNode(node)
+end
+
+function MainWindow:focusNode(node)
+    local nodeWidgets = self.currentGraphInfo.nodeWidgets
+    local nodeWidget = assert(nodeWidgets[node])
+    self:selectNode(nodeWidget)
+    nodeWidget:highlight()
+    local x, y = nodeWidget:getVisiblePosition()
+    local nodeWidth, nodeHeight = nodeWidget:getVisibleComputedSize()
+    local content = self:getContent()
+    local contentWidth, contentHeight = content:getComputedSize()
+    content:setScrollPosition(x - contentWidth / 2 + nodeWidth / 2, y + contentHeight / 2 - nodeHeight / 2)
 end
 
 function MainWindow:getLayoutForNodes(nodes)

@@ -476,6 +476,10 @@ function NodeWidget:deselect()
     self.visibleContainer:setBackgroundColor(Theme.BACKGROUND_COLOR)
 end
 
+function NodeWidget:highlight()
+    self.visibleContainer:setBackgroundColor(Theme.HIGHLIGHTED_BACKGROUND_COLOR)
+end
+
 local pinColors = {
     [PinTypes.ANY]           = 0x888888FF,
 

@@ -31,7 +31,7 @@ function InnerGraphNode:load(subGraphId, savedGraph)
     local loaded, err = pcall(function()
         self.subGraphId = assert(subGraphId)
         innerGraph:load(savedGraph)
-        innerGraph.graphOrigin = 'Inner graph #' .. subGraphId
+        innerGraph.graphOrigin = self:getName() .. ' inner graph #' .. subGraphId
     end)
     if not loaded then
         flat.ui.error('Could not load inner graph in node ' .. self:getName() .. ': ' .. err)
@@ -43,6 +43,25 @@ function InnerGraphNode:load(subGraphId, savedGraph)
         return false
     end
     return true
+end
+
+function InnerGraphNode:validate()
+    assert(self.subGraphId)
+    local errors = Node.validate(self)
+    local innerGraphErrors = self:validateInnerGraph()
+    flat.arrayAppend(errors, innerGraphErrors)
+    return errors
+end
+
+function InnerGraphNode:validateInnerGraph()
+    local errors = self.innerGraph:validate()
+    for i = 1, #errors do
+        local error = errors[i]
+        if error.path[1].graph == self.innerGraph then
+            error.path[1].subGraphId = self.subGraphId
+        end
+    end
+    return errors
 end
 
 return InnerGraphNode

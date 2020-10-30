@@ -258,8 +258,6 @@ function Node:unplugInputPin(inputPin, otherOutputPinPlugged)
         updateInputNode = inputPin.onUnplugged(self, inputPin, otherOutputPinPlugged)
     end
 
-    assert(otherOutputPinPlugged or self:findInputPinIndex(inputPin))
-
     return updateOutputNode, updateInputNode
 end
 
@@ -362,6 +360,20 @@ function Node:setOutputPinType(outputPin, pinType, isLoadingGraph)
             inputPin.node:unplugInputPin(inputPin.inputPin)
         end
     end
+end
+
+function Node:validate()
+    local errors = {}
+    for i = 1, #self.inputPins do
+        local inputPin = self.inputPins[i]
+        if inputPin.pinType ~= PinTypes.ANY and not self:isInputPinPlugged(inputPin) then
+            errors[#errors + 1] = {
+                inputPinIndex = i,
+                message = 'Input pin is not plugged.'
+            }
+        end
+    end
+    return errors
 end
 
 return Node

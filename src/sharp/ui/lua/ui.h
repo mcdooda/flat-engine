@@ -100,6 +100,7 @@ int l_Widget_getRestrictScrollY(lua_State* L);
 int l_Widget_setRestrictScroll(lua_State* L);
 int l_Widget_getRestrictScroll(lua_State* L);
 
+int l_Widget_setScrollPosition(lua_State* L);
 int l_Widget_getScrollPosition(lua_State* L);
 
 int l_Widget_scrollInDirection(lua_State* L);

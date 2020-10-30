@@ -115,6 +115,12 @@ local function sortedPairs(t)
     end
 end
 
+local function arrayAppend(t, t2)
+    for i = 1, #t2 do
+        t[#t + 1] = t2[i]
+    end
+end
+
 flat.tableLength = tableLength
 flat.tableFindValueKey = tableFindValueKey
 flat.tableMaxIntKey = tableMaxIntKey
@@ -127,5 +133,6 @@ flat.arrayRemoveIndex = arrayRemoveIndex
 flat.arrayRemoveValue = arrayRemoveValue
 flat.arrayRemoveIndexCyclic = arrayRemoveIndexCyclic
 flat.arrayRemoveValueCyclic = arrayRemoveValueCyclic
+flat.arrayAppend = arrayAppend
 
 flat.sortedPairs = sortedPairs
