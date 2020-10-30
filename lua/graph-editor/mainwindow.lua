@@ -62,11 +62,21 @@ function MainWindow:build()
         end
 
         do
-            local validateButton = toolbar:addButton 'Validate'
+            local validateButton = toolbar:addButton 'Validate Graph'
             validateButton:click(function()
                 if self:validateGraph() then
                     local graphInfo = self:getCurrentRootGraphInfo()
                     flat.ui.success('Graph ' .. graphInfo.path .. ' validated successfully (excluding compounds)')
+                end
+            end)
+        end
+
+        do
+            local validateButton = toolbar:addButton 'Validate Resolved Graph'
+            validateButton:click(function()
+                if self:validateResolvedGraph() then
+                    local graphInfo = self:getCurrentRootGraphInfo()
+                    flat.ui.success('Resolved graph ' .. graphInfo.path .. ' validated successfully (including compounds and reroutes)')
                 end
             end)
         end
@@ -656,6 +666,18 @@ function MainWindow:validateGraph()
                 }
             }
         )
+    end
+    return #errors == 0
+end
+
+function MainWindow:validateResolvedGraph()
+    local graphInfo = self:getCurrentRootGraphInfo()
+    local graph = graphInfo.graph:clone()
+    graph:resolveCompoundsAndReroutes()
+    local errors = graph:validate()
+    for i = 1, #errors do
+        local error = errors[i]
+        flat.ui.warn(self:makeErrorPathString(error) .. ': ' .. error.message)
     end
     return #errors == 0
 end
