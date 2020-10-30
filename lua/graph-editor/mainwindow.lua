@@ -45,6 +45,7 @@ function MainWindow:build()
         do
             local saveButton = toolbar:addButton 'Save Graph'
             saveButton:click(function()
+                self:validateGraph()
                 self:saveGraphToFile()
                 self:saveGraphLayoutToFile()
                 if self.getRunnerCode then
