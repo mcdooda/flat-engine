@@ -11,6 +11,7 @@ return {
     'script/holdvalue',
     'script/luavariable',
 
+    -- math
     'math/multiply',
     'math/divide',
     'math/add',
@@ -40,6 +41,9 @@ return {
     'math/vector3/vector3reflect',
     'math/vector3/vector3split',
     'math/vector3/vector3tovector2',
+
+    -- string
+    'string/concatenate',
 
     'print',
 
