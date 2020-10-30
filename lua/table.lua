@@ -83,6 +83,21 @@ local function arrayRemoveValueCyclic(t, value)
     return index
 end
 
+local function arrayRemoveIf(t, predicate)
+    assert(tableIsArray(t))
+    for i = #t, 1, -1 do
+        if predicate(t[i]) then
+            arrayRemoveIndexCyclic(t, i)
+        end
+    end
+end
+
+local function arrayAppend(t, t2)
+    for i = 1, #t2 do
+        t[#t + 1] = t2[i]
+    end
+end
+
 local function sortedPairs(t)
     local keys = {}
     for k in pairs(t) do
@@ -115,12 +130,6 @@ local function sortedPairs(t)
     end
 end
 
-local function arrayAppend(t, t2)
-    for i = 1, #t2 do
-        t[#t + 1] = t2[i]
-    end
-end
-
 flat.tableLength = tableLength
 flat.tableFindValueKey = tableFindValueKey
 flat.tableMaxIntKey = tableMaxIntKey
@@ -133,6 +142,7 @@ flat.arrayRemoveIndex = arrayRemoveIndex
 flat.arrayRemoveValue = arrayRemoveValue
 flat.arrayRemoveIndexCyclic = arrayRemoveIndexCyclic
 flat.arrayRemoveValueCyclic = arrayRemoveValueCyclic
+flat.arrayRemoveIf = arrayRemoveIf
 flat.arrayAppend = arrayAppend
 
 flat.sortedPairs = sortedPairs
