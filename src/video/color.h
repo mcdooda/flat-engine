@@ -1,6 +1,7 @@
 #ifndef FLAT_VIDEO_COLOR_H
 #define FLAT_VIDEO_COLOR_H
 
+#include <ostream>
 #include <cstdint>
 #include <GL/glew.h>
 
@@ -84,6 +85,11 @@ class Color
 		AttributeType b;
 		AttributeType a;
 };
+
+inline std::ostream& operator<<(std::ostream& out, const Color& color)
+{
+	return out << "Color(" << color.r << "," << color.b << "," << color.b << "," << color.a << ")";
+}
 
 } // video
 } // flat
