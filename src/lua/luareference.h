@@ -119,7 +119,7 @@ class LuaReference
 #ifdef FLAT_DEBUG
 				if (lua_pcall(L, numArguments, 0, top) != LUA_OK)
 				{
-					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
+					std::cerr << std::endl << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
 					lua_pop(L, 1);
 				}
 				lua_pop(L, 1); // pop traceback function
@@ -179,7 +179,7 @@ class LuaReference
 				}
 				else
 				{
-					std::cerr << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
+					std::cerr << std::endl << "Lua function call error: " << luaL_checkstring(L, -1) << std::endl;
 					lua_pop(L, 2); // pop error message and traceback function
 				}
 #endif
