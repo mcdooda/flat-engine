@@ -113,11 +113,13 @@ function Notification:new(icon, message, color, duration, buttons)
         o:remove()
     end)
 
-    local timer = flat.Timer()
-    timer:onEnd(function()
-        o:remove()
-    end)
-    timer:start(duration)
+    if duration < math.huge then
+        local timer = flat.Timer()
+        timer:onEnd(function()
+            o:remove()
+        end)
+        timer:start(duration)
+    end
 
     return o
 end
