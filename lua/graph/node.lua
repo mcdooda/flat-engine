@@ -191,7 +191,8 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
                 self:setInputPinType(inputPin, outputPin.pinType, isLoadingGraph)
                 updateInputNode = true
             else
-                error('Not sure what to do?')
+                print('Not sure what to do?')
+                return
     end
         elseif outputPin.isVariableType then
             self:setOutputPinType(outputPin, inputPin.pinType, isLoadingGraph)
@@ -200,7 +201,8 @@ function Node:plugPins(outputPin, inputNode, inputPin, otherOutputPinUnplugged, 
             self:setInputPinType(inputPin, outputPin.pinType, isLoadingGraph)
             updateInputNode = true
         else
-            error('Cannot plug pins!')
+            print('Cannot plug pins!')
+            return
         end
     end
 
@@ -366,7 +368,7 @@ function Node:validate()
     local errors = {}
     for i = 1, #self.inputPins do
         local inputPin = self.inputPins[i]
-        if inputPin.pinType ~= PinTypes.ANY and not self:isInputPinPlugged(inputPin) then
+        if inputPin.pinType ~= PinTypes.ANY and inputPin.pinType ~= flat.types.TABLE and not self:isInputPinPlugged(inputPin) then
             errors[#errors + 1] = {
                 inputPinIndex = i,
                 message = 'Input pin is not plugged.'

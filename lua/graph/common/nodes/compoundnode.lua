@@ -162,17 +162,24 @@ function CompoundNode:resolve(parentGraph)
 
     -- 4. clone sub graph nodes into the parent graph (except the input and output nodes)
     local clones = {}
+    local clonedNodes = {}
     for i = 1, #graph.nodeInstances do
         local node = graph.nodeInstances[i]
         if node ~= inputNode and node ~= outputNode then
             local clone = node:clone()
             clones[node] = clone
+            clonedNodes[#clonedNodes + 1] = node
             parentGraph:addNodeInstance(clone)
         end
     end
 
     -- 5. restore links between clones
-    for node, clone in pairs(clones) do
+    if flat.f then
+        flat.f:write('CompoundNode:resolve 5\n')
+    end
+    for i = 1, #clonedNodes do
+        local node = clonedNodes[i]
+        local clone = assert(clones[node])
         for i = 1, #node.outputPins do
             local outputPin = node.outputPins[i]
             local cloneOutputPin = assert(clone.outputPins[i])
@@ -185,7 +192,7 @@ function CompoundNode:resolve(parentGraph)
                     local inputNode = assert(clones[pluggedInputPin.node])
                     local inputPinIndex = assert(pluggedInputPin.node:findInputPinIndex(pluggedInputPin.inputPin))
                     local inputPin = assert(inputNode.inputPins[inputPinIndex])
-                    clone:plugPins(cloneOutputPin, inputNode, inputPin)
+                    clone:plugPins(cloneOutputPin, inputNode, inputPin, true, true)
                 end
             end
         end
@@ -213,7 +220,7 @@ function CompoundNode:resolve(parentGraph)
                     local inputPin = assert(inputNode.inputPins[inputPinIndex])
 
                     -- plug the original parent graph node to the clone
-                    outputNode:plugPins(outputPin, inputNode, inputPin)
+                    outputNode:plugPins(outputPin, inputNode, inputPin, true, true)
                 end
             end
         end
@@ -239,7 +246,7 @@ function CompoundNode:resolve(parentGraph)
                     local inputPin = pluggedInputPin.inputPin
 
                     -- plug the clone to the original parent graph node
-                    outputNode:plugPins(outputPin, inputNode, inputPin)
+                    outputNode:plugPins(outputPin, inputNode, inputPin, true, true)
                 end
             end
         end
