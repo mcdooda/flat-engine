@@ -53,6 +53,12 @@ local function arrayFindValueIndex(t, value)
     return nil
 end
 
+local function arrayAddUnique(t, value)
+    if not arrayFindValueIndex(t, value) then
+        arrayAdd(t, value)
+    end
+end
+
 local function arrayRemoveIndex(t, index)
     assert(tableIsArray(t))
     local length = #t
@@ -130,19 +136,21 @@ local function sortedPairs(t)
     end
 end
 
-flat.tableLength = tableLength
+-- generic table functions
+flat.tableLength       = tableLength
 flat.tableFindValueKey = tableFindValueKey
-flat.tableMaxIntKey = tableMaxIntKey
+flat.tableMaxIntKey    = tableMaxIntKey
+flat.tableIsArray      = tableIsArray
 
-flat.tableIsArray = tableIsArray
+flat.sortedPairs       = sortedPairs
 
-flat.arrayAdd = arrayAdd
-flat.arrayFindValueIndex = arrayFindValueIndex
-flat.arrayRemoveIndex = arrayRemoveIndex
-flat.arrayRemoveValue = arrayRemoveValue
+-- array functions
+flat.arrayAdd               = arrayAdd
+flat.arrayAddUnique         = arrayAddUnique
+flat.arrayFindValueIndex    = arrayFindValueIndex
+flat.arrayRemoveIndex       = arrayRemoveIndex
+flat.arrayRemoveValue       = arrayRemoveValue
 flat.arrayRemoveIndexCyclic = arrayRemoveIndexCyclic
 flat.arrayRemoveValueCyclic = arrayRemoveValueCyclic
-flat.arrayRemoveIf = arrayRemoveIf
-flat.arrayAppend = arrayAppend
-
-flat.sortedPairs = sortedPairs
+flat.arrayRemoveIf          = arrayRemoveIf
+flat.arrayAppend            = arrayAppend
