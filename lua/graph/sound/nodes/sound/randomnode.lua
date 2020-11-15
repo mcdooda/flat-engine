@@ -46,4 +46,9 @@ function RandomNode:load(...)
     self.inputPinCount = ...
 end
 
+function RandomNode:isInputPinOptional(inputPin)
+    local inputPinIndex = self:findInputPinIndex(inputPin)
+    return inputPinIndex == #self.inputPins or SoundNode.isInputPinOptional(self, inputPin)
+end
+
 return RandomNode

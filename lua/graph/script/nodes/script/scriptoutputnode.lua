@@ -56,4 +56,9 @@ function ScriptOutputNode:load(...)
     self.pinsData = {...}
 end
 
+function ScriptOutputNode:isInputPinOptional(inputPin)
+    local inputPinIndex = self:findInputPinIndex(inputPin)
+    return inputPinIndex == #self.inputPins or FunctionalScriptNode.isInputPinOptional(self, inputPin)
+end
+
 return ScriptOutputNode
