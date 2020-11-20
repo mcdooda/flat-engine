@@ -36,6 +36,7 @@ int openVector3(Lua& lua)
 
 		{"reflect",       l_Vector3_reflect},
 		{"dot",           l_Vector3_dot},
+		{"cross",         l_Vector3_cross},
 
 		{"__tostring",    l_Vector3_tostring},
 
@@ -176,6 +177,14 @@ int l_Vector3_dot(lua_State* L)
 	Vector3& vector3 = getVector3(L, 1);
 	Vector3& other = getVector3(L, 2);
 	lua_pushnumber(L, dot(vector3, other));
+	return 1;
+}
+
+int l_Vector3_cross(lua_State* L)
+{
+	Vector3& vector3 = getVector3(L, 1);
+	Vector3& other = getVector3(L, 2);
+	pushVector3(L, flat::cross(vector3, other));
 	return 1;
 }
 
