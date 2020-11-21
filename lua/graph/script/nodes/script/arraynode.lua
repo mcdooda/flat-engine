@@ -50,8 +50,7 @@ function ArrayNode:load(...)
 end
 
 function ArrayNode:isInputPinOptional(inputPin)
-    local inputPinIndex = self:findInputPinIndex(inputPin)
-    return inputPinIndex == #self.inputPins or FunctionalScriptNode.isInputPinOptional(self, inputPin)
+    return self:isLastInputPin(inputPin) or FunctionalScriptNode.isInputPinOptional(self, inputPin)
 end
 
 return ArrayNode
