@@ -49,4 +49,9 @@ function ArrayNode:load(...)
     self.pinsData = {...}
 end
 
+function ArrayNode:isInputPinOptional(inputPin)
+    local inputPinIndex = self:findInputPinIndex(inputPin)
+    return inputPinIndex == #self.inputPins or FunctionalScriptNode.isInputPinOptional(self, inputPin)
+end
+
 return ArrayNode

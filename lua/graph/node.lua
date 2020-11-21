@@ -383,7 +383,7 @@ function Node:validate()
 end
 
 function Node:isInputPinOptional(inputPin)
-    return inputPin.pinType == PinTypes.ANY or inputPin.pinType == flat.types.TABLE
+    return inputPin.pinType == flat.types.TABLE
 end
 
 return Node
