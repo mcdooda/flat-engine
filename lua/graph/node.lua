@@ -121,6 +121,10 @@ function Node:findInputPinIndex(inputPin)
     return flat.arrayFindValueIndex(self.inputPins, inputPin)
 end
 
+function Node:isLastInputPin(inputPin)
+    return self.inputPins[#self.inputPins] == inputPin
+end
+
 function Node:addOutputPin(pinType, pinName, onPlugged, onUnplugged)
     assert(pinType, 'no pin type for pin ' .. tostring(pinName))
     assert(pinName, 'no pin name')
@@ -368,7 +372,7 @@ function Node:validate()
     local errors = {}
     for i = 1, #self.inputPins do
         local inputPin = self.inputPins[i]
-        if inputPin.pinType ~= PinTypes.ANY and inputPin.pinType ~= flat.types.TABLE and not self:isInputPinPlugged(inputPin) then
+        if not self:isInputPinOptional(inputPin) and not self:isInputPinPlugged(inputPin) then
             errors[#errors + 1] = {
                 inputPinIndex = i,
                 message = 'Input pin is not plugged.'
@@ -376,6 +380,10 @@ function Node:validate()
         end
     end
     return errors
+end
+
+function Node:isInputPinOptional(inputPin)
+    return inputPin.pinType == PinTypes.ANY or inputPin.pinType == flat.types.TABLE
 end
 
 return Node

@@ -46,4 +46,8 @@ function RandomNode:load(...)
     self.inputPinCount = ...
 end
 
+function RandomNode:isInputPinOptional(inputPin)
+    return self:isLastInputPin(inputPin)
+end
+
 return RandomNode
