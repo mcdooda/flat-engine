@@ -116,7 +116,6 @@ template <class T>
 T& getFlatAs(lua_State* L)
 {
 	Flat* flat = &getFlat(L);
-	FLAT_ASSERT(dynamic_cast<T*>(flat) != nullptr);
 	return static_cast<T&>(*flat);
 }
 
