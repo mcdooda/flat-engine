@@ -114,8 +114,8 @@ function QueryInstance:getContextPosition2d(context, item)
         return contextObject
     elseif contextObjectType == flat.types['flat.Vector3'] then
         return contextObject:toVector2()
-    elseif contextObjectType == flat.types['CG.Entity'] then
-        return contextObject:getPosition():toVector2()
+    elseif contextObjectType == flat.types['CG.Entity'] then -- TODO remove this from flat
+        return contextObject:getBaseCenter():toVector2()
     end
     error('Cannot find position 2d for object \'' .. tostring(contextObject) .. '\' of type ' .. flat.typetostring(contextObjectType))
 end
