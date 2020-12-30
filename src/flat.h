@@ -88,6 +88,10 @@
 #include "sharp/notify/notify.h"
 // message
 #include "sharp/message/message.h"
+// ai
+// navigation
+#include "sharp/ai/navigation/astargridnavigationdata.h"
+#include "sharp/ai/navigation/lua/path.h"
 
 // misc
 #include "misc/std.h"

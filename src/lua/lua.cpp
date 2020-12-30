@@ -15,6 +15,7 @@
 #include "video/lua/image.h"
 #include "audio/lua/audio.h"
 #include "sharp/ui/lua/ui.h"
+#include "sharp/ai/navigation/lua/path.h"
 #include "misc/lua/vector2.h"
 #include "misc/lua/vector3.h"
 #include "file/lua/file.h"
@@ -111,6 +112,7 @@ void Lua::reset(Flat& flat)
 		video::lua::image::open(L);
 		audio::lua::open(*this);
 		sharp::ui::lua::open(flat, *this);
+		sharp::ai::navigation::lua::open(*this);
 
 		snapshot::open(*this);
 		profiler::lua::open(L);
