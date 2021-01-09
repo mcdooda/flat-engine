@@ -126,6 +126,8 @@ end
 
 -- test
 function Test:new(scoringFactor, scoringFunction)
+    assert(scoringFactor)
+    assert(scoringFunction)
     return setmetatable({
         scoringFactor   = scoringFactor,
         scoringFunction = scoringFunction
@@ -193,6 +195,10 @@ function Test:processCommonScoreFilters(score)
 end
 
 function Test:setupCommonSettings(settings)
+    if not settings then
+        return
+    end
+
     self.min = settings.min
     self.max = settings.max
     assert(not self.min or not self.max or self.min < self.max)
