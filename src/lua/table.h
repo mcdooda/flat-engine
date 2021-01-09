@@ -59,6 +59,11 @@ inline int pushVector(lua_State* L, const std::vector<ValueType>& values)
 
 void clear(lua_State* L, int index);
 
+bool inheritsFrom(lua_State* L, int classIndex, int superClassIndex);
+bool containsAllFields(lua_State* L, int classIndex, int superClassIndex);
+bool implementsInterface(lua_State* L, int objectIndex, int interfaceIndex);
+
+
 } // flat::lua::table
 
 #endif // FLAT_LUA_TABLE_H
