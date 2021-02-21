@@ -19,6 +19,7 @@ BaseSprite::BaseSprite() :
 	m_scale(1.f),
 	m_flipX(false),
 	m_flipY(false),
+	m_useColor(false),
 	m_modelMatrixIsDirty(true)
 {
 	

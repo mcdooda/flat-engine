@@ -38,6 +38,9 @@ class BaseSprite
 		inline void setColor(const video::Color& color) { m_color = color; }
 		inline const video::Color& getColor() const { return m_color; }
 
+		inline void setUseColor(bool useColor) { m_useColor = useColor; }
+		inline bool getUseColor() const { return m_useColor; }
+
 		inline void setNormal(const Vector3& normal) { m_normal = normal; }
 		inline const Vector3& getNormal() const { return m_normal; }
 
@@ -109,6 +112,7 @@ class BaseSprite
 		
 		bool m_flipX : 1;
 		bool m_flipY : 1;
+		bool m_useColor : 1;
 		
 		mutable bool m_modelMatrixIsDirty : 1;
 		mutable Matrix4 m_modelMatrix;

@@ -33,6 +33,7 @@ public:
 		Vector2 pos;
 		Vector2 uv;
 		video::Color color;
+		float useColor;
 		Vector3 normal;
 		float depth;
 
