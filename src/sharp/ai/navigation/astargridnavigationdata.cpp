@@ -287,6 +287,7 @@ void AStarGridNavigationData::updateAllAreas()
 void AStarGridNavigationData::clear()
 {
 	m_cells.clear();
+	m_cellPositionToIndex.clear();
 	m_dirtyCells.clear();
 }
 
