@@ -220,6 +220,7 @@ class Widget : public util::Convertible<Widget>
 		inline const std::shared_ptr<Widget>& getChildAtIndex(int index) const { return m_children[index]; }
 		inline const std::vector<std::shared_ptr<Widget>>& getChildren() const { return m_children; }
 		inline const std::weak_ptr<Widget>& getParent() const { return m_parent; }
+		inline bool hasParent() const { return !m_parent.expired(); }
 
 		virtual void preLayout() = 0;
 		virtual void layout(bool computePosition) = 0;

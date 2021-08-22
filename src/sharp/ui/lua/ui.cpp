@@ -302,6 +302,10 @@ int l_Widget_getChildAtIndex(lua_State* L)
 int l_Widget_removeFromParent(lua_State* L)
 {
 	Widget& widget = getWidget(L, 1);
+	if (!widget.hasParent())
+	{
+		luaL_error(L, "Widget has no parent");
+	}
 	widget.removeFromParent();
 	return 0;
 }
