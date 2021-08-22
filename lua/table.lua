@@ -56,7 +56,9 @@ end
 local function arrayAddUnique(t, value)
     if not arrayFindValueIndex(t, value) then
         arrayAdd(t, value)
+        return true
     end
+    return false
 end
 
 local function arrayRemoveIndex(t, index)
