@@ -97,7 +97,7 @@ function Graph:addReroute(node)
 end
 
 function Graph:loadGraphFromFile(graphPath)
-    local graphFile = io.open(graphPath, 'r')
+    local graphFile = io.open(graphPath .. '.graph.lua', 'r')
     if not graphFile then
         return false
     end
@@ -106,6 +106,7 @@ function Graph:loadGraphFromFile(graphPath)
     local graphDescription = load(graphFileAsString)()
     local graphErrors = self:load(graphDescription)
     self.graphOrigin = 'File: ' .. graphPath
+    self.path = graphPath
     return graphErrors
 end
 
@@ -278,6 +279,7 @@ function Graph:clone()
     local clone = getmetatable(self):new()
     clone:load(graphDescription)
     clone.graphOrigin = self.graphOrigin .. ' (clone)'
+    clone.path = self.path
     assert(flat.dumpToString(graphDescription) == flat.dumpToString(clone:getDescription()))
     return clone
 end
@@ -289,7 +291,7 @@ end
 
 function Graph:saveGraph(graphPath)
     local graphDescription = self:getDescription()
-    local f = assert(io.open(graphPath, 'w'))
+    local f = assert(io.open(graphPath .. '.graph.lua', 'w'))
     f:write 'return '
     flat.dumpToOutput(f, graphDescription)
     f:close()

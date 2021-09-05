@@ -28,14 +28,13 @@ function ScriptNodeRuntime:readPin(inputPin)
     assert(inputPin, 'Input pin does not exist')
     local value = self:readOptionalPin(inputPin)
     if value == nil then
-        local msg = 'Cannot read nil from pin ' .. self.node:getName() .. '->' .. inputPin.pinName .. ' of type ' .. self.node:pinTypeToString(inputPin.pinType)
+        local message = 'Cannot read nil from pin ' .. self.node:getName() .. '->' .. inputPin.pinName .. ' of type ' .. self.node:pinTypeToString(inputPin.pinType)
         if inputPin.pluggedOutputPin then
-            msg = msg .. ' ' .. '(plugged to ' .. inputPin.pluggedOutputPin.node:getName() .. '->' .. inputPin.pluggedOutputPin.outputPin.pinName .. ')'
+            message = message .. ' ' .. '(plugged to ' .. inputPin.pluggedOutputPin.node:getName() .. '->' .. inputPin.pluggedOutputPin.outputPin.pinName .. ')'
         else
-            msg = msg .. ' (not plugged)'
+            message = message .. ' (not plugged)'
         end
-        flat.ui.error(msg)
-        error(msg)
+        self:runtimeError(message)
     end
     return value
 end
@@ -99,6 +98,32 @@ function ScriptNodeRuntime:impulse(outputPin)
         local nodeRuntime = self.scriptRuntime:getNodeRuntime(node)
         node:execute(nodeRuntime, inputPin)
     end
+end
+
+function ScriptNodeRuntime:runtimeError(message)
+    local graph = self.scriptRuntime.graph
+    local buttons = {}
+    if graph.path then
+        buttons[#buttons + 1] = {
+            'Open Graph',
+            function()
+                flat.graph.editor.open(
+                    Widget.getRoot(),
+                    graph.path,
+                    graph.nodeType
+                )
+                return false
+            end
+        }
+    else
+        print('No path for graph:')
+        flat.dumpFlat(graph)
+    end
+    local fullMessage = 'Script Runtime Error:\n'
+    fullMessage = fullMessage .. 'Graph: ' .. graph.graphOrigin .. '\n'
+    fullMessage = fullMessage .. 'Error: ' .. message
+    flat.ui.error(fullMessage, buttons)
+    error(msg)
 end
 
 return ScriptNodeRuntime

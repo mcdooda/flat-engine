@@ -24,7 +24,7 @@ end
 function flat.graph.script.run(scriptPath, ...)
     local script = Graph:new()
 
-    local loaded = script:loadGraphFromFile(scriptPath .. '.graph.lua')
+    local loaded = script:loadGraphFromFile(scriptPath)
     if not loaded then
         error('Could not run graph, file does not exist: ' .. scriptPath)
     end

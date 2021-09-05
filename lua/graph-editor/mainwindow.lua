@@ -569,7 +569,7 @@ function MainWindow:loadGraphFromFile(graphPath)
 
     -- returns false if the file does not exist, the graph stays empty in this case
     -- note that the graph can be loaded but still contain errors
-    local errors = graph:loadGraphFromFile(graphPath .. '.graph.lua')
+    local errors = graph:loadGraphFromFile(graphPath)
 
     return graph, errors
 end
@@ -578,7 +578,7 @@ function MainWindow:saveGraphToFile()
     assert(self:layoutSanityCheck())
 
     local graphInfo = self:getCurrentRootGraphInfo()
-    graphInfo.graph:saveGraph(graphInfo.path .. '.graph.lua')
+    graphInfo.graph:saveGraph(graphInfo.path)
 end
 
 function MainWindow:loadGraphLayoutFromFile(graphPath)
@@ -652,32 +652,35 @@ end
 function MainWindow:validateGraph()
     local graphInfo = self:getCurrentRootGraphInfo()
     local graph = graphInfo.graph
-    local errors = graph:validate()
-    for i = 1, #errors do
-        local error = errors[i]
-        flat.ui.warn(
-            self:makeErrorPathString(error) .. ': ' .. error.message,
-            {
-                {
-                    'Go To Node',
-                    function()
-                        self:goToNode(error.path)
-                    end
-                }
-            }
-        )
-    end
-    return #errors == 0
+    return self:validateAndShowErrors(graph, true)
 end
 
 function MainWindow:validateResolvedGraph()
     local graphInfo = self:getCurrentRootGraphInfo()
     local graph = graphInfo.graph:clone()
     graph:resolveCompoundsAndReroutes()
+    return self:validateAndShowErrors(graph, false)
+end
+
+function MainWindow:validateAndShowErrors(graph, allowGoToNode)
     local errors = graph:validate()
     for i = 1, #errors do
         local error = errors[i]
-        flat.ui.warn(self:makeErrorPathString(error) .. ': ' .. error.message)
+        print('Path=')
+        flat.dumpFlat(error.path)
+        local buttons = {}
+        if allowGoToNode then
+            buttons[#buttons + 1] = {
+                'Go To Node',
+                function()
+                    self:goToNode(error.path)
+                end
+            }
+        end
+        flat.ui.warn(
+            'Graph Validation Warning:\n' .. self:makeErrorPathString(error) .. ': ' .. error.message,
+            buttons
+        )
     end
     return #errors == 0
 end
