@@ -46,8 +46,8 @@ bool Sample::isPlaying() const
 void Sample::setPosition(const flat::Vector2& position) const
 {
     const float angle = atan2(position.x, position.y);
-    const int distance = std::sqrt(flat::square(position.x) + flat::square(position.y));
-    Mix_SetPosition(m_channel, angle, distance * 255);
+    const int distance = static_cast<int>(std::sqrt(flat::square(position.x) + flat::square(position.y)));
+    Mix_SetPosition(m_channel, static_cast<Sint16>(angle), distance * 255);
 }
 
 }
