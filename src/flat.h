@@ -62,11 +62,13 @@
 
 // render
 #include "render/animatedsprite.h"
-#include "render/synchronizedsprite.h"
-#include "render/spritesynchronizer.h"
 #include "render/heightmap.h"
-#include "render/spritebatch.h"
+#include "render/mesh.h"
+#include "render/meshbatch.h"
 #include "render/programsettings.h"
+#include "render/spritebatch.h"
+#include "render/spritesynchronizer.h"
+#include "render/synchronizedsprite.h"
 
 // containers
 #include "containers/pool.h"
