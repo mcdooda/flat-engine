@@ -20,6 +20,7 @@ Game::~Game()
 void Game::init()
 {
 	checkArgs();
+	scanAssets();
 	openWindow();
 	setStates();
 }
@@ -27,6 +28,11 @@ void Game::init()
 void Game::checkArgs()
 {
 	
+}
+
+void Game::scanAssets()
+{
+	assetRepository->scanAllAssets();
 }
 
 void Game::openWindow()
