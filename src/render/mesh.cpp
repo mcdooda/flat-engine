@@ -12,6 +12,20 @@ Mesh::Mesh() :
 
 }
 
+void Mesh::addVertex(const Vector3 position, Vector2 uv)
+{
+	m_vertexPositions.push_back(position);
+	m_vertexUvs.push_back(uv);
+}
+
+void Mesh::transform(const Matrix4& transform)
+{
+	for (Vector3& vertexPosition : m_vertexPositions)
+	{
+		vertexPosition = flat::Vector3(transform * flat::Vector4(vertexPosition, 1.f));
+	}
+}
+
 void Mesh::updateModelMatrix() const
 {
 	if (m_modelMatrixIsDirty)

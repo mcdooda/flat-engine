@@ -39,17 +39,17 @@ void MeshBatch::add(const Mesh& mesh)
 	const float useColor = mesh.getUseColor() ? 1.f : 0.f;
 	const Mesh::VertexPositions& vertexPositions = mesh.getVertexPositions();
 	const Mesh::VertexUvs& vertexUvs = mesh.getVertexUvs();
-	Vector4 localPosition(0.f, 0.f, 0.f, 1.f);
+	Vector4 localSpacePosition(0.f, 0.f, 0.f, 1.f);
 	Vector4 worldSpacePosition(0.f, 0.f, 0.f, 1.f);
 	for (int i = 0; i < mesh.getVertexPositions().size(); ++i)
 	{
 		FLAT_ASSERT(m_numVertices + 1 > 0);
 		MeshBatch::Vertex& meshBatchVertex = m_vertices[m_numVertices++];
 		FLAT_ASSERT(m_numVertices > 0);
-		localPosition.x = vertexPositions[i].x;
-		localPosition.y = vertexPositions[i].y;
-		localPosition.z = vertexPositions[i].z;
-		worldSpacePosition = transform * localPosition;
+		localSpacePosition.x = vertexPositions[i].x;
+		localSpacePosition.y = vertexPositions[i].y;
+		localSpacePosition.z = vertexPositions[i].z;
+		worldSpacePosition = transform * localSpacePosition;
 		meshBatchVertex.pos.x = worldSpacePosition.x;
 		meshBatchVertex.pos.y = worldSpacePosition.y;
 		meshBatchVertex.pos.z = worldSpacePosition.z;
@@ -70,7 +70,7 @@ void MeshBatch::draw(const RenderSettings& renderSettings, const Matrix4& viewMa
 	const video::Attribute useColorAttribute = renderSettings.useColorAttribute;
 
 	glEnableVertexAttribArray(positionAttribute);
-	glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].pos);
+	glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].pos);
 
 	glEnableVertexAttribArray(uvAttribute);
 	glVertexAttribPointer(uvAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].uv);
