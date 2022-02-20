@@ -53,6 +53,7 @@ class Mesh
 		inline void setPositionZ(float z) { m_position.z = z; m_modelMatrixIsDirty = true; }
 		inline const Vector3& getPosition() const { return m_position; }
 
+		void clearVertices();
 		void addVertex(const Vector3 position, Vector2 uv);
 
 		void transform(const Matrix4& transform);

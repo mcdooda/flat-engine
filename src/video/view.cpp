@@ -25,7 +25,7 @@ void View::reset()
 
 void View::zoom(float factor)
 {
-	scaleBy(m_viewMatrix, factor);
+	scaleBy(m_viewMatrix, flat::Vector3(factor, factor, 1.f));
 }
 
 void View::move(const Vector2& move)
@@ -81,14 +81,21 @@ void View::updateProjection()
 	const Vector2& windowSize = m_window->getSize();
 	float halfWidth = windowSize.x / 2.f;
 	float halfHeight = windowSize.y / 2.f;
-	m_projectionMatrix = ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000.0f, 1000.0f);
+	m_projectionMatrix = ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -10000.0f, 10000.0f);
 }
 
 void View::getScreenAABB(flat::AABB2& aabb) const
 {
 	aabb.min = getRelativePosition(flat::Vector2(0, 0));
 	aabb.max = getRelativePosition(m_window->getSize());
-	std::swap(aabb.min.y, aabb.max.y);
+	if (aabb.min.x > aabb.max.x)
+	{
+		std::swap(aabb.min.x, aabb.max.x);
+	}
+	if (aabb.min.y > aabb.max.y)
+	{
+		std::swap(aabb.min.y, aabb.max.y);
+	}
 }
 
 } // video

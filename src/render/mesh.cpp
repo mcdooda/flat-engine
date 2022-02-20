@@ -12,6 +12,12 @@ Mesh::Mesh() :
 
 }
 
+void Mesh::clearVertices()
+{
+	m_vertexPositions.clear();
+	m_vertexUvs.clear();
+}
+
 void Mesh::addVertex(const Vector3 position, Vector2 uv)
 {
 	m_vertexPositions.push_back(position);
