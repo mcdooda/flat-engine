@@ -22,21 +22,27 @@ Sprite::Sprite() : BaseSprite()
 	// pos
 	m_vertexPositions[0].x = 0.f;
 	m_vertexPositions[0].y = 0.f;
+	m_vertexPositions[0].z = 0.f;
 
 	m_vertexPositions[1].x = 1.f; // will change according to the texture size
 	m_vertexPositions[1].y = 0.f;
+	m_vertexPositions[1].z = 0.f;
 
 	m_vertexPositions[2].x = 0.f;
 	m_vertexPositions[2].y = 1.f; // will change according to the texture size
+	m_vertexPositions[2].z = 0.f;
 
 	m_vertexPositions[3].x = 1.f; // will change according to the texture size
 	m_vertexPositions[3].y = 1.f; // will change according to the texture size
+	m_vertexPositions[3].z = 0.f;
 
 	m_vertexPositions[4].x = 0.f;
 	m_vertexPositions[4].y = 1.f; // will change according to the texture size
+	m_vertexPositions[4].z = 0.f;
 
 	m_vertexPositions[5].x = 1.f; // will change according to the texture size
 	m_vertexPositions[5].y = 0.f;
+	m_vertexPositions[5].z = 0.f;
 }
 
 Sprite::~Sprite()

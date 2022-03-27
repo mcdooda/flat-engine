@@ -12,9 +12,8 @@ namespace render
 BaseSprite::BaseSprite() :
 	m_color(video::Color::WHITE),
 	m_normal(0.f, 0.f, 1.f),
-	m_depth(0.f),
 	m_rotation(0.f),
-	m_position(0.f, 0.f),
+	m_position(0.f, 0.f, 0.f),
 	m_origin(0.f, 0.f),
 	m_scale(1.f),
 	m_flipX(false),
@@ -53,7 +52,7 @@ void BaseSprite::draw(const RenderSettings& renderSettings, const Matrix4& /*vie
 	video::Attribute uvAttribute = renderSettings.uvAttribute;
 	
 	glEnableVertexAttribArray(positionAttribute);
-	glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2), &getVertexPositions()[0].x);
+	glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), &getVertexPositions()[0].x);
 	
 	glEnableVertexAttribArray(uvAttribute);
 	glVertexAttribPointer(uvAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2), &getVertexUvs()[0].x);
@@ -70,7 +69,7 @@ void BaseSprite::updateModelMatrix() const
 	{
 		m_modelMatrixIsDirty = false;
 		m_modelMatrix = Matrix4();
-		translateBy(m_modelMatrix, Vector3(m_position, 0.f));
+		translateBy(m_modelMatrix, m_position);
 		rotateBy(m_modelMatrix, m_rotation);
 		scaleBy(m_modelMatrix, m_scale);
 		float scaleX = m_flipX ? -1.f : 1.f;
@@ -85,7 +84,7 @@ void BaseSprite::setModelMatrix(const Matrix4& modelMatrix)
 	// TODO: do better than this
 	m_modelMatrixIsDirty = false;
 	m_modelMatrix = modelMatrix;
-	m_position = flat::Vector2(m_modelMatrix[3]);
+	m_position = flat::Vector3(m_modelMatrix[3]);
 	m_rotation = flat::Vector3();
 	m_scale = flat::Vector2();
 }
@@ -94,8 +93,8 @@ void BaseSprite::getAABB(AABB2& aabb) const
 {
 	const Matrix4& aMatrix = getModelMatrix();
 	// TODO: wrong for rotated sprites
-	aabb.min = Vector2(aMatrix * Vector4(getVertexPositions()[0], 0.f, 1.f));
-	aabb.max = Vector2(aMatrix * Vector4(getVertexPositions()[3], 0.f, 1.f));
+	aabb.min = Vector2(aMatrix * Vector4(getVertexPositions()[0], 1.f));
+	aabb.max = Vector2(aMatrix * Vector4(getVertexPositions()[3], 1.f));
 
 	if (aabb.min.x > aabb.max.x)
 		std::swap(aabb.min.x, aabb.max.x);

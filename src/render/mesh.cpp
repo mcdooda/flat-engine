@@ -64,4 +64,9 @@ Mesh::VertexUvs& Mesh::getVertexUvs()
 	return m_vertexUvs;
 }
 
+flat::Vector3& Mesh::getVertexPosition(size_t vertexIndex)
+{
+	return getVertexPositions().at(vertexIndex);
+}
+
 } // flat::render

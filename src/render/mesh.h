@@ -61,6 +61,11 @@ class Mesh
 		void updateModelMatrix() const;
 		inline const Matrix4& getModelMatrix() const { updateModelMatrix(); return m_modelMatrix; }
 
+		Vector3& getVertexPosition(size_t vertexIndex);
+
+		template <class Func>
+		void eachVertexPosition(Func callback);
+
 	protected:
 		const VertexPositions& getVertexPositions() const;
 		VertexPositions& getVertexPositions();
@@ -84,6 +89,16 @@ class Mesh
 
 		bool m_useColor : 1;
 };
+
+template <class Func>
+void Mesh::eachVertexPosition(Func callback)
+{
+	VertexPositions& vertexPositions = getVertexPositions();
+	for (size_t vertexIndex = 0, numVertices = vertexPositions.size(); vertexIndex < numVertices; ++vertexIndex)
+	{
+		callback(vertexIndex, vertexPositions.at(vertexIndex));
+	}
+}
 
 } // flat::render
 

@@ -25,19 +25,16 @@ public:
 	SpriteBatch();
 
 	void clear();
-	void add(const BaseSprite& sprite);
+	void add(const BaseSprite& sprite, const Matrix4& transformPositionMatrix);
 	void draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const;
 
 	struct Vertex
 	{
-		Vector2 pos;
+		Vector3 pos;
 		Vector2 uv;
 		video::Color color;
 		float useColor;
 		Vector3 normal;
-		float depth;
-
-		Vertex() : depth(0.f) {}
 	};
 
 private:

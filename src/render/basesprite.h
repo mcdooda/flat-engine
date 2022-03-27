@@ -43,9 +43,6 @@ class BaseSprite
 
 		inline void setNormal(const Vector3& normal) { m_normal = normal; }
 		inline const Vector3& getNormal() const { return m_normal; }
-
-		inline void setDepth(float depth) { m_depth = depth; }
-		inline float getDepth() const { return m_depth; }
 		
 		inline void setRotation(const Vector3& rotation) { m_rotation = rotation; m_modelMatrixIsDirty = true; }
 		inline void setRotationX(float rotationX) { m_rotation.x = rotationX; m_modelMatrixIsDirty = true; }
@@ -58,10 +55,11 @@ class BaseSprite
 		inline void setScaleY(float scaleY) { m_scale.y = scaleY; m_modelMatrixIsDirty = true; }
 		inline const Vector2& getScale() const { return m_scale; }
 		
-		inline void setPosition(const Vector2& position) { m_position = position; m_modelMatrixIsDirty = true; }
+		inline void setPosition(const Vector3& position) { m_position = position; m_modelMatrixIsDirty = true; }
 		inline void setPositionX(float x) { m_position.x = x; m_modelMatrixIsDirty = true; }
 		inline void setPositionY(float y) { m_position.y = y; m_modelMatrixIsDirty = true; }
-		inline const Vector2& getPosition() const { return m_position; }
+		inline void setPositionZ(float z) { m_position.z = z; m_modelMatrixIsDirty = true; }
+		inline const Vector3& getPosition() const { return m_position; }
 		
 		inline void setOrigin(const Vector2& origin) { m_origin = origin; m_modelMatrixIsDirty = true; }
 		inline void setOriginX(float x) { m_origin.x = x; m_modelMatrixIsDirty = true; }
@@ -73,7 +71,7 @@ class BaseSprite
 		inline void setFlipY(bool flipY) { m_flipY = flipY; m_modelMatrixIsDirty = true; }
 		inline bool getFlipY() const { return m_flipY; }
 		
-		inline void moveBy(const Vector2& move) { m_position += move; m_modelMatrixIsDirty = true; }
+		inline void moveBy(const Vector3& move) { m_position += move; m_modelMatrixIsDirty = true; }
 		
 		virtual void draw(const RenderSettings& renderSettings, const Matrix4& viewMatrix) const;
 		
@@ -90,7 +88,7 @@ class BaseSprite
 		
 	protected:
 		static constexpr int NUM_VERTICES = 6;
-		using VertexPositions = std::array<Vector2, NUM_VERTICES>;
+		using VertexPositions = std::array<Vector3, NUM_VERTICES>;
 		using VertexUvs = std::array<Vector2, NUM_VERTICES>;
 
 		virtual const VertexPositions& getVertexPositions() const = 0;
@@ -103,10 +101,9 @@ class BaseSprite
 		
 		video::Color m_color;
 		Vector3 m_normal;
-		float m_depth;
 		
 		Vector3 m_rotation;
-		Vector2 m_position;
+		Vector3 m_position;
 		Vector2 m_origin;
 		Vector2 m_scale;
 		

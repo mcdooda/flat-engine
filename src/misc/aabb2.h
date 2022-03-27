@@ -47,6 +47,14 @@ class AABB2
 			return max - min;
 		}
 
+		void scaleBy(float scaleFactor)
+		{
+			const Vector2 scaledSize = getSize() * scaleFactor;
+			const Vector2 center = getCenter();
+			min = center - scaledSize;
+			max = center + scaledSize;
+		}
+
 		inline bool contains(const AABB2& other) const
 		{
 			return min.x <= other.min.x && min.y <= other.min.y
