@@ -47,6 +47,8 @@ class AssetRepository final
 		void addAssetDirectory(const std::filesystem::path& assetDirectory);
 		void scanAllAssets();
 
+		void reset();
+
 		const Asset* findAssetFromName(const Asset::Type& type, const Asset::Name& name) const;
 		std::vector<const Asset*> searchAllFromName(const Asset::Name& name) const;
 

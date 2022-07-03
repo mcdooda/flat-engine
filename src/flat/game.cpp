@@ -35,6 +35,12 @@ void Game::scanAssets()
 	assetRepository->scanAllAssets();
 }
 
+void Game::rescanAssets()
+{
+	assetRepository->reset();
+	scanAssets();
+}
+
 void Game::openWindow()
 {
 	video->window->open(video->window->getDesktopSize() * 3.f / 4.f, false, true);

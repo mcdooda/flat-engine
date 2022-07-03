@@ -32,6 +32,12 @@ void AssetRepository::scanAllAssets()
 	}
 }
 
+void AssetRepository::reset()
+{
+	m_assetDirectories.clear();
+	clearCache();
+}
+
 bool AssetRepository::isValidDirectory(const std::filesystem::path& path)
 {
 	return std::filesystem::is_directory(path) && !std::filesystem::exists(path / assetMetaDataFileName);

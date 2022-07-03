@@ -88,7 +88,7 @@ local function choice(message, choices, defaultValue)
 
     local messageWindow = flat.ui.message(message, content, { okButton, cancelButton })
     messageWindow:setTitle ''
-    messageWindow:setSize(300, 175)
+    messageWindow:setSize(300, 250)
     local windowClosed = false
     messageWindow.onClose:on(function()
         choiceCanceled = true

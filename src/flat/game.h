@@ -20,6 +20,7 @@ class Game : public Flat, public state::Agent
 		virtual void setStates() = 0;
 		virtual void checkArgs();
 		virtual void scanAssets();
+		void rescanAssets();
 		virtual void openWindow();
 		
 		bool isArg(int index);
