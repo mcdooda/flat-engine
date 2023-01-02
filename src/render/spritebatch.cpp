@@ -3,27 +3,24 @@
 #include "render/rendersettings.h"
 #include "misc/matrix4.h"
 
-namespace flat
-{
-namespace render
+namespace flat::render
 {
 
 SpriteBatch::SpriteBatch() :
-	m_numVertices(0),
 	m_texture(nullptr)
 {
-
+	m_vertices.reserve(1024 * 1024 * 4);
 }
 
 void SpriteBatch::clear()
 {
-	m_numVertices = 0;
+	m_vertices.clear();
 	m_texture = nullptr;
 }
 
 void SpriteBatch::add(const BaseSprite& sprite, const Matrix4& transformPositionMatrix)
 {
-	if (m_numVertices == 0)
+	if (m_vertices.empty())
 	{
 		FLAT_ASSERT(m_texture == nullptr);
 		m_texture = sprite.getTexture().get();
@@ -31,7 +28,6 @@ void SpriteBatch::add(const BaseSprite& sprite, const Matrix4& transformPosition
 #ifdef FLAT_DEBUG
 	else
 	{
-		FLAT_ASSERT(m_numVertices > 0 && static_cast<size_t>(m_numVertices) + BaseSprite::NUM_VERTICES < m_vertices.size());
 		FLAT_ASSERT(m_texture == sprite.getTexture().get());
 	}
 #endif
@@ -56,9 +52,7 @@ void SpriteBatch::add(const BaseSprite& sprite, const Matrix4& transformPosition
 	Vector4 pos(0.f, 0.f, 0.f, 1.f);
 	for (int i = 0; i < BaseSprite::NUM_VERTICES; ++i)
 	{
-		FLAT_ASSERT(m_numVertices + 1 > 0);
-		SpriteBatch::Vertex& spriteBatchVertex = m_vertices[m_numVertices++];
-		FLAT_ASSERT(m_numVertices > 0);
+		SpriteBatch::Vertex& spriteBatchVertex = m_vertices.emplace_back();
 		pos2d.x = vertexPositions[i].x;
 		pos2d.y = vertexPositions[i].y;
 		pos = transform * pos2d;
@@ -98,7 +92,7 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	glEnableVertexAttribArray(useColorAttribute);
 	glVertexAttribPointer(useColorAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].useColor);
 
-	glDrawArrays(GL_TRIANGLES, 0, m_numVertices);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
 	glDisableVertexAttribArray(positionAttribute);
 	glDisableVertexAttribArray(normalAttribute);
@@ -107,7 +101,5 @@ void SpriteBatch::draw(const RenderSettings& renderSettings, const Matrix4& view
 	glDisableVertexAttribArray(useColorAttribute);
 }
 
-} // render
-} // flat
-
+} // flat::render
 

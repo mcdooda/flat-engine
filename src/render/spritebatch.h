@@ -2,7 +2,6 @@
 #define FLAT_RENDER_SPRITEBATCH_H
 
 #include <vector>
-#include <array>
 
 #include "video/color.h"
 #include "misc/vector.h"
@@ -38,8 +37,7 @@ public:
 	};
 
 private:
-	std::array<Vertex, 1024 * 1024 * 4> m_vertices;
-	GLsizei m_numVertices;
+	std::vector<Vertex> m_vertices;
 	const video::Texture* m_texture;
 };
 

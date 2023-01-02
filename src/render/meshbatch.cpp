@@ -6,21 +6,20 @@ namespace flat::render
 {
 
 MeshBatch::MeshBatch() :
-	m_numVertices(0),
 	m_texture(nullptr)
 {
-
+	m_vertices.reserve(1024 * 1024 * 4);
 }
 
 void MeshBatch::clear()
 {
-	m_numVertices = 0;
+	m_vertices.clear();
 	m_texture = nullptr;
 }
 
 void MeshBatch::add(const Mesh& mesh)
 {
-	if (m_numVertices == 0)
+	if (m_vertices.empty())
 	{
 		FLAT_ASSERT(m_texture == nullptr);
 		m_texture = mesh.getTexture().get();
@@ -28,7 +27,6 @@ void MeshBatch::add(const Mesh& mesh)
 #ifdef FLAT_DEBUG
 	else
 	{
-		FLAT_ASSERT(m_numVertices > 0 && static_cast<size_t>(m_numVertices) + mesh.getVertexPositions().size() < m_vertices.size());
 		FLAT_ASSERT(m_texture == mesh.getTexture().get());
 	}
 #endif
@@ -43,9 +41,7 @@ void MeshBatch::add(const Mesh& mesh)
 	Vector4 worldSpacePosition(0.f, 0.f, 0.f, 1.f);
 	for (int i = 0; i < mesh.getVertexPositions().size(); ++i)
 	{
-		FLAT_ASSERT(m_numVertices + 1 > 0);
-		MeshBatch::Vertex& meshBatchVertex = m_vertices[m_numVertices++];
-		FLAT_ASSERT(m_numVertices > 0);
+		MeshBatch::Vertex& meshBatchVertex = m_vertices.emplace_back();
 		localSpacePosition.x = vertexPositions[i].x;
 		localSpacePosition.y = vertexPositions[i].y;
 		localSpacePosition.z = vertexPositions[i].z;
@@ -81,7 +77,7 @@ void MeshBatch::draw(const RenderSettings& renderSettings, const Matrix4& viewMa
 	glEnableVertexAttribArray(useColorAttribute);
 	glVertexAttribPointer(useColorAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), &m_vertices[0].useColor);
 
-	glDrawArrays(GL_TRIANGLES, 0, m_numVertices);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
 	glDisableVertexAttribArray(positionAttribute);
 	glDisableVertexAttribArray(uvAttribute);
